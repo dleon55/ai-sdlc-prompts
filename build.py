@@ -676,6 +676,100 @@ body.ms-mode .sec-check { display: block; }
   font-family: inherit; transition: background .12s;
 }
 .proj-add-btn:hover { background: #0891b2; }
+
+/* ════════════════════  PROYECTO QUICK-SWITCHER  ═══════════════════ */
+.proj-quick { position: relative; flex-shrink: 0; }
+.proj-quick-btn {
+  display: flex; align-items: center; gap: .3rem;
+  padding: .26rem .65rem; background: rgba(14,116,144,.12);
+  border: 1px solid #0e7490; border-radius: 6px;
+  color: #7dd3fc; font-size: .72rem; cursor: pointer;
+  font-family: inherit; font-weight: 600; transition: all .12s;
+  max-width: 200px; white-space: nowrap;
+}
+.proj-quick-btn:hover { background: rgba(14,116,144,.25); border-color: #06b6d4; }
+.proj-quick-name { overflow: hidden; text-overflow: ellipsis; max-width: 130px; display: inline-block; vertical-align: middle; }
+.proj-quick-chevron { flex-shrink: 0; transition: transform .15s; opacity: .7; }
+.proj-quick.open .proj-quick-chevron { transform: rotate(180deg); }
+.proj-quick-dropdown {
+  display: none; position: absolute; top: calc(100% + 6px); left: 0; z-index: 800;
+  background: var(--bg2); border: 1px solid var(--bdr2); border-radius: 10px;
+  min-width: 210px; max-width: 300px; max-height: 340px; overflow-y: auto;
+  box-shadow: 0 12px 40px rgba(0,0,0,.55); padding: .35rem;
+}
+.proj-quick.open .proj-quick-dropdown { display: block; }
+.pq-item {
+  display: flex; align-items: center; gap: 7px;
+  padding: .38rem .55rem; border-radius: 6px; cursor: pointer; width: 100%;
+  border: none; background: none; color: var(--tx2); font-size: .78rem;
+  font-family: inherit; text-align: left; transition: background .1s;
+}
+.pq-item:hover { background: var(--bg3); color: var(--tx); }
+.pq-item.pq-active { background: rgba(14,116,144,.14); color: #7dd3fc; }
+.pq-item-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pq-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; background: var(--bdr2); }
+.pq-dot.on { background: #06b6d4; box-shadow: 0 0 4px #06b6d4; }
+.pq-sep { height: 1px; background: var(--bdr); margin: .3rem 0; }
+.pq-footer { display: flex; gap: 5px; padding-top: .3rem; }
+.pq-new-btn {
+  flex: 1; padding: .28rem .5rem; background: rgba(14,116,144,.1);
+  border: 1px solid #0e7490; border-radius: 6px; color: #7dd3fc;
+  font-size: .7rem; cursor: pointer; font-family: inherit; transition: all .12s;
+}
+.pq-new-btn:hover { background: #0e7490; color: #fff; }
+.pq-mgr-btn {
+  padding: .28rem .55rem; background: var(--bg3); border: 1px solid var(--bdr2);
+  border-radius: 6px; color: var(--tx3); font-size: .7rem;
+  cursor: pointer; font-family: inherit; transition: all .12s;
+}
+.pq-mgr-btn:hover { border-color: var(--bdr2); color: var(--tx2); background: var(--bg4); }
+
+/* ════════════════════  SIDEBAR COLLAPSE  ════════════════════════ */
+.sidebar-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .4rem .75rem; border-bottom: 1px solid var(--bdr); flex-shrink: 0;
+}
+.sidebar-label-text { font-size: .6rem; font-weight: 700; color: var(--tx3); text-transform: uppercase; letter-spacing: .1em; }
+.sidebar-collapse-btn {
+  background: none; border: none; color: var(--tx3); cursor: pointer;
+  padding: 3px 4px; border-radius: 4px; transition: color .12s, background .12s;
+  display: flex; align-items: center; flex-shrink: 0;
+}
+.sidebar-collapse-btn:hover { color: var(--tx); background: var(--bg3); }
+body.sidebar-collapsed { --side: 46px; }
+body.sidebar-collapsed .sidebar { overflow: hidden; }
+body.sidebar-collapsed .sid-text,
+body.sidebar-collapsed .sid-badge,
+body.sidebar-collapsed .sid-label,
+body.sidebar-collapsed .sidebar-label-text { display: none; }
+body.sidebar-collapsed .sid-link { padding: .38rem; justify-content: center; gap: 0; }
+body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem .25rem; }
+
+/* ════════════════════  RESPONSIVE  ════════════════════════════════ */
+@media (max-width: 900px) {
+  .hdr-logo p { display: none; }
+  .tag-warn { font-size: .58rem; padding: .12rem .35rem; }
+}
+@media (max-width: 720px) {
+  :root { --side: 46px; }
+  .sidebar { overflow: hidden; }
+  .sid-text, .sid-badge, .sid-label, .sidebar-label-text { display: none !important; }
+  .sid-link { padding: .38rem; justify-content: center; gap: 0; }
+  .sidebar-header { justify-content: center; padding: .4rem .25rem; }
+  .hdr-tags .tag:not(.tag-warn) { display: none; }
+}
+@media (max-width: 560px) {
+  .hdr-tags { display: none; }
+  .proj-quick-name { max-width: 70px; }
+  .cards-grid { grid-template-columns: 1fr; }
+  .ms-label { display: none; }
+  .var-label { display: none; }
+}
+@media (max-width: 400px) {
+  .hdr-brand { display: none; }
+  header { padding: 0 .75rem; }
+  .proj-quick-btn { max-width: 90px; padding: .22rem .45rem; }
+}
 """
 
 JS = """
@@ -754,7 +848,7 @@ function duplicateProject(id) {
 function renameProject(id, name) {
   var list = loadProjects() || [];
   var p = list.find(function(x) { return x.id === id; });
-  if (p && name.trim()) { p.name = name.trim(); saveProjects(list); renderProjectSelector(); }
+  if (p && name.trim()) { p.name = name.trim(); saveProjects(list); renderProjectSelector(); renderProjQuick(); }
 }
 
 function setDefaultProject(id) {
@@ -767,6 +861,7 @@ function switchProject(id) {
   localStorage.setItem(LS_KEY_ACTV, id);
   syncPanelToProject();
   renderProjectSelector();
+  renderProjQuick();
 }
 
 /* ════════════════════  PROYECTOS — sync DOM  ════════════════════ */
@@ -802,16 +897,20 @@ function syncProjectFromPanel() {
 
 function renderProjectSelector() {
   var sel = document.getElementById('proj-selector');
-  if (!sel) return;
   var list = loadProjects() || [];
   var active = getActiveProject();
   var activeId = active ? active.id : null;
-  sel.innerHTML = list.map(function(p) {
-    var selAttr = (p.id === activeId) ? ' selected' : '';
-    var label = p.name + (p.isDefault ? ' \u2605' : '');
-    return '<option value="' + p.id + '"' + selAttr + '>'
-           + label.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</option>';
-  }).join('');
+  if (sel) {
+    sel.innerHTML = list.map(function(p) {
+      var selAttr = (p.id === activeId) ? ' selected' : '';
+      var label = p.name + (p.isDefault ? ' \u2605' : '');
+      return '<option value="' + p.id + '"' + selAttr + '>'
+             + label.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</option>';
+    }).join('');
+  }
+  var nameEl = document.getElementById('vp-proj-name');
+  if (nameEl && active) nameEl.textContent = active.name + (active.isDefault ? ' \u2605' : '');
+  renderProjQuick();
 }
 
 /* ════════════════════  PROYECTOS — modal  ═══════════════════════ */
@@ -855,6 +954,51 @@ function openProjectsModal() {
 function closeProjectsModal() {
   var m = document.getElementById('proj-modal');
   if (m) m.style.display = 'none';
+}
+
+/* ════════════════════  PROYECTO QUICK-SWITCHER  ══════════════════ */
+function renderProjQuick() {
+  var list = loadProjects() || [];
+  var active = getActiveProject();
+  var activeId = active ? active.id : null;
+  var nameEl = document.getElementById('proj-quick-name');
+  if (nameEl) nameEl.textContent = (active ? active.name : 'Proyecto') + (active && active.isDefault ? ' \u2605' : '');
+  var dd = document.getElementById('proj-quick-dropdown');
+  if (!dd) return;
+  var items = list.map(function(p) {
+    var isAct = p.id === activeId;
+    return '<button class="pq-item' + (isAct ? ' pq-active' : '') + '"'
+      + ' onclick="switchProject(\\'' + p.id + '\\');closeProjQuick();">'
+      + '<span class="pq-dot' + (isAct ? ' on' : '') + '"></span>'
+      + '<span class="pq-item-name">' + p.name.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</span>'
+      + (p.isDefault ? '<span style="font-size:.6rem;color:var(--tx3)">\u2605</span>' : '')
+      + '</button>';
+  }).join('');
+  dd.innerHTML = items
+    + '<div class="pq-sep"></div>'
+    + '<div class="pq-footer">'
+    + '<button class="pq-new-btn" onclick="createProject();renderProjQuick();renderProjectSelector();syncPanelToProject();closeProjQuick();">+ Nuevo</button>'
+    + '<button class="pq-mgr-btn" onclick="openProjectsModal();closeProjQuick();">\u2699 Gestionar</button>'
+    + '</div>';
+}
+
+function toggleProjQuick(e) {
+  if (e) e.stopPropagation();
+  var wrap = document.getElementById('proj-quick');
+  if (!wrap) return;
+  var isOpen = wrap.classList.toggle('open');
+  if (isOpen) renderProjQuick();
+}
+
+function closeProjQuick() {
+  var wrap = document.getElementById('proj-quick');
+  if (wrap) wrap.classList.remove('open');
+}
+
+/* ════════════════════  SIDEBAR  ════════════════════════════════ */
+function toggleSidebar() {
+  document.body.classList.toggle('sidebar-collapsed');
+  try { localStorage.setItem('AI_SDLC_sidebar', document.body.classList.contains('sidebar-collapsed') ? '1' : '0'); } catch(e) {}
 }
 
 /* ═══════════════════  VARIABLES  ═══════════════════════════════ */
@@ -1165,6 +1309,16 @@ document.addEventListener('DOMContentLoaded', function() {
   if (!loadProjects()) createProject('Default');
   renderProjectSelector();
   syncPanelToProject();
+  renderProjQuick();
+
+  // Restaurar estado del sidebar
+  try { if (localStorage.getItem('AI_SDLC_sidebar') === '1') document.body.classList.add('sidebar-collapsed'); } catch(e) {}
+
+  // Cerrar proj-quick al hacer clic fuera
+  document.addEventListener('click', function(e) {
+    var wrap = document.getElementById('proj-quick');
+    if (wrap && !wrap.contains(e.target)) closeProjQuick();
+  });
 
   // Cerrar modal de info al pulsar Escape o clic en overlay
   var overlay = document.getElementById('info-modal');
@@ -1174,7 +1328,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') { closeInfo(); closeVarPanel(); closeProjectsModal(); }
+    if (e.key === 'Escape') { closeInfo(); closeVarPanel(); closeProjectsModal(); closeProjQuick(); }
   });
 
   var content = document.querySelector('.content');
@@ -1373,6 +1527,14 @@ def build():
 
         # search bar
         '<div class="search-bar">\n'
+        '  <div class="proj-quick" id="proj-quick">'
+        '<button class="proj-quick-btn" id="proj-quick-btn" onclick="toggleProjQuick(event)" title="Cambiar proyecto activo">'
+        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M3 12h18M3 17h18"/></svg>'
+        '<span class="proj-quick-name" id="proj-quick-name">Proyecto</span>'
+        '<span class="proj-quick-chevron"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'
+        '</button>'
+        '<div class="proj-quick-dropdown" id="proj-quick-dropdown"></div>'
+        '</div>\n'
         '  <div class="search-wrap">'
         '<span class="search-ico">'
         '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
@@ -1386,16 +1548,25 @@ def build():
         '  <button class="ms-toggle-btn" id="ms-toggle-btn" onclick="toggleMsMode()" title="Activar selección múltiple">'
         '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
         '<rect x="3" y="5" width="13" height="13" rx="2"/><path d="M8 10l3 3 5-5"/>'
-        '</svg> Multi-select</button>\n'
+        '</svg><span class="ms-label"> Multi-select</span></button>\n'
         '  <button class="var-toggle-btn" id="var-toggle-btn" onclick="toggleVarPanel()" title="Panel de variables">'
         '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
         '<path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>'
-        '</svg> Variables</button>\n'
+        '</svg><span class="var-label"> Variables</span></button>\n'
         '</div>\n'
 
         # layout
         '<div class="layout">\n'
-        '  <nav class="sidebar">\n' + sidebar_html + '  </nav>\n'
+        '  <nav class="sidebar">\n'
+        '<div class="sidebar-header">'
+        '<span class="sidebar-label-text">Nav</span>'
+        '<button class="sidebar-collapse-btn" onclick="toggleSidebar()" title="Colapsar / expandir menú">'
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
+        '<path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/>'
+        '</svg>'
+        '</button>'
+        '</div>'
+        + sidebar_html + '  </nav>\n'
         '  <div class="content">\n'
         + fw_block
         + groups_html +
@@ -1414,8 +1585,12 @@ def build():
         '<button class="var-close-btn" onclick="closeVarPanel()" title="Cerrar">&#x2715;</button>'
         '</div>\n'
         '<div class="proj-selector-row">'
-        '<select id="proj-selector" class="proj-select" onchange="switchProject(this.value)"></select>'
-        '<button class="proj-mgr-btn" onclick="openProjectsModal()">&#x2699; Proyectos</button>'
+        '<select id="proj-selector" class="proj-select" onchange="switchProject(this.value)" style="display:none"></select>'
+        '<div style="flex:1;font-size:.74rem;color:var(--tx2);display:flex;align-items:center;gap:5px;overflow:hidden;">'
+        '<span style="color:var(--tx3);flex-shrink:0;">Proyecto\u00a0</span>'
+        '<span id="vp-proj-name" style="color:#7dd3fc;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>'
+        '</div>'
+        '<button class="proj-mgr-btn" onclick="openProjectsModal()" title="Gestionar proyectos">&#x2699;</button>'
         '</div>\n'
         '  <div class="var-panel-body">\n'
 

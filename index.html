@@ -529,6 +529,100 @@ body.ms-mode .sec-check { display: block; }
   font-family: inherit; transition: background .12s;
 }
 .proj-add-btn:hover { background: #0891b2; }
+
+/* ════════════════════  PROYECTO QUICK-SWITCHER  ═══════════════════ */
+.proj-quick { position: relative; flex-shrink: 0; }
+.proj-quick-btn {
+  display: flex; align-items: center; gap: .3rem;
+  padding: .26rem .65rem; background: rgba(14,116,144,.12);
+  border: 1px solid #0e7490; border-radius: 6px;
+  color: #7dd3fc; font-size: .72rem; cursor: pointer;
+  font-family: inherit; font-weight: 600; transition: all .12s;
+  max-width: 200px; white-space: nowrap;
+}
+.proj-quick-btn:hover { background: rgba(14,116,144,.25); border-color: #06b6d4; }
+.proj-quick-name { overflow: hidden; text-overflow: ellipsis; max-width: 130px; display: inline-block; vertical-align: middle; }
+.proj-quick-chevron { flex-shrink: 0; transition: transform .15s; opacity: .7; }
+.proj-quick.open .proj-quick-chevron { transform: rotate(180deg); }
+.proj-quick-dropdown {
+  display: none; position: absolute; top: calc(100% + 6px); left: 0; z-index: 800;
+  background: var(--bg2); border: 1px solid var(--bdr2); border-radius: 10px;
+  min-width: 210px; max-width: 300px; max-height: 340px; overflow-y: auto;
+  box-shadow: 0 12px 40px rgba(0,0,0,.55); padding: .35rem;
+}
+.proj-quick.open .proj-quick-dropdown { display: block; }
+.pq-item {
+  display: flex; align-items: center; gap: 7px;
+  padding: .38rem .55rem; border-radius: 6px; cursor: pointer; width: 100%;
+  border: none; background: none; color: var(--tx2); font-size: .78rem;
+  font-family: inherit; text-align: left; transition: background .1s;
+}
+.pq-item:hover { background: var(--bg3); color: var(--tx); }
+.pq-item.pq-active { background: rgba(14,116,144,.14); color: #7dd3fc; }
+.pq-item-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pq-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; background: var(--bdr2); }
+.pq-dot.on { background: #06b6d4; box-shadow: 0 0 4px #06b6d4; }
+.pq-sep { height: 1px; background: var(--bdr); margin: .3rem 0; }
+.pq-footer { display: flex; gap: 5px; padding-top: .3rem; }
+.pq-new-btn {
+  flex: 1; padding: .28rem .5rem; background: rgba(14,116,144,.1);
+  border: 1px solid #0e7490; border-radius: 6px; color: #7dd3fc;
+  font-size: .7rem; cursor: pointer; font-family: inherit; transition: all .12s;
+}
+.pq-new-btn:hover { background: #0e7490; color: #fff; }
+.pq-mgr-btn {
+  padding: .28rem .55rem; background: var(--bg3); border: 1px solid var(--bdr2);
+  border-radius: 6px; color: var(--tx3); font-size: .7rem;
+  cursor: pointer; font-family: inherit; transition: all .12s;
+}
+.pq-mgr-btn:hover { border-color: var(--bdr2); color: var(--tx2); background: var(--bg4); }
+
+/* ════════════════════  SIDEBAR COLLAPSE  ════════════════════════ */
+.sidebar-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .4rem .75rem; border-bottom: 1px solid var(--bdr); flex-shrink: 0;
+}
+.sidebar-label-text { font-size: .6rem; font-weight: 700; color: var(--tx3); text-transform: uppercase; letter-spacing: .1em; }
+.sidebar-collapse-btn {
+  background: none; border: none; color: var(--tx3); cursor: pointer;
+  padding: 3px 4px; border-radius: 4px; transition: color .12s, background .12s;
+  display: flex; align-items: center; flex-shrink: 0;
+}
+.sidebar-collapse-btn:hover { color: var(--tx); background: var(--bg3); }
+body.sidebar-collapsed { --side: 46px; }
+body.sidebar-collapsed .sidebar { overflow: hidden; }
+body.sidebar-collapsed .sid-text,
+body.sidebar-collapsed .sid-badge,
+body.sidebar-collapsed .sid-label,
+body.sidebar-collapsed .sidebar-label-text { display: none; }
+body.sidebar-collapsed .sid-link { padding: .38rem; justify-content: center; gap: 0; }
+body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem .25rem; }
+
+/* ════════════════════  RESPONSIVE  ════════════════════════════════ */
+@media (max-width: 900px) {
+  .hdr-logo p { display: none; }
+  .tag-warn { font-size: .58rem; padding: .12rem .35rem; }
+}
+@media (max-width: 720px) {
+  :root { --side: 46px; }
+  .sidebar { overflow: hidden; }
+  .sid-text, .sid-badge, .sid-label, .sidebar-label-text { display: none !important; }
+  .sid-link { padding: .38rem; justify-content: center; gap: 0; }
+  .sidebar-header { justify-content: center; padding: .4rem .25rem; }
+  .hdr-tags .tag:not(.tag-warn) { display: none; }
+}
+@media (max-width: 560px) {
+  .hdr-tags { display: none; }
+  .proj-quick-name { max-width: 70px; }
+  .cards-grid { grid-template-columns: 1fr; }
+  .ms-label { display: none; }
+  .var-label { display: none; }
+}
+@media (max-width: 400px) {
+  .hdr-brand { display: none; }
+  header { padding: 0 .75rem; }
+  .proj-quick-btn { max-width: 90px; padding: .22rem .45rem; }
+}
 </style>
 </head>
 <body>
@@ -538,15 +632,16 @@ body.ms-mode .sec-check { display: block; }
   <div class="hdr-brand"><img src="https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png" width="28" height="28" alt="Lionsystems" style="border-radius:4px;flex-shrink:0;"><div><span class="hdr-brand-text">Lionsystems</span><span class="hdr-brand-sub">Herramienta gratuita</span></div></div>
 </header>
 <div class="search-bar">
+  <div class="proj-quick" id="proj-quick"><button class="proj-quick-btn" id="proj-quick-btn" onclick="toggleProjQuick(event)" title="Cambiar proyecto activo"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M3 12h18M3 17h18"/></svg><span class="proj-quick-name" id="proj-quick-name">Proyecto</span><span class="proj-quick-chevron"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button><div class="proj-quick-dropdown" id="proj-quick-dropdown"></div></div>
   <div class="search-wrap"><span class="search-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></span><input type="text" placeholder="Buscar por nombre o contenido del prompt..." oninput="filterPrompts(this.value)" autocomplete="off"></div>
   <span class="search-count" id="vis-count">32 prompts</span>
   <span class="vars-active-badge" id="vars-badge">&#9632; Vars activas</span>
-  <button class="ms-toggle-btn" id="ms-toggle-btn" onclick="toggleMsMode()" title="Activar selección múltiple"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="13" height="13" rx="2"/><path d="M8 10l3 3 5-5"/></svg> Multi-select</button>
-  <button class="var-toggle-btn" id="var-toggle-btn" onclick="toggleVarPanel()" title="Panel de variables"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Variables</button>
+  <button class="ms-toggle-btn" id="ms-toggle-btn" onclick="toggleMsMode()" title="Activar selección múltiple"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="13" height="13" rx="2"/><path d="M8 10l3 3 5-5"/></svg><span class="ms-label"> Multi-select</span></button>
+  <button class="var-toggle-btn" id="var-toggle-btn" onclick="toggleVarPanel()" title="Panel de variables"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg><span class="var-label"> Variables</span></button>
 </div>
 <div class="layout">
   <nav class="sidebar">
-<div class="sid-section"><div class="sid-label">Framework</div><a class="sid-link sid-framework" href="#sec-00"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg><span class="sid-text">00 — Framework base</span><span class="sid-badge">★</span></a></div><div class="sid-section"><div class="sid-label">Prompts</div><a class="sid-link" href="#sec-01"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"/></svg><span class="sid-text">01 — Comprensión del repositorio</span><span class="sid-badge">2</span></a><a class="sid-link" href="#sec-02"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z"/></svg><span class="sid-text">02 — Análisis</span><span class="sid-badge">3</span></a><a class="sid-link" href="#sec-03"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M12 12.75c1.148 0 2.278.08 3.383.237 1.037.146 1.866.966 1.866 2.013 0 3.728-2.35 6.75-5.25 6.75S6.75 18.728 6.75 15c0-1.046.83-1.867 1.866-2.013A24.204 24.204 0 0112 12.75zm0 0c2.883 0 5.647.508 8.207 1.44a23.91 23.91 0 01-1.152 6.06M12 12.75c-2.883 0-5.647.508-8.208 1.44a23.91 23.91 0 001.153 6.06M12 12.75a2.25 2.25 0 002.248-2.354M12 12.75a2.25 2.25 0 01-2.248-2.354M12 8.25c.995 0 1.971-.08 2.922-.236.403-.066.74-.358.795-.762a3.778 3.778 0 00-.399-2.25M12 8.25c-.995 0-1.97-.08-2.922-.236-.402-.066-.74-.358-.795-.762a3.778 3.778 0 01.4-2.25m0 0a5.002 5.002 0 019.45 0m-9.45 0A5.002 5.002 0 002.55 5.764"/></svg><span class="sid-text">03 — Incidentes</span><span class="sid-badge">2</span></a><a class="sid-link" href="#sec-04"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"/></svg><span class="sid-text">04 — Diseño de solución</span><span class="sid-badge">3</span></a><a class="sid-link" href="#sec-05"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg><span class="sid-text">05 — Plan de implementación</span><span class="sid-badge">2</span></a><a class="sid-link" href="#sec-06"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z"/></svg><span class="sid-text">06 — Ejecución</span><span class="sid-badge">2</span></a><a class="sid-link" href="#sec-07"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"/></svg><span class="sid-text">07 — Pruebas</span><span class="sid-badge">5</span></a><a class="sid-link" href="#sec-08"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0118 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3l1.5 1.5 3-3.75"/></svg><span class="sid-text">08 — Revisión y remediación</span><span class="sid-badge">3</span></a><a class="sid-link" href="#sec-09"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#14b8a6" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/></svg><span class="sid-text">09 — Integración y CI/CD</span><span class="sid-badge">3</span></a><a class="sid-link" href="#sec-10"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a3e635" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg><span class="sid-text">10 — Documentación</span><span class="sid-badge">3</span></a><a class="sid-link" href="#sec-11"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 01.9 2.7m0 0a3 3 0 01-3 3m0 3h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008zm-3 6h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008z"/></svg><span class="sid-text">11 — Operaciones</span><span class="sid-badge">3</span></a><a class="sid-link" href="#sec-12"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 16.875h3.375m0 0h3.375m-3.375 0V13.5m0 3.375v3.375M6 10.5h2.25a2.25 2.25 0 002.25-2.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v2.25A2.25 2.25 0 006 10.5zm0 9.75h2.25A2.25 2.25 0 0010.5 18v-2.25a2.25 2.25 0 00-2.25-2.25H6a2.25 2.25 0 00-2.25 2.25V18A2.25 2.25 0 006 20.25zm9.75-9.75H18a2.25 2.25 0 002.25-2.25V6A2.25 2.25 0 0018 3.75h-2.25A2.25 2.25 0 0013.5 6v2.25a2.25 2.25 0 002.25 2.25z"/></svg><span class="sid-text">12 — Orquestador</span><span class="sid-badge">1</span></a></div>  </nav>
+<div class="sidebar-header"><span class="sidebar-label-text">Nav</span><button class="sidebar-collapse-btn" onclick="toggleSidebar()" title="Colapsar / expandir menú"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/></svg></button></div><div class="sid-section"><div class="sid-label">Framework</div><a class="sid-link sid-framework" href="#sec-00"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg><span class="sid-text">00 — Framework base</span><span class="sid-badge">★</span></a></div><div class="sid-section"><div class="sid-label">Prompts</div><a class="sid-link" href="#sec-01"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"/></svg><span class="sid-text">01 — Comprensión del repositorio</span><span class="sid-badge">2</span></a><a class="sid-link" href="#sec-02"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z"/></svg><span class="sid-text">02 — Análisis</span><span class="sid-badge">3</span></a><a class="sid-link" href="#sec-03"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M12 12.75c1.148 0 2.278.08 3.383.237 1.037.146 1.866.966 1.866 2.013 0 3.728-2.35 6.75-5.25 6.75S6.75 18.728 6.75 15c0-1.046.83-1.867 1.866-2.013A24.204 24.204 0 0112 12.75zm0 0c2.883 0 5.647.508 8.207 1.44a23.91 23.91 0 01-1.152 6.06M12 12.75c-2.883 0-5.647.508-8.208 1.44a23.91 23.91 0 001.153 6.06M12 12.75a2.25 2.25 0 002.248-2.354M12 12.75a2.25 2.25 0 01-2.248-2.354M12 8.25c.995 0 1.971-.08 2.922-.236.403-.066.74-.358.795-.762a3.778 3.778 0 00-.399-2.25M12 8.25c-.995 0-1.97-.08-2.922-.236-.402-.066-.74-.358-.795-.762a3.778 3.778 0 01.4-2.25m0 0a5.002 5.002 0 019.45 0m-9.45 0A5.002 5.002 0 002.55 5.764"/></svg><span class="sid-text">03 — Incidentes</span><span class="sid-badge">2</span></a><a class="sid-link" href="#sec-04"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"/></svg><span class="sid-text">04 — Diseño de solución</span><span class="sid-badge">3</span></a><a class="sid-link" href="#sec-05"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg><span class="sid-text">05 — Plan de implementación</span><span class="sid-badge">2</span></a><a class="sid-link" href="#sec-06"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z"/></svg><span class="sid-text">06 — Ejecución</span><span class="sid-badge">2</span></a><a class="sid-link" href="#sec-07"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"/></svg><span class="sid-text">07 — Pruebas</span><span class="sid-badge">5</span></a><a class="sid-link" href="#sec-08"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0118 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3l1.5 1.5 3-3.75"/></svg><span class="sid-text">08 — Revisión y remediación</span><span class="sid-badge">3</span></a><a class="sid-link" href="#sec-09"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#14b8a6" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/></svg><span class="sid-text">09 — Integración y CI/CD</span><span class="sid-badge">3</span></a><a class="sid-link" href="#sec-10"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a3e635" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg><span class="sid-text">10 — Documentación</span><span class="sid-badge">3</span></a><a class="sid-link" href="#sec-11"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 01.9 2.7m0 0a3 3 0 01-3 3m0 3h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008zm-3 6h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008z"/></svg><span class="sid-text">11 — Operaciones</span><span class="sid-badge">3</span></a><a class="sid-link" href="#sec-12"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 16.875h3.375m0 0h3.375m-3.375 0V13.5m0 3.375v3.375M6 10.5h2.25a2.25 2.25 0 002.25-2.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v2.25A2.25 2.25 0 006 10.5zm0 9.75h2.25A2.25 2.25 0 0010.5 18v-2.25a2.25 2.25 0 00-2.25-2.25H6a2.25 2.25 0 00-2.25 2.25V18A2.25 2.25 0 006 20.25zm9.75-9.75H18a2.25 2.25 0 002.25-2.25V6A2.25 2.25 0 0018 3.75h-2.25A2.25 2.25 0 0013.5 6v2.25a2.25 2.25 0 002.25 2.25z"/></svg><span class="sid-text">12 — Orquestador</span><span class="sid-badge">1</span></a></div>  </nav>
   <div class="content">
 <div class="framework-banner" id="sec-00" data-observe><div class="fw-header"><span class="fw-badge">&#9888; Obligatorio</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg><span class="fw-title">Framework base — Pegar al inicio de cada prompt</span></div><p class="fw-desc">Este bloque define el rol, el contexto multi-agente y las reglas obligatorias de ingeniería. Cópialo y pégalo <strong>antes</strong> de cualquier prompt de la biblioteca.</p><div class="fw-body"><pre><code id="code-fw">Actúa como un Ingeniero en Sistemas Computacionales, Ingeniero de Software Senior, Arquitecto de Soluciones, Analista Técnico-Funcional, DBA, Server Administrator y especialista en QA, DevOps y DevSecOps, con experiencia práctica en PSP, RUP, ITIL, SCRUM, CI/CD, GitHub, Docker, Linux, arquitectura cloud y desarrollo full stack.
 
@@ -1351,7 +1446,7 @@ Formato de salida obligatorio:
 </div>
 <div class="var-panel" id="var-panel">
   <div class="var-panel-hdr"><h2><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Variables del prompt</h2><button class="var-close-btn" onclick="closeVarPanel()" title="Cerrar">&#x2715;</button></div>
-<div class="proj-selector-row"><select id="proj-selector" class="proj-select" onchange="switchProject(this.value)"></select><button class="proj-mgr-btn" onclick="openProjectsModal()">&#x2699; Proyectos</button></div>
+<div class="proj-selector-row"><select id="proj-selector" class="proj-select" onchange="switchProject(this.value)" style="display:none"></select><div style="flex:1;font-size:.74rem;color:var(--tx2);display:flex;align-items:center;gap:5px;overflow:hidden;"><span style="color:var(--tx3);flex-shrink:0;">Proyecto </span><span id="vp-proj-name" style="color:#7dd3fc;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span></div><button class="proj-mgr-btn" onclick="openProjectsModal()" title="Gestionar proyectos">&#x2699;</button></div>
   <div class="var-panel-body">
     <div class="var-group"><label for="vf-repositorio">Repositorio</label><input id="vf-repositorio" type="text" placeholder="org/nombre-repo o URL" oninput="syncProjectFromPanel();updateVarsBadge();"><div class="var-tags"><span class="var-tag">[NOMBRE O URL]</span></div></div>
     <div class="var-group"><label for="vf-referencia">Issue / Referencia</label><textarea id="vf-referencia" placeholder="Número, URL o texto completo del issue" oninput="syncProjectFromPanel();updateVarsBadge();"></textarea><div class="var-tags"><span class="var-tag">[REFERENCIA]</span><span class="var-tag">[PEGAR]</span><span class="var-tag">[PEGAR TEXTO...]</span></div></div>
@@ -1468,7 +1563,7 @@ function duplicateProject(id) {
 function renameProject(id, name) {
   var list = loadProjects() || [];
   var p = list.find(function(x) { return x.id === id; });
-  if (p && name.trim()) { p.name = name.trim(); saveProjects(list); renderProjectSelector(); }
+  if (p && name.trim()) { p.name = name.trim(); saveProjects(list); renderProjectSelector(); renderProjQuick(); }
 }
 
 function setDefaultProject(id) {
@@ -1481,6 +1576,7 @@ function switchProject(id) {
   localStorage.setItem(LS_KEY_ACTV, id);
   syncPanelToProject();
   renderProjectSelector();
+  renderProjQuick();
 }
 
 /* ════════════════════  PROYECTOS — sync DOM  ════════════════════ */
@@ -1516,16 +1612,20 @@ function syncProjectFromPanel() {
 
 function renderProjectSelector() {
   var sel = document.getElementById('proj-selector');
-  if (!sel) return;
   var list = loadProjects() || [];
   var active = getActiveProject();
   var activeId = active ? active.id : null;
-  sel.innerHTML = list.map(function(p) {
-    var selAttr = (p.id === activeId) ? ' selected' : '';
-    var label = p.name + (p.isDefault ? ' ★' : '');
-    return '<option value="' + p.id + '"' + selAttr + '>'
-           + label.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</option>';
-  }).join('');
+  if (sel) {
+    sel.innerHTML = list.map(function(p) {
+      var selAttr = (p.id === activeId) ? ' selected' : '';
+      var label = p.name + (p.isDefault ? ' ★' : '');
+      return '<option value="' + p.id + '"' + selAttr + '>'
+             + label.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</option>';
+    }).join('');
+  }
+  var nameEl = document.getElementById('vp-proj-name');
+  if (nameEl && active) nameEl.textContent = active.name + (active.isDefault ? ' ★' : '');
+  renderProjQuick();
 }
 
 /* ════════════════════  PROYECTOS — modal  ═══════════════════════ */
@@ -1569,6 +1669,51 @@ function openProjectsModal() {
 function closeProjectsModal() {
   var m = document.getElementById('proj-modal');
   if (m) m.style.display = 'none';
+}
+
+/* ════════════════════  PROYECTO QUICK-SWITCHER  ══════════════════ */
+function renderProjQuick() {
+  var list = loadProjects() || [];
+  var active = getActiveProject();
+  var activeId = active ? active.id : null;
+  var nameEl = document.getElementById('proj-quick-name');
+  if (nameEl) nameEl.textContent = (active ? active.name : 'Proyecto') + (active && active.isDefault ? ' ★' : '');
+  var dd = document.getElementById('proj-quick-dropdown');
+  if (!dd) return;
+  var items = list.map(function(p) {
+    var isAct = p.id === activeId;
+    return '<button class="pq-item' + (isAct ? ' pq-active' : '') + '"'
+      + ' onclick="switchProject(\'' + p.id + '\');closeProjQuick();">'
+      + '<span class="pq-dot' + (isAct ? ' on' : '') + '"></span>'
+      + '<span class="pq-item-name">' + p.name.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</span>'
+      + (p.isDefault ? '<span style="font-size:.6rem;color:var(--tx3)">★</span>' : '')
+      + '</button>';
+  }).join('');
+  dd.innerHTML = items
+    + '<div class="pq-sep"></div>'
+    + '<div class="pq-footer">'
+    + '<button class="pq-new-btn" onclick="createProject();renderProjQuick();renderProjectSelector();syncPanelToProject();closeProjQuick();">+ Nuevo</button>'
+    + '<button class="pq-mgr-btn" onclick="openProjectsModal();closeProjQuick();">⚙ Gestionar</button>'
+    + '</div>';
+}
+
+function toggleProjQuick(e) {
+  if (e) e.stopPropagation();
+  var wrap = document.getElementById('proj-quick');
+  if (!wrap) return;
+  var isOpen = wrap.classList.toggle('open');
+  if (isOpen) renderProjQuick();
+}
+
+function closeProjQuick() {
+  var wrap = document.getElementById('proj-quick');
+  if (wrap) wrap.classList.remove('open');
+}
+
+/* ════════════════════  SIDEBAR  ════════════════════════════════ */
+function toggleSidebar() {
+  document.body.classList.toggle('sidebar-collapsed');
+  try { localStorage.setItem('AI_SDLC_sidebar', document.body.classList.contains('sidebar-collapsed') ? '1' : '0'); } catch(e) {}
 }
 
 /* ═══════════════════  VARIABLES  ═══════════════════════════════ */
@@ -1879,6 +2024,16 @@ document.addEventListener('DOMContentLoaded', function() {
   if (!loadProjects()) createProject('Default');
   renderProjectSelector();
   syncPanelToProject();
+  renderProjQuick();
+
+  // Restaurar estado del sidebar
+  try { if (localStorage.getItem('AI_SDLC_sidebar') === '1') document.body.classList.add('sidebar-collapsed'); } catch(e) {}
+
+  // Cerrar proj-quick al hacer clic fuera
+  document.addEventListener('click', function(e) {
+    var wrap = document.getElementById('proj-quick');
+    if (wrap && !wrap.contains(e.target)) closeProjQuick();
+  });
 
   // Cerrar modal de info al pulsar Escape o clic en overlay
   var overlay = document.getElementById('info-modal');
@@ -1888,7 +2043,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') { closeInfo(); closeVarPanel(); closeProjectsModal(); }
+    if (e.key === 'Escape') { closeInfo(); closeVarPanel(); closeProjectsModal(); closeProjQuick(); }
   });
 
   var content = document.querySelector('.content');
