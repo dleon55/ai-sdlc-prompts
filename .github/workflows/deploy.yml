@@ -5,9 +5,6 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# â”€â”€â”€ Permisos mÃ­nimos â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-# Pages necesita pages:write + id-token:write sÃ³lo en el job que despliega.
-# El job GCP no hereda esos permisos â€” usa SSH key via secret.
 permissions:
   contents: read
 
@@ -15,10 +12,12 @@ concurrency:
   group: "deploy-${{ github.ref }}"
   cancel-in-progress: false
 
+jobs:
+
 # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 #  JOB 1 â€” BUILD (fuente Ãºnica de verdad)
+#  Si verify_clean.py falla â†’ ambos deploys se cancelan
 # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-jobs:
   build:
     runs-on: ubuntu-latest
     steps:
@@ -30,11 +29,10 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Build index.html from prompts .md
+      - name: Build index.html
         run: python build.py
 
-      - name: Validate prompts (QA gate)
-        # Si verify_clean.py falla, los dos deploys se cancelan
+      - name: QA gate â€” validate prompts
         run: python verify_clean.py
 
       - name: Prepare dist/
@@ -42,7 +40,7 @@ jobs:
           mkdir -p dist
           cp index.html dist/index.html
 
-      - name: Upload artifact (compartido por Pages y GCP)
+      - name: Upload artifact (shared by both deploy jobs)
         uses: actions/upload-artifact@v4
         with:
           name: site
@@ -55,7 +53,7 @@ jobs:
           path: dist
 
 # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-#  JOB 2 â€” DEPLOY â†’ GITHUB PAGES (ambiente de pruebas / staging)
+#  JOB 2 â€” GITHUB PAGES (staging / pruebas)
 # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   deploy-pages:
     needs: build
@@ -72,11 +70,10 @@ jobs:
         uses: actions/deploy-pages@v4
 
 # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-#  JOB 3 â€” DEPLOY â†’ GCP (producciÃ³n)
-#  Solo se ejecuta si build + deploy-pages pasaron exitosamente.
-#  Usa known_host para prevenir MITM.
-#  El usuario en GCP tiene NOPASSWD:ALL; la clave privada SSH
-#  se almacena en el secret GCP_SSH_KEY del environment production.
+#  JOB 3 â€” GCP (producciÃ³n)
+#  SÃ³lo avanza si build + deploy-pages fueron exitosos.
+#  Secretos del environment "production": GCP_SSH_KEY, GCP_KNOWN_HOST,
+#  GCP_HOST, GCP_USER, GCP_PORT, GCP_DEPLOY_PATH.
 # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
   deploy-gcp:
     needs: [build, deploy-pages]
@@ -84,6 +81,11 @@ jobs:
     environment:
       name: production
       url: https://prompts.lionsystems.com.mx
+    env:
+      GCP_HOST: ${{ secrets.GCP_HOST }}
+      GCP_USER: ${{ secrets.GCP_USER }}
+      GCP_PORT: ${{ secrets.GCP_PORT }}
+      GCP_DEPLOY_PATH: ${{ secrets.GCP_DEPLOY_PATH }}
     steps:
       - name: Download site artifact
         uses: actions/download-artifact@v4
@@ -92,52 +94,57 @@ jobs:
           path: dist
 
       - name: Configure SSH
+        shell: bash
+        env:
+          GCP_SSH_KEY: ${{ secrets.GCP_SSH_KEY }}
+          GCP_KNOWN_HOST: ${{ secrets.GCP_KNOWN_HOST }}
         run: |
           install -m 700 -d ~/.ssh
-          # Known host â€” previene MITM (valor: "[ip]:port ecdsa-type pubkey")
-          echo "${{ secrets.GCP_KNOWN_HOST }}" >> ~/.ssh/known_hosts
-          # Clave privada
-          echo "${{ secrets.GCP_SSH_KEY }}" > ~/.ssh/gcp_key
+          printf '%s\n' "$GCP_KNOWN_HOST" >> ~/.ssh/known_hosts
+          printf '%s\n' "$GCP_SSH_KEY" > ~/.ssh/gcp_key
           chmod 600 ~/.ssh/gcp_key
 
-      - name: Transfer index.html to GCP staging dir
+      - name: Transfer index.html to GCP staging path
+        shell: bash
         run: |
-          scp -P "${{ secrets.GCP_PORT }}" \
+          scp -P "$GCP_PORT" \
               -i ~/.ssh/gcp_key \
               -o BatchMode=yes \
               dist/index.html \
-              "${{ secrets.GCP_USER }}@${{ secrets.GCP_HOST }}:/home/${{ secrets.GCP_USER }}/index.html.new"
+              "${GCP_USER}@${GCP_HOST}:/home/${GCP_USER}/index.html.new"
 
-      - name: Atomic replace in production path
+      - name: Atomic replace in production dir
+        shell: bash
         run: |
-          ssh -p "${{ secrets.GCP_PORT }}" \
+          ssh -p "$GCP_PORT" \
               -i ~/.ssh/gcp_key \
               -o BatchMode=yes \
-              "${{ secrets.GCP_USER }}@${{ secrets.GCP_HOST }}" \
-              "sudo cp /home/${{ secrets.GCP_USER }}/index.html.new ${{ secrets.GCP_DEPLOY_PATH }}/index.html \
-               && sudo chown www-data:www-data ${{ secrets.GCP_DEPLOY_PATH }}/index.html \
-               && sudo chmod 644 ${{ secrets.GCP_DEPLOY_PATH }}/index.html \
-               && rm -f /home/${{ secrets.GCP_USER }}/index.html.new \
-               && echo DEPLOY_PROD_OK \
-               && stat -c '%y %s' ${{ secrets.GCP_DEPLOY_PATH }}/index.html"
+              "${GCP_USER}@${GCP_HOST}" \
+              "set -e
+               sudo cp /home/${GCP_USER}/index.html.new ${GCP_DEPLOY_PATH}/index.html
+               sudo chown www-data:www-data ${GCP_DEPLOY_PATH}/index.html
+               sudo chmod 644 ${GCP_DEPLOY_PATH}/index.html
+               rm -f /home/${GCP_USER}/index.html.new
+               echo DEPLOY_PROD_OK
+               stat -c '%y %s' ${GCP_DEPLOY_PATH}/index.html"
 
-      - name: Smoke test GCP production
+      - name: Smoke test â€” GCP production
+        shell: bash
         run: |
-          sleep 3
+          sleep 5
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 https://prompts.lionsystems.com.mx)
           echo "HTTP status: $STATUS"
           if [ "$STATUS" != "200" ]; then
-            echo "ERROR: GCP production returned HTTP $STATUS"
-            exit 1
+            echo "ERROR: producciÃ³n retornÃ³ HTTP $STATUS" && exit 1
           fi
-          COUNT=$(curl -s --max-time 15 https://prompts.lionsystems.com.mx | grep -c 'class="card"' || true)
-          echo "Cards in production: $COUNT"
+          COUNT=$(curl -s --max-time 20 https://prompts.lionsystems.com.mx | grep -c 'class="card"' || true)
+          echo "Cards verificadas en producciÃ³n: $COUNT"
           if [ "$COUNT" -lt 44 ]; then
-            echo "ERROR: expected >= 44 cards, got $COUNT"
-            exit 1
+            echo "ERROR: se esperaban >= 44 cards, encontradas $COUNT" && exit 1
           fi
-          echo "SMOKE_TEST_OK: $COUNT cards verified in production"
+          echo "SMOKE_OK: $COUNT cards en producciÃ³n"
 
       - name: Cleanup SSH key
         if: always()
+        shell: bash
         run: rm -f ~/.ssh/gcp_key
