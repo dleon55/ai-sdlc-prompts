@@ -95,6 +95,7 @@ Usa el prompt de análisis de causa raíz y adáptalo a:
 | `04-01-diseno-solucion.md` | 4.1 | Diseño funcional y técnico de solución |
 | `04-02-diagramas-mermaid.md` | 4.2 | Generación de diagramas Mermaid |
 | `04-03-casos-de-uso.md` | 4.3 | Diseño y documentación formal de casos de uso |
+| `04-04-adr-decisiones-arquitectura.md` | 4.4 | Architecture Decision Records (ADR) |
 | `05-01-plan-implementacion.md` | 5.1 | Plan de implementación detallado y trazable |
 | `05-02-riesgos-implementacion.md` | 5.2 | Análisis de riesgos e impacto de implementación |
 | `06-01-implementacion-multiagente.md` | 6.1 | Implementación multi-agente segura y controlada |
@@ -104,18 +105,21 @@ Usa el prompt de análisis de causa raíz y adáptalo a:
 | `07-03-pruebas-e2e.md` | 7.3 | Diseño de pruebas E2E |
 | `07-04-pruebas-humo.md` | 7.4 | Plan de pruebas de humo |
 | `07-05-automatizacion-antigravity.md` | 7.5 | Automatización en navegador con Chrome Antigravity |
+| `07-06-pruebas-performance-carga.md` | 7.6 | Pruebas de performance, carga e stress |
 | `08-01-revision-estatica.md` | 8.1 | Revisión estática de código |
 | `08-02-cumplimiento-requerimiento.md` | 8.2 | Revisión de cumplimiento contra requerimiento |
 | `08-03-remediacion-maestro.md` | 8.3 | Prompt maestro de remediación de revisión estática |
 | `09-01-integracion-ramas.md` | 9.1 | Integración controlada con ramas |
 | `09-02-monitoreo-ci.md` | 9.2 | Monitoreo de CI local y remoto |
 | `09-03-workflows-github-actions.md` | 9.3 | Revisión de workflows de GitHub Actions |
+| `09-04-promotion-checklist.md` | 9.4 | Checklist de promoción entre ambientes (dev→staging→prod) |
 | `10-01-documentacion-tecnica.md` | 10.1 | Actualizar documentación técnica |
 | `10-02-memoria-tecnica.md` | 10.2 | Memoria técnica del cambio |
 | `10-03-release-changelog.md` | 10.3 | Documentación de release o changelog |
 | `11-01-troubleshooting.md` | 11.1 | Troubleshooting de ambiente |
 | `11-02-hardening-seguridad.md` | 11.2 | Hardening y seguridad operativa |
 | `11-03-deuda-tecnica.md` | 11.3 | Deuda técnica y mejora continua |
+| `11-04-incident-response.md` | 11.4 | Runbook de incident response en producción |
 | `12-orquestador.md` | 12 | Prompt maestro orquestador del ciclo completo |
 
 ---
