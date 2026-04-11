@@ -74,6 +74,17 @@ Usa el prompt de análisis de causa raíz y adáptalo a:
 
 | Archivo | Sección | Propósito |
 |---|---|---|
+| **── CONFIGURACIÓN DE REPOSITORIO (00-B)** | | |
+| `00-B-01-scaffolding-repositorio.md` | 0-B.1 | Estructura base del repositorio: directorios, archivos raíz, .github/, docs/ |
+| `00-B-02-gobernanza-ia-agentes.md` | 0-B.2 | Archivos de gobierno para agentes IA: copilot-instructions, .windsurfrules, AGENTS.md |
+| `00-B-03-github-configuracion.md` | 0-B.3 | Configuración GitHub: branch protection, issue templates, PR template, Dependabot |
+| `00-B-04-metodologia-framework.md` | 0-B.4 | Selección de metodología, branching strategy, Definition of Ready y Done |
+| `00-B-05-stack-calidad-codigo.md` | 0-B.5 | Stack y calidad: linters, formatters, pre-commit hooks, quality gates CI |
+| **── GOBERNANZA DE AGENTES IA (00-C)** | | |
+| `00-C-01-issue-para-agente-ia.md` | 0-C.1 | Issue estructurado listo para ejecución por agente IA con criterios y restricciones |
+| `00-C-02-plan-mode-multiagente.md` | 0-C.2 | Modo plan seguro (sin cambios) y protocolo de coordinación multi-agente |
+| `00-C-03-configuracion-por-agente.md` | 0-C.3 | Configuración específica por agente: Copilot, Claude, Codex, Windsurf, Cursor, Antigravity |
+| **── CICLO DE INGENIERÍA DE SOFTWARE (01–12)** | | |
 | `01-01-arranque-comprension-repositorio.md` | 1.1 | Inventario técnico del repositorio |
 | `01-02-analisis-procesos.md` | 1.2 | Localizar procesos, políticas y estándares |
 | `02-01-analisis-issue.md` | 2.1 | Análisis funcional de requerimiento o issue |
