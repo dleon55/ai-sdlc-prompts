@@ -1443,51 +1443,50 @@ function dismissWelcomeBanner() {
 }
 
 /* ═══════════════════  ONBOARDING  ══════════════════════════════ */
-var _obStep = 1;
+var _obStep = 0;
 var _obTotal = 3;
 
 function initOnboarding() {
   try {
     if (localStorage.getItem(LS_ONBOARD) === '1') return;
-    var overlay = document.getElementById('onboarding-overlay');
+    var overlay = document.getElementById('ob-overlay');
     if (overlay) overlay.classList.remove('hidden');
-    _obStep = 1;
+    _obStep = 0;
     renderObStep();
   } catch(e) {}
 }
 
 function renderObStep() {
-  for (var i = 1; i <= _obTotal; i++) {
+  for (var i = 0; i < _obTotal; i++) {
     var step = document.getElementById('ob-step-' + i);
     if (step) step.classList.toggle('active', i === _obStep);
-    var bar = document.getElementById('ob-bar-' + i);
-    if (bar) {
-      bar.classList.remove('done', 'active');
-      if (i < _obStep) bar.classList.add('done');
-      else if (i === _obStep) bar.classList.add('active');
-    }
+    var dot = document.getElementById('ob-dot-' + i);
+    if (dot) dot.classList.toggle('on', i === _obStep);
   }
-  var label = document.getElementById('ob-nav-label');
-  if (label) label.textContent = 'Paso ' + _obStep + ' de ' + _obTotal;
+  var prevBtn = document.getElementById('ob-prev-btn');
   var nextBtn = document.getElementById('ob-next-btn');
-  var finishBtn = document.getElementById('ob-finish-btn');
-  if (nextBtn) nextBtn.style.display = _obStep < _obTotal ? 'inline-block' : 'none';
-  if (finishBtn) finishBtn.style.display = _obStep === _obTotal ? 'inline-block' : 'none';
+  if (prevBtn) prevBtn.style.display = _obStep > 0 ? 'inline-block' : 'none';
+  if (nextBtn) nextBtn.innerHTML = _obStep < _obTotal - 1 ? 'Siguiente &#8250;' : '&#10003; Comenzar';
 }
 
-function nextObStep() {
-  if (_obStep < _obTotal) { _obStep++; renderObStep(); }
+function obNext() {
+  if (_obStep < _obTotal - 1) { _obStep++; renderObStep(); }
+  else { closeOnboarding(true); }
 }
 
-function completeOnboarding() {
+function obPrev() {
+  if (_obStep > 0) { _obStep--; renderObStep(); }
+}
+
+function closeOnboarding(permanent) {
   try {
-    var overlay = document.getElementById('onboarding-overlay');
+    var overlay = document.getElementById('ob-overlay');
     if (overlay) overlay.classList.add('hidden');
-    localStorage.setItem(LS_ONBOARD, '1');
+    if (permanent) localStorage.setItem(LS_ONBOARD, '1');
   } catch(e) {}
 }
 
-function skipOnboarding() { completeOnboarding(); }
+function skipOnboarding() { closeOnboarding(false); }
 
 /* ═══════════════════  INIT  ════════════════════════════════════ */
 
@@ -2011,58 +2010,8 @@ def build():
         '  </div>\n'
         '</div>\n'
 
-        # onboarding overlay (primer uso — 3 pasos guiados)
-        '<div class="ob-overlay hidden" id="onboarding-overlay">\n'
-        '  <div class="ob-box">\n'
-        '    <div class="ob-hdr">\n'
-        '      <h2>&#128218; Gu\u00eda r\u00e1pida de inicio</h2>\n'
-        '      <button class="ob-skip" onclick="skipOnboarding()">Saltar</button>\n'
-        '    </div>\n'
-        '    <div class="ob-progress">\n'
-        '      <div class="ob-prog-bar active" id="ob-bar-1"></div>\n'
-        '      <div class="ob-prog-bar" id="ob-bar-2"></div>\n'
-        '      <div class="ob-prog-bar" id="ob-bar-3"></div>\n'
-        '    </div>\n'
-        '    <div class="ob-steps">\n'
-        '      <div class="ob-step active" id="ob-step-1">\n'
-        '        <div class="ob-step-num">1</div>\n'
-        '        <h3>Copia el Framework base</h3>\n'
-        '        <p>Cada prompt de esta biblioteca asume que el agente IA ya tiene contexto del proyecto. '
-        'El <strong>Framework base</strong> es ese contexto: define el rol del agente, las reglas de ingenier\u00eda y las restricciones multi-agente.</p>\n'
-        '        <div class="ob-tip">&#128204; Siempre pega el framework <strong>antes</strong> de cualquier prompt '
-        'en tu conversaci\u00f3n con Copilot, Claude, Cursor o Windsurf.</div>\n'
-        '      </div>\n'
-        '      <div class="ob-step" id="ob-step-2">\n'
-        '        <div class="ob-step-num">2</div>\n'
-        '        <h3>Configura las variables de tu proyecto</h3>\n'
-        '        <p>Los prompts usan tokens como <code style="font-family:monospace;font-size:.78rem;color:#a5b4fc">[REPOSITORIO]</code>, '
-        '<code style="font-family:monospace;font-size:.78rem;color:#a5b4fc">[STACK]</code>, '
-        '<code style="font-family:monospace;font-size:.78rem;color:#a5b4fc">[RAMA ACTUAL]</code>. '
-        'El <strong>panel de variables</strong> los sustituye autom\u00e1ticamente al copiar.</p>\n'
-        '        <div class="ob-tip">&#9881; Busca el bot\u00f3n <strong>Variables (X/12)</strong> en la barra de b\u00fasqueda '
-        'para abrir el panel y configurar tu proyecto.</div>\n'
-        '      </div>\n'
-        '      <div class="ob-step" id="ob-step-3">\n'
-        '        <div class="ob-step-num">3</div>\n'
-        '        <h3>Elige el prompt de la fase que necesitas</h3>\n'
-        '        <p>Los prompts est\u00e1n organizados por fase del SDLC: an\u00e1lisis, dise\u00f1o, implementaci\u00f3n, pruebas, CI/CD, documentaci\u00f3n y operaciones. '
-        'Usa el <strong>buscador</strong> o navega por la barra lateral por secci\u00f3n.</p>\n'
-        '        <div class="ob-tip">&#128161; Puedes seleccionar varios prompts a la vez con el modo <strong>Multi-select</strong> '
-        'para copiar una cadena completa de prompts encadenados.</div>\n'
-        '      </div>\n'
-        '    </div>\n'
-        '    <div class="ob-nav">\n'
-        '      <span class="ob-nav-label" id="ob-nav-label">Paso 1 de 3</span>\n'
-        '      <div style="display:flex;gap:.45rem;">\n'
-        '        <button class="ob-next-btn" id="ob-next-btn" onclick="nextObStep()">Siguiente &#8594;</button>\n'
-        '        <button class="ob-finish-btn" id="ob-finish-btn" onclick="completeOnboarding()">&#10003; Comenzar</button>\n'
-        '      </div>\n'
-        '    </div>\n'
-        '  </div>\n'
-        '</div>\n'
-
         # ── Onboarding modal (UX-01) ──
-        '<div class="ob-overlay" id="ob-overlay">\n'
+        '<div class="ob-overlay hidden" id="ob-overlay">\n'
         '  <div class="ob-box">\n'
         '    <div class="ob-header">\n'
         '      <div class="ob-header-text">\n'
