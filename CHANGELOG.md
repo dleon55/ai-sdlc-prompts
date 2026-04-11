@@ -6,6 +6,34 @@ Este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 
 ---
 
+## [1.4.0] — 2026-04-11
+
+### Added
+- **Onboarding guiado**: welcome banner + overlay de bienvenida con guía de primeros pasos (pasos 1-4)
+  - Dismissable — se guarda en `localStorage` (`AI_SDLC_v1_onboarded`)
+  - Responsive: adaptado para móvil/tablet
+- **4 nuevos prompts**:
+  - `04-04` — Architecture Decision Records (ADR) con plantilla numerada ADR-NNN
+  - `07-06` — Pruebas de performance/carga (load, stress, spike, soak) + scripts k6
+  - `09-04` — Promotion checklist: dev → staging → prod con go/no-go y rollback
+  - `11-04` — Runbook de incident response SEV1-4, escalación, post-mortem blameless
+- **Pipeline CI/CD dual** en `.github/workflows/deploy.yml`:
+  - Job `build`: Python 3.11 + QA gate (`verify_clean.py`) + artefacto compartido
+  - Job `deploy-pages`: GitHub Pages (ambiente de staging/pruebas)
+  - Job `deploy-gcp`: Producción GCP vía SSH/SCP (requiere secrets `GCP_SSH_KEY`, `GCP_HOST`, `GCP_USER`, `GCP_PORT`)
+  - `concurrency: deploy-main` — previene deploys paralelos
+
+### Fixed
+- 6 bugs en `renderProjectsModal()` / sincronización JS↔HTML del onboarding
+- CSS: clases del onboarding alineadas con estructura HTML
+
+### Changed
+- README: conteo actualizado a **45 prompts / 15 grupos** (antes 33/12)
+- README: sección de funcionalidades actualizada con 12 variables de panel y onboarding
+- `00-framework.md`: índice actualizado con 4 nuevas entradas
+
+---
+
 ## [1.3.0] — 2026-04-10
 
 ### Added

@@ -1,6 +1,6 @@
 # AI-SDLC Pro — Biblioteca de Prompts de Ingeniería de Software
 
-Biblioteca interactiva de prompts estructurados bajo el **AI-SDLC Enterprise Framework**: 33 prompts organizados en 12 secciones que cubren el ciclo completo de ingeniería de software.
+Biblioteca interactiva de prompts estructurados bajo el **AI-SDLC Enterprise Framework**: **45 prompts** organizados en **15 grupos** que cubren el ciclo completo de ingeniería de software asistida por IA.
 
 ## Entornos activos
 
@@ -13,8 +13,9 @@ Biblioteca interactiva de prompts estructurados bajo el **AI-SDLC Enterprise Fra
 
 ## Funcionalidades del sitio
 
-- **Proyectos con variables por entorno** — múltiples proyectos, cada uno con su set de 7 variables (`repositorio`, `issue`, `rama actual`, `rama destino`, `ambiente`, `componentes`, `módulo`). Variables persisten en `localStorage`.
+- **Proyectos con variables por entorno** — múltiples proyectos, cada uno con **12 variables** (`repositorio`, `issue`, `rama actual/destino`, `ambiente`, `componentes`, `módulo`, `stack`, `tipo de proyecto`, `metodología`, `agentes IA`, `nivel de autonomía`). Variables persisten en `localStorage`.
 - **Framework auto-prepend** — el bloque de contexto del framework se antepone automáticamente a cada prompt copiado.
+- **Onboarding guiado** — banner + overlay de bienvenida para nuevos usuarios con guía de primeros pasos.
 - **Multi-select** — selección de varios prompts para copiarlos en bloque.
 - **Búsqueda/filtrado** — filtro en tiempo real por texto.
 - **Modal de información ⓘ** — descripción y fórmulas de uso de cada prompt sin contaminar el contenido del prompt.
@@ -26,15 +27,17 @@ Biblioteca interactiva de prompts estructurados bajo el **AI-SDLC Enterprise Fra
 ## Estructura del proyecto
 
 ```
-ai_sdlc_pro_prompts/    # 33 fuentes Markdown de cada prompt
+ai_sdlc_pro_prompts/    # 45 fuentes Markdown (15 grupos, ciclo SDLC completo)
 build.py                # Generador: produce index.html desde los .md
 extract_vars.py         # Analiza tokens [PLACEHOLDER] en los prompts
-verify_clean.py         # Valida prompts limpios + cuenta info buttons
+verify_clean.py         # QA gate: valida prompts limpios (integrado en CI)
 nginx_prompts.conf      # Config Nginx para producción GCP
 deploy-to-gcp.sh        # Script de re-deploy manual a GCP
-index.html              # Artefacto generado (no editar manualmente)
-docs/                   # Memorias técnicas y documentación
-.github/workflows/      # CI/CD — build + deploy automático a GitHub Pages
+index.html              # Artefacto generado (~255 KB, no editar manualmente)
+docs/                   # Memorias técnicas (MT-001, MT-002)
+.github/workflows/      # CI/CD — build + QA gate + deploy GitHub Pages + GCP
+CONTRIBUTING.md         # Guía de contribución y convenciones
+LICENSE                 # Licencia del proyecto
 ```
 
 ---
@@ -83,21 +86,24 @@ El push a `main` también actualiza GitHub Pages automáticamente vía el workfl
 
 ## Secciones de prompts
 
-| # | Sección | Prompts |
+| Grupo | Sección | Prompts |
 |---|---|---|
 | 00 | Framework base (obligatorio — se antepone en cada copia) | 1 |
+| 00-B | Scaffolding: repositorio, gobernanza, GitHub, metodología, stack | 5 |
+| 00-C | Multi-agente: issues para IA, plan mode, configuración por agente | 3 |
 | 01 | Comprensión del repositorio | 2 |
-| 02 | Análisis | 3 |
-| 03 | Incidentes | 2 |
-| 04 | Diseño de solución | 3 |
-| 05 | Plan de implementación | 2 |
-| 06 | Ejecución | 2 |
-| 07 | Pruebas | 5 |
-| 08 | Revisión y remediación | 3 |
-| 09 | Integración y CI/CD | 3 |
-| 10 | Documentación | 3 |
-| 11 | Operaciones | 3 |
-| 12 | Orquestador maestro | 1 |
+| 02 | Análisis (issue, técnico, impacto cruzado) | 3 |
+| 03 | Incidentes (GitHub, causa raíz) | 2 |
+| 04 | Diseño de solución (diseño, Mermaid, casos de uso, ADR) | 4 |
+| 05 | Plan de implementación (plan, riesgos) | 2 |
+| 06 | Ejecución (multi-agente, commits) | 2 |
+| 07 | Pruebas (unitarias, integración, E2E, humo, automatización, performance) | 6 |
+| 08 | Revisión y remediación (estática, cumplimiento, maestro) | 3 |
+| 09 | Integración y CI/CD (ramas, monitoreo, workflows, promotion) | 4 |
+| 10 | Documentación (técnica, memoria, changelog) | 3 |
+| 11 | Operaciones (troubleshooting, hardening, deuda técnica, incident response) | 4 |
+| 12 | Orquestador maestro (ciclo completo) | 1 |
+| **Total** | | **45** |
 
 ---
 
