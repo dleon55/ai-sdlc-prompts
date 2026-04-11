@@ -1,0 +1,17 @@
+# Artefactos de build
+dist/
+
+# Temporales y scripts de desarrollo interno
+_tmp_check.js
+_analysis.txt
+analyze_prompts.py
+verify_clean.py
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# OS
+.DS_Store
+Thumbs.db

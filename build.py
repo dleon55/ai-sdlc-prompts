@@ -1,0 +1,1570 @@
+#!/usr/bin/env python3
+"""
+build.py -- Genera index.html desde ai_sdlc_pro_prompts/
+Uso:  cd WEB_PROMPTS && python build.py
+"""
+import re
+import json
+from pathlib import Path
+from collections import defaultdict
+
+PROMPTS_DIR = Path(__file__).parent / "ai_sdlc_pro_prompts"
+OUTPUT_FILE = Path(__file__).parent / "index.html"
+
+# (etiqueta, clave-icono)
+SECTION_META = {
+    "00": ("Framework base",              "framework"),
+    "01": ("Comprension del repositorio", "repo"),
+    "02": ("Analisis",                    "analysis"),
+    "03": ("Incidentes",                  "bug"),
+    "04": ("Diseno de solucion",          "design"),
+    "05": ("Plan de implementacion",      "plan"),
+    "06": ("Ejecucion",                   "code"),
+    "07": ("Pruebas",                     "test"),
+    "08": ("Revision y remediacion",      "review"),
+    "09": ("Integracion y CI/CD",         "ci"),
+    "10": ("Documentacion",               "docs"),
+    "11": ("Operaciones",                 "ops"),
+    "12": ("Orquestador",                 "orchestrator"),
+}
+
+# Labels con tildes/enye para mostrar en UI
+SECTION_LABEL = {
+    "00": "Framework base",
+    "01": "Comprensión del repositorio",
+    "02": "Análisis",
+    "03": "Incidentes",
+    "04": "Diseño de solución",
+    "05": "Plan de implementación",
+    "06": "Ejecución",
+    "07": "Pruebas",
+    "08": "Revisión y remediación",
+    "09": "Integración y CI/CD",
+    "10": "Documentación",
+    "11": "Operaciones",
+    "12": "Orquestador",
+}
+
+# Color accent por sección (hue de HSL)
+SECTION_COLOR = {
+    "00": "#f59e0b",  # amber  — framework
+    "01": "#6366f1",  # indigo — repo
+    "02": "#3b82f6",  # blue   — analisis
+    "03": "#ef4444",  # red    — incidentes
+    "04": "#8b5cf6",  # violet — diseno
+    "05": "#06b6d4",  # cyan   — plan
+    "06": "#10b981",  # emerald — ejecucion
+    "07": "#f97316",  # orange — pruebas
+    "08": "#ec4899",  # pink   — revision
+    "09": "#14b8a6",  # teal   — ci
+    "10": "#a3e635",  # lime   — docs
+    "11": "#94a3b8",  # slate  — ops
+    "12": "#c084fc",  # purple — orquestador
+}
+
+# SVG paths para cada icono (24x24 viewBox, stroke-based)
+ICON_PATH = {
+    "framework": '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/>',
+    "repo":      '<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"/>',
+    "analysis":  '<path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z"/>',
+    "bug":       '<path stroke-linecap="round" stroke-linejoin="round" d="M12 12.75c1.148 0 2.278.08 3.383.237 1.037.146 1.866.966 1.866 2.013 0 3.728-2.35 6.75-5.25 6.75S6.75 18.728 6.75 15c0-1.046.83-1.867 1.866-2.013A24.204 24.204 0 0112 12.75zm0 0c2.883 0 5.647.508 8.207 1.44a23.91 23.91 0 01-1.152 6.06M12 12.75c-2.883 0-5.647.508-8.208 1.44a23.91 23.91 0 001.153 6.06M12 12.75a2.25 2.25 0 002.248-2.354M12 12.75a2.25 2.25 0 01-2.248-2.354M12 8.25c.995 0 1.971-.08 2.922-.236.403-.066.74-.358.795-.762a3.778 3.778 0 00-.399-2.25M12 8.25c-.995 0-1.97-.08-2.922-.236-.402-.066-.74-.358-.795-.762a3.778 3.778 0 01.4-2.25m0 0a5.002 5.002 0 019.45 0m-9.45 0A5.002 5.002 0 002.55 5.764"/>',
+    "design":    '<path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"/>',
+    "plan":      '<path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>',
+    "code":      '<path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z"/>',
+    "test":      '<path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"/>',
+    "review":    '<path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0118 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3l1.5 1.5 3-3.75"/>',
+    "ci":        '<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/>',
+    "docs":      '<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/>',
+    "ops":       '<path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 01.9 2.7m0 0a3 3 0 01-3 3m0 3h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008zm-3 6h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008z"/>',
+    "orchestrator": '<path stroke-linecap="round" stroke-linejoin="round" d="M13.5 16.875h3.375m0 0h3.375m-3.375 0V13.5m0 3.375v3.375M6 10.5h2.25a2.25 2.25 0 002.25-2.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v2.25A2.25 2.25 0 006 10.5zm0 9.75h2.25A2.25 2.25 0 0010.5 18v-2.25a2.25 2.25 0 00-2.25-2.25H6a2.25 2.25 0 00-2.25 2.25V18A2.25 2.25 0 006 20.25zm9.75-9.75H18a2.25 2.25 0 002.25-2.25V6A2.25 2.25 0 0018 3.75h-2.25A2.25 2.25 0 0013.5 6v2.25a2.25 2.25 0 002.25 2.25z"/>',
+}
+
+
+def icon_svg(key, color, size=16):
+    path = ICON_PATH.get(key, ICON_PATH["docs"])
+    return (
+        f'<svg width="{size}" height="{size}" viewBox="0 0 24 24" fill="none" '
+        f'stroke="{color}" stroke-width="1.7" style="flex-shrink:0;margin-top:1px">'
+        f'{path}</svg>'
+    )
+
+
+def chevron_svg():
+    return (
+        '<svg width="10" height="10" viewBox="0 0 10 10" fill="none">'
+        '<path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6"'
+        ' stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    )
+
+
+def parse_md(filepath):
+    content = filepath.read_text(encoding="utf-8")
+
+    # --- título ---
+    title_match = re.search(r"^#\s+(.+)$", content, re.MULTILINE)
+    title = title_match.group(1).strip() if title_match else filepath.stem
+
+    # --- todos los bloques ```text``` ---
+    blocks = [b.strip() for b in re.findall(r"```text\n(.*?)```", content, re.DOTALL)]
+
+    if not blocks:
+        return title, content.strip(), "", []
+
+    # El PRIMER bloque siempre es el prompt real para la IA
+    prompt_parts = [blocks[0]]
+    formula_blocks = []
+
+    for b in blocks[1:]:
+        # Bloques de fórmula/instrucción para el humano:
+        #   "Usa el prompt de..." (fórmula de uso estándar)
+        #   bloques de formato de commit (fix( / feat( ...)
+        if re.match(r"^Usa el prompt", b) or re.match(r"^(fix|feat|refactor|docs|test|chore)\(", b):
+            formula_blocks.append(b)
+        else:
+            # Prompts reales encadenados (ej. 08-03 ejecución: "Con base en el análisis...")
+            prompt_parts.append(b)
+
+    prompt = "\n\n---\n\n".join(prompt_parts)
+
+    # --- descripción de la sección ## Descripción (para el botón ⓘ) ---
+    desc_match = re.search(
+        r"##\s+Descripci[oó]n\s*\n([\s\S]*?)(?=\n##\s|\Z)", content
+    )
+    description = ""
+    if desc_match:
+        raw = desc_match.group(1)
+        raw = re.sub(r"\*\*(.*?)\*\*", r"\1", raw)          # **bold** → plain
+        raw = re.sub(r"^\s*>\s*", "", raw, flags=re.MULTILINE)  # blockquotes
+        raw = re.sub(r"^\s*---+\s*$", "", raw, flags=re.MULTILINE)  # líneas HR
+        raw = re.sub(r"\n{3,}", "\n\n", raw)
+        description = raw.strip()
+
+    return title, prompt, description, formula_blocks
+
+
+def h(text):
+    return (
+        text.replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+            .replace('"', "&quot;")
+    )
+
+
+CSS = """
+:root {
+  --hdr:  58px;
+  --bar:  46px;
+  --side: 220px;
+  --bg:   #080b14;
+  --bg2:  #0f1220;
+  --bg3:  #161929;
+  --bg4:  #1c2035;
+  --bdr:  #1f2340;
+  --bdr2: #262b45;
+  --tx:   #dde1f5;
+  --tx2:  #8892c0;
+  --tx3:  #454d6e;
+  --grn:  #22c55e;
+  --warn: #f59e0b;
+  --mono: 'JetBrains Mono','Fira Code','Cascadia Code','Courier New',monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg); color: var(--tx); font-size: 14px; line-height: 1.5;
+  display: flex; flex-direction: column; height: 100vh; overflow: hidden;
+}
+
+/* ═══════════════════════════ HEADER ════════════════════════════ */
+header {
+  height: var(--hdr); flex-shrink: 0;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--bdr);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 1.5rem; z-index: 300;
+}
+.hdr-logo { display: flex; align-items: center; gap: .65rem; }
+.hdr-logo svg { flex-shrink: 0; }
+.hdr-logo h1 {
+  font-size: .95rem; font-weight: 700; letter-spacing: .015em;
+  background: linear-gradient(90deg, #818cf8, #c084fc);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hdr-logo p { font-size: .68rem; color: var(--tx3); margin-top: .05rem; }
+.hdr-tags { display: flex; align-items: center; gap: .5rem; }
+.tag {
+  font-size: .62rem; font-weight: 600; letter-spacing: .04em;
+  background: var(--bg3); border: 1px solid var(--bdr2);
+  color: var(--tx3); border-radius: 4px; padding: .15rem .5rem;
+}
+.tag-warn { border-color: #78350f; color: var(--warn); background: #1c1006; }
+.hdr-brand {
+  display: flex; align-items: center; gap: .45rem;
+  border-left: 1px solid var(--bdr2); padding-left: .85rem; margin-left: .35rem;
+}
+.hdr-brand-text { font-size: .7rem; font-weight: 700; letter-spacing: .04em; color: #f59e0b; }
+.hdr-brand-sub { font-size: .58rem; color: var(--tx3); display: block; line-height: 1.1; }
+
+/* ═══════════════════════════ SEARCH BAR ════════════════════════ */
+.search-bar {
+  height: var(--bar); flex-shrink: 0;
+  background: var(--bg); border-bottom: 1px solid var(--bdr);
+  display: flex; align-items: center; flex-wrap: wrap;
+  padding: 0 1.25rem 0 calc(var(--side) + 1.25rem);
+  gap: .65rem; z-index: 299;
+}
+.search-wrap { position: relative; flex: 1; max-width: 560px; }
+.search-ico {
+  position: absolute; left: .65rem; top: 50%; transform: translateY(-50%);
+  color: var(--tx3); pointer-events: none;
+}
+.search-bar input {
+  width: 100%; padding: .35rem .85rem .35rem 2rem;
+  border-radius: 6px; border: 1px solid var(--bdr2);
+  background: var(--bg3); color: var(--tx); font-size: .82rem; outline: none;
+  transition: border-color .15s;
+}
+.search-bar input::placeholder { color: var(--tx3); }
+.search-bar input:focus { border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99,102,241,.15); }
+.search-count { font-size: .7rem; color: var(--tx3); white-space: nowrap; }
+
+/* ═══════════════════════════ LAYOUT ════════════════════════════ */
+.layout { display: flex; flex: 1; overflow: hidden; }
+
+/* ═══════════════════════════ SIDEBAR ═══════════════════════════ */
+.sidebar {
+  width: var(--side); flex-shrink: 0;
+  background: var(--bg2); border-right: 1px solid var(--bdr);
+  overflow-y: auto; display: flex; flex-direction: column;
+}
+.sidebar::-webkit-scrollbar { width: 3px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--bdr2); border-radius: 2px; }
+.sid-section { padding: .5rem 0; }
+.sid-label {
+  font-size: .58rem; font-weight: 700; color: var(--tx3);
+  text-transform: uppercase; letter-spacing: .12em;
+  padding: .6rem 1rem .3rem;
+}
+.sid-link {
+  display: flex; align-items: center; gap: .5rem;
+  padding: .32rem .85rem .32rem 1rem;
+  cursor: pointer; text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: all .12s;
+}
+.sid-link:hover { background: var(--bg3); }
+.sid-link.active { background: rgba(99,102,241,.1); border-left-color: #6366f1; }
+.sid-icon { flex-shrink: 0; opacity: .65; transition: opacity .12s; }
+.sid-link:hover .sid-icon,
+.sid-link.active .sid-icon { opacity: 1; }
+.sid-text { flex: 1; font-size: .74rem; color: var(--tx2); line-height: 1.3; transition: color .12s; }
+.sid-link:hover .sid-text { color: var(--tx); }
+.sid-link.active .sid-text { color: #a5b4fc; font-weight: 500; }
+.sid-badge {
+  flex-shrink: 0; font-size: .58rem; font-weight: 700;
+  background: var(--bg4); border: 1px solid var(--bdr2);
+  color: var(--tx3); border-radius: 10px; padding: .05rem .4rem;
+  min-width: 18px; text-align: center; transition: all .12s;
+}
+.sid-link.active .sid-badge { background: #6366f1; border-color: #6366f1; color: #fff; }
+.sid-framework { background: rgba(245,158,11,.06); }
+.sid-framework .sid-text { color: #d97706; }
+.sid-framework.active { background: rgba(245,158,11,.12); border-left-color: var(--warn); }
+.sid-framework.active .sid-text { color: var(--warn); }
+.sid-framework.active .sid-badge { background: var(--warn); border-color: var(--warn); }
+
+/* ═══════════════════════════ CONTENT ═══════════════════════════ */
+.content {
+  flex: 1; overflow-y: auto; padding: 1.5rem 1.75rem 5rem;
+  min-width: 0;
+}
+.content::-webkit-scrollbar { width: 5px; }
+.content::-webkit-scrollbar-thumb { background: var(--bdr2); border-radius: 3px; }
+
+/* ────── Framework banner ────── */
+.framework-banner {
+  background: linear-gradient(135deg, #1a1306 0%, #0f1220 60%);
+  border: 1px solid #78350f;
+  border-radius: 10px; margin-bottom: 2rem; overflow: hidden;
+  scroll-margin-top: .5rem;
+}
+.fw-header {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .85rem 1rem; border-bottom: 1px solid #78350f;
+}
+.fw-badge {
+  font-size: .6rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .08em; background: var(--warn); color: #000;
+  border-radius: 4px; padding: .15rem .5rem;
+}
+.fw-title { font-size: .88rem; font-weight: 600; color: #fbbf24; flex: 1; }
+.fw-desc { font-size: .72rem; color: #92400e; padding: .5rem 1rem; }
+.fw-body { padding: 0; border-top: none; }
+.fw-body pre {
+  margin: 0; padding: .85rem 1rem;
+  background: #06040a; max-height: 340px; overflow-y: auto; border-radius: 0;
+  border: none; border-top: 1px solid #1c1a06;
+}
+.fw-copy-row {
+  display: flex; justify-content: flex-end;
+  padding: .45rem .85rem; background: #100d02; border-top: 1px solid #1c1a06;
+}
+.fw-copy-btn {
+  padding: .25rem .75rem; background: var(--warn); border: none;
+  border-radius: 5px; color: #000; font-size: .72rem;
+  cursor: pointer; font-weight: 700; transition: background .12s; font-family: inherit;
+}
+.fw-copy-btn:hover { background: #fbbf24; }
+.fw-copy-btn.ok { background: var(--grn); color: #fff; }
+
+/* ────── Section group ────── */
+.section-group { margin-bottom: 2rem; scroll-margin-top: .5rem; }
+.section-header-row {
+  display: flex; align-items: center; gap: .6rem;
+  padding-bottom: .55rem; margin-bottom: .8rem;
+  border-bottom: 1px solid var(--bdr);
+}
+.sec-num {
+  font-size: .6rem; font-weight: 700; font-family: var(--mono);
+  letter-spacing: .04em; padding: .12rem .45rem;
+  border-radius: 4px; border: 1px solid; flex-shrink: 0;
+}
+.sec-label {
+  font-size: .72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--tx3); flex: 1;
+}
+.sec-count {
+  font-size: .62rem; color: var(--tx3); background: var(--bg3);
+  border: 1px solid var(--bdr); border-radius: 10px; padding: .05rem .45rem;
+}
+
+/* ────── Grid de cards ────── */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: .55rem;
+}
+
+/* ────── Card ────── */
+.card {
+  background: var(--bg2); border: 1px solid var(--bdr);
+  border-radius: 8px; overflow: hidden; transition: border-color .15s, box-shadow .15s;
+}
+.card:hover { border-color: var(--bdr2); box-shadow: 0 2px 12px rgba(0,0,0,.35); }
+
+/* Card header: siempre visible */
+.card-head {
+  display: flex; align-items: center; gap: .45rem;
+  padding: .55rem .75rem; min-height: 42px;
+}
+.card-expand {
+  flex-shrink: 0; background: none; border: none; cursor: pointer;
+  color: var(--tx3); width: 20px; height: 20px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 4px; transition: color .12s, background .12s;
+}
+.card-expand:hover { color: var(--tx); background: var(--bg4); }
+.card-expand svg { transition: transform .18s; }
+.card-expand.open svg { transform: rotate(180deg); }
+.card-title {
+  flex: 1; font-size: .78rem; font-weight: 500; color: #c4c9e8;
+  line-height: 1.35; cursor: pointer; min-width: 0;
+}
+.card-title:hover { color: var(--tx); }
+.copy-btn {
+  flex-shrink: 0; padding: .2rem .6rem;
+  background: var(--bg4); border: 1px solid var(--bdr2);
+  border-radius: 5px; color: var(--tx2); font-size: .68rem;
+  cursor: pointer; font-weight: 600; transition: all .12s;
+  white-space: nowrap; font-family: inherit; display: flex; align-items: center; gap: .3rem;
+}
+.copy-btn:hover { background: #6366f1; border-color: #6366f1; color: #fff; }
+.copy-btn.ok { background: var(--grn); border-color: var(--grn); color: #fff; }
+
+/* Card body: colapsable */
+.card-body { display: none; border-top: 1px solid var(--bdr); }
+.card-body.open { display: block; }
+pre {
+  margin: 0; padding: .7rem .9rem;
+  background: #04050d; overflow-x: auto; max-height: 400px; overflow-y: auto;
+}
+code {
+  font-family: var(--mono);
+  font-size: .7rem; color: #a8b0d8; white-space: pre-wrap; word-break: break-word;
+  line-height: 1.6;
+}
+
+/* ────── Empty state ────── */
+.glbl-empty {
+  text-align: center; padding: 3.5rem 1rem; color: var(--tx3);
+}
+.glbl-empty p { font-size: .88rem; margin-bottom: .4rem; }
+.glbl-empty small { font-size: .72rem; color: var(--tx3); }
+
+/* ═══════════════════════════ VARIABLES PANEL ═══════════════════ */
+.var-panel {
+  position: fixed; top: 0; right: 0; height: 100vh; width: 300px;
+  background: var(--bg2); border-left: 1px solid var(--bdr);
+  display: flex; flex-direction: column; z-index: 500;
+  transform: translateX(100%); transition: transform .22s ease;
+}
+.var-panel.open { transform: translateX(0); }
+.var-panel-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .85rem 1rem; border-bottom: 1px solid var(--bdr); flex-shrink: 0;
+}
+.var-panel-hdr h2 {
+  font-size: .82rem; font-weight: 700; color: var(--tx);
+  display: flex; align-items: center; gap: .4rem;
+}
+.var-close-btn {
+  background: none; border: none; cursor: pointer; color: var(--tx3);
+  padding: .2rem; border-radius: 4px; font-size: 1rem; line-height: 1;
+  transition: color .12s;
+}
+.var-close-btn:hover { color: var(--tx); }
+.var-panel-body {
+  flex: 1; overflow-y: auto; padding: .85rem 1rem;
+  display: flex; flex-direction: column; gap: .75rem;
+}
+.var-panel-body::-webkit-scrollbar { width: 3px; }
+.var-panel-body::-webkit-scrollbar-thumb { background: var(--bdr2); border-radius: 2px; }
+.var-group label {
+  display: block; font-size: .66rem; font-weight: 700; color: var(--tx3);
+  text-transform: uppercase; letter-spacing: .08em; margin-bottom: .3rem;
+}
+.var-group input, .var-group select, .var-group textarea {
+  width: 100%; background: var(--bg3); border: 1px solid var(--bdr2);
+  color: var(--tx); font-size: .76rem; border-radius: 5px; outline: none;
+  transition: border-color .12s; font-family: inherit;
+}
+.var-group input, .var-group select { padding: .35rem .6rem; }
+.var-group textarea { padding: .35rem .6rem; resize: vertical; min-height: 56px; }
+.var-group input:focus, .var-group select:focus, .var-group textarea:focus {
+  border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99,102,241,.15);
+}
+.var-group input::placeholder, .var-group textarea::placeholder { color: var(--tx3); }
+.var-tags { display: flex; flex-wrap: wrap; gap: .25rem; margin-top: .3rem; }
+.var-tag {
+  font-size: .58rem; font-family: var(--mono); color: var(--tx3);
+  background: var(--bg4); border: 1px solid var(--bdr2); border-radius: 3px;
+  padding: .08rem .35rem;
+}
+.var-panel-footer {
+  padding: .75rem 1rem; border-top: 1px solid var(--bdr); flex-shrink: 0;
+  display: flex; gap: .5rem;
+}
+.var-apply-btn, .var-clear-btn {
+  flex: 1; padding: .35rem; border: none; border-radius: 5px;
+  font-size: .74rem; font-weight: 700; cursor: pointer;
+  font-family: inherit; transition: background .12s;
+}
+.var-apply-btn { background: #6366f1; color: #fff; }
+.var-apply-btn:hover { background: #4f52d4; }
+.var-apply-btn.ok { background: var(--grn); }
+.var-clear-btn { background: var(--bg4); color: var(--tx2); border: 1px solid var(--bdr2); }
+.var-clear-btn:hover { background: var(--bg3); }
+
+/* ═══════════════════════════ MULTI-SELECT ══════════════════════ */
+.ms-toggle-btn {
+  padding: .25rem .75rem; background: var(--bg3); border: 1px solid var(--bdr2);
+  border-radius: 5px; color: var(--tx2); font-size: .72rem;
+  cursor: pointer; font-weight: 600; transition: all .12s; font-family: inherit;
+  display: flex; align-items: center; gap: .35rem;
+}
+.ms-toggle-btn:hover, .ms-toggle-btn.active { background: #4f46e5; border-color: #6366f1; color: #fff; }
+.var-toggle-btn {
+  padding: .25rem .75rem; background: var(--bg3); border: 1px solid var(--bdr2);
+  border-radius: 5px; color: var(--tx2); font-size: .72rem;
+  cursor: pointer; font-weight: 600; transition: all .12s; font-family: inherit;
+  display: flex; align-items: center; gap: .35rem;
+}
+.var-toggle-btn:hover, .var-toggle-btn.active { background: #0e7490; border-color: #06b6d4; color: #fff; }
+
+/* Checkbox en card header */
+.card-check {
+  display: none; flex-shrink: 0;
+  width: 16px; height: 16px; cursor: pointer; accent-color: #6366f1;
+}
+body.ms-mode .card-check { display: block; }
+
+/* Checkbox de sección */
+.sec-check {
+  display: none; width: 15px; height: 15px; cursor: pointer; accent-color: #6366f1;
+  flex-shrink: 0;
+}
+body.ms-mode .sec-check { display: block; }
+
+/* barra flotante de selección */
+.ms-bar {
+  position: fixed; bottom: -70px; left: 50%; transform: translateX(-50%);
+  background: #1c2035; border: 1px solid #6366f1;
+  border-radius: 10px; padding: .65rem 1.25rem;
+  display: flex; align-items: center; gap: .85rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,.5); z-index: 600;
+  transition: bottom .22s ease; white-space: nowrap;
+}
+.ms-bar.visible { bottom: 1.5rem; }
+.ms-count { font-size: .8rem; color: var(--tx2); }
+.ms-count strong { color: #a5b4fc; font-size: .85rem; }
+.ms-copy-btn {
+  padding: .3rem 1rem; background: #6366f1; border: none; border-radius: 6px;
+  color: #fff; font-size: .74rem; font-weight: 700; cursor: pointer;
+  font-family: inherit; transition: background .12s;
+}
+.ms-copy-btn:hover { background: #4f52d4; }
+.ms-copy-btn.ok { background: var(--grn); }
+.ms-clear-btn {
+  background: none; border: 1px solid var(--bdr2); border-radius: 6px;
+  color: var(--tx3); font-size: .72rem; padding: .3rem .7rem;
+  cursor: pointer; font-family: inherit; transition: all .12s;
+}
+.ms-clear-btn:hover { border-color: var(--tx3); color: var(--tx2); }
+
+/* Highlight card seleccionada */
+.card.ms-selected {
+  border-color: #6366f1; box-shadow: 0 0 0 1px #6366f133;
+}
+
+/* Indicador "vars activas" en barra de búsqueda */
+.vars-active-badge {
+  font-size: .65rem; font-weight: 700; background: #0e7490;
+  border: 1px solid #06b6d4; color: #7dd3fc;
+  border-radius: 4px; padding: .12rem .45rem; display: none;
+}
+.vars-active-badge.show { display: inline; }
+
+/* ═══════════════════════════ BOTÓN ⓘ INFO ══════════════════════ */
+.info-btn {
+  flex-shrink: 0; width: 22px; height: 22px; padding: 0;
+  background: none; border: 1px solid var(--bdr2);
+  border-radius: 50%; color: var(--tx3); font-size: .7rem; font-weight: 700;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all .12s; line-height: 1; font-family: inherit;
+}
+.info-btn:hover { background: rgba(99,102,241,.15); border-color: #6366f1; color: #a5b4fc; }
+
+/* ═══════════════════════════ MODAL INFO ════════════════════════ */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.65);
+  z-index: 700; display: none; align-items: center; justify-content: center;
+  padding: 1.5rem;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: var(--bg2); border: 1px solid var(--bdr2);
+  border-radius: 12px; width: 100%; max-width: 640px;
+  max-height: 88vh; display: flex; flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,0,0,.6);
+}
+.modal-hdr {
+  display: flex; align-items: flex-start; gap: .65rem;
+  padding: .9rem 1.1rem .75rem; border-bottom: 1px solid var(--bdr); flex-shrink: 0;
+}
+.modal-hdr-icon { flex-shrink: 0; opacity: .8; }
+.modal-hdr h2 {
+  flex: 1; font-size: .88rem; font-weight: 700; color: var(--tx); line-height: 1.4;
+}
+.modal-close-btn {
+  flex-shrink: 0; background: none; border: none; cursor: pointer;
+  color: var(--tx3); font-size: 1.1rem; padding: .1rem .2rem; border-radius: 4px;
+  line-height: 1; transition: color .12s;
+}
+.modal-close-btn:hover { color: var(--tx); }
+.modal-body {
+  flex: 1; overflow-y: auto; padding: 1rem 1.1rem 1.25rem;
+  display: flex; flex-direction: column; gap: .85rem;
+}
+.modal-body::-webkit-scrollbar { width: 4px; }
+.modal-body::-webkit-scrollbar-thumb { background: var(--bdr2); border-radius: 2px; }
+.modal-section h3 {
+  font-size: .62rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .1em; color: var(--tx3); margin-bottom: .4rem;
+  display: flex; align-items: center; gap: .35rem;
+}
+.modal-section h3::before {
+  content: ''; display: inline-block; width: 6px; height: 6px;
+  background: #6366f1; border-radius: 50%; flex-shrink: 0;
+}
+.modal-desc {
+  font-size: .79rem; color: var(--tx2); line-height: 1.65; white-space: pre-wrap;
+}
+.modal-formula-wrap { margin-top: .3rem; }
+.modal-formula {
+  background: #04050d; border: 1px solid var(--bdr);
+  border-radius: 6px; padding: .65rem .85rem; max-height: 220px; overflow-y: auto;
+}
+.modal-formula::-webkit-scrollbar { width: 3px; }
+.modal-formula::-webkit-scrollbar-thumb { background: var(--bdr2); border-radius: 2px; }
+.modal-formula code {
+  font-family: var(--mono); font-size: .7rem; color: #8892c0;
+  white-space: pre-wrap; word-break: break-word; line-height: 1.6;
+}
+.modal-copy-formula {
+  margin-top: .35rem; padding: .22rem .7rem;
+  background: var(--bg4); border: 1px solid var(--bdr2);
+  border-radius: 5px; color: var(--tx2); font-size: .68rem;
+  cursor: pointer; font-weight: 600; transition: all .12s; font-family: inherit;
+}
+.modal-copy-formula:hover { background: #6366f1; border-color: #6366f1; color: #fff; }
+.modal-copy-formula.ok { background: var(--grn); border-color: var(--grn); color: #fff; }
+.modal-note {
+  font-size: .72rem; color: var(--tx3); padding: .5rem .75rem;
+  background: var(--bg3); border: 1px solid var(--bdr); border-radius: 6px;
+  border-left: 3px solid #6366f1; line-height: 1.5;
+}
+
+/* ════════════════════  PROYECTOS  ══════════════════════════════ */
+.proj-selector-row {
+  display: flex; align-items: center; gap: 6px;
+  padding: 0 14px 10px; border-bottom: 1px solid var(--bdr);
+}
+.proj-select {
+  flex: 1; background: var(--bg); color: var(--tx); border: 1px solid var(--bdr2);
+  border-radius: 6px; padding: 4px 8px; font-size: .76rem; font-family: inherit;
+  cursor: pointer; outline: none;
+}
+.proj-select:focus { border-color: #06b6d4; }
+.proj-mgr-btn {
+  background: none; border: 1px solid var(--bdr2); border-radius: 6px;
+  color: var(--tx3); padding: 4px 8px; font-size: .7rem; cursor: pointer;
+  white-space: nowrap; font-family: inherit; transition: border-color .12s, color .12s;
+}
+.proj-mgr-btn:hover { border-color: #06b6d4; color: #06b6d4; }
+
+/* Modal de proyectos */
+#proj-modal {
+  position: fixed; inset: 0; background: rgba(0,0,0,.65);
+  z-index: 2000; display: none; align-items: center; justify-content: center;
+  padding: 1.5rem;
+}
+.proj-modal-box {
+  background: var(--bg2); border: 1px solid var(--bdr2); border-radius: 12px;
+  padding: 20px; width: min(480px, 90vw); max-height: 80vh;
+  overflow-y: auto; position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,.6);
+}
+.proj-modal-box .modal-hdr { padding: 0 0 .75rem; border-bottom: 1px solid var(--bdr); margin-bottom: .75rem; }
+.proj-modal-box .modal-hdr h2 { font-size: .92rem; color: var(--tx); }
+.proj-list { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.proj-item {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg); border: 1px solid var(--bdr2); border-radius: 8px; padding: 7px 10px;
+  transition: border-color .12s;
+}
+.proj-item.active-proj { border-color: #06b6d4; }
+.proj-item-name {
+  flex: 1; background: none; border: none; color: var(--tx);
+  font-size: .82rem; font-family: inherit; outline: none; cursor: pointer;
+}
+.proj-item-name:focus { border-bottom: 1px solid #06b6d4; cursor: text; }
+.proj-def-badge {
+  font-size: .62rem; background: #0e7490; color: #fff;
+  border-radius: 4px; padding: 1px 5px; white-space: nowrap; flex-shrink: 0;
+}
+.proj-action-btn {
+  background: none; border: none; color: var(--tx3);
+  cursor: pointer; padding: 2px 5px; font-size: .82rem;
+  border-radius: 4px; transition: color .12s, background .12s;
+}
+.proj-action-btn:hover { color: var(--tx); background: var(--bg3); }
+.proj-add-btn {
+  background: #0e7490; color: #fff; border: none; border-radius: 8px;
+  padding: 8px 16px; width: 100%; cursor: pointer; font-size: .82rem;
+  font-family: inherit; transition: background .12s;
+}
+.proj-add-btn:hover { background: #0891b2; }
+"""
+
+JS = """
+/* ════════════════════  PROYECTOS — datos  ══════════════════════ */
+
+var LS_KEY_PROJ = 'AI_SDLC_v1_projects';
+var LS_KEY_ACTV = 'AI_SDLC_v1_active';
+var EMPTY_VARS  = {
+  repositorio: '', referencia: '', rama_actual: '',
+  rama_destino: '', ambiente: '', componentes: '', modulo: ''
+};
+
+function genId() {
+  return 'proj_' + Math.random().toString(36).slice(2, 9);
+}
+
+function loadProjects() {
+  try {
+    var raw = localStorage.getItem(LS_KEY_PROJ);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) { return null; }
+}
+
+function saveProjects(list) {
+  try { localStorage.setItem(LS_KEY_PROJ, JSON.stringify(list)); } catch (e) {}
+}
+
+function getActiveProject() {
+  var list = loadProjects();
+  if (!list || !list.length) return null;
+  var id = localStorage.getItem(LS_KEY_ACTV);
+  return list.find(function(p) { return p.id === id; }) ||
+         list.find(function(p) { return p.isDefault; }) ||
+         list[0];
+}
+
+/* ════════════════════  PROYECTOS — CRUD  ═══════════════════════ */
+
+function createProject(name) {
+  var list = loadProjects() || [];
+  var p = {
+    id: genId(),
+    name: name || ('Proyecto ' + (list.length + 1)),
+    isDefault: list.length === 0,
+    vars: Object.assign({}, EMPTY_VARS)
+  };
+  list.push(p);
+  saveProjects(list);
+  localStorage.setItem(LS_KEY_ACTV, p.id);
+  return p;
+}
+
+function deleteProject(id) {
+  var list = (loadProjects() || []).filter(function(p) { return p.id !== id; });
+  if (!list.length) { createProject('Default'); return; }
+  if (!list.find(function(p) { return p.isDefault; })) list[0].isDefault = true;
+  saveProjects(list);
+  var active = localStorage.getItem(LS_KEY_ACTV);
+  if (active === id) localStorage.setItem(LS_KEY_ACTV, list[0].id);
+}
+
+function duplicateProject(id) {
+  var list = loadProjects() || [];
+  var src = list.find(function(p) { return p.id === id; });
+  if (!src) return;
+  var copy = {
+    id: genId(), name: src.name + ' (copia)', isDefault: false,
+    vars: Object.assign({}, src.vars)
+  };
+  list.push(copy);
+  saveProjects(list);
+  localStorage.setItem(LS_KEY_ACTV, copy.id);
+  return copy;
+}
+
+function renameProject(id, name) {
+  var list = loadProjects() || [];
+  var p = list.find(function(x) { return x.id === id; });
+  if (p && name.trim()) { p.name = name.trim(); saveProjects(list); renderProjectSelector(); }
+}
+
+function setDefaultProject(id) {
+  var list = loadProjects() || [];
+  list.forEach(function(p) { p.isDefault = (p.id === id); });
+  saveProjects(list);
+}
+
+function switchProject(id) {
+  localStorage.setItem(LS_KEY_ACTV, id);
+  syncPanelToProject();
+  renderProjectSelector();
+}
+
+/* ════════════════════  PROYECTOS — sync DOM  ════════════════════ */
+
+var FIELD_VAR_MAP = {
+  'vf-repositorio': 'repositorio', 'vf-referencia': 'referencia',
+  'vf-rama-actual': 'rama_actual', 'vf-rama-destino': 'rama_destino',
+  'vf-ambiente': 'ambiente', 'vf-componentes': 'componentes', 'vf-modulo': 'modulo'
+};
+
+function syncPanelToProject() {
+  var p = getActiveProject();
+  var v = p ? p.vars : EMPTY_VARS;
+  Object.keys(FIELD_VAR_MAP).forEach(function(eid) {
+    var el = document.getElementById(eid);
+    if (el) el.value = v[FIELD_VAR_MAP[eid]] || '';
+  });
+  updateVarsBadge();
+}
+
+function syncProjectFromPanel() {
+  var list = loadProjects();
+  if (!list) return;
+  var actId = localStorage.getItem(LS_KEY_ACTV);
+  var p = list.find(function(x) { return x.id === actId; });
+  if (!p) return;
+  Object.keys(FIELD_VAR_MAP).forEach(function(eid) {
+    var el = document.getElementById(eid);
+    if (el) p.vars[FIELD_VAR_MAP[eid]] = el.value;
+  });
+  saveProjects(list);
+}
+
+function renderProjectSelector() {
+  var sel = document.getElementById('proj-selector');
+  if (!sel) return;
+  var list = loadProjects() || [];
+  var active = getActiveProject();
+  var activeId = active ? active.id : null;
+  sel.innerHTML = list.map(function(p) {
+    var selAttr = (p.id === activeId) ? ' selected' : '';
+    var label = p.name + (p.isDefault ? ' \u2605' : '');
+    return '<option value="' + p.id + '"' + selAttr + '>'
+           + label.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</option>';
+  }).join('');
+}
+
+/* ════════════════════  PROYECTOS — modal  ═══════════════════════ */
+
+function renderProjectsModal() {
+  var list = loadProjects() || [];
+  var active = getActiveProject();
+  var activeId = active ? active.id : null;
+  var ul = document.getElementById('proj-modal-list');
+  if (!ul) return;
+  ul.innerHTML = list.map(function(p) {
+    var isActive = p.id === activeId;
+    var defBadge = p.isDefault ? '<span class="proj-def-badge">default</span>' : '';
+    var delBtn = list.length > 1
+      ? '<button class="proj-action-btn" title="Eliminar"'
+        + ' onclick="deleteProject(\\'' + p.id + '\\');renderProjectsModal();renderProjectSelector();">'
+        + '\u2715</button>'
+      : '';
+    return '<li class="proj-item' + (isActive ? ' active-proj' : '') + '">'
+      + defBadge
+      + '<input class="proj-item-name" value="'
+        + p.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;') + '"'
+        + ' onblur="renameProject(\\'' + p.id + '\\',this.value)">'
+      + '<button class="proj-action-btn" title="Activar"'
+        + ' onclick="switchProject(\\'' + p.id + '\\');renderProjectsModal();">\u26a1</button>'
+      + '<button class="proj-action-btn" title="Predeterminar"'
+        + ' onclick="setDefaultProject(\\'' + p.id + '\\');renderProjectsModal();renderProjectSelector();">\u2605</button>'
+      + '<button class="proj-action-btn" title="Duplicar"'
+        + ' onclick="duplicateProject(\\'' + p.id + '\\');renderProjectsModal();renderProjectSelector();syncPanelToProject();">\u2398</button>'
+      + delBtn
+      + '</li>';
+  }).join('');
+}
+
+function openProjectsModal() {
+  renderProjectsModal();
+  var m = document.getElementById('proj-modal');
+  if (m) m.style.display = 'flex';
+}
+
+function closeProjectsModal() {
+  var m = document.getElementById('proj-modal');
+  if (m) m.style.display = 'none';
+}
+
+/* ═══════════════════  VARIABLES  ═══════════════════════════════ */
+
+// Mapa: campo UI → array de tokens del prompt que sustituye
+var VAR_MAP = {
+  repositorio: ['NOMBRE O URL'],
+  referencia:  ['REFERENCIA', 'PEGAR TEXTO O REFERENCIA', 'PEGAR TEXTO COMPLETO',
+                 'PEGAR LISTA DE INCIDENTES', 'PEGAR REPORTE', 'PEGAR'],
+  rama_actual: ['RAMA ACTUAL', 'RAMA CON LOS CAMBIOS', 'RAMA EN PRUEBAS',
+                'RAMA AFECTADA', 'RAMA DE TRABAJO', 'RAMA DE PRUEBAS'],
+  rama_destino:['RAMA OBJETIVO', 'RAMA PRINCIPAL', 'RAMA INTEGRADA',
+                'RAMA DESTINO', 'RAMA DE RELEASE', 'DEVELOP / MAIN / RELEASE'],
+  ambiente:    ['DEV / QA / PROD', 'QA / STAGING', 'QA / STAGING / PROD',
+                'DEV / QA / STAGING / PROD', 'PROD / STAGING', 'DEV / QA',
+                'URL DEL AMBIENTE'],
+  componentes: ['COMPONENTES INVOLUCRADOS', 'COMPONENTES MODIFICADOS',
+                'COMPONENTES A MODIFICAR', 'COMPONENTES REVISADOS',
+                'RUTAS DE ARCHIVOS MODIFICADOS', 'FUNCIONES O UNIDADES A PROBAR'],
+  modulo:      ['NOMBRE DEL PROCESO', 'INDICAR', 'SI YA CONOCES ALGUNO'],
+};
+
+function getVarValues() {
+  var p = getActiveProject();
+  return p ? Object.assign({}, p.vars) : Object.assign({}, EMPTY_VARS);
+}
+
+function hasActiveVars() {
+  var v = getVarValues();
+  return Object.values(v).some(function(x){ return x.trim() !== ''; });
+}
+
+function applyVars(text) {
+  var v = getVarValues();
+  Object.keys(VAR_MAP).forEach(function(field) {
+    var val = v[field].trim();
+    if (!val) return;
+    VAR_MAP[field].forEach(function(token) {
+      var rx = new RegExp('\\\\[' + token.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&') + '\\\\]', 'g');
+      text = text.replace(rx, val);
+    });
+  });
+  return text;
+}
+
+function updateVarsBadge() {
+  var badge = document.getElementById('vars-badge');
+  if (badge) badge.classList.toggle('show', hasActiveVars());
+}
+
+function openVarPanel() {
+  var p = document.getElementById('var-panel');
+  if (p) p.classList.add('open');
+  var btn = document.getElementById('var-toggle-btn');
+  if (btn) btn.classList.add('active');
+}
+
+function closeVarPanel() {
+  var p = document.getElementById('var-panel');
+  if (p) p.classList.remove('open');
+  var btn = document.getElementById('var-toggle-btn');
+  if (btn) btn.classList.remove('active');
+}
+
+function toggleVarPanel() {
+  var p = document.getElementById('var-panel');
+  if (p && p.classList.contains('open')) closeVarPanel();
+  else openVarPanel();
+}
+
+function clearVars() {
+  var list = loadProjects();
+  if (list) {
+    var actId = localStorage.getItem(LS_KEY_ACTV);
+    var p = list.find(function(x) { return x.id === actId; });
+    if (p) { p.vars = Object.assign({}, EMPTY_VARS); saveProjects(list); }
+  }
+  syncPanelToProject();
+}
+
+/* ═══════════════════  TOGGLE CARD / COPY  ══════════════════════ */
+
+function toggleCard(pid) {
+  var b = document.getElementById('cb-' + pid);
+  var t = document.getElementById('ce-' + pid);
+  if (!b) return;
+  var isOpen = b.classList.toggle('open');
+  if (t) t.classList.toggle('open', isOpen);
+}
+
+function getFwText() {
+  var fw = document.getElementById('code-fw');
+  return fw ? fw.textContent : '';
+}
+
+function copyPrompt(pid, btn) {
+  var el = document.getElementById('code-' + pid);
+  if (!el) return;
+  var raw = el.textContent;
+  var text = applyVars(raw);
+  // Para prompts individuales (no el framework mismo), anteponer framework
+  if (pid !== 'fw') {
+    var fw = applyVars(getFwText());
+    if (fw) text = fw + '\\n\\n---\\n\\n' + text;
+  }
+  doCopy(text, btn);
+}
+
+function doCopy(text, btn) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text)
+      .then(function() { flash(btn); })
+      .catch(function() { fbCopy(text, btn); });
+  } else { fbCopy(text, btn); }
+}
+
+function fbCopy(text, btn) {
+  var t = document.createElement('textarea');
+  t.value = text; t.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+  document.body.appendChild(t); t.focus(); t.select();
+  try { document.execCommand('copy'); } catch(e) {}
+  document.body.removeChild(t); flash(btn);
+}
+
+function flash(btn) {
+  var orig = btn.innerHTML;
+  btn.innerHTML = '<span>&#10003;</span> Copiado';
+  btn.classList.add('ok');
+  setTimeout(function() { btn.innerHTML = orig; btn.classList.remove('ok'); }, 2000);
+}
+
+/* ═══════════════════  MULTI-SELECT  ════════════════════════════ */
+
+var msMode = false;
+
+function toggleMsMode() {
+  msMode = !msMode;
+  document.body.classList.toggle('ms-mode', msMode);
+  var btn = document.getElementById('ms-toggle-btn');
+  if (btn) btn.classList.toggle('active', msMode);
+  if (!msMode) {
+    clearSelection();
+  }
+  updateMsBar();
+}
+
+function getSelected() {
+  return Array.from(document.querySelectorAll('.card-check:checked'));
+}
+
+function updateMsBar() {
+  var sel = getSelected();
+  var bar = document.getElementById('ms-bar');
+  if (!bar) return;
+  bar.classList.toggle('visible', msMode && sel.length > 0);
+  var countEl = document.getElementById('ms-sel-count');
+  if (countEl) countEl.textContent = sel.length;
+}
+
+function clearSelection() {
+  document.querySelectorAll('.card-check').forEach(function(cb) { cb.checked = false; });
+  document.querySelectorAll('.card').forEach(function(c) { c.classList.remove('ms-selected'); });
+  document.querySelectorAll('.sec-check').forEach(function(cb) { cb.checked = false; cb.indeterminate = false; });
+  updateMsBar();
+}
+
+function onCardCheck(cb) {
+  var card = cb.closest('.card');
+  if (card) card.classList.toggle('ms-selected', cb.checked);
+  // sync section checkbox
+  var group = cb.closest('.section-group');
+  if (group) {
+    var secCb = group.querySelector('.sec-check');
+    var all = group.querySelectorAll('.card-check');
+    var checked = group.querySelectorAll('.card-check:checked');
+    if (secCb) {
+      secCb.indeterminate = checked.length > 0 && checked.length < all.length;
+      secCb.checked = checked.length === all.length;
+    }
+  }
+  updateMsBar();
+}
+
+function onSecCheck(cb) {
+  var group = cb.closest('.section-group');
+  if (!group) return;
+  group.querySelectorAll('.card-check').forEach(function(cc) {
+    cc.checked = cb.checked;
+    var card = cc.closest('.card');
+    if (card) card.classList.toggle('ms-selected', cb.checked);
+  });
+  cb.indeterminate = false;
+  updateMsBar();
+}
+
+function copySelected(btn) {
+  var checks = getSelected();
+  if (!checks.length) return;
+  // obtener prompts en orden DOM (orden de proceso)
+  var parts = checks.map(function(cb) {
+    var pid = cb.dataset.pid;
+    var el = document.getElementById('code-' + pid);
+    return el ? applyVars(el.textContent) : '';
+  }).filter(Boolean);
+  var fw = applyVars(getFwText());
+  var text = (fw ? fw + '\\n\\n---\\n\\n' : '') + parts.join('\\n\\n---\\n\\n');
+  doCopy(text, btn);
+}
+
+/* ═══════════════════  SEARCH / FILTER  ═════════════════════════ */
+
+function filterPrompts(q) {
+  q = q.toLowerCase().trim();
+  var groups = document.querySelectorAll('.section-group');
+  var total = 0;
+  groups.forEach(function(g) {
+    var cards = g.querySelectorAll('.card');
+    var vis = 0;
+    cards.forEach(function(card) {
+      var title = (card.querySelector('.card-title') || {}).textContent || '';
+      var codeEl = card.querySelector('code');
+      var code = codeEl ? codeEl.textContent : '';
+      var match = !q || title.toLowerCase().includes(q) || code.toLowerCase().includes(q);
+      card.style.display = match ? '' : 'none';
+      if (match) vis++;
+    });
+    g.style.display = vis ? '' : 'none';
+    total += vis;
+  });
+  var fw = document.getElementById('sec-00');
+  if (fw) fw.style.display = '';
+  var empty = document.getElementById('glbl-empty');
+  if (empty) empty.style.display = total === 0 ? '' : 'none';
+  var countEl = document.getElementById('vis-count');
+  if (countEl) countEl.textContent = total + ' prompts';
+}
+
+/* ═══════════════════  INFO MODAL  ══════════════════════════════ */
+
+function openInfo(pid) {
+  var info = (typeof PROMPT_INFO !== 'undefined') ? PROMPT_INFO[pid] : null;
+  if (!info) return;
+  var modal = document.getElementById('info-modal');
+  if (!modal) return;
+
+  var titleEl = document.getElementById('modal-title');
+  if (titleEl) titleEl.textContent = info.title || pid;
+
+  // Description
+  var descSec = document.getElementById('modal-desc-section');
+  var descEl  = document.getElementById('modal-desc');
+  if (descEl && descSec) {
+    descSec.style.display = info.desc ? '' : 'none';
+    descEl.textContent = info.desc || '';
+  }
+
+  // Formulas
+  var formulasEl = document.getElementById('modal-formulas');
+  if (formulasEl) {
+    formulasEl.innerHTML = '';
+    if (info.formulas && info.formulas.length) {
+      info.formulas.forEach(function(f, i) {
+        var sec = document.createElement('div');
+        sec.className = 'modal-section';
+        var h = document.createElement('h3');
+        h.textContent = info.formulas.length > 1
+          ? 'Fórmula de uso ' + (i + 1)
+          : 'Fórmula de uso estándar';
+        var wrap = document.createElement('div');
+        wrap.className = 'modal-formula-wrap';
+        var box = document.createElement('div');
+        box.className = 'modal-formula';
+        var code = document.createElement('code');
+        code.textContent = f;
+        box.appendChild(code);
+        var btn = document.createElement('button');
+        btn.className = 'modal-copy-formula';
+        btn.innerHTML = '&#10697; Copiar fórmula';
+        (function(formula, b) {
+          b.addEventListener('click', function() { doCopy(applyVars(formula), b); });
+        })(f, btn);
+        wrap.appendChild(box);
+        wrap.appendChild(btn);
+        sec.appendChild(h);
+        sec.appendChild(wrap);
+        formulasEl.appendChild(sec);
+      });
+    } else {
+      var note = document.createElement('p');
+      note.className = 'modal-note';
+      note.textContent = 'Este prompt no tiene fórmula de uso estandarizada — se usa directamente después del framework.';
+      formulasEl.appendChild(note);
+    }
+  }
+
+  modal.classList.add('open');
+}
+
+function closeInfo() {
+  var modal = document.getElementById('info-modal');
+  if (modal) modal.classList.remove('open');
+}
+
+/* ═══════════════════  INIT  ════════════════════════════════════ */
+
+document.addEventListener('DOMContentLoaded', function() {
+  // ── Inicializar proyectos ──
+  if (!loadProjects()) createProject('Default');
+  renderProjectSelector();
+  syncPanelToProject();
+
+  // Cerrar modal de info al pulsar Escape o clic en overlay
+  var overlay = document.getElementById('info-modal');
+  if (overlay) {
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) closeInfo();
+    });
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') { closeInfo(); closeVarPanel(); closeProjectsModal(); }
+  });
+
+  var content = document.querySelector('.content');
+  if (!content) return;
+  var targets = document.querySelectorAll('[data-observe]');
+  if (!targets.length) return;
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      var link = document.querySelector('.sid-link[href="#' + entry.target.id + '"]');
+      if (link) link.classList.toggle('active', entry.isIntersecting);
+    });
+  }, { root: content, threshold: 0.04, rootMargin: '-2% 0px -88% 0px' });
+  targets.forEach(function(el) { obs.observe(el); });
+});
+"""
+
+
+def build():
+    # ── leer framework ──
+    fw_file = PROMPTS_DIR / "00-framework.md"
+    _, fw_prompt, _, _ = parse_md(fw_file) if fw_file.exists() else ("", "", "", [])
+
+    # ── leer prompts ──
+    sections = defaultdict(list)
+    for md_file in sorted(PROMPTS_DIR.glob("*.md")):
+        name = md_file.stem
+        if name == "00-framework":
+            continue
+        parts = name.split("-")
+        sk = parts[0]
+        if sk not in SECTION_META:
+            continue
+        title, prompt, description, formulas = parse_md(md_file)
+        sections[sk].append({"id": name, "title": title, "prompt": prompt,
+                              "description": description, "formulas": formulas})
+
+    total = sum(len(v) for v in sections.values())
+
+    # ── PROMPT_INFO para el modal de ⓘ ──
+    info_data = {}
+    for sk, items in sections.items():
+        for p in items:
+            info_data[p["id"]] = {
+                "title": p["title"],
+                "desc":  p.get("description", ""),
+                "formulas": p.get("formulas", []),
+            }
+    prompt_info_js = "var PROMPT_INFO = " + json.dumps(info_data, ensure_ascii=False) + ";"
+
+    # ── sidebar ──
+    COPY_ICO = (
+        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"'
+        ' stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>'
+        '<path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>'
+    )
+
+    fw_color = SECTION_COLOR["00"]
+    fw_icon_key = SECTION_META["00"][1]
+
+    sidebar_html = (
+        '<div class="sid-section">'
+        '<div class="sid-label">Framework</div>'
+        '<a class="sid-link sid-framework" href="#sec-00">'
+        + icon_svg(fw_icon_key, fw_color, 14) +
+        '<span class="sid-text">00 — Framework base</span>'
+        '<span class="sid-badge">★</span>'
+        '</a>'
+        '</div>'
+        '<div class="sid-section">'
+        '<div class="sid-label">Prompts</div>'
+    )
+
+    for sk in sorted(k for k in sections if k != "00"):
+        label = SECTION_LABEL.get(sk, sk)
+        icon_key = SECTION_META.get(sk, ("", "docs"))[1]
+        color = SECTION_COLOR.get(sk, "#6366f1")
+        cnt = len(sections[sk])
+        sidebar_html += (
+            '<a class="sid-link" href="#sec-' + sk + '">'
+            + icon_svg(icon_key, color, 14) +
+            '<span class="sid-text">' + sk + ' — ' + label + '</span>'
+            '<span class="sid-badge">' + str(cnt) + '</span>'
+            '</a>'
+        )
+    sidebar_html += '</div>'
+
+    # ── framework banner ──
+    chevron = chevron_svg()
+    fw_escaped = h(fw_prompt)
+    fw_block = (
+        '<div class="framework-banner" id="sec-00" data-observe>'
+        '<div class="fw-header">'
+        '<span class="fw-badge">&#9888; Obligatorio</span>'
+        + icon_svg("framework", SECTION_COLOR["00"], 18) +
+        '<span class="fw-title">Framework base — Pegar al inicio de cada prompt</span>'
+        '</div>'
+        '<p class="fw-desc">Este bloque define el rol, el contexto multi-agente y las reglas obligatorias de ingeniería. '
+        'Cópialo y pégalo <strong>antes</strong> de cualquier prompt de la biblioteca.</p>'
+        '<div class="fw-body">'
+        '<pre><code id="code-fw">' + fw_escaped + '</code></pre>'
+        '</div>'
+        '<div class="fw-copy-row">'
+        '<button class="fw-copy-btn" onclick="copyPrompt(\'fw\',this)">'
+        + COPY_ICO + ' Copiar framework completo'
+        '</button>'
+        '</div>'
+        '</div>'
+    )
+
+    # ── section groups ──
+    groups_html = ""
+    for sk in sorted(sections.keys()):
+        label = SECTION_LABEL.get(sk, sk)
+        icon_key = SECTION_META.get(sk, ("", "docs"))[1]
+        color = SECTION_COLOR.get(sk, "#6366f1")
+        cnt = len(sections[sk])
+        gid = "sec-" + sk
+
+        # section header
+        groups_html += (
+            '<div class="section-group" id="' + gid + '" data-observe>'
+            '<div class="section-header-row">'
+            '<input type="checkbox" class="sec-check" title="Seleccionar toda la sección" onchange="onSecCheck(this)">'
+            '<span class="sec-num" style="color:' + color + ';border-color:' + color + '22;background:' + color + '11">'
+            + sk + '</span>'
+            + icon_svg(icon_key, color, 16) +
+            '<span class="sec-label">' + label + '</span>'
+            '<span class="sec-count">' + str(cnt) + '</span>'
+            '</div>'
+            '<div class="cards-grid">'
+        )
+
+        for p in sections[sk]:
+            pid = p["id"]
+            escaped_prompt = h(p["prompt"])
+            has_info = bool(p.get("description") or p.get("formulas"))
+            info_btn_html = (
+                '<button class="info-btn" onclick="openInfo(\'' + pid + '\')"'
+                ' title="Cuándo usar · Fórmula de uso estándar">&#9432;</button>'
+            ) if has_info else ''
+
+            groups_html += (
+                '<div class="card">'
+                '<div class="card-head">'
+                '<input type="checkbox" class="card-check" data-pid="' + pid + '"'
+                ' onchange="onCardCheck(this)" title="Seleccionar prompt">'
+                '<button class="card-expand" id="ce-' + pid + '"'
+                ' onclick="toggleCard(\'' + pid + '\')" title="Ver / ocultar prompt">'
+                + chevron +
+                '</button>'
+                '<span class="card-title" onclick="toggleCard(\'' + pid + '\')">'
+                + h(p["title"]) +
+                '</span>'
+                + info_btn_html +
+                '<button class="copy-btn" onclick="copyPrompt(\'' + pid + '\',this)">'
+                + COPY_ICO + ' Copiar'
+                '</button>'
+                '</div>'
+                '<div class="card-body" id="cb-' + pid + '">'
+                '<pre><code id="code-' + pid + '">' + escaped_prompt + '</code></pre>'
+                '</div>'
+                '</div>'
+            )
+
+        groups_html += '</div></div>'
+
+    # ── HTML final ──
+    html = (
+        '<!DOCTYPE html>\n<html lang="es">\n<head>\n'
+        '<meta charset="UTF-8">\n'
+        '<meta name="viewport" content="width=device-width,initial-scale=1.0">\n'
+        '<title>AI-SDLC Pro \u2014 Biblioteca de Prompts</title>\n'
+        '<style>' + CSS + '</style>\n'
+        '</head>\n<body>\n'
+
+        # header
+        '<header>\n'
+        '  <div class="hdr-logo">'
+        '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="1.6">'
+        '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/>'
+        '</svg>'
+        '<div><h1>AI-SDLC Pro</h1><p>Biblioteca de Prompts &middot; Multi-agente &middot; Open Agent Manager</p></div>'
+        '</div>\n'
+        '  <div class="hdr-tags">'
+        '<span class="tag">v3</span>'
+        '<span class="tag">' + str(total) + ' prompts</span>'
+        '<span class="tag tag-warn">&#9888; Incluir framework antes de cada prompt</span>'
+        '</div>\n'
+        '  <div class="hdr-brand">'
+        '<img src="https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png"'
+        ' width="28" height="28" alt="Lionsystems" style="border-radius:4px;flex-shrink:0;">'
+        '<div><span class="hdr-brand-text">Lionsystems</span>'
+        '<span class="hdr-brand-sub">Herramienta gratuita</span></div>'
+        '</div>\n'
+        '</header>\n'
+
+        # search bar
+        '<div class="search-bar">\n'
+        '  <div class="search-wrap">'
+        '<span class="search-ico">'
+        '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
+        '<circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>'
+        '</span>'
+        '<input type="text" placeholder="Buscar por nombre o contenido del prompt..."'
+        ' oninput="filterPrompts(this.value)" autocomplete="off">'
+        '</div>\n'
+        '  <span class="search-count" id="vis-count">' + str(total) + ' prompts</span>\n'
+        '  <span class="vars-active-badge" id="vars-badge">&#9632; Vars activas</span>\n'
+        '  <button class="ms-toggle-btn" id="ms-toggle-btn" onclick="toggleMsMode()" title="Activar selección múltiple">'
+        '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
+        '<rect x="3" y="5" width="13" height="13" rx="2"/><path d="M8 10l3 3 5-5"/>'
+        '</svg> Multi-select</button>\n'
+        '  <button class="var-toggle-btn" id="var-toggle-btn" onclick="toggleVarPanel()" title="Panel de variables">'
+        '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
+        '<path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>'
+        '</svg> Variables</button>\n'
+        '</div>\n'
+
+        # layout
+        '<div class="layout">\n'
+        '  <nav class="sidebar">\n' + sidebar_html + '  </nav>\n'
+        '  <div class="content">\n'
+        + fw_block
+        + groups_html +
+        '    <div class="glbl-empty" id="glbl-empty" style="display:none">'
+        '<p>Sin resultados.</p><small>Intenta con otro término de búsqueda.</small>'
+        '</div>\n'
+        '  </div>\n'
+        '</div>\n'
+
+        # ── Panel de variables ──
+        '<div class="var-panel" id="var-panel">\n'
+        '  <div class="var-panel-hdr">'
+        '<h2><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2">'
+        '<path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>'
+        ' Variables del prompt</h2>'
+        '<button class="var-close-btn" onclick="closeVarPanel()" title="Cerrar">&#x2715;</button>'
+        '</div>\n'
+        '<div class="proj-selector-row">'
+        '<select id="proj-selector" class="proj-select" onchange="switchProject(this.value)"></select>'
+        '<button class="proj-mgr-btn" onclick="openProjectsModal()">&#x2699; Proyectos</button>'
+        '</div>\n'
+        '  <div class="var-panel-body">\n'
+
+        # repositorio
+        '    <div class="var-group">'
+        '<label for="vf-repositorio">Repositorio</label>'
+        '<input id="vf-repositorio" type="text" placeholder="org/nombre-repo o URL" oninput="syncProjectFromPanel();updateVarsBadge();">'
+        '<div class="var-tags">'
+        '<span class="var-tag">[NOMBRE O URL]</span>'
+        '</div>'
+        '</div>\n'
+
+        # referencia / issue
+        '    <div class="var-group">'
+        '<label for="vf-referencia">Issue / Referencia</label>'
+        '<textarea id="vf-referencia" placeholder="Número, URL o texto completo del issue" oninput="syncProjectFromPanel();updateVarsBadge();"></textarea>'
+        '<div class="var-tags">'
+        '<span class="var-tag">[REFERENCIA]</span>'
+        '<span class="var-tag">[PEGAR]</span>'
+        '<span class="var-tag">[PEGAR TEXTO...]</span>'
+        '</div>'
+        '</div>\n'
+
+        # rama actual
+        '    <div class="var-group">'
+        '<label for="vf-rama-actual">Rama actual / con cambios</label>'
+        '<input id="vf-rama-actual" type="text" placeholder="feature/mi-rama" oninput="syncProjectFromPanel();updateVarsBadge();">'
+        '<div class="var-tags">'
+        '<span class="var-tag">[RAMA ACTUAL]</span>'
+        '<span class="var-tag">[RAMA CON LOS CAMBIOS]</span>'
+        '<span class="var-tag">[RAMA EN PRUEBAS]</span>'
+        '</div>'
+        '</div>\n'
+
+        # rama destino
+        '    <div class="var-group">'
+        '<label for="vf-rama-destino">Rama destino / principal</label>'
+        '<input id="vf-rama-destino" type="text" placeholder="main / develop" oninput="syncProjectFromPanel();updateVarsBadge();">'
+        '<div class="var-tags">'
+        '<span class="var-tag">[RAMA OBJETIVO]</span>'
+        '<span class="var-tag">[RAMA PRINCIPAL]</span>'
+        '<span class="var-tag">[RAMA INTEGRADA]</span>'
+        '<span class="var-tag">[RAMA DESTINO]</span>'
+        '</div>'
+        '</div>\n'
+
+        # ambiente
+        '    <div class="var-group">'
+        '<label for="vf-ambiente">Ambiente</label>'
+        '<select id="vf-ambiente" onchange="syncProjectFromPanel();updateVarsBadge();">'  
+        '<option value="">-- seleccionar --</option>'
+        '<option>DEV</option>'
+        '<option>QA</option>'
+        '<option>STAGING</option>'
+        '<option>PROD</option>'
+        '</select>'
+        '<div class="var-tags">'
+        '<span class="var-tag">[DEV / QA / PROD]</span>'
+        '<span class="var-tag">[QA / STAGING]</span>'
+        '<span class="var-tag">[URL DEL AMBIENTE]</span>'
+        '</div>'
+        '</div>\n'
+
+        # componentes
+        '    <div class="var-group">'
+        '<label for="vf-componentes">Componentes / archivos</label>'
+        '<textarea id="vf-componentes" placeholder="Lista de componentes o rutas de archivos" oninput="syncProjectFromPanel();updateVarsBadge();"></textarea>'
+        '<div class="var-tags">'
+        '<span class="var-tag">[COMPONENTES INVOLUCRADOS]</span>'
+        '<span class="var-tag">[COMPONENTES MODIFICADOS]</span>'
+        '<span class="var-tag">[RUTAS DE ARCHIVOS...]</span>'
+        '</div>'
+        '</div>\n'
+
+        # módulo / proceso
+        '    <div class="var-group">'
+        '<label for="vf-modulo">Módulo / proceso / indicación</label>'
+        '<input id="vf-modulo" type="text" placeholder="Nombre del módulo o funcionalidad" oninput="syncProjectFromPanel();updateVarsBadge();">'
+        '<div class="var-tags">'
+        '<span class="var-tag">[NOMBRE DEL PROCESO]</span>'
+        '<span class="var-tag">[INDICAR]</span>'
+        '</div>'
+        '</div>\n'
+
+        '  </div>\n'  # end var-panel-body
+        '  <div class="var-panel-footer">'
+        '<button class="var-apply-btn" id="var-apply-btn" onclick="updateVarsBadge(); flash(this)">&#10003; Aplicar al copiar</button>'
+        '<button class="var-clear-btn" onclick="clearVars()">Limpiar</button>'
+        '</div>\n'
+        '</div>\n'
+
+        # ── Barra flotante multi-select ──
+        '<div class="ms-bar" id="ms-bar">\n'
+        '  <span class="ms-count"><strong id="ms-sel-count">0</strong> seleccionados</span>\n'
+        '  <button class="ms-copy-btn" onclick="copySelected(this)">'
+        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
+        '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>'
+        '</svg> Copiar seleccionados</button>\n'
+        '  <button class="ms-clear-btn" onclick="clearSelection()">Limpiar selecci\u00f3n</button>\n'
+        '</div>\n'
+
+        # ── Modal de información ⓘ ──
+        '<div class="modal-overlay" id="info-modal">\n'
+        '  <div class="modal-box">\n'
+        '    <div class="modal-hdr">\n'
+        '      <span class="modal-hdr-icon">'
+        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="1.8">'
+        '<circle cx="12" cy="12" r="10"/>'
+        '<path stroke-linecap="round" d="M12 16v-4m0-4h.01"/>'
+        '</svg></span>\n'
+        '      <h2 id="modal-title"></h2>\n'
+        '      <button class="modal-close-btn" onclick="closeInfo()">&#x2715;</button>\n'
+        '    </div>\n'
+        '    <div class="modal-body">\n'
+        '      <div class="modal-section" id="modal-desc-section">'
+        '<h3>Descripci\u00f3n y cu\u00e1ndo usarlo</h3>'
+        '<p class="modal-desc" id="modal-desc"></p>'
+        '</div>\n'
+        '      <div id="modal-formulas"></div>\n'
+        '    </div>\n'
+        '  </div>\n'
+        '</div>\n'
+
+        # ── Modal de proyectos ──
+        '<div id="proj-modal" onclick="if(event.target===this)closeProjectsModal()">\n'
+        '  <div class="proj-modal-box">\n'
+        '    <div class="modal-hdr">\n'
+        '      <h2>Gesti\u00f3n de Proyectos</h2>\n'
+        '      <button class="modal-close-btn" onclick="closeProjectsModal()">&#x2715;</button>\n'
+        '    </div>\n'
+        '    <ul class="proj-list" id="proj-modal-list"></ul>\n'
+        '    <button class="proj-add-btn"'
+        ' onclick="createProject();renderProjectsModal();renderProjectSelector();syncPanelToProject();">'
+        '+ Nuevo proyecto</button>\n'
+        '  </div>\n'
+        '</div>\n'
+
+        '<script>' + prompt_info_js + '\n' + JS + '</script>\n'
+        '</body>\n</html>\n'
+    )
+
+    OUTPUT_FILE.write_text(html, encoding="utf-8")
+    size_kb = OUTPUT_FILE.stat().st_size / 1024
+    print(f"OK  -> {OUTPUT_FILE.name}")
+    print(f"Secciones : {len(sections)}")
+    print(f"Prompts   : {total}")
+    print(f"Framework : incluido")
+    print(f"Tamano    : {size_kb:.1f} KB")
+
+
+if __name__ == "__main__":
+    build()

@@ -1,0 +1,1908 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AI-SDLC Pro — Biblioteca de Prompts</title>
+<style>
+:root {
+  --hdr:  58px;
+  --bar:  46px;
+  --side: 220px;
+  --bg:   #080b14;
+  --bg2:  #0f1220;
+  --bg3:  #161929;
+  --bg4:  #1c2035;
+  --bdr:  #1f2340;
+  --bdr2: #262b45;
+  --tx:   #dde1f5;
+  --tx2:  #8892c0;
+  --tx3:  #454d6e;
+  --grn:  #22c55e;
+  --warn: #f59e0b;
+  --mono: 'JetBrains Mono','Fira Code','Cascadia Code','Courier New',monospace;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg); color: var(--tx); font-size: 14px; line-height: 1.5;
+  display: flex; flex-direction: column; height: 100vh; overflow: hidden;
+}
+
+/* ═══════════════════════════ HEADER ════════════════════════════ */
+header {
+  height: var(--hdr); flex-shrink: 0;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--bdr);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 1.5rem; z-index: 300;
+}
+.hdr-logo { display: flex; align-items: center; gap: .65rem; }
+.hdr-logo svg { flex-shrink: 0; }
+.hdr-logo h1 {
+  font-size: .95rem; font-weight: 700; letter-spacing: .015em;
+  background: linear-gradient(90deg, #818cf8, #c084fc);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hdr-logo p { font-size: .68rem; color: var(--tx3); margin-top: .05rem; }
+.hdr-tags { display: flex; align-items: center; gap: .5rem; }
+.tag {
+  font-size: .62rem; font-weight: 600; letter-spacing: .04em;
+  background: var(--bg3); border: 1px solid var(--bdr2);
+  color: var(--tx3); border-radius: 4px; padding: .15rem .5rem;
+}
+.tag-warn { border-color: #78350f; color: var(--warn); background: #1c1006; }
+.hdr-brand {
+  display: flex; align-items: center; gap: .45rem;
+  border-left: 1px solid var(--bdr2); padding-left: .85rem; margin-left: .35rem;
+}
+.hdr-brand-text { font-size: .7rem; font-weight: 700; letter-spacing: .04em; color: #f59e0b; }
+.hdr-brand-sub { font-size: .58rem; color: var(--tx3); display: block; line-height: 1.1; }
+
+/* ═══════════════════════════ SEARCH BAR ════════════════════════ */
+.search-bar {
+  height: var(--bar); flex-shrink: 0;
+  background: var(--bg); border-bottom: 1px solid var(--bdr);
+  display: flex; align-items: center; flex-wrap: wrap;
+  padding: 0 1.25rem 0 calc(var(--side) + 1.25rem);
+  gap: .65rem; z-index: 299;
+}
+.search-wrap { position: relative; flex: 1; max-width: 560px; }
+.search-ico {
+  position: absolute; left: .65rem; top: 50%; transform: translateY(-50%);
+  color: var(--tx3); pointer-events: none;
+}
+.search-bar input {
+  width: 100%; padding: .35rem .85rem .35rem 2rem;
+  border-radius: 6px; border: 1px solid var(--bdr2);
+  background: var(--bg3); color: var(--tx); font-size: .82rem; outline: none;
+  transition: border-color .15s;
+}
+.search-bar input::placeholder { color: var(--tx3); }
+.search-bar input:focus { border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99,102,241,.15); }
+.search-count { font-size: .7rem; color: var(--tx3); white-space: nowrap; }
+
+/* ═══════════════════════════ LAYOUT ════════════════════════════ */
+.layout { display: flex; flex: 1; overflow: hidden; }
+
+/* ═══════════════════════════ SIDEBAR ═══════════════════════════ */
+.sidebar {
+  width: var(--side); flex-shrink: 0;
+  background: var(--bg2); border-right: 1px solid var(--bdr);
+  overflow-y: auto; display: flex; flex-direction: column;
+}
+.sidebar::-webkit-scrollbar { width: 3px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--bdr2); border-radius: 2px; }
+.sid-section { padding: .5rem 0; }
+.sid-label {
+  font-size: .58rem; font-weight: 700; color: var(--tx3);
+  text-transform: uppercase; letter-spacing: .12em;
+  padding: .6rem 1rem .3rem;
+}
+.sid-link {
+  display: flex; align-items: center; gap: .5rem;
+  padding: .32rem .85rem .32rem 1rem;
+  cursor: pointer; text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: all .12s;
+}
+.sid-link:hover { background: var(--bg3); }
+.sid-link.active { background: rgba(99,102,241,.1); border-left-color: #6366f1; }
+.sid-icon { flex-shrink: 0; opacity: .65; transition: opacity .12s; }
+.sid-link:hover .sid-icon,
+.sid-link.active .sid-icon { opacity: 1; }
+.sid-text { flex: 1; font-size: .74rem; color: var(--tx2); line-height: 1.3; transition: color .12s; }
+.sid-link:hover .sid-text { color: var(--tx); }
+.sid-link.active .sid-text { color: #a5b4fc; font-weight: 500; }
+.sid-badge {
+  flex-shrink: 0; font-size: .58rem; font-weight: 700;
+  background: var(--bg4); border: 1px solid var(--bdr2);
+  color: var(--tx3); border-radius: 10px; padding: .05rem .4rem;
+  min-width: 18px; text-align: center; transition: all .12s;
+}
+.sid-link.active .sid-badge { background: #6366f1; border-color: #6366f1; color: #fff; }
+.sid-framework { background: rgba(245,158,11,.06); }
+.sid-framework .sid-text { color: #d97706; }
+.sid-framework.active { background: rgba(245,158,11,.12); border-left-color: var(--warn); }
+.sid-framework.active .sid-text { color: var(--warn); }
+.sid-framework.active .sid-badge { background: var(--warn); border-color: var(--warn); }
+
+/* ═══════════════════════════ CONTENT ═══════════════════════════ */
+.content {
+  flex: 1; overflow-y: auto; padding: 1.5rem 1.75rem 5rem;
+  min-width: 0;
+}
+.content::-webkit-scrollbar { width: 5px; }
+.content::-webkit-scrollbar-thumb { background: var(--bdr2); border-radius: 3px; }
+
+/* ────── Framework banner ────── */
+.framework-banner {
+  background: linear-gradient(135deg, #1a1306 0%, #0f1220 60%);
+  border: 1px solid #78350f;
+  border-radius: 10px; margin-bottom: 2rem; overflow: hidden;
+  scroll-margin-top: .5rem;
+}
+.fw-header {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .85rem 1rem; border-bottom: 1px solid #78350f;
+}
+.fw-badge {
+  font-size: .6rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .08em; background: var(--warn); color: #000;
+  border-radius: 4px; padding: .15rem .5rem;
+}
+.fw-title { font-size: .88rem; font-weight: 600; color: #fbbf24; flex: 1; }
+.fw-desc { font-size: .72rem; color: #92400e; padding: .5rem 1rem; }
+.fw-body { padding: 0; border-top: none; }
+.fw-body pre {
+  margin: 0; padding: .85rem 1rem;
+  background: #06040a; max-height: 340px; overflow-y: auto; border-radius: 0;
+  border: none; border-top: 1px solid #1c1a06;
+}
+.fw-copy-row {
+  display: flex; justify-content: flex-end;
+  padding: .45rem .85rem; background: #100d02; border-top: 1px solid #1c1a06;
+}
+.fw-copy-btn {
+  padding: .25rem .75rem; background: var(--warn); border: none;
+  border-radius: 5px; color: #000; font-size: .72rem;
+  cursor: pointer; font-weight: 700; transition: background .12s; font-family: inherit;
+}
+.fw-copy-btn:hover { background: #fbbf24; }
+.fw-copy-btn.ok { background: var(--grn); color: #fff; }
+
+/* ────── Section group ────── */
+.section-group { margin-bottom: 2rem; scroll-margin-top: .5rem; }
+.section-header-row {
+  display: flex; align-items: center; gap: .6rem;
+  padding-bottom: .55rem; margin-bottom: .8rem;
+  border-bottom: 1px solid var(--bdr);
+}
+.sec-num {
+  font-size: .6rem; font-weight: 700; font-family: var(--mono);
+  letter-spacing: .04em; padding: .12rem .45rem;
+  border-radius: 4px; border: 1px solid; flex-shrink: 0;
+}
+.sec-label {
+  font-size: .72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--tx3); flex: 1;
+}
+.sec-count {
+  font-size: .62rem; color: var(--tx3); background: var(--bg3);
+  border: 1px solid var(--bdr); border-radius: 10px; padding: .05rem .45rem;
+}
+
+/* ────── Grid de cards ────── */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: .55rem;
+}
+
+/* ────── Card ────── */
+.card {
+  background: var(--bg2); border: 1px solid var(--bdr);
+  border-radius: 8px; overflow: hidden; transition: border-color .15s, box-shadow .15s;
+}
+.card:hover { border-color: var(--bdr2); box-shadow: 0 2px 12px rgba(0,0,0,.35); }
+
+/* Card header: siempre visible */
+.card-head {
+  display: flex; align-items: center; gap: .45rem;
+  padding: .55rem .75rem; min-height: 42px;
+}
+.card-expand {
+  flex-shrink: 0; background: none; border: none; cursor: pointer;
+  color: var(--tx3); width: 20px; height: 20px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 4px; transition: color .12s, background .12s;
+}
+.card-expand:hover { color: var(--tx); background: var(--bg4); }
+.card-expand svg { transition: transform .18s; }
+.card-expand.open svg { transform: rotate(180deg); }
+.card-title {
+  flex: 1; font-size: .78rem; font-weight: 500; color: #c4c9e8;
+  line-height: 1.35; cursor: pointer; min-width: 0;
+}
+.card-title:hover { color: var(--tx); }
+.copy-btn {
+  flex-shrink: 0; padding: .2rem .6rem;
+  background: var(--bg4); border: 1px solid var(--bdr2);
+  border-radius: 5px; color: var(--tx2); font-size: .68rem;
+  cursor: pointer; font-weight: 600; transition: all .12s;
+  white-space: nowrap; font-family: inherit; display: flex; align-items: center; gap: .3rem;
+}
+.copy-btn:hover { background: #6366f1; border-color: #6366f1; color: #fff; }
+.copy-btn.ok { background: var(--grn); border-color: var(--grn); color: #fff; }
+
+/* Card body: colapsable */
+.card-body { display: none; border-top: 1px solid var(--bdr); }
+.card-body.open { display: block; }
+pre {
+  margin: 0; padding: .7rem .9rem;
+  background: #04050d; overflow-x: auto; max-height: 400px; overflow-y: auto;
+}
+code {
+  font-family: var(--mono);
+  font-size: .7rem; color: #a8b0d8; white-space: pre-wrap; word-break: break-word;
+  line-height: 1.6;
+}
+
+/* ────── Empty state ────── */
+.glbl-empty {
+  text-align: center; padding: 3.5rem 1rem; color: var(--tx3);
+}
+.glbl-empty p { font-size: .88rem; margin-bottom: .4rem; }
+.glbl-empty small { font-size: .72rem; color: var(--tx3); }
+
+/* ═══════════════════════════ VARIABLES PANEL ═══════════════════ */
+.var-panel {
+  position: fixed; top: 0; right: 0; height: 100vh; width: 300px;
+  background: var(--bg2); border-left: 1px solid var(--bdr);
+  display: flex; flex-direction: column; z-index: 500;
+  transform: translateX(100%); transition: transform .22s ease;
+}
+.var-panel.open { transform: translateX(0); }
+.var-panel-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .85rem 1rem; border-bottom: 1px solid var(--bdr); flex-shrink: 0;
+}
+.var-panel-hdr h2 {
+  font-size: .82rem; font-weight: 700; color: var(--tx);
+  display: flex; align-items: center; gap: .4rem;
+}
+.var-close-btn {
+  background: none; border: none; cursor: pointer; color: var(--tx3);
+  padding: .2rem; border-radius: 4px; font-size: 1rem; line-height: 1;
+  transition: color .12s;
+}
+.var-close-btn:hover { color: var(--tx); }
+.var-panel-body {
+  flex: 1; overflow-y: auto; padding: .85rem 1rem;
+  display: flex; flex-direction: column; gap: .75rem;
+}
+.var-panel-body::-webkit-scrollbar { width: 3px; }
+.var-panel-body::-webkit-scrollbar-thumb { background: var(--bdr2); border-radius: 2px; }
+.var-group label {
+  display: block; font-size: .66rem; font-weight: 700; color: var(--tx3);
+  text-transform: uppercase; letter-spacing: .08em; margin-bottom: .3rem;
+}
+.var-group input, .var-group select, .var-group textarea {
+  width: 100%; background: var(--bg3); border: 1px solid var(--bdr2);
+  color: var(--tx); font-size: .76rem; border-radius: 5px; outline: none;
+  transition: border-color .12s; font-family: inherit;
+}
+.var-group input, .var-group select { padding: .35rem .6rem; }
+.var-group textarea { padding: .35rem .6rem; resize: vertical; min-height: 56px; }
+.var-group input:focus, .var-group select:focus, .var-group textarea:focus {
+  border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99,102,241,.15);
+}
+.var-group input::placeholder, .var-group textarea::placeholder { color: var(--tx3); }
+.var-tags { display: flex; flex-wrap: wrap; gap: .25rem; margin-top: .3rem; }
+.var-tag {
+  font-size: .58rem; font-family: var(--mono); color: var(--tx3);
+  background: var(--bg4); border: 1px solid var(--bdr2); border-radius: 3px;
+  padding: .08rem .35rem;
+}
+.var-panel-footer {
+  padding: .75rem 1rem; border-top: 1px solid var(--bdr); flex-shrink: 0;
+  display: flex; gap: .5rem;
+}
+.var-apply-btn, .var-clear-btn {
+  flex: 1; padding: .35rem; border: none; border-radius: 5px;
+  font-size: .74rem; font-weight: 700; cursor: pointer;
+  font-family: inherit; transition: background .12s;
+}
+.var-apply-btn { background: #6366f1; color: #fff; }
+.var-apply-btn:hover { background: #4f52d4; }
+.var-apply-btn.ok { background: var(--grn); }
+.var-clear-btn { background: var(--bg4); color: var(--tx2); border: 1px solid var(--bdr2); }
+.var-clear-btn:hover { background: var(--bg3); }
+
+/* ═══════════════════════════ MULTI-SELECT ══════════════════════ */
+.ms-toggle-btn {
+  padding: .25rem .75rem; background: var(--bg3); border: 1px solid var(--bdr2);
+  border-radius: 5px; color: var(--tx2); font-size: .72rem;
+  cursor: pointer; font-weight: 600; transition: all .12s; font-family: inherit;
+  display: flex; align-items: center; gap: .35rem;
+}
+.ms-toggle-btn:hover, .ms-toggle-btn.active { background: #4f46e5; border-color: #6366f1; color: #fff; }
+.var-toggle-btn {
+  padding: .25rem .75rem; background: var(--bg3); border: 1px solid var(--bdr2);
+  border-radius: 5px; color: var(--tx2); font-size: .72rem;
+  cursor: pointer; font-weight: 600; transition: all .12s; font-family: inherit;
+  display: flex; align-items: center; gap: .35rem;
+}
+.var-toggle-btn:hover, .var-toggle-btn.active { background: #0e7490; border-color: #06b6d4; color: #fff; }
+
+/* Checkbox en card header */
+.card-check {
+  display: none; flex-shrink: 0;
+  width: 16px; height: 16px; cursor: pointer; accent-color: #6366f1;
+}
+body.ms-mode .card-check { display: block; }
+
+/* Checkbox de sección */
+.sec-check {
+  display: none; width: 15px; height: 15px; cursor: pointer; accent-color: #6366f1;
+  flex-shrink: 0;
+}
+body.ms-mode .sec-check { display: block; }
+
+/* barra flotante de selección */
+.ms-bar {
+  position: fixed; bottom: -70px; left: 50%; transform: translateX(-50%);
+  background: #1c2035; border: 1px solid #6366f1;
+  border-radius: 10px; padding: .65rem 1.25rem;
+  display: flex; align-items: center; gap: .85rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,.5); z-index: 600;
+  transition: bottom .22s ease; white-space: nowrap;
+}
+.ms-bar.visible { bottom: 1.5rem; }
+.ms-count { font-size: .8rem; color: var(--tx2); }
+.ms-count strong { color: #a5b4fc; font-size: .85rem; }
+.ms-copy-btn {
+  padding: .3rem 1rem; background: #6366f1; border: none; border-radius: 6px;
+  color: #fff; font-size: .74rem; font-weight: 700; cursor: pointer;
+  font-family: inherit; transition: background .12s;
+}
+.ms-copy-btn:hover { background: #4f52d4; }
+.ms-copy-btn.ok { background: var(--grn); }
+.ms-clear-btn {
+  background: none; border: 1px solid var(--bdr2); border-radius: 6px;
+  color: var(--tx3); font-size: .72rem; padding: .3rem .7rem;
+  cursor: pointer; font-family: inherit; transition: all .12s;
+}
+.ms-clear-btn:hover { border-color: var(--tx3); color: var(--tx2); }
+
+/* Highlight card seleccionada */
+.card.ms-selected {
+  border-color: #6366f1; box-shadow: 0 0 0 1px #6366f133;
+}
+
+/* Indicador "vars activas" en barra de búsqueda */
+.vars-active-badge {
+  font-size: .65rem; font-weight: 700; background: #0e7490;
+  border: 1px solid #06b6d4; color: #7dd3fc;
+  border-radius: 4px; padding: .12rem .45rem; display: none;
+}
+.vars-active-badge.show { display: inline; }
+
+/* ═══════════════════════════ BOTÓN ⓘ INFO ══════════════════════ */
+.info-btn {
+  flex-shrink: 0; width: 22px; height: 22px; padding: 0;
+  background: none; border: 1px solid var(--bdr2);
+  border-radius: 50%; color: var(--tx3); font-size: .7rem; font-weight: 700;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all .12s; line-height: 1; font-family: inherit;
+}
+.info-btn:hover { background: rgba(99,102,241,.15); border-color: #6366f1; color: #a5b4fc; }
+
+/* ═══════════════════════════ MODAL INFO ════════════════════════ */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.65);
+  z-index: 700; display: none; align-items: center; justify-content: center;
+  padding: 1.5rem;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: var(--bg2); border: 1px solid var(--bdr2);
+  border-radius: 12px; width: 100%; max-width: 640px;
+  max-height: 88vh; display: flex; flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0,0,0,.6);
+}
+.modal-hdr {
+  display: flex; align-items: flex-start; gap: .65rem;
+  padding: .9rem 1.1rem .75rem; border-bottom: 1px solid var(--bdr); flex-shrink: 0;
+}
+.modal-hdr-icon { flex-shrink: 0; opacity: .8; }
+.modal-hdr h2 {
+  flex: 1; font-size: .88rem; font-weight: 700; color: var(--tx); line-height: 1.4;
+}
+.modal-close-btn {
+  flex-shrink: 0; background: none; border: none; cursor: pointer;
+  color: var(--tx3); font-size: 1.1rem; padding: .1rem .2rem; border-radius: 4px;
+  line-height: 1; transition: color .12s;
+}
+.modal-close-btn:hover { color: var(--tx); }
+.modal-body {
+  flex: 1; overflow-y: auto; padding: 1rem 1.1rem 1.25rem;
+  display: flex; flex-direction: column; gap: .85rem;
+}
+.modal-body::-webkit-scrollbar { width: 4px; }
+.modal-body::-webkit-scrollbar-thumb { background: var(--bdr2); border-radius: 2px; }
+.modal-section h3 {
+  font-size: .62rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .1em; color: var(--tx3); margin-bottom: .4rem;
+  display: flex; align-items: center; gap: .35rem;
+}
+.modal-section h3::before {
+  content: ''; display: inline-block; width: 6px; height: 6px;
+  background: #6366f1; border-radius: 50%; flex-shrink: 0;
+}
+.modal-desc {
+  font-size: .79rem; color: var(--tx2); line-height: 1.65; white-space: pre-wrap;
+}
+.modal-formula-wrap { margin-top: .3rem; }
+.modal-formula {
+  background: #04050d; border: 1px solid var(--bdr);
+  border-radius: 6px; padding: .65rem .85rem; max-height: 220px; overflow-y: auto;
+}
+.modal-formula::-webkit-scrollbar { width: 3px; }
+.modal-formula::-webkit-scrollbar-thumb { background: var(--bdr2); border-radius: 2px; }
+.modal-formula code {
+  font-family: var(--mono); font-size: .7rem; color: #8892c0;
+  white-space: pre-wrap; word-break: break-word; line-height: 1.6;
+}
+.modal-copy-formula {
+  margin-top: .35rem; padding: .22rem .7rem;
+  background: var(--bg4); border: 1px solid var(--bdr2);
+  border-radius: 5px; color: var(--tx2); font-size: .68rem;
+  cursor: pointer; font-weight: 600; transition: all .12s; font-family: inherit;
+}
+.modal-copy-formula:hover { background: #6366f1; border-color: #6366f1; color: #fff; }
+.modal-copy-formula.ok { background: var(--grn); border-color: var(--grn); color: #fff; }
+.modal-note {
+  font-size: .72rem; color: var(--tx3); padding: .5rem .75rem;
+  background: var(--bg3); border: 1px solid var(--bdr); border-radius: 6px;
+  border-left: 3px solid #6366f1; line-height: 1.5;
+}
+
+/* ════════════════════  PROYECTOS  ══════════════════════════════ */
+.proj-selector-row {
+  display: flex; align-items: center; gap: 6px;
+  padding: 0 14px 10px; border-bottom: 1px solid var(--bdr);
+}
+.proj-select {
+  flex: 1; background: var(--bg); color: var(--tx); border: 1px solid var(--bdr2);
+  border-radius: 6px; padding: 4px 8px; font-size: .76rem; font-family: inherit;
+  cursor: pointer; outline: none;
+}
+.proj-select:focus { border-color: #06b6d4; }
+.proj-mgr-btn {
+  background: none; border: 1px solid var(--bdr2); border-radius: 6px;
+  color: var(--tx3); padding: 4px 8px; font-size: .7rem; cursor: pointer;
+  white-space: nowrap; font-family: inherit; transition: border-color .12s, color .12s;
+}
+.proj-mgr-btn:hover { border-color: #06b6d4; color: #06b6d4; }
+
+/* Modal de proyectos */
+#proj-modal {
+  position: fixed; inset: 0; background: rgba(0,0,0,.65);
+  z-index: 2000; display: none; align-items: center; justify-content: center;
+  padding: 1.5rem;
+}
+.proj-modal-box {
+  background: var(--bg2); border: 1px solid var(--bdr2); border-radius: 12px;
+  padding: 20px; width: min(480px, 90vw); max-height: 80vh;
+  overflow-y: auto; position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,.6);
+}
+.proj-modal-box .modal-hdr { padding: 0 0 .75rem; border-bottom: 1px solid var(--bdr); margin-bottom: .75rem; }
+.proj-modal-box .modal-hdr h2 { font-size: .92rem; color: var(--tx); }
+.proj-list { list-style: none; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+.proj-item {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg); border: 1px solid var(--bdr2); border-radius: 8px; padding: 7px 10px;
+  transition: border-color .12s;
+}
+.proj-item.active-proj { border-color: #06b6d4; }
+.proj-item-name {
+  flex: 1; background: none; border: none; color: var(--tx);
+  font-size: .82rem; font-family: inherit; outline: none; cursor: pointer;
+}
+.proj-item-name:focus { border-bottom: 1px solid #06b6d4; cursor: text; }
+.proj-def-badge {
+  font-size: .62rem; background: #0e7490; color: #fff;
+  border-radius: 4px; padding: 1px 5px; white-space: nowrap; flex-shrink: 0;
+}
+.proj-action-btn {
+  background: none; border: none; color: var(--tx3);
+  cursor: pointer; padding: 2px 5px; font-size: .82rem;
+  border-radius: 4px; transition: color .12s, background .12s;
+}
+.proj-action-btn:hover { color: var(--tx); background: var(--bg3); }
+.proj-add-btn {
+  background: #0e7490; color: #fff; border: none; border-radius: 8px;
+  padding: 8px 16px; width: 100%; cursor: pointer; font-size: .82rem;
+  font-family: inherit; transition: background .12s;
+}
+.proj-add-btn:hover { background: #0891b2; }
+</style>
+</head>
+<body>
+<header>
+  <div class="hdr-logo"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg><div><h1>AI-SDLC Pro</h1><p>Biblioteca de Prompts &middot; Multi-agente &middot; Open Agent Manager</p></div></div>
+  <div class="hdr-tags"><span class="tag">v3</span><span class="tag">32 prompts</span><span class="tag tag-warn">&#9888; Incluir framework antes de cada prompt</span></div>
+  <div class="hdr-brand"><img src="https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png" width="28" height="28" alt="Lionsystems" style="border-radius:4px;flex-shrink:0;"><div><span class="hdr-brand-text">Lionsystems</span><span class="hdr-brand-sub">Herramienta gratuita</span></div></div>
+</header>
+<div class="search-bar">
+  <div class="search-wrap"><span class="search-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></span><input type="text" placeholder="Buscar por nombre o contenido del prompt..." oninput="filterPrompts(this.value)" autocomplete="off"></div>
+  <span class="search-count" id="vis-count">32 prompts</span>
+  <span class="vars-active-badge" id="vars-badge">&#9632; Vars activas</span>
+  <button class="ms-toggle-btn" id="ms-toggle-btn" onclick="toggleMsMode()" title="Activar selección múltiple"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="13" height="13" rx="2"/><path d="M8 10l3 3 5-5"/></svg> Multi-select</button>
+  <button class="var-toggle-btn" id="var-toggle-btn" onclick="toggleVarPanel()" title="Panel de variables"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Variables</button>
+</div>
+<div class="layout">
+  <nav class="sidebar">
+<div class="sid-section"><div class="sid-label">Framework</div><a class="sid-link sid-framework" href="#sec-00"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg><span class="sid-text">00 — Framework base</span><span class="sid-badge">★</span></a></div><div class="sid-section"><div class="sid-label">Prompts</div><a class="sid-link" href="#sec-01"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"/></svg><span class="sid-text">01 — Comprensión del repositorio</span><span class="sid-badge">2</span></a><a class="sid-link" href="#sec-02"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z"/></svg><span class="sid-text">02 — Análisis</span><span class="sid-badge">3</span></a><a class="sid-link" href="#sec-03"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M12 12.75c1.148 0 2.278.08 3.383.237 1.037.146 1.866.966 1.866 2.013 0 3.728-2.35 6.75-5.25 6.75S6.75 18.728 6.75 15c0-1.046.83-1.867 1.866-2.013A24.204 24.204 0 0112 12.75zm0 0c2.883 0 5.647.508 8.207 1.44a23.91 23.91 0 01-1.152 6.06M12 12.75c-2.883 0-5.647.508-8.208 1.44a23.91 23.91 0 001.153 6.06M12 12.75a2.25 2.25 0 002.248-2.354M12 12.75a2.25 2.25 0 01-2.248-2.354M12 8.25c.995 0 1.971-.08 2.922-.236.403-.066.74-.358.795-.762a3.778 3.778 0 00-.399-2.25M12 8.25c-.995 0-1.97-.08-2.922-.236-.402-.066-.74-.358-.795-.762a3.778 3.778 0 01.4-2.25m0 0a5.002 5.002 0 019.45 0m-9.45 0A5.002 5.002 0 002.55 5.764"/></svg><span class="sid-text">03 — Incidentes</span><span class="sid-badge">2</span></a><a class="sid-link" href="#sec-04"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"/></svg><span class="sid-text">04 — Diseño de solución</span><span class="sid-badge">3</span></a><a class="sid-link" href="#sec-05"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg><span class="sid-text">05 — Plan de implementación</span><span class="sid-badge">2</span></a><a class="sid-link" href="#sec-06"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z"/></svg><span class="sid-text">06 — Ejecución</span><span class="sid-badge">2</span></a><a class="sid-link" href="#sec-07"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"/></svg><span class="sid-text">07 — Pruebas</span><span class="sid-badge">5</span></a><a class="sid-link" href="#sec-08"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0118 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3l1.5 1.5 3-3.75"/></svg><span class="sid-text">08 — Revisión y remediación</span><span class="sid-badge">3</span></a><a class="sid-link" href="#sec-09"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#14b8a6" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/></svg><span class="sid-text">09 — Integración y CI/CD</span><span class="sid-badge">3</span></a><a class="sid-link" href="#sec-10"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a3e635" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg><span class="sid-text">10 — Documentación</span><span class="sid-badge">3</span></a><a class="sid-link" href="#sec-11"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 01.9 2.7m0 0a3 3 0 01-3 3m0 3h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008zm-3 6h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008z"/></svg><span class="sid-text">11 — Operaciones</span><span class="sid-badge">3</span></a><a class="sid-link" href="#sec-12"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 16.875h3.375m0 0h3.375m-3.375 0V13.5m0 3.375v3.375M6 10.5h2.25a2.25 2.25 0 002.25-2.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v2.25A2.25 2.25 0 006 10.5zm0 9.75h2.25A2.25 2.25 0 0010.5 18v-2.25a2.25 2.25 0 00-2.25-2.25H6a2.25 2.25 0 00-2.25 2.25V18A2.25 2.25 0 006 20.25zm9.75-9.75H18a2.25 2.25 0 002.25-2.25V6A2.25 2.25 0 0018 3.75h-2.25A2.25 2.25 0 0013.5 6v2.25a2.25 2.25 0 002.25 2.25z"/></svg><span class="sid-text">12 — Orquestador</span><span class="sid-badge">1</span></a></div>  </nav>
+  <div class="content">
+<div class="framework-banner" id="sec-00" data-observe><div class="fw-header"><span class="fw-badge">&#9888; Obligatorio</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg><span class="fw-title">Framework base — Pegar al inicio de cada prompt</span></div><p class="fw-desc">Este bloque define el rol, el contexto multi-agente y las reglas obligatorias de ingeniería. Cópialo y pégalo <strong>antes</strong> de cualquier prompt de la biblioteca.</p><div class="fw-body"><pre><code id="code-fw">Actúa como un Ingeniero en Sistemas Computacionales, Ingeniero de Software Senior, Arquitecto de Soluciones, Analista Técnico-Funcional, DBA, Server Administrator y especialista en QA, DevOps y DevSecOps, con experiencia práctica en PSP, RUP, ITIL, SCRUM, CI/CD, GitHub, Docker, Linux, arquitectura cloud y desarrollo full stack.
+
+Estás operando en un entorno multi-agente bajo Open Agent Manager. Otros agentes pueden estar trabajando en paralelo sobre el mismo repositorio y el mismo espacio de trabajo.
+
+Reglas obligatorias:
+1. Antes de cualquier análisis o cambio, revisa la documentación, procesos, procedimientos, políticas, estándares y lineamientos del proyecto.
+2. No asumas que el estado del repositorio es estático.
+3. Antes de trabajar:
+   - revisa cambios recientes,
+   - identifica ramas activas,
+   - detecta posibles conflictos con otros agentes.
+4. Todo trabajo debe ser controlado, trazable y con commits atómicos.
+5. No sobrescribas cambios ajenos sin validar.
+6. Sigue el ciclo de ingeniería de software del proyecto.
+7. Todo entregable debe distinguir claramente:
+   - hechos confirmados,
+   - hallazgos,
+   - supuestos,
+   - riesgos,
+   - recomendaciones.
+8. Si falta documentación, indícalo y usa buenas prácticas de ingeniería.
+9. No implementes primero y pienses después: primero analiza, luego diseña, luego ejecuta, luego valida y documenta.
+10. Mantén consistencia con la arquitectura, convenciones, políticas y estándares del repositorio.
+
+---
+
+Quiero que uses el prompt de [NOMBRE DEL PROCESO] y lo adaptes a:
+- repositorio:
+- issue o requerimiento:
+- rama:
+- ambiente:
+- componentes:
+- documentos a revisar:
+- objetivo puntual de salida:
+- nivel de profundidad:</code></pre></div><div class="fw-copy-row"><button class="fw-copy-btn" onclick="copyPrompt('fw',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar framework completo</button></div></div><div class="section-group" id="sec-01" data-observe><div class="section-header-row"><input type="checkbox" class="sec-check" title="Seleccionar toda la sección" onchange="onSecCheck(this)"><span class="sec-num" style="color:#6366f1;border-color:#6366f122;background:#6366f111">01</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"/></svg><span class="sec-label">Comprensión del repositorio</span><span class="sec-count">2</span></div><div class="cards-grid"><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="01-01-arranque-comprension-repositorio" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-01-01-arranque-comprension-repositorio" onclick="toggleCard('01-01-arranque-comprension-repositorio')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('01-01-arranque-comprension-repositorio')">01-01-arranque-comprension-repositorio</span><button class="copy-btn" onclick="copyPrompt('01-01-arranque-comprension-repositorio',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-01-01-arranque-comprension-repositorio"><pre><code id="code-01-01-arranque-comprension-repositorio">Objetivo:
+Quiero que analices integralmente este repositorio y construyas un inventario técnico inicial del proyecto.
+
+Actividades:
+1. Revisa la estructura completa del repositorio.
+2. Identifica:
+   - componentes,
+   - módulos,
+   - capas,
+   - servicios,
+   - librerías internas,
+   - scripts,
+   - pipelines,
+   - pruebas,
+   - documentación,
+   - archivos de configuración,
+   - contenedores,
+   - migraciones,
+   - variables de entorno.
+3. Detecta tecnologías utilizadas:
+   - frontend,
+   - backend,
+   - base de datos,
+   - infraestructura,
+   - mensajería,
+   - autenticación,
+   - observabilidad.
+4. Ubica los artefactos del ciclo de ingeniería:
+   - análisis,
+   - diseño,
+   - casos de uso,
+   - diagramas,
+   - implementación,
+   - pruebas,
+   - CI/CD,
+   - documentación.
+5. Detecta vacíos o ausencias relevantes.
+
+Formato de salida:
+1. Resumen ejecutivo
+2. Inventario de carpetas y propósito
+3. Arquitectura detectada
+4. Tecnologías y versiones encontradas
+5. Procesos/documentación localizados
+6. Riesgos o vacíos
+7. Recomendación de orden de revisión</code></pre></div></div><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="01-02-analisis-procesos" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-01-02-analisis-procesos" onclick="toggleCard('01-02-analisis-procesos')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('01-02-analisis-procesos')">1.2 — Localizar procesos, procedimientos y políticas del proyecto</span><button class="info-btn" onclick="openInfo('01-02-analisis-procesos')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('01-02-analisis-procesos',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-01-02-analisis-procesos"><pre><code id="code-01-02-analisis-procesos">Objetivo:
+Quiero que identifiques dentro del repositorio todos los documentos, archivos o secciones que correspondan a procesos, procedimientos, políticas, estándares, lineamientos, guías de codificación, flujos de trabajo, definición de ramas, estrategia QA, estrategia CI/CD y reglas de ingeniería de software.
+
+Actividades:
+1. Busca en README, docs, wiki exportada, carpetas de documentación, markdowns, ADRs, archivos de contribución y workflows.
+2. Clasifica lo encontrado por categoría:
+   - procesos,
+   - procedimientos,
+   - políticas,
+   - estándares,
+   - arquitectura,
+   - QA,
+   - seguridad,
+   - branching,
+   - despliegue,
+   - operación.
+3. Indica qué sí existe, qué está incompleto y qué no existe.
+
+Formato de salida:
+- matriz por categoría,
+- archivo/ruta encontrada,
+- descripción,
+- nivel de completitud,
+- observaciones.</code></pre></div></div></div></div><div class="section-group" id="sec-02" data-observe><div class="section-header-row"><input type="checkbox" class="sec-check" title="Seleccionar toda la sección" onchange="onSecCheck(this)"><span class="sec-num" style="color:#3b82f6;border-color:#3b82f622;background:#3b82f611">02</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z"/></svg><span class="sec-label">Análisis</span><span class="sec-count">3</span></div><div class="cards-grid"><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="02-01-analisis-issue" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-02-01-analisis-issue" onclick="toggleCard('02-01-analisis-issue')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('02-01-analisis-issue')">2.1 — Análisis funcional de un requerimiento, issue o cambio</span><button class="info-btn" onclick="openInfo('02-01-analisis-issue')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('02-01-analisis-issue',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-02-01-analisis-issue"><pre><code id="code-02-01-analisis-issue">Objetivo:
+Analiza el requerimiento, issue o cambio solicitado y determina su alcance funcional y técnico dentro del proyecto.
+
+Entradas:
+- issue o requerimiento: [PEGAR]
+- repositorio o módulo: [INDICAR]
+
+Actividades:
+1. Comprende el problema o necesidad.
+2. Identifica:
+   - flujo de negocio afectado,
+   - actor(es),
+   - caso(s) de uso,
+   - comportamiento actual,
+   - comportamiento esperado,
+   - criterios de aceptación si existen.
+3. Revisa si ya está documentado en el proyecto.
+4. Relaciona el requerimiento con módulos, componentes y datos impactados.
+5. Detecta dependencias y riesgos.
+
+Salida:
+1. Resumen funcional
+2. Casos de uso impactados
+3. Reglas de negocio detectadas
+4. Componentes técnicos involucrados
+5. Riesgos funcionales y técnicos
+6. Recomendación de atención</code></pre></div></div><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="02-02-analisis-tecnico" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-02-02-analisis-tecnico" onclick="toggleCard('02-02-analisis-tecnico')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('02-02-analisis-tecnico')">2.2 — Análisis técnico profundo de código existente</span><button class="info-btn" onclick="openInfo('02-02-analisis-tecnico')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('02-02-analisis-tecnico',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-02-02-analisis-tecnico"><pre><code id="code-02-02-analisis-tecnico">Objetivo:
+Analiza el código existente relacionado con el requerimiento o incidente y explica cómo funciona realmente hoy.
+
+Actividades:
+1. Ubica archivos, clases, funciones, endpoints, servicios, consultas, tablas y componentes UI involucrados.
+2. Describe el flujo end-to-end actual.
+3. Identifica:
+   - acoplamientos,
+   - dependencias,
+   - deuda técnica,
+   - validaciones faltantes,
+   - riesgos de regresión,
+   - problemas de diseño.
+4. Señala exactamente qué archivos y módulos están involucrados.
+
+Formato de salida:
+1. Flujo actual
+2. Componentes afectados
+3. Archivos relevantes
+4. Hallazgos técnicos
+5. Riesgos de modificación
+
+---
+
+Objetivo:
+Analiza el código existente relacionado con el requerimiento o incidente y explica cómo funciona realmente hoy.
+
+Actividades:
+1. Ubica archivos, clases, funciones, endpoints, servicios, consultas, tablas y componentes UI involucrados.
+2. Describe el flujo end-to-end actual.
+3. Identifica:
+   - acoplamientos,
+   - dependencias,
+   - deuda técnica,
+   - validaciones faltantes,
+   - riesgos de regresión,
+   - problemas de diseño.
+4. Señala exactamente qué archivos y módulos están involucrados.
+
+Formato de salida:
+1. Flujo actual
+2. Componentes afectados
+3. Archivos relevantes
+4. Hallazgos técnicos
+5. Riesgos de modificación
+
+---
+
+Objetivo:
+Analiza el impacto del cambio solicitado en otros módulos, procesos, datos, integraciones, ambientes y pipelines.
+
+Actividades:
+1. Evalúa impacto en:
+   - frontend,
+   - backend,
+   - base de datos,
+   - integraciones,
+   - infraestructura,
+   - CI/CD,
+   - seguridad,
+   - monitoreo,
+   - documentación.
+2. Detecta impactos directos e indirectos.
+3. Evalúa afectación a otros casos de uso.
+
+Salida:
+- matriz de impacto,
+- severidad,
+- componente afectado,
+- tipo de impacto,
+- riesgo,
+- recomendación.</code></pre></div></div><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="02-03-impacto-cruzado" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-02-03-impacto-cruzado" onclick="toggleCard('02-03-impacto-cruzado')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('02-03-impacto-cruzado')">2.3 — Análisis de impacto cruzado</span><button class="info-btn" onclick="openInfo('02-03-impacto-cruzado')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('02-03-impacto-cruzado',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-02-03-impacto-cruzado"><pre><code id="code-02-03-impacto-cruzado">Objetivo:
+Analiza el impacto del cambio solicitado en otros módulos, procesos, datos, integraciones, ambientes y pipelines.
+
+Actividades:
+1. Evalúa impacto en:
+   - frontend,
+   - backend,
+   - base de datos,
+   - integraciones,
+   - infraestructura,
+   - CI/CD,
+   - seguridad,
+   - monitoreo,
+   - documentación.
+2. Detecta impactos directos e indirectos.
+3. Evalúa afectación a otros casos de uso.
+
+Salida:
+- matriz de impacto,
+- severidad,
+- componente afectado,
+- tipo de impacto,
+- riesgo,
+- recomendación.</code></pre></div></div></div></div><div class="section-group" id="sec-03" data-observe><div class="section-header-row"><input type="checkbox" class="sec-check" title="Seleccionar toda la sección" onchange="onSecCheck(this)"><span class="sec-num" style="color:#ef4444;border-color:#ef444422;background:#ef444411">03</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M12 12.75c1.148 0 2.278.08 3.383.237 1.037.146 1.866.966 1.866 2.013 0 3.728-2.35 6.75-5.25 6.75S6.75 18.728 6.75 15c0-1.046.83-1.867 1.866-2.013A24.204 24.204 0 0112 12.75zm0 0c2.883 0 5.647.508 8.207 1.44a23.91 23.91 0 01-1.152 6.06M12 12.75c-2.883 0-5.647.508-8.208 1.44a23.91 23.91 0 001.153 6.06M12 12.75a2.25 2.25 0 002.248-2.354M12 12.75a2.25 2.25 0 01-2.248-2.354M12 8.25c.995 0 1.971-.08 2.922-.236.403-.066.74-.358.795-.762a3.778 3.778 0 00-.399-2.25M12 8.25c-.995 0-1.97-.08-2.922-.236-.402-.066-.74-.358-.795-.762a3.778 3.778 0 01.4-2.25m0 0a5.002 5.002 0 019.45 0m-9.45 0A5.002 5.002 0 002.55 5.764"/></svg><span class="sec-label">Incidentes</span><span class="sec-count">2</span></div><div class="cards-grid"><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="03-01-incidentes-github" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-03-01-incidentes-github" onclick="toggleCard('03-01-incidentes-github')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('03-01-incidentes-github')">3.1 — Revisión de incidentes reportados por tester contra GitHub Issues</span><button class="info-btn" onclick="openInfo('03-01-incidentes-github')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('03-01-incidentes-github',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-03-01-incidentes-github"><pre><code id="code-03-01-incidentes-github">Objetivo:
+Analiza los incidentes reportados por testing y compáralos con los issues existentes en GitHub para determinar si ya existen, si están bien documentados y cuál es su estatus actual.
+
+Actividades:
+1. Normaliza cada incidente:
+   - título,
+   - descripción,
+   - pasos para reproducir,
+   - resultado actual,
+   - resultado esperado,
+   - severidad,
+   - ambiente,
+   - módulo.
+2. Busca equivalentes en GitHub.
+3. Clasifica cada incidente en:
+   - existe y está correcto,
+   - existe pero está incompleto,
+   - existe pero está mal documentado,
+   - no existe.
+4. Propón acción:
+   - comentar,
+   - actualizar,
+   - reabrir,
+   - crear,
+   - relacionar,
+   - marcar duplicado.
+5. Si no existe, redacta el issue completo con el estándar del proyecto.
+
+Salida:
+1. Resumen ejecutivo
+2. Matriz QA vs GitHub
+3. Issues a crear
+4. Issues a actualizar
+5. Issues con problemas de trazabilidad
+6. Recomendaciones de mejora al proceso QA → GH</code></pre></div></div><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="03-02-causa-raiz" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-03-02-causa-raiz" onclick="toggleCard('03-02-causa-raiz')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('03-02-causa-raiz')">3.2 — Análisis de causa raíz</span><button class="info-btn" onclick="openInfo('03-02-causa-raiz')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('03-02-causa-raiz',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-03-02-causa-raiz"><pre><code id="code-03-02-causa-raiz">Objetivo:
+Analiza un defecto o incidente y determina la causa raíz real, no solo el síntoma.
+
+Actividades:
+1. Define el síntoma observado.
+2. Revisa evidencia:
+   - logs,
+   - código,
+   - configuraciones,
+   - consultas,
+   - commits recientes,
+   - despliegues recientes.
+3. Formula hipótesis.
+4. Valida hipótesis con evidencia.
+5. Determina:
+   - causa raíz,
+   - factores contribuyentes,
+   - impacto,
+   - módulos afectados.
+6. Si no se puede confirmar totalmente, indica evidencia faltante y nivel de confianza.
+
+Salida:
+1. Síntoma
+2. Evidencia
+3. Hipótesis
+4. Causa raíz confirmada o probable
+5. Factores contribuyentes
+6. Riesgo asociado
+7. Recomendación de remediación</code></pre></div></div></div></div><div class="section-group" id="sec-04" data-observe><div class="section-header-row"><input type="checkbox" class="sec-check" title="Seleccionar toda la sección" onchange="onSecCheck(this)"><span class="sec-num" style="color:#8b5cf6;border-color:#8b5cf622;background:#8b5cf611">04</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"/></svg><span class="sec-label">Diseño de solución</span><span class="sec-count">3</span></div><div class="cards-grid"><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="04-01-diseno-solucion" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-04-01-diseno-solucion" onclick="toggleCard('04-01-diseno-solucion')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('04-01-diseno-solucion')">4.1 — Diseño funcional y técnico de solución</span><button class="info-btn" onclick="openInfo('04-01-diseno-solucion')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('04-01-diseno-solucion',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-04-01-diseno-solucion"><pre><code id="code-04-01-diseno-solucion">Objetivo:
+Diseña una solución completa, funcional y técnica, para el requerimiento o incidente analizado.
+
+Incluye:
+1. Objetivo de la solución
+2. Alcance
+3. Supuestos
+4. Restricciones
+5. Casos de uso impactados
+6. Reglas de negocio
+7. Cambios requeridos por componente
+8. Riesgos
+9. Dependencias
+10. Estrategia de validación
+11. Estrategia de rollback
+
+Formato de salida:
+1. Resumen de diseño
+2. Diseño funcional
+3. Diseño técnico
+4. Componentes afectados
+5. Riesgos y mitigaciones
+6. Recomendación de implementación</code></pre></div></div><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="04-02-diagramas-mermaid" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-04-02-diagramas-mermaid" onclick="toggleCard('04-02-diagramas-mermaid')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('04-02-diagramas-mermaid')">4.2 — Generar diagramas Mermaid</span><button class="info-btn" onclick="openInfo('04-02-diagramas-mermaid')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('04-02-diagramas-mermaid',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-04-02-diagramas-mermaid"><pre><code id="code-04-02-diagramas-mermaid">Objetivo:
+Con base en el análisis y diseño del cambio, genera diagramas Mermaid claros y útiles para documentar la solución.
+
+Necesito:
+1. Diagrama de flujo del proceso actual y propuesto
+2. Diagrama de secuencia
+3. Diagrama de componentes
+4. Si aplica, diagrama entidad-relación simplificado
+
+Reglas:
+- Los diagramas deben ser consistentes con el código y la arquitectura real.
+- No inventes componentes inexistentes.
+- Etiqueta claramente actores, servicios, módulos y datos.
+
+Entrega:
+- bloque Mermaid por diagrama,
+- breve explicación de cada uno.</code></pre></div></div><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="04-03-casos-de-uso" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-04-03-casos-de-uso" onclick="toggleCard('04-03-casos-de-uso')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('04-03-casos-de-uso')">4.3 — Diseño de casos de uso</span><button class="info-btn" onclick="openInfo('04-03-casos-de-uso')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('04-03-casos-de-uso',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-04-03-casos-de-uso"><pre><code id="code-04-03-casos-de-uso">Objetivo:
+Documenta formalmente los casos de uso relacionados con el requerimiento o módulo analizado.
+
+Para cada caso de uso incluye:
+- nombre,
+- objetivo,
+- actores,
+- disparador,
+- precondiciones,
+- flujo principal,
+- flujos alternos,
+- postcondiciones,
+- reglas de negocio,
+- criterios de aceptación,
+- componentes técnicos relacionados.</code></pre></div></div></div></div><div class="section-group" id="sec-05" data-observe><div class="section-header-row"><input type="checkbox" class="sec-check" title="Seleccionar toda la sección" onchange="onSecCheck(this)"><span class="sec-num" style="color:#06b6d4;border-color:#06b6d422;background:#06b6d411">05</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg><span class="sec-label">Plan de implementación</span><span class="sec-count">2</span></div><div class="cards-grid"><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="05-01-plan-implementacion" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-05-01-plan-implementacion" onclick="toggleCard('05-01-plan-implementacion')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('05-01-plan-implementacion')">5.1 — Plan de implementación detallado</span><button class="info-btn" onclick="openInfo('05-01-plan-implementacion')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('05-01-plan-implementacion',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-05-01-plan-implementacion"><pre><code id="code-05-01-plan-implementacion">Objetivo:
+Elabora un plan de implementación detallado, ejecutable y trazable para la solución propuesta.
+
+Incluye:
+1. actividades previas,
+2. cambios por componente,
+3. ajustes de datos o migraciones,
+4. pruebas requeridas,
+5. validaciones en ambiente,
+6. integración con ramas,
+7. despliegue,
+8. rollback,
+9. evidencias esperadas.
+
+Formato:
+| Paso | Actividad | Componente | Dependencia | Riesgo | Evidencia esperada |</code></pre></div></div><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="05-02-riesgos-implementacion" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-05-02-riesgos-implementacion" onclick="toggleCard('05-02-riesgos-implementacion')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('05-02-riesgos-implementacion')">5.2 — Análisis de riesgos e impacto de implementación</span><button class="info-btn" onclick="openInfo('05-02-riesgos-implementacion')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('05-02-riesgos-implementacion',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-05-02-riesgos-implementacion"><pre><code id="code-05-02-riesgos-implementacion">Objetivo:
+Identifica y analiza los riesgos de implementación y el impacto potencial del cambio en otros módulos, procesos, servicios, pipelines, integraciones y usuarios.
+
+Clasifica riesgos por:
+- funcional,
+- técnico,
+- datos,
+- seguridad,
+- operación,
+- concurrencia de agentes,
+- integración,
+- despliegue.
+
+Entrega:
+- matriz de riesgos,
+- probabilidad,
+- impacto,
+- mitigación,
+- contingencia.</code></pre></div></div></div></div><div class="section-group" id="sec-06" data-observe><div class="section-header-row"><input type="checkbox" class="sec-check" title="Seleccionar toda la sección" onchange="onSecCheck(this)"><span class="sec-num" style="color:#10b981;border-color:#10b98122;background:#10b98111">06</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z"/></svg><span class="sec-label">Ejecución</span><span class="sec-count">2</span></div><div class="cards-grid"><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="06-01-implementacion-multiagente" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-06-01-implementacion-multiagente" onclick="toggleCard('06-01-implementacion-multiagente')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('06-01-implementacion-multiagente')">6.1 — Implementación multi-agente segura</span><button class="info-btn" onclick="openInfo('06-01-implementacion-multiagente')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('06-01-implementacion-multiagente',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-06-01-implementacion-multiagente"><pre><code id="code-06-01-implementacion-multiagente">Modo: ejecución controlada
+
+Objetivo:
+Implementa la solución aprobada respetando un entorno multi-agente con cambios concurrentes.
+
+Reglas:
+1. Revisa cambios recientes antes de editar.
+2. Trabaja con cambios mínimos y controlados.
+3. No modifiques archivos fuera del alcance.
+4. Haz commits atómicos por unidad lógica.
+5. Si detectas cambios ajenos en la misma zona, detén y documenta.
+
+Actividades:
+1. Identificar archivos a modificar
+2. Aplicar cambios por componente
+3. Mantener compatibilidad con contratos y flujos existentes
+4. Actualizar pruebas y documentación relacionadas
+5. Preparar propuesta de commit
+
+Entrega:
+- archivos modificados,
+- resumen de cambio por archivo,
+- riesgos residuales,
+- mensaje de commit sugerido.</code></pre></div></div><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="06-02-commits" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-06-02-commits" onclick="toggleCard('06-02-commits')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('06-02-commits')">6.2 — Generación de mensajes de commit de calidad</span><button class="info-btn" onclick="openInfo('06-02-commits')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('06-02-commits',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-06-02-commits"><pre><code id="code-06-02-commits">Objetivo:
+Genera mensajes de commit pequeños, claros, trazables y alineados al estándar del proyecto.
+
+Entradas:
+- issue,
+- tipo de cambio,
+- componente,
+- descripción breve.
+
+Entrega:
+1. commit principal sugerido
+2. commits alternativos si el cambio debe dividirse
+3. justificación de por qué conviene dividir el trabajo</code></pre></div></div></div></div><div class="section-group" id="sec-07" data-observe><div class="section-header-row"><input type="checkbox" class="sec-check" title="Seleccionar toda la sección" onchange="onSecCheck(this)"><span class="sec-num" style="color:#f97316;border-color:#f9731622;background:#f9731611">07</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"/></svg><span class="sec-label">Pruebas</span><span class="sec-count">5</span></div><div class="cards-grid"><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="07-01-pruebas-unitarias" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-07-01-pruebas-unitarias" onclick="toggleCard('07-01-pruebas-unitarias')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('07-01-pruebas-unitarias')">7.1 — Diseño de pruebas unitarias</span><button class="info-btn" onclick="openInfo('07-01-pruebas-unitarias')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('07-01-pruebas-unitarias',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-07-01-pruebas-unitarias"><pre><code id="code-07-01-pruebas-unitarias">Objetivo:
+Diseña las pruebas unitarias necesarias para validar los cambios propuestos o implementados.
+
+Incluye:
+- función o unidad bajo prueba,
+- escenario,
+- entrada,
+- resultado esperado,
+- casos positivos,
+- casos negativos,
+- casos borde.
+
+Entrega:
+- matriz de pruebas unitarias,
+- recomendación de cobertura.</code></pre></div></div><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="07-02-pruebas-integracion" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-07-02-pruebas-integracion" onclick="toggleCard('07-02-pruebas-integracion')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('07-02-pruebas-integracion')">7.2 — Diseño de pruebas de integración</span><button class="info-btn" onclick="openInfo('07-02-pruebas-integracion')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('07-02-pruebas-integracion',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-07-02-pruebas-integracion"><pre><code id="code-07-02-pruebas-integracion">Objetivo:
+Define las pruebas de integración necesarias para validar la interacción entre módulos, servicios, APIs, base de datos e integraciones involucradas.
+
+Incluye:
+- flujo,
+- componentes integrados,
+- datos de prueba,
+- resultado esperado,
+- validación de errores.</code></pre></div></div><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="07-03-pruebas-e2e" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-07-03-pruebas-e2e" onclick="toggleCard('07-03-pruebas-e2e')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('07-03-pruebas-e2e')">7.3 — Diseño de pruebas E2E</span><button class="info-btn" onclick="openInfo('07-03-pruebas-e2e')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('07-03-pruebas-e2e',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-07-03-pruebas-e2e"><pre><code id="code-07-03-pruebas-e2e">Objetivo:
+Diseña pruebas end-to-end para los casos de uso impactados por el cambio.
+
+Incluye:
+- actor,
+- flujo principal,
+- precondiciones,
+- pasos,
+- resultado esperado,
+- evidencia requerida,
+- regresiones relacionadas.</code></pre></div></div><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="07-04-pruebas-humo" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-07-04-pruebas-humo" onclick="toggleCard('07-04-pruebas-humo')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('07-04-pruebas-humo')">7.4 — Pruebas de humo</span><button class="info-btn" onclick="openInfo('07-04-pruebas-humo')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('07-04-pruebas-humo',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-07-04-pruebas-humo"><pre><code id="code-07-04-pruebas-humo">Objetivo:
+Define un plan de pruebas de humo para validar rápidamente que el sistema sigue operativo después del cambio.
+
+Incluye:
+- login/autenticación si aplica,
+- flujo crítico principal,
+- acceso a módulos,
+- operaciones básicas,
+- integraciones mínimas,
+- errores visibles.</code></pre></div></div><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="07-05-automatizacion-antigravity" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-07-05-automatizacion-antigravity" onclick="toggleCard('07-05-automatizacion-antigravity')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('07-05-automatizacion-antigravity')">7.5 — Automatización en navegador con Chrome Antigravity</span><button class="info-btn" onclick="openInfo('07-05-automatizacion-antigravity')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('07-05-automatizacion-antigravity',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-07-05-automatizacion-antigravity"><pre><code id="code-07-05-automatizacion-antigravity">Objetivo:
+Diseña y documenta una estrategia de pruebas automatizadas en navegador usando Chrome Antigravity para validar los flujos impactados.
+
+Incluye:
+- escenario,
+- navegación,
+- selectors esperados,
+- datos de prueba,
+- validaciones visuales y funcionales,
+- capturas o evidencia esperada,
+- posibles puntos frágiles del flujo.</code></pre></div></div></div></div><div class="section-group" id="sec-08" data-observe><div class="section-header-row"><input type="checkbox" class="sec-check" title="Seleccionar toda la sección" onchange="onSecCheck(this)"><span class="sec-num" style="color:#ec4899;border-color:#ec489922;background:#ec489911">08</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0118 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3l1.5 1.5 3-3.75"/></svg><span class="sec-label">Revisión y remediación</span><span class="sec-count">3</span></div><div class="cards-grid"><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="08-01-revision-estatica" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-08-01-revision-estatica" onclick="toggleCard('08-01-revision-estatica')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('08-01-revision-estatica')">8.1 — Revisión estática de código</span><button class="info-btn" onclick="openInfo('08-01-revision-estatica')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('08-01-revision-estatica',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-08-01-revision-estatica"><pre><code id="code-08-01-revision-estatica">Objetivo:
+Realiza una revisión estática del código relacionado con el cambio y evalúa calidad, mantenibilidad, seguridad y consistencia con estándares del proyecto.
+
+Revisa:
+- estructura,
+- claridad,
+- duplicación,
+- complejidad,
+- manejo de errores,
+- validaciones,
+- logging,
+- seguridad,
+- consistencia de nombres,
+- alineación con arquitectura.
+
+Entrega:
+1. hallazgos críticos
+2. hallazgos medios
+3. observaciones menores
+4. deuda técnica detectada
+5. recomendaciones puntuales</code></pre></div></div><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="08-02-cumplimiento-requerimiento" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-08-02-cumplimiento-requerimiento" onclick="toggleCard('08-02-cumplimiento-requerimiento')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('08-02-cumplimiento-requerimiento')">8.2 — Revisión de cumplimiento contra requerimiento</span><button class="info-btn" onclick="openInfo('08-02-cumplimiento-requerimiento')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('08-02-cumplimiento-requerimiento',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-08-02-cumplimiento-requerimiento"><pre><code id="code-08-02-cumplimiento-requerimiento">Objetivo:
+Valida si la implementación realmente cumple con el issue, requerimiento, caso de uso y criterios de aceptación.
+
+Compara:
+- lo solicitado,
+- lo diseñado,
+- lo implementado,
+- lo probado.
+
+Entrega:
+- cumplimiento total/parcial/no cumple,
+- diferencias detectadas,
+- riesgos por incumplimiento,
+- acciones requeridas.</code></pre></div></div><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="08-03-remediacion-maestro" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-08-03-remediacion-maestro" onclick="toggleCard('08-03-remediacion-maestro')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('08-03-remediacion-maestro')">8.3 — Remediación de revisión estática (prompt maestro)</span><button class="info-btn" onclick="openInfo('08-03-remediacion-maestro')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('08-03-remediacion-maestro',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-08-03-remediacion-maestro"><pre><code id="code-08-03-remediacion-maestro">Actúa como un Ingeniero de Software Senior, Arquitecto de Soluciones, QA Lead y DevOps Engineer con experiencia en PSP, RUP, DevSecOps, CI/CD y revisión de código en sistemas productivos.
+
+Contexto:
+Estoy trabajando en un entorno multi-agente con Open Agent Manager. Otros agentes pueden estar modificando el repositorio en paralelo.
+
+Entrada:
+Te proporciono un reporte de revisión estática de código con hallazgos críticos, medios, menores y deuda técnica.
+
+Documento:
+[PEGAR REPORTE COMPLETO AQUÍ]
+
+Objetivo:
+Quiero que analices este reporte y generes una solución integral, controlada y de calidad para corregir los hallazgos sin afectar la estabilidad del sistema.
+
+---
+
+REGLAS CRÍTICAS:
+1. NO implementar directamente.
+2. Primero analizar, luego diseñar, luego planificar.
+3. Considerar impacto en:
+   - arquitectura
+   - base de datos
+   - frontend/backend
+   - integraciones
+   - CI/CD
+   - otros agentes trabajando en paralelo
+4. No proponer cambios sin justificar.
+5. Detectar dependencias entre hallazgos.
+6. Priorizar estabilidad del sistema sobre velocidad.
+
+---
+
+FASE 1 — ANÁLISIS DEL REPORTE:
+Para cada hallazgo:
+1. Validar si aplica realmente al código
+2. Clasificar: crítico / medio / menor / deuda técnica
+3. Identificar: causa raíz, componente afectado, riesgo
+4. Detectar: duplicidades y dependencias entre hallazgos
+
+---
+
+FASE 2 — DISEÑO DE SOLUCIÓN:
+Para cada hallazgo:
+- solución propuesta
+- alternativa (si aplica)
+- impacto técnico
+- impacto en otros módulos
+- riesgos de implementación
+
+Además:
+1. Proponer refactorizaciones globales si hay problemas estructurales
+2. Proponer centralización (ej: constantes duplicadas)
+3. Proponer mejoras de arquitectura si aplica
+
+---
+
+FASE 3 — ESTRATEGIA DE CALIDAD:
+Definir:
+1. Pruebas unitarias necesarias
+2. Pruebas de integración
+3. Pruebas E2E
+4. Pruebas de regresión
+5. Casos negativos
+
+Incluir: qué validar, cómo validar, riesgo cubierto
+
+---
+
+FASE 4 — PLAN DE IMPLEMENTACIÓN CONTROLADO:
+Generar plan detallado:
+| Paso | Cambio | Archivo | Riesgo | Validación |
+
+Considerar:
+- orden correcto de cambios
+- dependencias entre fixes
+- concurrencia con otros agentes
+- commits atómicos
+- rollback
+
+---
+
+FASE 5 — ESTRATEGIA DE INTEGRACIÓN:
+Definir:
+- estrategia de ramas
+- manejo de conflictos
+- validación en CI
+- validación en PR
+- condiciones de merge
+
+---
+
+FASE 6 — ANÁLISIS DE RIESGOS:
+Generar matriz:
+| Riesgo | Probabilidad | Impacto | Mitigación |
+
+---
+
+FORMATO DE SALIDA OBLIGATORIO:
+1. Resumen ejecutivo
+2. Validación del reporte (qué sí aplica y qué no)
+3. Análisis por hallazgo
+4. Causa raíz
+5. Diseño de solución
+6. Estrategia de calidad
+7. Plan de implementación
+8. Estrategia de integración
+9. Riesgos y mitigación
+10. Recomendación final
+
+REGLAS DE CALIDAD:
+- No soluciones superficiales
+- No cambios aislados sin contexto
+- No ignorar impacto en otros módulos
+- No asumir comportamiento sin evidencia
+- Si algo no está claro → declararlo
+
+---
+
+Con base en el análisis y plan generado previamente:
+
+Objetivo:
+Implementar los cambios de forma controlada en entorno multi-agente.
+
+Reglas:
+- cambios mínimos por commit
+- un hallazgo por commit
+- no modificar fuera del alcance
+- validar antes de cada commit
+
+Para cada cambio:
+1. archivo afectado
+2. cambio exacto
+3. validación
+4. commit sugerido
+
+Si detectas conflicto:
+DETENER ejecución y documentar el conflicto antes de continuar.</code></pre></div></div></div></div><div class="section-group" id="sec-09" data-observe><div class="section-header-row"><input type="checkbox" class="sec-check" title="Seleccionar toda la sección" onchange="onSecCheck(this)"><span class="sec-num" style="color:#14b8a6;border-color:#14b8a622;background:#14b8a611">09</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#14b8a6" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/></svg><span class="sec-label">Integración y CI/CD</span><span class="sec-count">3</span></div><div class="cards-grid"><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="09-01-integracion-ramas" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-09-01-integracion-ramas" onclick="toggleCard('09-01-integracion-ramas')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('09-01-integracion-ramas')">9.1 — Integración controlada con ramas</span><button class="info-btn" onclick="openInfo('09-01-integracion-ramas')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('09-01-integracion-ramas',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-09-01-integracion-ramas"><pre><code id="code-09-01-integracion-ramas">Objetivo:
+Analiza cómo integrar los cambios con otras ramas activas, evitando conflictos y asegurando consistencia funcional y técnica.
+
+Incluye:
+1. ramas relacionadas,
+2. cambios potencialmente conflictivos,
+3. estrategia recomendada:
+   - merge,
+   - rebase,
+   - cherry-pick,
+   - espera controlada,
+   - integración por fases.
+4. riesgos de integración.</code></pre></div></div><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="09-02-monitoreo-ci" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-09-02-monitoreo-ci" onclick="toggleCard('09-02-monitoreo-ci')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('09-02-monitoreo-ci')">9.2 — Monitoreo de CI local y remoto</span><button class="info-btn" onclick="openInfo('09-02-monitoreo-ci')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('09-02-monitoreo-ci',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-09-02-monitoreo-ci"><pre><code id="code-09-02-monitoreo-ci">Objetivo:
+Revisa el estado del pipeline de CI tanto localmente como en GitHub y determina si los cambios están listos para integrarse.
+
+Valida:
+- lint,
+- build,
+- pruebas,
+- quality gates,
+- workflows,
+- artefactos,
+- checks del PR.
+
+Entrega:
+1. estatus general,
+2. fallas detectadas,
+3. causa probable,
+4. acción recomendada,
+5. criterio de aprobación o rechazo.</code></pre></div></div><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="09-03-workflows-github-actions" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-09-03-workflows-github-actions" onclick="toggleCard('09-03-workflows-github-actions')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('09-03-workflows-github-actions')">9.3 — Revisión de workflows de GitHub Actions</span><button class="info-btn" onclick="openInfo('09-03-workflows-github-actions')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('09-03-workflows-github-actions',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-09-03-workflows-github-actions"><pre><code id="code-09-03-workflows-github-actions">Objetivo:
+Analiza los workflows del repositorio y determina si cubren adecuadamente validación, pruebas, seguridad, despliegue y calidad.
+
+Incluye:
+- inventario de workflows,
+- disparadores,
+- jobs,
+- validaciones existentes,
+- faltantes,
+- riesgos,
+- mejoras recomendadas.</code></pre></div></div></div></div><div class="section-group" id="sec-10" data-observe><div class="section-header-row"><input type="checkbox" class="sec-check" title="Seleccionar toda la sección" onchange="onSecCheck(this)"><span class="sec-num" style="color:#a3e635;border-color:#a3e63522;background:#a3e63511">10</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a3e635" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg><span class="sec-label">Documentación</span><span class="sec-count">3</span></div><div class="cards-grid"><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="10-01-documentacion-tecnica" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-10-01-documentacion-tecnica" onclick="toggleCard('10-01-documentacion-tecnica')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('10-01-documentacion-tecnica')">10.1 — Actualizar documentación técnica</span><button class="info-btn" onclick="openInfo('10-01-documentacion-tecnica')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('10-01-documentacion-tecnica',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-10-01-documentacion-tecnica"><pre><code id="code-10-01-documentacion-tecnica">Objetivo:
+Actualiza o propone actualización de la documentación técnica afectada por el cambio.
+
+Revisa y actualiza:
+- README,
+- docs,
+- arquitectura,
+- diagramas,
+- contratos,
+- casos de uso,
+- notas de despliegue,
+- troubleshooting.
+
+Entrega:
+- documentos a actualizar,
+- contenido propuesto,
+- razón del cambio.</code></pre></div></div><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="10-02-memoria-tecnica" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-10-02-memoria-tecnica" onclick="toggleCard('10-02-memoria-tecnica')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('10-02-memoria-tecnica')">10.2 — Memoria técnica del cambio</span><button class="info-btn" onclick="openInfo('10-02-memoria-tecnica')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('10-02-memoria-tecnica',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-10-02-memoria-tecnica"><pre><code id="code-10-02-memoria-tecnica">Objetivo:
+Genera una memoria técnica clara y ejecutiva del cambio realizado.
+
+Incluye:
+1. contexto
+2. problema o requerimiento
+3. análisis
+4. causa raíz si aplica
+5. solución implementada
+6. componentes modificados
+7. pruebas ejecutadas
+8. riesgos
+9. resultados
+10. puntos pendientes</code></pre></div></div><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="10-03-release-changelog" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-10-03-release-changelog" onclick="toggleCard('10-03-release-changelog')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('10-03-release-changelog')">10.3 — Documentación de release o changelog</span><button class="info-btn" onclick="openInfo('10-03-release-changelog')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('10-03-release-changelog',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-10-03-release-changelog"><pre><code id="code-10-03-release-changelog">Objetivo:
+Redacta las notas de release o changelog del cambio con enfoque técnico y funcional.
+
+Incluye:
+- resumen del cambio,
+- módulos impactados,
+- correcciones,
+- mejoras,
+- riesgos,
+- consideraciones de despliegue,
+- notas de compatibilidad.</code></pre></div></div></div></div><div class="section-group" id="sec-11" data-observe><div class="section-header-row"><input type="checkbox" class="sec-check" title="Seleccionar toda la sección" onchange="onSecCheck(this)"><span class="sec-num" style="color:#94a3b8;border-color:#94a3b822;background:#94a3b811">11</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 01.9 2.7m0 0a3 3 0 01-3 3m0 3h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008zm-3 6h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008z"/></svg><span class="sec-label">Operaciones</span><span class="sec-count">3</span></div><div class="cards-grid"><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="11-01-troubleshooting" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-11-01-troubleshooting" onclick="toggleCard('11-01-troubleshooting')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('11-01-troubleshooting')">11.1 — Troubleshooting de ambiente</span><button class="info-btn" onclick="openInfo('11-01-troubleshooting')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('11-01-troubleshooting',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-11-01-troubleshooting"><pre><code id="code-11-01-troubleshooting">Objetivo:
+Analiza un problema de ambiente, despliegue, servicio, contenedor, pipeline o configuración y determina posibles causas, validaciones necesarias y ruta de solución.
+
+Incluye:
+- síntoma,
+- servicios involucrados,
+- revisión sugerida,
+- comandos o evidencias a revisar,
+- hipótesis,
+- ruta de resolución.</code></pre></div></div><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="11-02-hardening-seguridad" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-11-02-hardening-seguridad" onclick="toggleCard('11-02-hardening-seguridad')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('11-02-hardening-seguridad')">11.2 — Hardening y seguridad operativa</span><button class="info-btn" onclick="openInfo('11-02-hardening-seguridad')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('11-02-hardening-seguridad',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-11-02-hardening-seguridad"><pre><code id="code-11-02-hardening-seguridad">Objetivo:
+Analiza el repositorio y la configuración operativa para detectar oportunidades de fortalecimiento de seguridad, hardening, manejo de secretos, permisos, exposición de servicios y riesgos de despliegue.
+
+Entrega:
+- hallazgos,
+- criticidad,
+- mitigación,
+- prioridad.</code></pre></div></div><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="11-03-deuda-tecnica" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-11-03-deuda-tecnica" onclick="toggleCard('11-03-deuda-tecnica')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('11-03-deuda-tecnica')">11.3 — Deuda técnica y mejora continua</span><button class="info-btn" onclick="openInfo('11-03-deuda-tecnica')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('11-03-deuda-tecnica',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-11-03-deuda-tecnica"><pre><code id="code-11-03-deuda-tecnica">Objetivo:
+Identifica deuda técnica en el repositorio y propón un backlog priorizado de mejoras.
+
+Clasifica por:
+- arquitectura,
+- código,
+- pruebas,
+- documentación,
+- seguridad,
+- CI/CD,
+- observabilidad,
+- datos,
+- performance.
+
+Entrega:
+- matriz de deuda técnica,
+- prioridad,
+- impacto,
+- esfuerzo estimado,
+- recomendación de atención.</code></pre></div></div></div></div><div class="section-group" id="sec-12" data-observe><div class="section-header-row"><input type="checkbox" class="sec-check" title="Seleccionar toda la sección" onchange="onSecCheck(this)"><span class="sec-num" style="color:#c084fc;border-color:#c084fc22;background:#c084fc11">12</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 16.875h3.375m0 0h3.375m-3.375 0V13.5m0 3.375v3.375M6 10.5h2.25a2.25 2.25 0 002.25-2.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v2.25A2.25 2.25 0 006 10.5zm0 9.75h2.25A2.25 2.25 0 0010.5 18v-2.25a2.25 2.25 0 00-2.25-2.25H6a2.25 2.25 0 00-2.25 2.25V18A2.25 2.25 0 006 20.25zm9.75-9.75H18a2.25 2.25 0 002.25-2.25V6A2.25 2.25 0 0018 3.75h-2.25A2.25 2.25 0 0013.5 6v2.25a2.25 2.25 0 002.25 2.25z"/></svg><span class="sec-label">Orquestador</span><span class="sec-count">1</span></div><div class="cards-grid"><div class="card"><div class="card-head"><input type="checkbox" class="card-check" data-pid="12-orquestador" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-12-orquestador" onclick="toggleCard('12-orquestador')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('12-orquestador')">12 — Prompt maestro orquestador del ciclo completo</span><button class="info-btn" onclick="openInfo('12-orquestador')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" onclick="copyPrompt('12-orquestador',this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-12-orquestador"><pre><code id="code-12-orquestador">Objetivo:
+Coordina el ciclo completo de ingeniería de software para esta asignación dentro del repositorio.
+
+Entrada:
+- issue/requerimiento/incidente: [PEGAR]
+- rama objetivo: [INDICAR]
+- ambiente: [INDICAR]
+- componentes: [INDICAR]
+
+Quiero que trabajes por fases:
+
+Fase 1. Comprensión e inventario
+- revisar documentación, procesos, políticas y estructura del repo.
+
+Fase 2. Análisis
+- funcional,
+- técnico,
+- impacto,
+- riesgos,
+- concurrencia con otros agentes.
+
+Fase 3. Diseño
+- solución funcional,
+- solución técnica,
+- casos de uso,
+- diagramas mermaid,
+- plan de implementación.
+
+Fase 4. Ejecución controlada
+- propuesta de cambios por archivo,
+- estrategia de commits,
+- validaciones.
+
+Fase 5. Calidad
+- pruebas unitarias,
+- integración,
+- E2E,
+- humo,
+- automatización navegador,
+- revisión estática.
+
+Fase 6. Integración
+- ramas,
+- CI local,
+- GitHub Actions,
+- riesgos de integración.
+
+Fase 7. Documentación
+- memoria técnica,
+- actualización documental,
+- release notes.
+
+Formato de salida obligatorio:
+1. Resumen ejecutivo
+2. Hallazgos
+3. Riesgos
+4. Diseño propuesto
+5. Plan de implementación
+6. Estrategia de pruebas
+7. Estrategia de integración
+8. Documentación requerida
+9. Recomendación final</code></pre></div></div></div></div>    <div class="glbl-empty" id="glbl-empty" style="display:none"><p>Sin resultados.</p><small>Intenta con otro término de búsqueda.</small></div>
+  </div>
+</div>
+<div class="var-panel" id="var-panel">
+  <div class="var-panel-hdr"><h2><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> Variables del prompt</h2><button class="var-close-btn" onclick="closeVarPanel()" title="Cerrar">&#x2715;</button></div>
+<div class="proj-selector-row"><select id="proj-selector" class="proj-select" onchange="switchProject(this.value)"></select><button class="proj-mgr-btn" onclick="openProjectsModal()">&#x2699; Proyectos</button></div>
+  <div class="var-panel-body">
+    <div class="var-group"><label for="vf-repositorio">Repositorio</label><input id="vf-repositorio" type="text" placeholder="org/nombre-repo o URL" oninput="syncProjectFromPanel();updateVarsBadge();"><div class="var-tags"><span class="var-tag">[NOMBRE O URL]</span></div></div>
+    <div class="var-group"><label for="vf-referencia">Issue / Referencia</label><textarea id="vf-referencia" placeholder="Número, URL o texto completo del issue" oninput="syncProjectFromPanel();updateVarsBadge();"></textarea><div class="var-tags"><span class="var-tag">[REFERENCIA]</span><span class="var-tag">[PEGAR]</span><span class="var-tag">[PEGAR TEXTO...]</span></div></div>
+    <div class="var-group"><label for="vf-rama-actual">Rama actual / con cambios</label><input id="vf-rama-actual" type="text" placeholder="feature/mi-rama" oninput="syncProjectFromPanel();updateVarsBadge();"><div class="var-tags"><span class="var-tag">[RAMA ACTUAL]</span><span class="var-tag">[RAMA CON LOS CAMBIOS]</span><span class="var-tag">[RAMA EN PRUEBAS]</span></div></div>
+    <div class="var-group"><label for="vf-rama-destino">Rama destino / principal</label><input id="vf-rama-destino" type="text" placeholder="main / develop" oninput="syncProjectFromPanel();updateVarsBadge();"><div class="var-tags"><span class="var-tag">[RAMA OBJETIVO]</span><span class="var-tag">[RAMA PRINCIPAL]</span><span class="var-tag">[RAMA INTEGRADA]</span><span class="var-tag">[RAMA DESTINO]</span></div></div>
+    <div class="var-group"><label for="vf-ambiente">Ambiente</label><select id="vf-ambiente" onchange="syncProjectFromPanel();updateVarsBadge();"><option value="">-- seleccionar --</option><option>DEV</option><option>QA</option><option>STAGING</option><option>PROD</option></select><div class="var-tags"><span class="var-tag">[DEV / QA / PROD]</span><span class="var-tag">[QA / STAGING]</span><span class="var-tag">[URL DEL AMBIENTE]</span></div></div>
+    <div class="var-group"><label for="vf-componentes">Componentes / archivos</label><textarea id="vf-componentes" placeholder="Lista de componentes o rutas de archivos" oninput="syncProjectFromPanel();updateVarsBadge();"></textarea><div class="var-tags"><span class="var-tag">[COMPONENTES INVOLUCRADOS]</span><span class="var-tag">[COMPONENTES MODIFICADOS]</span><span class="var-tag">[RUTAS DE ARCHIVOS...]</span></div></div>
+    <div class="var-group"><label for="vf-modulo">Módulo / proceso / indicación</label><input id="vf-modulo" type="text" placeholder="Nombre del módulo o funcionalidad" oninput="syncProjectFromPanel();updateVarsBadge();"><div class="var-tags"><span class="var-tag">[NOMBRE DEL PROCESO]</span><span class="var-tag">[INDICAR]</span></div></div>
+  </div>
+  <div class="var-panel-footer"><button class="var-apply-btn" id="var-apply-btn" onclick="updateVarsBadge(); flash(this)">&#10003; Aplicar al copiar</button><button class="var-clear-btn" onclick="clearVars()">Limpiar</button></div>
+</div>
+<div class="ms-bar" id="ms-bar">
+  <span class="ms-count"><strong id="ms-sel-count">0</strong> seleccionados</span>
+  <button class="ms-copy-btn" onclick="copySelected(this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar seleccionados</button>
+  <button class="ms-clear-btn" onclick="clearSelection()">Limpiar selección</button>
+</div>
+<div class="modal-overlay" id="info-modal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <span class="modal-hdr-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" d="M12 16v-4m0-4h.01"/></svg></span>
+      <h2 id="modal-title"></h2>
+      <button class="modal-close-btn" onclick="closeInfo()">&#x2715;</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-section" id="modal-desc-section"><h3>Descripción y cuándo usarlo</h3><p class="modal-desc" id="modal-desc"></p></div>
+      <div id="modal-formulas"></div>
+    </div>
+  </div>
+</div>
+<div id="proj-modal" onclick="if(event.target===this)closeProjectsModal()">
+  <div class="proj-modal-box">
+    <div class="modal-hdr">
+      <h2>Gestión de Proyectos</h2>
+      <button class="modal-close-btn" onclick="closeProjectsModal()">&#x2715;</button>
+    </div>
+    <ul class="proj-list" id="proj-modal-list"></ul>
+    <button class="proj-add-btn" onclick="createProject();renderProjectsModal();renderProjectSelector();syncPanelToProject();">+ Nuevo proyecto</button>
+  </div>
+</div>
+<script>var PROMPT_INFO = {"01-01-arranque-comprension-repositorio": {"title": "01-01-arranque-comprension-repositorio", "desc": "", "formulas": []}, "01-02-analisis-procesos": {"title": "1.2 — Localizar procesos, procedimientos y políticas del proyecto", "desc": "Prompt de arranque para mapear todo el gobierno del proyecto: procesos, procedimientos, políticas, estándares, branching strategy, estrategia QA, CI/CD y reglas de ingeniería. Establece qué sí existe, qué está incompleto y qué no existe.\n\nCuándo usarlo: antes de cualquier trabajo de análisis o implementación, para entender el marco de gobierno del proyecto y evitar violar reglas ya definidas.", "formulas": ["Usa el prompt de localización de procesos y políticas y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama: [RAMA ACTUAL]\n- documentos a revisar: README, docs/, .github/, workflows/\n- objetivo puntual de salida: matriz de gobierno del proyecto con estado de completitud\n- nivel de profundidad: medio"]}, "02-01-analisis-issue": {"title": "2.1 — Análisis funcional de un requerimiento, issue o cambio", "desc": "Prompt para analizar un requerimiento, issue o cambio y determinar su alcance funcional: flujo de negocio afectado, actores, comportamiento actual vs esperado, criterios de aceptación y riesgos.\n\nCuándo usarlo: como primer paso al recibir una tarea, antes de cualquier análisis técnico o diseño.", "formulas": ["Usa el prompt de análisis funcional y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [PEGAR TEXTO O REFERENCIA]\n- rama: [RAMA ACTUAL]\n- ambiente: [DEV / QA / PROD]\n- componentes: [SI YA CONOCES ALGUNO]\n- documentos a revisar: README, docs/, casos de uso existentes\n- objetivo puntual de salida: alcance funcional completo con criterios de aceptación\n- nivel de profundidad: alto"]}, "02-02-analisis-tecnico": {"title": "2.2 — Análisis técnico profundo de código existente", "desc": "Prompt para analizar cómo funciona realmente el código existente hoy: flujo end-to-end, acoplamientos, deuda técnica, validaciones faltantes y riesgos de regresión.\n\nCuándo usarlo: después del análisis funcional (`02-01`) y antes del análisis de impacto cruzado (`02-03`) y el diseño de la solución (`02-04`).", "formulas": ["Usa el prompt de análisis técnico profundo y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA ACTUAL]\n- ambiente: [DEV / QA / PROD]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: código fuente, esquema de BD, contratos API\n- objetivo puntual de salida: flujo actual documentado con hallazgos técnicos\n- nivel de profundidad: alto", "Usa el prompt de análisis técnico profundo y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA ACTUAL]\n- ambiente: [DEV / QA / PROD]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: código fuente, esquema de BD, contratos API\n- objetivo puntual de salida: flujo actual documentado + matriz de impacto cruzado\n- nivel de profundidad: alto"]}, "02-03-impacto-cruzado": {"title": "2.3 — Análisis de impacto cruzado", "desc": "Prompt para evaluar el impacto del cambio en todos los módulos, procesos, datos, integraciones, ambientes y pipelines del sistema. Detecta impactos directos e indirectos y genera una matriz de severidad.\n\nCuándo usarlo: después del análisis técnico profundo (`02-02`) y antes del diseño de la solución (`04-01`).", "formulas": ["Usa el prompt de análisis de impacto cruzado y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA ACTUAL]\n- ambiente: [DEV / QA / PROD]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: arquitectura, contratos API, esquema de BD\n- objetivo puntual de salida: matriz de impacto cruzado con severidad por componente\n- nivel de profundidad: alto"]}, "03-01-incidentes-github": {"title": "3.1 — Revisión de incidentes reportados por tester contra GitHub Issues", "desc": "Prompt para normalizar incidentes de testing, compararlos contra issues existentes en GitHub, detectar duplicados, incompletos o mal documentados, y redactar los que no existen con el estándar del proyecto.\n\nCuándo usarlo: al recibir un reporte de ciclo de QA, antes de gestionar cualquier defecto en GitHub.", "formulas": ["Usa el prompt de revisión de incidentes y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- reporte de QA: [PEGAR LISTA DE INCIDENTES]\n- rama: [RAMA EN PRUEBAS]\n- ambiente: [QA / STAGING]\n- módulos probados: [MÓDULOS]\n- documentos a revisar: issues abiertos y cerrados en GitHub, estándar de documentación de issues\n- objetivo puntual de salida: matriz QA vs GitHub + issues redactados para crear/actualizar\n- nivel de profundidad: alto"]}, "03-02-causa-raiz": {"title": "3.2 — Análisis de causa raíz", "desc": "Prompt para investigar un defecto o incidente y determinar la causa raíz real, no solo el síntoma. Incluye formulación de hipótesis, validación con evidencia y recomendación de remediación.\n\nCuándo usarlo: al investigar defectos en QA o producción, cuando el síntoma está claro pero la causa no.", "formulas": ["Usa el prompt de análisis de causa raíz y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue: [NÚMERO O REFERENCIA]\n- rama: [RAMA AFECTADA]\n- ambiente: [QA / STAGING / PROD]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: logs, código, commits recientes, configuraciones\n- objetivo puntual: confirmar causa raíz y proponer plan de solución\n- nivel de profundidad: alto", "Usa el prompt de análisis de causa raíz y adáptalo a:\n- repositorio: urgemy-api\n- issue: #842\n- rama: urgemy-test\n- ambiente: QA\n- componentes: api, notificaciones push, postgres\n- documentos a revisar: README, docs/notificaciones, workflows, issues relacionados\n- objetivo puntual: confirmar causa raíz y proponer plan de solución\n- nivel de profundidad: alto"]}, "04-01-diseno-solucion": {"title": "4.1 — Diseño funcional y técnico de solución", "desc": "Prompt para diseñar la solución completa antes de implementar: objetivo, alcance, supuestos, restricciones, cambios por componente, riesgos, dependencias, estrategia de validación y rollback.\n\nCuándo usarlo: una vez completado el análisis funcional, técnico y de impacto, antes de planificar o ejecutar cualquier cambio.", "formulas": ["Usa el prompt de diseño de solución y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA OBJETIVO]\n- ambiente: [DEV / QA / PROD]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: análisis previo, arquitectura, contratos\n- objetivo puntual de salida: diseño completo con riesgos y estrategia de rollback\n- nivel de profundidad: alto"]}, "04-02-diagramas-mermaid": {"title": "4.2 — Generar diagramas Mermaid", "desc": "Prompt para generar diagramas Mermaid que documenten la solución: flujo actual y propuesto, secuencia, componentes y entidad-relación. Los diagramas deben ser consistentes con el código y la arquitectura real.\n\nCuándo usarlo: durante o después del diseño de la solución (`04-01`), para documentar y comunicar visualmente los cambios.", "formulas": ["Usa el prompt de diagramas Mermaid y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: diseño aprobado, arquitectura, código fuente\n- objetivo puntual de salida: conjunto de diagramas Mermaid para documentación técnica\n- nivel de profundidad: medio"]}, "04-03-casos-de-uso": {"title": "4.3 — Diseño de casos de uso", "desc": "Prompt para documentar formalmente los casos de uso del requerimiento o módulo analizado: actores, disparadores, flujos principal y alternos, reglas de negocio y criterios de aceptación.\n\nCuándo usarlo: durante la fase de diseño, para formalizar el comportamiento esperado del sistema antes de implementar.", "formulas": ["Usa el prompt de diseño de casos de uso y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- módulo: [MÓDULO O FUNCIONALIDAD]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: análisis funcional, documentación existente de CU\n- objetivo puntual de salida: casos de uso formales listos para revisión y validación\n- nivel de profundidad: alto"]}, "05-01-plan-implementacion": {"title": "5.1 — Plan de implementación detallado", "desc": "Prompt para elaborar un plan de implementación ejecutable y trazable: actividades previas, cambios por componente, migraciones, pruebas, despliegue, rollback y evidencias esperadas por paso.\n\nCuándo usarlo: después del diseño aprobado (`04-01`), antes de ejecutar cualquier cambio en el repositorio.", "formulas": ["Usa el prompt de plan de implementación y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA OBJETIVO]\n- ambiente: [DEV / QA / PROD]\n- componentes: [COMPONENTES A MODIFICAR]\n- documentos a revisar: diseño aprobado, arquitectura, contratos\n- objetivo puntual de salida: plan de implementación ejecutable paso a paso\n- nivel de profundidad: alto"]}, "05-02-riesgos-implementacion": {"title": "5.2 — Análisis de riesgos e impacto de implementación", "desc": "Prompt para identificar y clasificar los riesgos de implementación: funcionales, técnicos, de datos, seguridad, operación, concurrencia de agentes, integración y despliegue. Genera una matriz de riesgos con probabilidad, impacto y plan de mitigación.\n\nCuándo usarlo: en paralelo al plan de implementación (`05-01`), antes de ejecutar cualquier cambio.", "formulas": ["Usa el prompt de análisis de riesgos de implementación y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA OBJETIVO]\n- ambiente: [DEV / QA / PROD]\n- componentes: [COMPONENTES A MODIFICAR]\n- documentos a revisar: diseño aprobado, arquitectura, historial de incidentes\n- objetivo puntual de salida: matriz de riesgos completa con plan de mitigación\n- nivel de profundidad: alto"]}, "06-01-implementacion-multiagente": {"title": "6.1 — Implementación multi-agente segura", "desc": "Prompt de ejecución controlada para implementar la solución aprobada en un entorno donde múltiples agentes pueden estar modificando el repositorio en paralelo. Prioriza cambios mínimos, commits atómicos y detección de conflictos.\n\nCuándo usarlo: durante la fase de ejecución, después de que el plan (`05-01`) y los riesgos (`05-02`) han sido aprobados.", "formulas": ["Usa el prompt de implementación multi-agente y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA DE TRABAJO]\n- ambiente: [DEV / QA]\n- componentes: [ARCHIVOS Y MÓDULOS A MODIFICAR]\n- documentos a revisar: plan de implementación aprobado, diseño técnico\n- objetivo puntual de salida: cambios aplicados con commits atómicos y sin conflictos\n- nivel de profundidad: alto"]}, "06-02-commits": {"title": "6.2 — Generación de mensajes de commit de calidad", "desc": "Prompt para generar mensajes de commit pequeños, claros y trazables, alineados al estándar del proyecto. Incluye alternativas si el cambio debe dividirse en múltiples commits.\n\nCuándo usarlo: antes de hacer commit de cualquier cambio, para garantizar trazabilidad y consistencia con el historial del repositorio.", "formulas": ["Usa el prompt de mensajes de commit y adáptalo a:\n- issue: [NÚMERO O REFERENCIA]\n- tipo de cambio: [feat / fix / refactor / docs / test / chore]\n- componente: [MÓDULO O ARCHIVO AFECTADO]\n- descripción breve: [QUÉ SE HIZO EN UNA LÍNEA]\n- objetivo puntual de salida: commit principal + alternativas si aplica dividir", "Usa el prompt de mensajes de commit y adáptalo a:\n- issue: #842\n- tipo de cambio: fix\n- componente: api/notificaciones\n- descripción breve: corrige envío duplicado de notificaciones push al actualizar orden", "fix(api/notificaciones): corrige envío duplicado al actualizar orden #842\n\nfeat(auth): agrega validación de expiración de token en middleware #123\n\nrefactor(db): extrae consulta de usuarios a repositorio separado #456\n\ndocs(readme): actualiza instrucciones de despliegue en Docker #78\n\ntest(pagos): agrega casos borde para monto negativo en procesador #99"]}, "07-01-pruebas-unitarias": {"title": "7.1 — Diseño de pruebas unitarias", "desc": "Prompt para diseñar la suite de pruebas unitarias que valide los cambios propuestos o implementados: escenarios positivos, negativos y casos borde por cada función o unidad bajo prueba.\n\nCuándo usarlo: después de implementar cambios, en paralelo a la implementación, o como referencia antes de escribir código.", "formulas": ["Usa el prompt de pruebas unitarias y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA DE PRUEBAS]\n- ambiente: [DEV / QA]\n- componentes: [FUNCIONES O UNIDADES A PROBAR]\n- documentos a revisar: código implementado, criterios de aceptación\n- objetivo puntual de salida: matriz completa de pruebas unitarias con cobertura\n- nivel de profundidad: alto"]}, "07-02-pruebas-integracion": {"title": "7.2 — Diseño de pruebas de integración", "desc": "Prompt para definir las pruebas de integración que validen la interacción entre módulos, servicios, APIs, base de datos e integraciones involucradas en el cambio.\n\nCuándo usarlo: después de las pruebas unitarias (`07-01`), para validar que los módulos funcionan correctamente en conjunto.", "formulas": ["Usa el prompt de pruebas de integración y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA DE PRUEBAS]\n- ambiente: [QA / STAGING]\n- componentes: [MÓDULOS E INTEGRACIONES A PROBAR]\n- documentos a revisar: contratos API, diseño de integración, datos de prueba disponibles\n- objetivo puntual de salida: plan de pruebas de integración con casos de error\n- nivel de profundidad: alto"]}, "07-03-pruebas-e2e": {"title": "7.3 — Diseño de pruebas E2E", "desc": "Prompt para diseñar pruebas end-to-end de los casos de uso impactados por el cambio: desde el actor hasta el resultado final, incluyendo evidencia requerida y regresiones relacionadas.\n\nCuándo usarlo: después de las pruebas de integración (`07-02`), para validar el flujo completo desde la perspectiva del usuario.", "formulas": ["Usa el prompt de pruebas E2E y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA DE PRUEBAS]\n- ambiente: [QA / STAGING]\n- componentes: [FLUJOS Y MÓDULOS A PROBAR]\n- documentos a revisar: casos de uso, criterios de aceptación, flujos documentados\n- objetivo puntual de salida: plan de pruebas E2E con evidencia requerida por caso\n- nivel de profundidad: alto"]}, "07-04-pruebas-humo": {"title": "7.4 — Pruebas de humo", "desc": "Prompt para definir un plan de pruebas de humo que valide rápidamente que el sistema sigue operativo después de un cambio o despliegue: autenticación, flujos críticos, módulos, integraciones mínimas y errores visibles.\n\nCuándo usarlo: inmediatamente después de un despliegue o merge, para una validación rápida de salud del sistema antes de pruebas completas.", "formulas": ["Usa el prompt de pruebas de humo y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama o versión desplegada: [REFERENCIA]\n- ambiente: [QA / STAGING / PROD]\n- módulos críticos: [MÓDULOS QUE DEBEN FUNCIONAR]\n- documentos a revisar: flujos críticos documentados, última versión estable\n- objetivo puntual de salida: checklist de humo ejecutable en menos de 15 minutos\n- nivel de profundidad: bajo"]}, "07-05-automatizacion-antigravity": {"title": "7.5 — Automatización en navegador con Chrome Antigravity", "desc": "Prompt para diseñar y documentar una estrategia de pruebas automatizadas en navegador usando Chrome Antigravity: escenarios, navegación, selectors, datos de prueba, validaciones visuales y puntos frágiles del flujo.\n\nCuándo usarlo: para automatizar pruebas E2E o de regresión de flujos críticos impactados por el cambio.", "formulas": ["Usa el prompt de automatización con Antigravity y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- flujos a automatizar: [FLUJOS CRÍTICOS A CUBRIR]\n- ambiente: [QA / STAGING]\n- URL base: [URL DEL AMBIENTE]\n- documentos a revisar: casos de uso, plan E2E, diseño de UI\n- objetivo puntual de salida: estrategia de automatización con pasos, selectors y validaciones\n- nivel de profundidad: alto"]}, "08-01-revision-estatica": {"title": "8.1 — Revisión estática de código", "desc": "Prompt para realizar una revisión estática del código relacionado con el cambio: calidad, mantenibilidad, seguridad, complejidad, manejo de errores y consistencia con los estándares del proyecto.\n\nCuándo usarlo: después de implementar cambios, antes de abrir un PR o hacer merge.", "formulas": ["Usa el prompt de revisión estática y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama: [RAMA CON LOS CAMBIOS]\n- archivos a revisar: [RUTAS DE ARCHIVOS MODIFICADOS]\n- documentos a revisar: estándares de código del proyecto, arquitectura\n- objetivo puntual de salida: reporte de hallazgos clasificados por criticidad\n- nivel de profundidad: alto"]}, "08-02-cumplimiento-requerimiento": {"title": "8.2 — Revisión de cumplimiento contra requerimiento", "desc": "Prompt para validar si la implementación realmente cumple con el issue, requerimiento, caso de uso y criterios de aceptación. Compara lo solicitado, lo diseñado, lo implementado y lo probado.\n\nCuándo usarlo: antes de cerrar un issue o abrir un PR para merge, como paso de cierre de calidad.", "formulas": ["Usa el prompt de cumplimiento contra requerimiento y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA CON LOS CAMBIOS]\n- documentos a revisar: issue original, diseño aprobado, código implementado, resultados de pruebas\n- objetivo puntual de salida: matriz de cumplimiento con brechas y acciones requeridas\n- nivel de profundidad: alto"]}, "08-03-remediacion-maestro": {"title": "8.3 — Remediación de revisión estática (prompt maestro)", "desc": "Prompt maestro de nivel producción para analizar un reporte de revisión estática con hallazgos críticos, medios y menores, y generar un plan integral de corrección controlado, priorizado y seguro para entornos multi-agente.\n\nCuándo usarlo: cuando se recibe un reporte de revisión estática y se necesita un plan estructurado de corrección, no solo parches superficiales.", "formulas": ["Usa el prompt maestro de remediación y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- reporte de revisión estática: [PEGAR REPORTE]\n- rama: [RAMA CON LOS CAMBIOS]\n- ambiente: [DEV / QA]\n- componentes: [COMPONENTES REVISADOS]\n- documentos a revisar: código fuente, arquitectura, contratos\n- objetivo puntual de salida: plan de remediación ejecutable y priorizado\n- nivel de profundidad: alto"]}, "09-01-integracion-ramas": {"title": "9.1 — Integración controlada con ramas", "desc": "Prompt para planificar la integración de cambios con otras ramas activas: análisis de conflictos potenciales, estrategia recomendada (merge, rebase, cherry-pick) y riesgos de concurrencia con otros agentes o desarrolladores.\n\nCuándo usarlo: antes de hacer merge a cualquier rama destino, especialmente en entornos con cambios concurrentes.", "formulas": ["Usa el prompt de integración controlada y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama origen: [RAMA CON LOS CAMBIOS]\n- rama destino: [DEVELOP / MAIN / RELEASE]\n- ambiente: [QA / STAGING / PROD]\n- componentes: [COMPONENTES MODIFICADOS]\n- documentos a revisar: historial de commits, ramas activas, PRs abiertos\n- objetivo puntual de salida: estrategia de integración con plan de resolución de conflictos\n- nivel de profundidad: alto"]}, "09-02-monitoreo-ci": {"title": "9.2 — Monitoreo de CI local y remoto", "desc": "Prompt para revisar el estado del pipeline de CI local y en GitHub y determinar si los cambios están listos para integrarse: lint, build, pruebas, quality gates, artefactos y checks del PR.\n\nCuándo usarlo: antes de abrir o aprobar un PR, antes de hacer merge a cualquier rama protegida.", "formulas": ["Usa el prompt de monitoreo CI y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama: [RAMA DEL PR O INTEGRACIÓN]\n- ambiente: [QA / STAGING / PROD]\n- componentes: [COMPONENTES MODIFICADOS]\n- documentos a revisar: .github/workflows/, logs de CI, checks del PR\n- objetivo puntual de salida: estado del pipeline + criterio de aprobación\n- nivel de profundidad: medio"]}, "09-03-workflows-github-actions": {"title": "9.3 — Revisión de workflows de GitHub Actions", "desc": "Prompt para auditar los workflows del repositorio y verificar si cubren adecuadamente validación, pruebas, seguridad, despliegue y calidad. Detecta vacíos, riesgos y propone mejoras.\n\nCuándo usarlo: periódicamente como revisión de salud del pipeline, o al incorporar nuevos módulos o ambientes.", "formulas": ["Usa el prompt de revisión de workflows y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama: [RAMA PRINCIPAL]\n- documentos a revisar: .github/workflows/, README de CI/CD\n- objetivo puntual de salida: inventario de workflows con brechas y mejoras recomendadas\n- nivel de profundidad: medio"]}, "10-01-documentacion-tecnica": {"title": "10.1 — Actualizar documentación técnica", "desc": "Prompt para revisar y proponer actualizaciones a la documentación técnica afectada por un cambio: README, docs, arquitectura, diagramas, contratos, casos de uso, notas de despliegue y troubleshooting.\n\nCuándo usarlo: al cierre de cada cambio, antes de hacer merge a la rama principal.", "formulas": ["Usa el prompt de actualización de documentación técnica y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA INTEGRADA]\n- componentes: [COMPONENTES MODIFICADOS]\n- documentos a revisar: README, docs/, arquitectura, contratos API\n- objetivo puntual de salida: lista de documentos a actualizar con contenido propuesto\n- nivel de profundidad: medio"]}, "10-02-memoria-tecnica": {"title": "10.2 — Memoria técnica del cambio", "desc": "Prompt para generar una memoria técnica clara y ejecutiva del cambio realizado: contexto, problema, análisis, solución implementada, pruebas, riesgos, resultados y puntos pendientes.\n\nCuándo usarlo: al cierre de cada issue o sprint, como registro formal del trabajo realizado para auditoría y referencia futura.", "formulas": ["Usa el prompt de memoria técnica y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA INTEGRADA]\n- ambiente: [PROD / STAGING]\n- componentes: [COMPONENTES MODIFICADOS]\n- documentos a revisar: commits, PRs, diseño aprobado, resultados de pruebas\n- objetivo puntual de salida: memoria técnica completa para auditoría\n- nivel de profundidad: alto"]}, "10-03-release-changelog": {"title": "10.3 — Documentación de release o changelog", "desc": "Prompt para redactar las notas de release o changelog de un cambio con enfoque técnico y funcional: resumen, módulos impactados, correcciones, mejoras, riesgos y consideraciones de despliegue.\n\nCuándo usarlo: al preparar un release o al cerrar un sprint para documentar cambios entregados.", "formulas": ["Usa el prompt de release/changelog y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- versión: [TAG O VERSIÓN]\n- rama: [RAMA DE RELEASE]\n- issues incluidos: [LISTA DE ISSUES O PRs]\n- documentos a revisar: commits del período, PRs mergeados, issues cerrados\n- objetivo puntual de salida: changelog listo para publicar en GitHub Releases o CHANGELOG.md\n- nivel de profundidad: medio"]}, "11-01-troubleshooting": {"title": "11.1 — Troubleshooting de ambiente", "desc": "Prompt para analizar un problema de ambiente, despliegue, servicio, contenedor, pipeline o configuración: síntoma, servicios involucrados, hipótesis, comandos a revisar y ruta de resolución.\n\nCuándo usarlo: cuando un servicio falla, un despliegue no funciona como esperado, o hay un problema de configuración en cualquier ambiente.", "formulas": ["Usa el prompt de troubleshooting de ambiente y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- síntoma: [DESCRIPCIÓN DEL PROBLEMA]\n- ambiente: [DEV / QA / STAGING / PROD]\n- servicios involucrados: [CONTENEDORES, SERVICIOS, PIPELINES]\n- evidencias disponibles: [LOGS, ERRORES, CAPTURAS]\n- documentos a revisar: configuraciones, docker-compose, nginx, variables de entorno\n- objetivo puntual de salida: hipótesis ordenadas + comandos de diagnóstico + ruta de resolución\n- nivel de profundidad: alto"]}, "11-02-hardening-seguridad": {"title": "11.2 — Hardening y seguridad operativa", "desc": "Prompt para analizar el repositorio y la configuración operativa en busca de oportunidades de fortalecimiento de seguridad: hardening, manejo de secretos, permisos, exposición de servicios y riesgos de despliegue.\n\nCuándo usarlo: periódicamente como revisión de seguridad, antes de un despliegue a producción, o cuando se detectan hallazgos de seguridad en code review.", "formulas": ["Usa el prompt de hardening y seguridad y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama: [RAMA PRINCIPAL]\n- ambiente: [PROD / STAGING]\n- componentes: [INFRAESTRUCTURA, SERVICIOS, CONFIGURACIONES]\n- documentos a revisar: docker-compose, nginx, .env, workflows, permisos de GitHub\n- objetivo puntual de salida: reporte de hallazgos de seguridad con plan de mitigación priorizado\n- nivel de profundidad: alto"]}, "11-03-deuda-tecnica": {"title": "11.3 — Deuda técnica y mejora continua", "desc": "Prompt para identificar la deuda técnica del repositorio y generar un backlog priorizado de mejoras clasificado por arquitectura, código, pruebas, documentación, seguridad, CI/CD, observabilidad, datos y performance.\n\nCuándo usarlo: al cierre de un sprint, en revisiones técnicas periódicas, o cuando se quiere planificar mejoras estructurales del proyecto.", "formulas": ["Usa el prompt de deuda técnica y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama: [RAMA PRINCIPAL]\n- componentes: [MÓDULOS O ÁREAS A ANALIZAR]\n- documentos a revisar: código fuente, tests, CI/CD, arquitectura, docs\n- objetivo puntual de salida: backlog priorizado de deuda técnica con esfuerzo estimado\n- nivel de profundidad: alto"]}, "12-orquestador": {"title": "12 — Prompt maestro orquestador del ciclo completo", "desc": "Prompt que coordina la totalidad del ciclo de ingeniería de software para una asignación: desde la comprensión del repositorio hasta la documentación final, pasando por análisis, diseño, implementación, pruebas e integración.\n\nCuándo usarlo: para asignaciones completas que requieren pasar por todas las fases, o cuando se trabaja con un agente que debe operar de forma autónoma sobre un issue de principio a fin.", "formulas": ["Usa el prompt maestro orquestador y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [PEGAR TEXTO COMPLETO]\n- rama objetivo: [RAMA DESTINO]\n- ambiente: [DEV / QA / STAGING / PROD]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: README, docs/, arquitectura, workflows, issues relacionados\n- objetivo puntual de salida: ciclo completo documentado listo para ejecución\n- nivel de profundidad: alto"]}};
+
+/* ════════════════════  PROYECTOS — datos  ══════════════════════ */
+
+var LS_KEY_PROJ = 'AI_SDLC_v1_projects';
+var LS_KEY_ACTV = 'AI_SDLC_v1_active';
+var EMPTY_VARS  = {
+  repositorio: '', referencia: '', rama_actual: '',
+  rama_destino: '', ambiente: '', componentes: '', modulo: ''
+};
+
+function genId() {
+  return 'proj_' + Math.random().toString(36).slice(2, 9);
+}
+
+function loadProjects() {
+  try {
+    var raw = localStorage.getItem(LS_KEY_PROJ);
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) { return null; }
+}
+
+function saveProjects(list) {
+  try { localStorage.setItem(LS_KEY_PROJ, JSON.stringify(list)); } catch (e) {}
+}
+
+function getActiveProject() {
+  var list = loadProjects();
+  if (!list || !list.length) return null;
+  var id = localStorage.getItem(LS_KEY_ACTV);
+  return list.find(function(p) { return p.id === id; }) ||
+         list.find(function(p) { return p.isDefault; }) ||
+         list[0];
+}
+
+/* ════════════════════  PROYECTOS — CRUD  ═══════════════════════ */
+
+function createProject(name) {
+  var list = loadProjects() || [];
+  var p = {
+    id: genId(),
+    name: name || ('Proyecto ' + (list.length + 1)),
+    isDefault: list.length === 0,
+    vars: Object.assign({}, EMPTY_VARS)
+  };
+  list.push(p);
+  saveProjects(list);
+  localStorage.setItem(LS_KEY_ACTV, p.id);
+  return p;
+}
+
+function deleteProject(id) {
+  var list = (loadProjects() || []).filter(function(p) { return p.id !== id; });
+  if (!list.length) { createProject('Default'); return; }
+  if (!list.find(function(p) { return p.isDefault; })) list[0].isDefault = true;
+  saveProjects(list);
+  var active = localStorage.getItem(LS_KEY_ACTV);
+  if (active === id) localStorage.setItem(LS_KEY_ACTV, list[0].id);
+}
+
+function duplicateProject(id) {
+  var list = loadProjects() || [];
+  var src = list.find(function(p) { return p.id === id; });
+  if (!src) return;
+  var copy = {
+    id: genId(), name: src.name + ' (copia)', isDefault: false,
+    vars: Object.assign({}, src.vars)
+  };
+  list.push(copy);
+  saveProjects(list);
+  localStorage.setItem(LS_KEY_ACTV, copy.id);
+  return copy;
+}
+
+function renameProject(id, name) {
+  var list = loadProjects() || [];
+  var p = list.find(function(x) { return x.id === id; });
+  if (p && name.trim()) { p.name = name.trim(); saveProjects(list); renderProjectSelector(); }
+}
+
+function setDefaultProject(id) {
+  var list = loadProjects() || [];
+  list.forEach(function(p) { p.isDefault = (p.id === id); });
+  saveProjects(list);
+}
+
+function switchProject(id) {
+  localStorage.setItem(LS_KEY_ACTV, id);
+  syncPanelToProject();
+  renderProjectSelector();
+}
+
+/* ════════════════════  PROYECTOS — sync DOM  ════════════════════ */
+
+var FIELD_VAR_MAP = {
+  'vf-repositorio': 'repositorio', 'vf-referencia': 'referencia',
+  'vf-rama-actual': 'rama_actual', 'vf-rama-destino': 'rama_destino',
+  'vf-ambiente': 'ambiente', 'vf-componentes': 'componentes', 'vf-modulo': 'modulo'
+};
+
+function syncPanelToProject() {
+  var p = getActiveProject();
+  var v = p ? p.vars : EMPTY_VARS;
+  Object.keys(FIELD_VAR_MAP).forEach(function(eid) {
+    var el = document.getElementById(eid);
+    if (el) el.value = v[FIELD_VAR_MAP[eid]] || '';
+  });
+  updateVarsBadge();
+}
+
+function syncProjectFromPanel() {
+  var list = loadProjects();
+  if (!list) return;
+  var actId = localStorage.getItem(LS_KEY_ACTV);
+  var p = list.find(function(x) { return x.id === actId; });
+  if (!p) return;
+  Object.keys(FIELD_VAR_MAP).forEach(function(eid) {
+    var el = document.getElementById(eid);
+    if (el) p.vars[FIELD_VAR_MAP[eid]] = el.value;
+  });
+  saveProjects(list);
+}
+
+function renderProjectSelector() {
+  var sel = document.getElementById('proj-selector');
+  if (!sel) return;
+  var list = loadProjects() || [];
+  var active = getActiveProject();
+  var activeId = active ? active.id : null;
+  sel.innerHTML = list.map(function(p) {
+    var selAttr = (p.id === activeId) ? ' selected' : '';
+    var label = p.name + (p.isDefault ? ' ★' : '');
+    return '<option value="' + p.id + '"' + selAttr + '>'
+           + label.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</option>';
+  }).join('');
+}
+
+/* ════════════════════  PROYECTOS — modal  ═══════════════════════ */
+
+function renderProjectsModal() {
+  var list = loadProjects() || [];
+  var active = getActiveProject();
+  var activeId = active ? active.id : null;
+  var ul = document.getElementById('proj-modal-list');
+  if (!ul) return;
+  ul.innerHTML = list.map(function(p) {
+    var isActive = p.id === activeId;
+    var defBadge = p.isDefault ? '<span class="proj-def-badge">default</span>' : '';
+    var delBtn = list.length > 1
+      ? '<button class="proj-action-btn" title="Eliminar"'
+        + ' onclick="deleteProject(\'' + p.id + '\');renderProjectsModal();renderProjectSelector();">'
+        + '✕</button>'
+      : '';
+    return '<li class="proj-item' + (isActive ? ' active-proj' : '') + '">'
+      + defBadge
+      + '<input class="proj-item-name" value="'
+        + p.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;') + '"'
+        + ' onblur="renameProject(\'' + p.id + '\',this.value)">'
+      + '<button class="proj-action-btn" title="Activar"'
+        + ' onclick="switchProject(\'' + p.id + '\');renderProjectsModal();">⚡</button>'
+      + '<button class="proj-action-btn" title="Predeterminar"'
+        + ' onclick="setDefaultProject(\'' + p.id + '\');renderProjectsModal();renderProjectSelector();">★</button>'
+      + '<button class="proj-action-btn" title="Duplicar"'
+        + ' onclick="duplicateProject(\'' + p.id + '\');renderProjectsModal();renderProjectSelector();syncPanelToProject();">⎘</button>'
+      + delBtn
+      + '</li>';
+  }).join('');
+}
+
+function openProjectsModal() {
+  renderProjectsModal();
+  var m = document.getElementById('proj-modal');
+  if (m) m.style.display = 'flex';
+}
+
+function closeProjectsModal() {
+  var m = document.getElementById('proj-modal');
+  if (m) m.style.display = 'none';
+}
+
+/* ═══════════════════  VARIABLES  ═══════════════════════════════ */
+
+// Mapa: campo UI → array de tokens del prompt que sustituye
+var VAR_MAP = {
+  repositorio: ['NOMBRE O URL'],
+  referencia:  ['REFERENCIA', 'PEGAR TEXTO O REFERENCIA', 'PEGAR TEXTO COMPLETO',
+                 'PEGAR LISTA DE INCIDENTES', 'PEGAR REPORTE', 'PEGAR'],
+  rama_actual: ['RAMA ACTUAL', 'RAMA CON LOS CAMBIOS', 'RAMA EN PRUEBAS',
+                'RAMA AFECTADA', 'RAMA DE TRABAJO', 'RAMA DE PRUEBAS'],
+  rama_destino:['RAMA OBJETIVO', 'RAMA PRINCIPAL', 'RAMA INTEGRADA',
+                'RAMA DESTINO', 'RAMA DE RELEASE', 'DEVELOP / MAIN / RELEASE'],
+  ambiente:    ['DEV / QA / PROD', 'QA / STAGING', 'QA / STAGING / PROD',
+                'DEV / QA / STAGING / PROD', 'PROD / STAGING', 'DEV / QA',
+                'URL DEL AMBIENTE'],
+  componentes: ['COMPONENTES INVOLUCRADOS', 'COMPONENTES MODIFICADOS',
+                'COMPONENTES A MODIFICAR', 'COMPONENTES REVISADOS',
+                'RUTAS DE ARCHIVOS MODIFICADOS', 'FUNCIONES O UNIDADES A PROBAR'],
+  modulo:      ['NOMBRE DEL PROCESO', 'INDICAR', 'SI YA CONOCES ALGUNO'],
+};
+
+function getVarValues() {
+  var p = getActiveProject();
+  return p ? Object.assign({}, p.vars) : Object.assign({}, EMPTY_VARS);
+}
+
+function hasActiveVars() {
+  var v = getVarValues();
+  return Object.values(v).some(function(x){ return x.trim() !== ''; });
+}
+
+function applyVars(text) {
+  var v = getVarValues();
+  Object.keys(VAR_MAP).forEach(function(field) {
+    var val = v[field].trim();
+    if (!val) return;
+    VAR_MAP[field].forEach(function(token) {
+      var rx = new RegExp('\\[' + token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\]', 'g');
+      text = text.replace(rx, val);
+    });
+  });
+  return text;
+}
+
+function updateVarsBadge() {
+  var badge = document.getElementById('vars-badge');
+  if (badge) badge.classList.toggle('show', hasActiveVars());
+}
+
+function openVarPanel() {
+  var p = document.getElementById('var-panel');
+  if (p) p.classList.add('open');
+  var btn = document.getElementById('var-toggle-btn');
+  if (btn) btn.classList.add('active');
+}
+
+function closeVarPanel() {
+  var p = document.getElementById('var-panel');
+  if (p) p.classList.remove('open');
+  var btn = document.getElementById('var-toggle-btn');
+  if (btn) btn.classList.remove('active');
+}
+
+function toggleVarPanel() {
+  var p = document.getElementById('var-panel');
+  if (p && p.classList.contains('open')) closeVarPanel();
+  else openVarPanel();
+}
+
+function clearVars() {
+  var list = loadProjects();
+  if (list) {
+    var actId = localStorage.getItem(LS_KEY_ACTV);
+    var p = list.find(function(x) { return x.id === actId; });
+    if (p) { p.vars = Object.assign({}, EMPTY_VARS); saveProjects(list); }
+  }
+  syncPanelToProject();
+}
+
+/* ═══════════════════  TOGGLE CARD / COPY  ══════════════════════ */
+
+function toggleCard(pid) {
+  var b = document.getElementById('cb-' + pid);
+  var t = document.getElementById('ce-' + pid);
+  if (!b) return;
+  var isOpen = b.classList.toggle('open');
+  if (t) t.classList.toggle('open', isOpen);
+}
+
+function getFwText() {
+  var fw = document.getElementById('code-fw');
+  return fw ? fw.textContent : '';
+}
+
+function copyPrompt(pid, btn) {
+  var el = document.getElementById('code-' + pid);
+  if (!el) return;
+  var raw = el.textContent;
+  var text = applyVars(raw);
+  // Para prompts individuales (no el framework mismo), anteponer framework
+  if (pid !== 'fw') {
+    var fw = applyVars(getFwText());
+    if (fw) text = fw + '\n\n---\n\n' + text;
+  }
+  doCopy(text, btn);
+}
+
+function doCopy(text, btn) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text)
+      .then(function() { flash(btn); })
+      .catch(function() { fbCopy(text, btn); });
+  } else { fbCopy(text, btn); }
+}
+
+function fbCopy(text, btn) {
+  var t = document.createElement('textarea');
+  t.value = text; t.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+  document.body.appendChild(t); t.focus(); t.select();
+  try { document.execCommand('copy'); } catch(e) {}
+  document.body.removeChild(t); flash(btn);
+}
+
+function flash(btn) {
+  var orig = btn.innerHTML;
+  btn.innerHTML = '<span>&#10003;</span> Copiado';
+  btn.classList.add('ok');
+  setTimeout(function() { btn.innerHTML = orig; btn.classList.remove('ok'); }, 2000);
+}
+
+/* ═══════════════════  MULTI-SELECT  ════════════════════════════ */
+
+var msMode = false;
+
+function toggleMsMode() {
+  msMode = !msMode;
+  document.body.classList.toggle('ms-mode', msMode);
+  var btn = document.getElementById('ms-toggle-btn');
+  if (btn) btn.classList.toggle('active', msMode);
+  if (!msMode) {
+    clearSelection();
+  }
+  updateMsBar();
+}
+
+function getSelected() {
+  return Array.from(document.querySelectorAll('.card-check:checked'));
+}
+
+function updateMsBar() {
+  var sel = getSelected();
+  var bar = document.getElementById('ms-bar');
+  if (!bar) return;
+  bar.classList.toggle('visible', msMode && sel.length > 0);
+  var countEl = document.getElementById('ms-sel-count');
+  if (countEl) countEl.textContent = sel.length;
+}
+
+function clearSelection() {
+  document.querySelectorAll('.card-check').forEach(function(cb) { cb.checked = false; });
+  document.querySelectorAll('.card').forEach(function(c) { c.classList.remove('ms-selected'); });
+  document.querySelectorAll('.sec-check').forEach(function(cb) { cb.checked = false; cb.indeterminate = false; });
+  updateMsBar();
+}
+
+function onCardCheck(cb) {
+  var card = cb.closest('.card');
+  if (card) card.classList.toggle('ms-selected', cb.checked);
+  // sync section checkbox
+  var group = cb.closest('.section-group');
+  if (group) {
+    var secCb = group.querySelector('.sec-check');
+    var all = group.querySelectorAll('.card-check');
+    var checked = group.querySelectorAll('.card-check:checked');
+    if (secCb) {
+      secCb.indeterminate = checked.length > 0 && checked.length < all.length;
+      secCb.checked = checked.length === all.length;
+    }
+  }
+  updateMsBar();
+}
+
+function onSecCheck(cb) {
+  var group = cb.closest('.section-group');
+  if (!group) return;
+  group.querySelectorAll('.card-check').forEach(function(cc) {
+    cc.checked = cb.checked;
+    var card = cc.closest('.card');
+    if (card) card.classList.toggle('ms-selected', cb.checked);
+  });
+  cb.indeterminate = false;
+  updateMsBar();
+}
+
+function copySelected(btn) {
+  var checks = getSelected();
+  if (!checks.length) return;
+  // obtener prompts en orden DOM (orden de proceso)
+  var parts = checks.map(function(cb) {
+    var pid = cb.dataset.pid;
+    var el = document.getElementById('code-' + pid);
+    return el ? applyVars(el.textContent) : '';
+  }).filter(Boolean);
+  var fw = applyVars(getFwText());
+  var text = (fw ? fw + '\n\n---\n\n' : '') + parts.join('\n\n---\n\n');
+  doCopy(text, btn);
+}
+
+/* ═══════════════════  SEARCH / FILTER  ═════════════════════════ */
+
+function filterPrompts(q) {
+  q = q.toLowerCase().trim();
+  var groups = document.querySelectorAll('.section-group');
+  var total = 0;
+  groups.forEach(function(g) {
+    var cards = g.querySelectorAll('.card');
+    var vis = 0;
+    cards.forEach(function(card) {
+      var title = (card.querySelector('.card-title') || {}).textContent || '';
+      var codeEl = card.querySelector('code');
+      var code = codeEl ? codeEl.textContent : '';
+      var match = !q || title.toLowerCase().includes(q) || code.toLowerCase().includes(q);
+      card.style.display = match ? '' : 'none';
+      if (match) vis++;
+    });
+    g.style.display = vis ? '' : 'none';
+    total += vis;
+  });
+  var fw = document.getElementById('sec-00');
+  if (fw) fw.style.display = '';
+  var empty = document.getElementById('glbl-empty');
+  if (empty) empty.style.display = total === 0 ? '' : 'none';
+  var countEl = document.getElementById('vis-count');
+  if (countEl) countEl.textContent = total + ' prompts';
+}
+
+/* ═══════════════════  INFO MODAL  ══════════════════════════════ */
+
+function openInfo(pid) {
+  var info = (typeof PROMPT_INFO !== 'undefined') ? PROMPT_INFO[pid] : null;
+  if (!info) return;
+  var modal = document.getElementById('info-modal');
+  if (!modal) return;
+
+  var titleEl = document.getElementById('modal-title');
+  if (titleEl) titleEl.textContent = info.title || pid;
+
+  // Description
+  var descSec = document.getElementById('modal-desc-section');
+  var descEl  = document.getElementById('modal-desc');
+  if (descEl && descSec) {
+    descSec.style.display = info.desc ? '' : 'none';
+    descEl.textContent = info.desc || '';
+  }
+
+  // Formulas
+  var formulasEl = document.getElementById('modal-formulas');
+  if (formulasEl) {
+    formulasEl.innerHTML = '';
+    if (info.formulas && info.formulas.length) {
+      info.formulas.forEach(function(f, i) {
+        var sec = document.createElement('div');
+        sec.className = 'modal-section';
+        var h = document.createElement('h3');
+        h.textContent = info.formulas.length > 1
+          ? 'Fórmula de uso ' + (i + 1)
+          : 'Fórmula de uso estándar';
+        var wrap = document.createElement('div');
+        wrap.className = 'modal-formula-wrap';
+        var box = document.createElement('div');
+        box.className = 'modal-formula';
+        var code = document.createElement('code');
+        code.textContent = f;
+        box.appendChild(code);
+        var btn = document.createElement('button');
+        btn.className = 'modal-copy-formula';
+        btn.innerHTML = '&#10697; Copiar fórmula';
+        (function(formula, b) {
+          b.addEventListener('click', function() { doCopy(applyVars(formula), b); });
+        })(f, btn);
+        wrap.appendChild(box);
+        wrap.appendChild(btn);
+        sec.appendChild(h);
+        sec.appendChild(wrap);
+        formulasEl.appendChild(sec);
+      });
+    } else {
+      var note = document.createElement('p');
+      note.className = 'modal-note';
+      note.textContent = 'Este prompt no tiene fórmula de uso estandarizada — se usa directamente después del framework.';
+      formulasEl.appendChild(note);
+    }
+  }
+
+  modal.classList.add('open');
+}
+
+function closeInfo() {
+  var modal = document.getElementById('info-modal');
+  if (modal) modal.classList.remove('open');
+}
+
+/* ═══════════════════  INIT  ════════════════════════════════════ */
+
+document.addEventListener('DOMContentLoaded', function() {
+  // ── Inicializar proyectos ──
+  if (!loadProjects()) createProject('Default');
+  renderProjectSelector();
+  syncPanelToProject();
+
+  // Cerrar modal de info al pulsar Escape o clic en overlay
+  var overlay = document.getElementById('info-modal');
+  if (overlay) {
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) closeInfo();
+    });
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') { closeInfo(); closeVarPanel(); closeProjectsModal(); }
+  });
+
+  var content = document.querySelector('.content');
+  if (!content) return;
+  var targets = document.querySelectorAll('[data-observe]');
+  if (!targets.length) return;
+  var obs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      var link = document.querySelector('.sid-link[href="#' + entry.target.id + '"]');
+      if (link) link.classList.toggle('active', entry.isIntersecting);
+    });
+  }, { root: content, threshold: 0.04, rootMargin: '-2% 0px -88% 0px' });
+  targets.forEach(function(el) { obs.observe(el); });
+});
+</script>
+</body>
+</html>
