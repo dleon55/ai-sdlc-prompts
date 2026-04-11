@@ -1718,6 +1718,8 @@ def build():
         '<meta name="twitter:title" content="AI-SDLC Pro \u2014 Biblioteca de Prompts">\n'
         '<meta name="twitter:description" content="44 prompts para dirigir agentes IA en ingenieria de software. Copilot, Claude, Cursor, Windsurf.">\n'
         '<link rel="canonical" href="https://prompts.lionsystems.com.mx">\n'
+        '<script async src="https://www.googletagmanager.com/gtag/js?id=G-C5JKYNZ62F"></script>\n'
+        '<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-C5JKYNZ62F");</script>\n'
         '<style>' + CSS + '</style>\n'
         '</head>\n<body>\n'
 
