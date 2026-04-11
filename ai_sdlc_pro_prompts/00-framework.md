@@ -133,8 +133,6 @@ Usa el prompt de análisis de causa raíz y adáptalo a:
 - No implementación sin diseño previo aprobado
 - Control de concurrencia en entornos multi-agente
 - Todo entregable distingue hechos, hallazgos, supuestos, riesgos y recomendaciones
-5. Integración
-6. Monitoreo
 
 ## Reglas críticas
 
