@@ -1,6 +1,6 @@
 # AI-SDLC Pro — Biblioteca de Prompts de Ingeniería de Software
 
-Biblioteca interactiva de prompts estructurados bajo el **AI-SDLC Enterprise Framework**: **45 prompts** organizados en **15 grupos** que cubren el ciclo completo de ingeniería de software asistida por IA.
+Biblioteca interactiva de prompts estructurados bajo el **AI-SDLC Enterprise Framework**: **44 prompts** organizados en **15 grupos** que cubren el ciclo completo de ingeniería de software asistida por IA.
 
 ## Entornos activos
 
@@ -27,7 +27,7 @@ Biblioteca interactiva de prompts estructurados bajo el **AI-SDLC Enterprise Fra
 ## Estructura del proyecto
 
 ```
-ai_sdlc_pro_prompts/    # 45 fuentes Markdown (15 grupos, ciclo SDLC completo)
+ai_sdlc_pro_prompts/    # 44 fuentes Markdown (15 grupos, ciclo SDLC completo)
 build.py                # Generador: produce index.html desde los .md
 extract_vars.py         # Analiza tokens [PLACEHOLDER] en los prompts
 verify_clean.py         # QA gate: valida prompts limpios (integrado en CI)
