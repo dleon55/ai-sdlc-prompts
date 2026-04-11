@@ -29,6 +29,9 @@ jobs:
       - name: Build index.html from prompts .md
         run: python build.py
 
+      - name: Validate prompts (QA gate)
+        run: python verify_clean.py
+
       - name: Prepare dist/
         run: |
           mkdir -p dist

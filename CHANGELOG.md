@@ -6,6 +6,21 @@ Este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 
 ---
 
+## [1.3.0] — 2026-04-10
+
+### Added
+- Panel de variables extendido con campos adicionales: **stack tecnológico** y **configuración de agentes IA**
+  - Campos nuevos integrados en el sistema de proyectos (`AI_SDLC_v1_projects`)
+  - Variables disponibles para sustitución en prompts de la sección 00-B y 00-C
+- `verify_clean.py` integrado al pipeline CI como QA gate (step "Validate prompts")
+  - Ahora emite `sys.exit(1)` ante prompts contaminados — el CI falla correctamente
+
+### Fixed
+- `StrictHostKeyChecking=no` → `StrictHostKeyChecking=accept-new` en `deploy-to-gcp.sh` (3 ocurrencias) — mitigación MITM
+- `verify_clean.py` excluido incorrectamente de git tracking — removido de `.gitignore`
+
+---
+
 ## [1.2.0] — 2026-04-10
 
 ### Added

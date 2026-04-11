@@ -19,15 +19,15 @@ if [ ! -f "$LOCAL_PATH" ]; then
 fi
 
 echo "==> Subiendo index.html al servidor GCP..."
-scp -P $PORT -i "$SSH_KEY" -o StrictHostKeyChecking=no \
+scp -P $PORT -i "$SSH_KEY" -o StrictHostKeyChecking=accept-new \
   "$LOCAL_PATH" "$REMOTE:$REMOTE_PATH"
 
 echo "==> Ajustando permisos..."
-ssh -p $PORT -i "$SSH_KEY" -o StrictHostKeyChecking=no "$REMOTE" \
+ssh -p $PORT -i "$SSH_KEY" -o StrictHostKeyChecking=accept-new "$REMOTE" \
   "sudo chown www-data:www-data $REMOTE_PATH && sudo chmod 644 $REMOTE_PATH"
 
 echo "==> Verificando sitio..."
-RESULT=$(ssh -p $PORT -i "$SSH_KEY" -o StrictHostKeyChecking=no "$REMOTE" \
+RESULT=$(ssh -p $PORT -i "$SSH_KEY" -o StrictHostKeyChecking=accept-new "$REMOTE" \
   "curl -s -o /dev/null -w '%{http_code}' https://prompts.lionsystems.com.mx/")
 
 if [ "$RESULT" = "200" ]; then

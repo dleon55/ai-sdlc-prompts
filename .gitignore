@@ -5,7 +5,6 @@ dist/
 _tmp_check.js
 _analysis.txt
 analyze_prompts.py
-verify_clean.py
 
 # Python
 __pycache__/
