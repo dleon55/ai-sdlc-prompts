@@ -741,9 +741,208 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   font-family: inherit; transition: all .12s;
 }
 .ob-prev:hover { border-color: #6366f1; color: #a5b4fc; }
+.ob-email-form { margin-top: .85rem; }
+.ob-email-form label { font-size: .74rem; color: var(--tx2); display: block; margin-bottom: .35rem; }
+.ob-email-input {
+  width: 100%; padding: .45rem .8rem; border-radius: 7px;
+  border: 1px solid var(--bdr2); background: var(--bg3); color: var(--tx);
+  font-size: .82rem; font-family: inherit; outline: none; box-sizing: border-box;
+  transition: border-color .15s;
+}
+.ob-email-input:focus { border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99,102,241,.15); }
+.ob-email-input::placeholder { color: var(--tx3); }
+.ob-email-submit {
+  margin-top: .55rem; width: 100%; padding: .42rem 1rem;
+  background: linear-gradient(90deg,#6366f1,#8b5cf6); border: none;
+  border-radius: 7px; color: #fff; font-size: .8rem; font-weight: 700;
+  cursor: pointer; font-family: inherit; transition: opacity .12s;
+}
+.ob-email-submit:hover { opacity: .88; }
+.ob-email-submit.ok { background: var(--grn); }
+.ob-email-note { font-size: .66rem; color: var(--tx3); margin-top: .35rem; text-align: center; }
+/* ═════════════════ LANDING PAGE ════════════════════════════════ */
+.landing {
+  min-height: 100vh; background: var(--bg);
+  display: flex; flex-direction: column; overflow-y: auto;
+}
+.landing-hidden { display: none !important; }
+.app-hidden { display: none !important; }
+.landing-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 2rem; border-bottom: 1px solid var(--bdr);
+  background: var(--bg); position: sticky; top: 0; z-index: 100;
+}
+.landing-nav-logo { display: flex; align-items: center; gap: .55rem; }
+.landing-nav-logo h1 { font-size: .95rem; font-weight: 700; color: var(--tx); }
+.landing-nav-logo p { font-size: .65rem; color: var(--tx3); display: none; }
+.landing-nav-cta {
+  padding: .38rem 1.1rem; background: #6366f1; border: none;
+  border-radius: 7px; color: #fff; font-size: .8rem; font-weight: 700;
+  cursor: pointer; text-decoration: none; font-family: inherit;
+  transition: background .12s;
+}
+.landing-nav-cta:hover { background: #4f46e5; }
+.landing-hero {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; text-align: center;
+  padding: 5rem 1.5rem 3rem; max-width: 760px; margin: 0 auto;
+}
+.landing-badge {
+  display: inline-flex; align-items: center; gap: .4rem;
+  font-size: .7rem; font-weight: 700; color: #f59e0b;
+  background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.25);
+  border-radius: 20px; padding: .22rem .75rem; margin-bottom: 1.5rem;
+  text-transform: uppercase; letter-spacing: .08em;
+}
+.landing-hero h2 {
+  font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 800; line-height: 1.2;
+  color: var(--tx); margin-bottom: 1.1rem;
+}
+.landing-hero h2 em {
+  font-style: normal;
+  background: linear-gradient(90deg,#818cf8,#c084fc);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.landing-hero p {
+  font-size: 1rem; color: var(--tx2); line-height: 1.7;
+  margin-bottom: 2rem; max-width: 600px;
+}
+.landing-cta-group { display: flex; gap: .75rem; flex-wrap: wrap; justify-content: center; }
+.landing-cta-primary {
+  padding: .75rem 2rem; background: linear-gradient(90deg,#6366f1,#8b5cf6);
+  border: none; border-radius: 9px; color: #fff; font-size: .9rem; font-weight: 700;
+  cursor: pointer; text-decoration: none; font-family: inherit;
+  box-shadow: 0 4px 15px rgba(99,102,241,.35); transition: box-shadow .15s, transform .1s;
+}
+.landing-cta-primary:hover { box-shadow: 0 6px 22px rgba(99,102,241,.45); transform: translateY(-1px); }
+.landing-cta-secondary {
+  padding: .75rem 1.5rem; background: none; border: 1px solid var(--bdr2);
+  border-radius: 9px; color: var(--tx2); font-size: .9rem;
+  cursor: pointer; text-decoration: none; font-family: inherit;
+  transition: border-color .15s, color .15s;
+}
+.landing-cta-secondary:hover { border-color: #6366f1; color: #a5b4fc; }
+.landing-pain {
+  background: var(--bg2); border-top: 1px solid var(--bdr);
+  padding: 4rem 1.5rem;
+}
+.landing-pain-inner { max-width: 900px; margin: 0 auto; }
+.landing-pain h3 {
+  text-align: center; font-size: 1.3rem; font-weight: 700;
+  color: var(--tx); margin-bottom: .5rem;
+}
+.landing-pain-sub { text-align: center; color: var(--tx3); font-size: .85rem; margin-bottom: 2.5rem; }
+.landing-pain-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+.pain-card {
+  background: var(--bg); border: 1px solid var(--bdr);
+  border-radius: 10px; padding: 1.1rem 1.2rem;
+}
+.pain-card-icon { font-size: 1.4rem; margin-bottom: .5rem; }
+.pain-card h4 { font-size: .85rem; font-weight: 700; color: var(--tx); margin-bottom: .3rem; }
+.pain-card p { font-size: .78rem; color: var(--tx3); line-height: 1.6; }
+.landing-proof {
+  padding: 4rem 1.5rem; max-width: 900px; margin: 0 auto;
+}
+.landing-proof h3 {
+  text-align: center; font-size: 1.3rem; font-weight: 700;
+  color: var(--tx); margin-bottom: 2rem;
+}
+.proof-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem; margin-bottom: 3rem;
+}
+.proof-stat {
+  text-align: center; padding: 1.2rem;
+  background: var(--bg2); border: 1px solid var(--bdr); border-radius: 10px;
+}
+.proof-stat-num {
+  font-size: 2rem; font-weight: 800;
+  background: linear-gradient(90deg,#818cf8,#c084fc);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.proof-stat-label { font-size: .74rem; color: var(--tx3); margin-top: .2rem; }
+.landing-final {
+  background: linear-gradient(135deg,#1e1b4b,#0f1220);
+  border-top: 1px solid #4338ca; padding: 4rem 1.5rem; text-align: center;
+}
+.landing-final h3 { font-size: 1.4rem; font-weight: 800; color: #e0e7ff; margin-bottom: .75rem; }
+.landing-final p { font-size: .9rem; color: #a5b4fc; margin-bottom: 2rem; }
+.landing-footer {
+  border-top: 1px solid var(--bdr); padding: 1.2rem 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--bg2); font-size: .72rem; color: var(--tx3);
+}
 </style>
 </head>
 <body>
+<div id="landing-root" class="landing">
+  <nav class="landing-nav">
+    <div class="landing-nav-logo">
+      <img src="https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png" width="28" height="28" alt="Lionsystems" style="border-radius:4px;flex-shrink:0;">
+      <h1>AI-SDLC Pro</h1>
+    </div>
+    <a class="landing-nav-cta" href="/app">Explorar prompts →</a>
+  </nav>
+  <section class="landing-hero">
+    <span class="landing-badge">● Framework profesional · 44 prompts</span>
+    <h2>Deja de improvisar con IA.<br><em>Dirige cada fase del SDLC.</em></h2>
+    <p>44 prompts estructurados para guiar a Copilot, Claude, Cursor y Windsurf
+en análisis, diseño, implementación, pruebas, CI/CD y documentación
+— en español, listos para producción.</p>
+    <div class="landing-cta-group">
+      <a class="landing-cta-primary" href="/app">Explorar prompts gratis →</a>
+      <a class="landing-cta-secondary" href="https://github.com/dleon55/ai-sdlc-prompts" target="_blank" rel="noopener">Ver en GitHub ↗</a>
+    </div>
+  </section>
+  <section class="landing-pain">
+    <div class="landing-pain-inner">
+      <h3>¿Por qué tus agentes IA producen resultados inconsistentes?</h3>
+      <p class="landing-pain-sub">No es el modelo — es la falta de un prompt de dirección preciso</p>
+      <div class="landing-pain-grid">
+        <div class="pain-card"><div class="pain-card-icon">🎲</div>
+          <h4>Respuestas genéricas</h4>
+          <p>El agente no sabe tu stack ni las reglas de tu proyecto — da código genérico que necesitas reescribir.</p>
+        </div>
+        <div class="pain-card"><div class="pain-card-icon">🔁</div>
+          <h4>Repetir contexto en cada sesión</h4>
+          <p>Explicas el proyecto desde cero cada vez. Pierdes tiempo y el agente pierde calidad de respuesta.</p>
+        </div>
+        <div class="pain-card"><div class="pain-card-icon">🧩</div>
+          <h4>Sin estructura SDLC</h4>
+          <p>El agente salta directo a código sin análisis ni diseño. Resultado: deuda técnica desde el primer commit.</p>
+        </div>
+        <div class="pain-card"><div class="pain-card-icon">⚠️</div>
+          <h4>Multi-agente sin gobernanza</h4>
+          <p>Copilot, Claude y Cursor reciben instrucciones contradictorias y producen artefactos incompatibles.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="landing-proof">
+    <h3>El framework en números</h3>
+    <div class="proof-grid">
+      <div class="proof-stat"><div class="proof-stat-num">44</div><div class="proof-stat-label">Prompts listos para usar</div></div>
+      <div class="proof-stat"><div class="proof-stat-num">10</div><div class="proof-stat-label">Fases del ciclo SDLC</div></div>
+      <div class="proof-stat"><div class="proof-stat-num">4</div><div class="proof-stat-label">Agentes IA cubiertos</div></div>
+      <div class="proof-stat"><div class="proof-stat-num">0</div><div class="proof-stat-label">Costo para empezar</div></div>
+    </div>
+  </section>
+  <section class="landing-final">
+    <h3>Empieza a dirigir tus agentes IA hoy</h3>
+    <p>Acceso gratuito. Sin registro. Sin tarjeta de crédito.</p>
+    <div class="landing-cta-group">
+      <a class="landing-cta-primary" href="/app">Abrir biblioteca de prompts →</a>
+    </div>
+  </section>
+  <footer class="landing-footer">
+    <span>AI-SDLC Pro &copy; 2025 LionSystems</span>
+    <a class="landing-cta-secondary" style="font-size:.72rem;padding:.25rem .75rem;" href="https://lionsystems.com.mx" target="_blank" rel="noopener">lionsystems.com.mx ↗</a>
+  </footer>
+</div>
+<div id="app-root" class="app-hidden">
 <header>
   <div class="hdr-logo"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg><div><h1>AI-SDLC Pro</h1><p>44 prompts para dirigir agentes IA en cada fase del SDLC &middot; Copilot &middot; Claude &middot; Cursor &middot; Windsurf</p></div></div>
   <div class="hdr-tags"><span class="tag">v3</span><span class="tag">44 prompts</span><span class="tag tag-warn">&#9888; Incluir framework antes de cada prompt</span></div>
@@ -2534,11 +2733,26 @@ Formato de salida obligatorio:
         <p>El sidebar izquierdo lista las secciones en orden:
 <br><br><strong>01</strong> Comprensión → <strong>02</strong> Análisis → <strong>04</strong> Diseño → <strong>05</strong> Plan → <strong>06</strong> Ejecución → <strong>07</strong> Pruebas → <strong>09</strong> CI/CD → <strong>10</strong> Documentación<br><br>El botón <span class="ob-highlight">&#9432;</span> en cada card explica cuándo y cómo usar ese prompt.</p>
       </div>
+      <div class="ob-step" id="ob-step-3">
+        <div class="ob-step-badge"><span class="ob-step-badge-dot">4</span> Recíbe nuevos prompts gratis</div>
+        <h3>Mantente al tanto de cada actualización</h3>
+        <p>Cada mes publicamos nuevos prompts y mejoras al framework.
+Déjanos tu email y serás el primero en saber.</p>
+        <form class="ob-email-form" onsubmit="submitObEmail();return false;">
+          <label for="ob-email-input">Correo electrónico</label>
+          <input class="ob-email-input" id="ob-email-input" type="email" placeholder="tu@correo.com" autocomplete="email" required>
+          <button class="ob-email-submit" id="ob-email-submit-btn" type="submit">
+            ✉️ Recibir nuevos prompts gratis
+          </button>
+        </form>
+        <p class="ob-email-note">Sin spam. Cancelar en cualquier momento.</p>
+      </div>
     </div>
     <div class="ob-progress">
       <div class="ob-dot on" id="ob-dot-0"></div>
       <div class="ob-dot" id="ob-dot-1"></div>
       <div class="ob-dot" id="ob-dot-2"></div>
+      <div class="ob-dot" id="ob-dot-3"></div>
     </div>
     <div class="ob-footer">
       <button class="ob-skip" onclick="closeOnboarding(true)">No volver a mostrar</button>
@@ -2548,6 +2762,7 @@ Formato de salida obligatorio:
       </div>
     </div>
   </div>
+</div>
 </div>
 <script>var PROMPT_INFO = {"00-B-01-scaffolding-repositorio": {"title": "0-B.1 — Scaffolding de repositorio nuevo", "desc": "Prompt para diseñar y generar la estructura base de un repositorio nuevo: directorios, archivos de configuración, gobierno y estándares, a partir del tipo de proyecto, metodología y stack tecnológico seleccionados.\n\nCuándo usarlo: al iniciar un proyecto nuevo, al migrar un proyecto sin estructura formal, o al estandarizar un repositorio existente que creció sin guía.", "formulas": ["Usa el prompt de scaffolding de repositorio y adáptalo a:\n- nombre del repo: [NOMBRE]\n- tipo de proyecto: [TIPO]\n- metodología: [METODOLOGÍA]\n- stack: [STACK]\n- plataforma CI/hosting: [PLATAFORMA]\n- equipo: [COMPOSICIÓN]\n- licencia: [TIPO DE LICENCIA]\n- objetivo puntual de salida: árbol de directorios + tabla de archivos + contenido base de README, CONTRIBUTING, .gitignore, Dockerfile\n- nivel de profundidad: alto"]}, "00-B-02-gobernanza-ia-agentes": {"title": "0-B.2 — Configuración de archivos de gobernanza para agentes IA", "desc": "Prompt para generar los archivos de configuración y gobierno que controlan el comportamiento de los agentes IA sobre el repositorio: instrucciones de rol, reglas de codificación, restricciones de seguridad, contexto del proyecto y protocolo de trabajo. Compatible con GitHub Copilot, Claude, Windsurf, Cursor, Codex y otros agentes.\n\nCuándo usarlo: al iniciar un repositorio nuevo, al incorporar agentes IA a un proyecto existente, o cuando los agentes no siguen las convenciones ni el marco de trabajo del proyecto.", "formulas": ["Usa el prompt de gobernanza de agentes IA y adáptalo a:\n- nombre del proyecto: [NOMBRE]\n- stack: [STACK]\n- metodología: [METODOLOGÍA]\n- agentes a configurar: [LISTA DE AGENTES]\n- nivel de autonomía: [NIVEL]\n- reglas críticas del proyecto: [REGLAS ESPECÍFICAS]\n- documentos a revisar: README, CONTRIBUTING, estructura del repo, workflows existentes\n- objetivo puntual de salida: archivos .github/copilot-instructions.md, .windsurfrules, AGENTS.md, docs/ai-governance.md con contenido completo\n- nivel de profundidad: alto"]}, "00-B-03-github-configuracion": {"title": "0-B.3 — Configuración de repositorio GitHub (protecciones, plantillas y settings)", "desc": "Prompt para configurar el repositorio GitHub de forma completa y segura: protección de ramas, plantillas de issues y PRs, Dependabot, GitHub Actions permissions, Environments, secrets y quality gates. Alinea la plataforma con la metodología y el nivel de madurez del equipo.\n\nCuándo usarlo: al crear un repositorio nuevo, al estandarizar uno existente, o cuando el repo no tiene protecciones formales y se va a incorporar IA o múltiples contribuidores.", "formulas": ["Usa el prompt de configuración de repositorio GitHub y adáptalo a:\n- repositorio: [ORG/REPO]\n- metodología: [BRANCHING STRATEGY]\n- stack CI: [GITHUB ACTIONS / OTRO]\n- ambientes: [DEV / STAGING / PROD]\n- equipo: [COMPOSICIÓN]\n- documentos a revisar: workflows existentes, README, CONTRIBUTING\n- objetivo puntual de salida: archivos ISSUE_TEMPLATE/, PR_TEMPLATE, dependabot.yml, CODEOWNERS + comandos gh CLI para branch protection\n- nivel de profundidad: alto"]}, "00-B-04-metodologia-framework": {"title": "0-B.4 — Selección y configuración de metodología y marco de trabajo", "desc": "Prompt para seleccionar, documentar y configurar operativamente la metodología y el marco de trabajo del proyecto: definición de flujo de trabajo, ceremonies, roles, estrategia de branching, Definition of Ready, Definition of Done, y cómo se integra el trabajo de agentes IA en el proceso.\n\nCuándo usarlo: al iniciar un proyecto, al formalizar uno existente que creció sin metodología, o cuando se incorporan agentes IA y se necesita definir su lugar en el proceso.", "formulas": ["Usa el prompt de metodología y marco de trabajo y adáptalo a:\n- tipo de proyecto: [TIPO]\n- tamaño del equipo: [NÚMERO + AGENTES IA]\n- frecuencia de entregas: [CADENCIA]\n- metodología candidata: [METODOLOGÍA O \"ninguna\"]\n- nivel de madurez: [BAJO / MEDIO / ALTO]\n- documentos a revisar: README, CONTRIBUTING, issues actuales, estructura del repo\n- objetivo puntual de salida: estrategia de branches documentada + DoR + DoD + flujo de issue para humanos y agentes IA\n- nivel de profundidad: alto"]}, "00-B-05-stack-calidad-codigo": {"title": "0-B.5 — Configuración de stack y herramientas de calidad de código", "desc": "Prompt para seleccionar y configurar las herramientas de calidad de código según el stack del proyecto: linters, formatters, analizadores estáticos, pre-commit hooks, coverage mínimo y quality gates en CI. Genera los archivos de configuración listos para usar.\n\nCuándo usarlo: al iniciar un proyecto, al estandarizar calidad en uno existente, o cuando se incorporan agentes IA que deben respetar las convenciones del stack.", "formulas": ["Usa el prompt de configuración de stack y calidad de código y adáptalo a:\n- lenguaje(s): [LENGUAJES]\n- frameworks: [FRAMEWORKS]\n- plataforma CI: [CI]\n- cobertura mínima: [PORCENTAJE]\n- nivel de restricción: [PERMISIVO / BALANCEADO / ESTRICTO]\n- objetivo puntual de salida: archivos de configuración completos + workflow CI quality gates + comandos de bootstrap\n- nivel de profundidad: alto"]}, "00-C-01-issue-para-agente-ia": {"title": "0-C.1 — Documentar un issue listo para ejecución por agente IA", "desc": "Prompt para redactar un issue GitHub de alta calidad que pueda ser ejecutado por un agente IA de forma autónoma y controlada: con contexto suficiente, criterios de aceptación verificables, restricciones explícitas, archivos involucrados y checklist de validación humana post-ejecución.\n\nCuándo usarlo: antes de asignar cualquier tarea a un agente IA (Copilot Agent, Claude, Codex, Windsurf), para garantizar que el agente opere con contexto completo y dentro de límites seguros.", "formulas": ["Usa el prompt de issue para agente IA y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- título del issue: [TÍTULO]\n- tipo: [TIPO]\n- descripción del requerimiento: [DESCRIPCIÓN]\n- archivos involucrados: [LISTA]\n- criterios de aceptación: [CRITERIOS]\n- restricciones: [RESTRICCIONES]\n- agente asignado: [AGENTE]\n- nivel de autonomía: [NIVEL]\n- objetivo puntual de salida: issue completo listo para crear en GitHub con gh issue create\n- nivel de profundidad: alto"]}, "00-C-02-plan-mode-multiagente": {"title": "0-C.2 — Modo plan seguro y coordinación multi-agente", "desc": "Prompt para ejecutar cualquier tarea en modo plan antes de implementar: el agente analiza, diseña y propone sin tocar el código. Incluye el protocolo de coordinación para entornos donde múltiples agentes (Copilot, Claude, Codex, Windsurf, Antigravity) operan en paralelo sobre el mismo repositorio, previniendo conflictos, sobreescrituras y pérdida de trabajo.\n\nCuándo usarlo: siempre antes de ejecutar tareas de alto impacto, cuando hay más de un agente activo en el repo, o cuando se trabaja en `mode:plan` en Agent Manager o GitHub Copilot Agent.", "formulas": ["Usa el prompt de modo plan y coordinación multi-agente y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- tarea o issue: [REFERENCIA]\n- rama objetivo: [BRANCH]\n- agentes activos en paralelo: [LISTA O \"ninguno conocido\"]\n- modo: [SOLO PLAN / PLAN + EJECUCIÓN CONTROLADA]\n- documentos a revisar: git log reciente, PRs abiertos, AGENTS.md\n- objetivo puntual de salida: plan de implementación con tabla de archivos + detección de conflictos + reserva de rama\n- nivel de profundidad: alto"]}, "00-C-03-configuracion-por-agente": {"title": "0-C.3 — Configuración específica por tipo de agente IA", "desc": "Prompt y referencia para configurar el comportamiento, las instrucciones y las restricciones de cada tipo de agente IA según sus capacidades y mecanismos propios: GitHub Copilot (Agent / Chat / Edits), Claude (Anthropic), OpenAI Codex, Windsurf, Cursor y Chrome Antigravity. Garantiza que cada agente opere con el contexto del proyecto y dentro de las reglas de equipo.\n\nCuándo usarlo: al incorporar un nuevo tipo de agente al proyecto, al detectar que un agente no sigue las convenciones, o al configurar un entorno multi-agente por primera vez.", "formulas": ["Usa el prompt de configuración por tipo de agente y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- agentes activos: [LISTA]\n- stack: [STACK]\n- metodología: [METODOLOGÍA]\n- reglas críticas: [REGLAS ESPECÍFICAS DEL PROYECTO]\n- nivel de autonomía: [NIVEL]\n- documentos a revisar: README, CONTRIBUTING, AGENTS.md existente (si hay), estructura del repo\n- objetivo puntual de salida: archivos de instrucciones completos para cada agente activo + tabla comparativa\n- nivel de profundidad: alto"]}, "01-01-arranque-comprension-repositorio": {"title": "01-01-arranque-comprension-repositorio", "desc": "", "formulas": []}, "01-02-analisis-procesos": {"title": "1.2 — Localizar procesos, procedimientos y políticas del proyecto", "desc": "Prompt de arranque para mapear todo el gobierno del proyecto: procesos, procedimientos, políticas, estándares, branching strategy, estrategia QA, CI/CD y reglas de ingeniería. Establece qué sí existe, qué está incompleto y qué no existe.\n\nCuándo usarlo: antes de cualquier trabajo de análisis o implementación, para entender el marco de gobierno del proyecto y evitar violar reglas ya definidas.", "formulas": ["Usa el prompt de localización de procesos y políticas y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama: [RAMA ACTUAL]\n- documentos a revisar: README, docs/, .github/, workflows/\n- objetivo puntual de salida: matriz de gobierno del proyecto con estado de completitud\n- nivel de profundidad: medio"]}, "02-01-analisis-issue": {"title": "2.1 — Análisis funcional de un requerimiento, issue o cambio", "desc": "Prompt para analizar un requerimiento, issue o cambio y determinar su alcance funcional: flujo de negocio afectado, actores, comportamiento actual vs esperado, criterios de aceptación y riesgos.\n\nCuándo usarlo: como primer paso al recibir una tarea, antes de cualquier análisis técnico o diseño.", "formulas": ["Usa el prompt de análisis funcional y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [PEGAR TEXTO O REFERENCIA]\n- rama: [RAMA ACTUAL]\n- ambiente: [DEV / QA / PROD]\n- componentes: [SI YA CONOCES ALGUNO]\n- documentos a revisar: README, docs/, casos de uso existentes\n- objetivo puntual de salida: alcance funcional completo con criterios de aceptación\n- nivel de profundidad: alto"]}, "02-02-analisis-tecnico": {"title": "2.2 — Análisis técnico profundo de código existente", "desc": "Prompt para analizar cómo funciona realmente el código existente hoy: flujo end-to-end, acoplamientos, deuda técnica, validaciones faltantes y riesgos de regresión.\n\nCuándo usarlo: después del análisis funcional (`02-01`) y antes del análisis de impacto cruzado (`02-03`) y el diseño de la solución (`02-04`).", "formulas": ["Usa el prompt de análisis técnico profundo y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA ACTUAL]\n- ambiente: [DEV / QA / PROD]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: código fuente, esquema de BD, contratos API\n- objetivo puntual de salida: flujo actual documentado con hallazgos técnicos\n- nivel de profundidad: alto", "Usa el prompt de análisis técnico profundo y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA ACTUAL]\n- ambiente: [DEV / QA / PROD]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: código fuente, esquema de BD, contratos API\n- objetivo puntual de salida: flujo actual documentado + matriz de impacto cruzado\n- nivel de profundidad: alto"]}, "02-03-impacto-cruzado": {"title": "2.3 — Análisis de impacto cruzado", "desc": "Prompt para evaluar el impacto del cambio en todos los módulos, procesos, datos, integraciones, ambientes y pipelines del sistema. Detecta impactos directos e indirectos y genera una matriz de severidad.\n\nCuándo usarlo: después del análisis técnico profundo (`02-02`) y antes del diseño de la solución (`04-01`).", "formulas": ["Usa el prompt de análisis de impacto cruzado y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA ACTUAL]\n- ambiente: [DEV / QA / PROD]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: arquitectura, contratos API, esquema de BD\n- objetivo puntual de salida: matriz de impacto cruzado con severidad por componente\n- nivel de profundidad: alto"]}, "03-01-incidentes-github": {"title": "3.1 — Revisión de incidentes reportados por tester contra GitHub Issues", "desc": "Prompt para normalizar incidentes de testing, compararlos contra issues existentes en GitHub, detectar duplicados, incompletos o mal documentados, y redactar los que no existen con el estándar del proyecto.\n\nCuándo usarlo: al recibir un reporte de ciclo de QA, antes de gestionar cualquier defecto en GitHub.", "formulas": ["Usa el prompt de revisión de incidentes y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- reporte de QA: [PEGAR LISTA DE INCIDENTES]\n- rama: [RAMA EN PRUEBAS]\n- ambiente: [QA / STAGING]\n- módulos probados: [MÓDULOS]\n- documentos a revisar: issues abiertos y cerrados en GitHub, estándar de documentación de issues\n- objetivo puntual de salida: matriz QA vs GitHub + issues redactados para crear/actualizar\n- nivel de profundidad: alto"]}, "03-02-causa-raiz": {"title": "3.2 — Análisis de causa raíz", "desc": "Prompt para investigar un defecto o incidente y determinar la causa raíz real, no solo el síntoma. Incluye formulación de hipótesis, validación con evidencia y recomendación de remediación.\n\nCuándo usarlo: al investigar defectos en QA o producción, cuando el síntoma está claro pero la causa no.", "formulas": ["Usa el prompt de análisis de causa raíz y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue: [NÚMERO O REFERENCIA]\n- rama: [RAMA AFECTADA]\n- ambiente: [QA / STAGING / PROD]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: logs, código, commits recientes, configuraciones\n- objetivo puntual: confirmar causa raíz y proponer plan de solución\n- nivel de profundidad: alto", "Usa el prompt de análisis de causa raíz y adáptalo a:\n- repositorio: urgemy-api\n- issue: #842\n- rama: urgemy-test\n- ambiente: QA\n- componentes: api, notificaciones push, postgres\n- documentos a revisar: README, docs/notificaciones, workflows, issues relacionados\n- objetivo puntual: confirmar causa raíz y proponer plan de solución\n- nivel de profundidad: alto"]}, "04-01-diseno-solucion": {"title": "4.1 — Diseño funcional y técnico de solución", "desc": "Prompt para diseñar la solución completa antes de implementar: objetivo, alcance, supuestos, restricciones, cambios por componente, riesgos, dependencias, estrategia de validación y rollback.\n\nCuándo usarlo: una vez completado el análisis funcional, técnico y de impacto, antes de planificar o ejecutar cualquier cambio.", "formulas": ["Usa el prompt de diseño de solución y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA OBJETIVO]\n- ambiente: [DEV / QA / PROD]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: análisis previo, arquitectura, contratos\n- objetivo puntual de salida: diseño completo con riesgos y estrategia de rollback\n- nivel de profundidad: alto"]}, "04-02-diagramas-mermaid": {"title": "4.2 — Generar diagramas Mermaid", "desc": "Prompt para generar diagramas Mermaid que documenten la solución: flujo actual y propuesto, secuencia, componentes y entidad-relación. Los diagramas deben ser consistentes con el código y la arquitectura real.\n\nCuándo usarlo: durante o después del diseño de la solución (`04-01`), para documentar y comunicar visualmente los cambios.", "formulas": ["Usa el prompt de diagramas Mermaid y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: diseño aprobado, arquitectura, código fuente\n- objetivo puntual de salida: conjunto de diagramas Mermaid para documentación técnica\n- nivel de profundidad: medio"]}, "04-03-casos-de-uso": {"title": "4.3 — Diseño de casos de uso", "desc": "Prompt para documentar formalmente los casos de uso del requerimiento o módulo analizado: actores, disparadores, flujos principal y alternos, reglas de negocio y criterios de aceptación.\n\nCuándo usarlo: durante la fase de diseño, para formalizar el comportamiento esperado del sistema antes de implementar.", "formulas": ["Usa el prompt de diseño de casos de uso y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- módulo: [MÓDULO O FUNCIONALIDAD]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: análisis funcional, documentación existente de CU\n- objetivo puntual de salida: casos de uso formales listos para revisión y validación\n- nivel de profundidad: alto"]}, "04-04-adr-decisiones-arquitectura": {"title": "4.4 — Architecture Decision Records (ADR)", "desc": "Prompt para documentar decisiones arquitectónicas de forma estructurada: contexto del problema, opciones evaluadas, decisión tomada, consecuencias y estado. Genera ADRs numerados y versionados que quedan como registro permanente del por qué del diseño.\n\nCuándo usarlo: al tomar una decisión arquitectónica significativa (elección de tecnología, patrón de diseño, estrategia de integración, estructura de datos), al documentar decisiones pasadas que no quedaron registradas, o como revisión al inicio de un proyecto.", "formulas": ["Usa el prompt de Architecture Decision Records y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- número ADR: [ADR-NNN]\n- título: [TÍTULO DE LA DECISIÓN]\n- contexto del proyecto: [STACK, RESTRICCIONES, EQUIPO]\n- opciones evaluadas: [LISTA DE ALTERNATIVAS CONSIDERADAS]\n- documentos a revisar: README, arquitectura existente, issues relacionados\n- objetivo puntual de salida: ADR completo listo para guardar en docs/decisions/\n- nivel de profundidad: alto"]}, "05-01-plan-implementacion": {"title": "5.1 — Plan de implementación detallado", "desc": "Prompt para elaborar un plan de implementación ejecutable y trazable: actividades previas, cambios por componente, migraciones, pruebas, despliegue, rollback y evidencias esperadas por paso.\n\nCuándo usarlo: después del diseño aprobado (`04-01`), antes de ejecutar cualquier cambio en el repositorio.", "formulas": ["Usa el prompt de plan de implementación y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA OBJETIVO]\n- ambiente: [DEV / QA / PROD]\n- componentes: [COMPONENTES A MODIFICAR]\n- documentos a revisar: diseño aprobado, arquitectura, contratos\n- objetivo puntual de salida: plan de implementación ejecutable paso a paso\n- nivel de profundidad: alto"]}, "05-02-riesgos-implementacion": {"title": "5.2 — Análisis de riesgos e impacto de implementación", "desc": "Prompt para identificar y clasificar los riesgos de implementación: funcionales, técnicos, de datos, seguridad, operación, concurrencia de agentes, integración y despliegue. Genera una matriz de riesgos con probabilidad, impacto y plan de mitigación.\n\nCuándo usarlo: en paralelo al plan de implementación (`05-01`), antes de ejecutar cualquier cambio.", "formulas": ["Usa el prompt de análisis de riesgos de implementación y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA OBJETIVO]\n- ambiente: [DEV / QA / PROD]\n- componentes: [COMPONENTES A MODIFICAR]\n- documentos a revisar: diseño aprobado, arquitectura, historial de incidentes\n- objetivo puntual de salida: matriz de riesgos completa con plan de mitigación\n- nivel de profundidad: alto"]}, "06-01-implementacion-multiagente": {"title": "6.1 — Implementación multi-agente segura", "desc": "Prompt de ejecución controlada para implementar la solución aprobada en un entorno donde múltiples agentes pueden estar modificando el repositorio en paralelo. Prioriza cambios mínimos, commits atómicos y detección de conflictos.\n\nCuándo usarlo: durante la fase de ejecución, después de que el plan (`05-01`) y los riesgos (`05-02`) han sido aprobados.", "formulas": ["Usa el prompt de implementación multi-agente y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA DE TRABAJO]\n- ambiente: [DEV / QA]\n- componentes: [ARCHIVOS Y MÓDULOS A MODIFICAR]\n- documentos a revisar: plan de implementación aprobado, diseño técnico\n- objetivo puntual de salida: cambios aplicados con commits atómicos y sin conflictos\n- nivel de profundidad: alto"]}, "06-02-commits": {"title": "6.2 — Generación de mensajes de commit de calidad", "desc": "Prompt para generar mensajes de commit pequeños, claros y trazables, alineados al estándar del proyecto. Incluye alternativas si el cambio debe dividirse en múltiples commits.\n\nCuándo usarlo: antes de hacer commit de cualquier cambio, para garantizar trazabilidad y consistencia con el historial del repositorio.", "formulas": ["Usa el prompt de mensajes de commit y adáptalo a:\n- issue: [NÚMERO O REFERENCIA]\n- tipo de cambio: [feat / fix / refactor / docs / test / chore]\n- componente: [MÓDULO O ARCHIVO AFECTADO]\n- descripción breve: [QUÉ SE HIZO EN UNA LÍNEA]\n- objetivo puntual de salida: commit principal + alternativas si aplica dividir", "Usa el prompt de mensajes de commit y adáptalo a:\n- issue: #842\n- tipo de cambio: fix\n- componente: api/notificaciones\n- descripción breve: corrige envío duplicado de notificaciones push al actualizar orden", "fix(api/notificaciones): corrige envío duplicado al actualizar orden #842\n\nfeat(auth): agrega validación de expiración de token en middleware #123\n\nrefactor(db): extrae consulta de usuarios a repositorio separado #456\n\ndocs(readme): actualiza instrucciones de despliegue en Docker #78\n\ntest(pagos): agrega casos borde para monto negativo en procesador #99"]}, "07-01-pruebas-unitarias": {"title": "7.1 — Diseño de pruebas unitarias", "desc": "Prompt para diseñar la suite de pruebas unitarias que valide los cambios propuestos o implementados: escenarios positivos, negativos y casos borde por cada función o unidad bajo prueba.\n\nCuándo usarlo: después de implementar cambios, en paralelo a la implementación, o como referencia antes de escribir código.", "formulas": ["Usa el prompt de pruebas unitarias y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA DE PRUEBAS]\n- ambiente: [DEV / QA]\n- componentes: [FUNCIONES O UNIDADES A PROBAR]\n- documentos a revisar: código implementado, criterios de aceptación\n- objetivo puntual de salida: matriz completa de pruebas unitarias con cobertura\n- nivel de profundidad: alto"]}, "07-02-pruebas-integracion": {"title": "7.2 — Diseño de pruebas de integración", "desc": "Prompt para definir las pruebas de integración que validen la interacción entre módulos, servicios, APIs, base de datos e integraciones involucradas en el cambio.\n\nCuándo usarlo: después de las pruebas unitarias (`07-01`), para validar que los módulos funcionan correctamente en conjunto.", "formulas": ["Usa el prompt de pruebas de integración y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA DE PRUEBAS]\n- ambiente: [QA / STAGING]\n- componentes: [MÓDULOS E INTEGRACIONES A PROBAR]\n- documentos a revisar: contratos API, diseño de integración, datos de prueba disponibles\n- objetivo puntual de salida: plan de pruebas de integración con casos de error\n- nivel de profundidad: alto"]}, "07-03-pruebas-e2e": {"title": "7.3 — Diseño de pruebas E2E", "desc": "Prompt para diseñar pruebas end-to-end de los casos de uso impactados por el cambio: desde el actor hasta el resultado final, incluyendo evidencia requerida y regresiones relacionadas.\n\nCuándo usarlo: después de las pruebas de integración (`07-02`), para validar el flujo completo desde la perspectiva del usuario.", "formulas": ["Usa el prompt de pruebas E2E y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA DE PRUEBAS]\n- ambiente: [QA / STAGING]\n- componentes: [FLUJOS Y MÓDULOS A PROBAR]\n- documentos a revisar: casos de uso, criterios de aceptación, flujos documentados\n- objetivo puntual de salida: plan de pruebas E2E con evidencia requerida por caso\n- nivel de profundidad: alto"]}, "07-04-pruebas-humo": {"title": "7.4 — Pruebas de humo", "desc": "Prompt para definir un plan de pruebas de humo que valide rápidamente que el sistema sigue operativo después de un cambio o despliegue: autenticación, flujos críticos, módulos, integraciones mínimas y errores visibles.\n\nCuándo usarlo: inmediatamente después de un despliegue o merge, para una validación rápida de salud del sistema antes de pruebas completas.", "formulas": ["Usa el prompt de pruebas de humo y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama o versión desplegada: [REFERENCIA]\n- ambiente: [QA / STAGING / PROD]\n- módulos críticos: [MÓDULOS QUE DEBEN FUNCIONAR]\n- documentos a revisar: flujos críticos documentados, última versión estable\n- objetivo puntual de salida: checklist de humo ejecutable en menos de 15 minutos\n- nivel de profundidad: bajo"]}, "07-05-automatizacion-antigravity": {"title": "7.5 — Automatización en navegador con Chrome Antigravity", "desc": "Prompt para diseñar y documentar una estrategia de pruebas automatizadas en navegador usando Chrome Antigravity: escenarios, navegación, selectors, datos de prueba, validaciones visuales y puntos frágiles del flujo.\n\nCuándo usarlo: para automatizar pruebas E2E o de regresión de flujos críticos impactados por el cambio.", "formulas": ["Usa el prompt de automatización con Antigravity y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- flujos a automatizar: [FLUJOS CRÍTICOS A CUBRIR]\n- ambiente: [QA / STAGING]\n- URL base: [URL DEL AMBIENTE]\n- documentos a revisar: casos de uso, plan E2E, diseño de UI\n- objetivo puntual de salida: estrategia de automatización con pasos, selectors y validaciones\n- nivel de profundidad: alto"]}, "07-06-pruebas-performance-carga": {"title": "7.6 — Pruebas de performance y carga", "desc": "Prompt para diseñar una estrategia de pruebas de performance, carga, stress y benchmark para los componentes impactados por un cambio: escenarios, umbrales de aceptación, herramientas, datos de prueba y criterios de fallo.\n\nCuándo usarlo: antes de desplegar a producción cambios que afecten APIs, consultas de base de datos, procesos batch, generación de archivos o cualquier componente con requerimientos de rendimiento. También como revisión periódica de salud del sistema.", "formulas": ["Usa el prompt de pruebas de performance y carga y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- componentes a probar: [LISTA]\n- ambiente: [QA / STAGING]\n- SLA objetivo: [TIEMPOS DE RESPUESTA ACEPTABLES]\n- usuarios concurrentes esperados: [NÚMERO]\n- herramienta: [k6 / Locust / JMeter / Artillery]\n- documentos a revisar: arquitectura, contratos de API, requerimientos de performance\n- objetivo puntual de salida: estrategia completa + script base + tabla de umbrales\n- nivel de profundidad: alto"]}, "08-01-revision-estatica": {"title": "8.1 — Revisión estática de código", "desc": "Prompt para realizar una revisión estática del código relacionado con el cambio: calidad, mantenibilidad, seguridad, complejidad, manejo de errores y consistencia con los estándares del proyecto.\n\nCuándo usarlo: después de implementar cambios, antes de abrir un PR o hacer merge.", "formulas": ["Usa el prompt de revisión estática y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama: [RAMA CON LOS CAMBIOS]\n- archivos a revisar: [RUTAS DE ARCHIVOS MODIFICADOS]\n- documentos a revisar: estándares de código del proyecto, arquitectura\n- objetivo puntual de salida: reporte de hallazgos clasificados por criticidad\n- nivel de profundidad: alto"]}, "08-02-cumplimiento-requerimiento": {"title": "8.2 — Revisión de cumplimiento contra requerimiento", "desc": "Prompt para validar si la implementación realmente cumple con el issue, requerimiento, caso de uso y criterios de aceptación. Compara lo solicitado, lo diseñado, lo implementado y lo probado.\n\nCuándo usarlo: antes de cerrar un issue o abrir un PR para merge, como paso de cierre de calidad.", "formulas": ["Usa el prompt de cumplimiento contra requerimiento y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA CON LOS CAMBIOS]\n- documentos a revisar: issue original, diseño aprobado, código implementado, resultados de pruebas\n- objetivo puntual de salida: matriz de cumplimiento con brechas y acciones requeridas\n- nivel de profundidad: alto"]}, "08-03-remediacion-maestro": {"title": "8.3 — Remediación de revisión estática (prompt maestro)", "desc": "Prompt maestro de nivel producción para analizar un reporte de revisión estática con hallazgos críticos, medios y menores, y generar un plan integral de corrección controlado, priorizado y seguro para entornos multi-agente.\n\nCuándo usarlo: cuando se recibe un reporte de revisión estática y se necesita un plan estructurado de corrección, no solo parches superficiales.", "formulas": ["Usa el prompt maestro de remediación y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- reporte de revisión estática: [PEGAR REPORTE]\n- rama: [RAMA CON LOS CAMBIOS]\n- ambiente: [DEV / QA]\n- componentes: [COMPONENTES REVISADOS]\n- documentos a revisar: código fuente, arquitectura, contratos\n- objetivo puntual de salida: plan de remediación ejecutable y priorizado\n- nivel de profundidad: alto"]}, "09-01-integracion-ramas": {"title": "9.1 — Integración controlada con ramas", "desc": "Prompt para planificar la integración de cambios con otras ramas activas: análisis de conflictos potenciales, estrategia recomendada (merge, rebase, cherry-pick) y riesgos de concurrencia con otros agentes o desarrolladores.\n\nCuándo usarlo: antes de hacer merge a cualquier rama destino, especialmente en entornos con cambios concurrentes.", "formulas": ["Usa el prompt de integración controlada y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama origen: [RAMA CON LOS CAMBIOS]\n- rama destino: [DEVELOP / MAIN / RELEASE]\n- ambiente: [QA / STAGING / PROD]\n- componentes: [COMPONENTES MODIFICADOS]\n- documentos a revisar: historial de commits, ramas activas, PRs abiertos\n- objetivo puntual de salida: estrategia de integración con plan de resolución de conflictos\n- nivel de profundidad: alto"]}, "09-02-monitoreo-ci": {"title": "9.2 — Monitoreo de CI local y remoto", "desc": "Prompt para revisar el estado del pipeline de CI local y en GitHub y determinar si los cambios están listos para integrarse: lint, build, pruebas, quality gates, artefactos y checks del PR.\n\nCuándo usarlo: antes de abrir o aprobar un PR, antes de hacer merge a cualquier rama protegida.", "formulas": ["Usa el prompt de monitoreo CI y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama: [RAMA DEL PR O INTEGRACIÓN]\n- ambiente: [QA / STAGING / PROD]\n- componentes: [COMPONENTES MODIFICADOS]\n- documentos a revisar: .github/workflows/, logs de CI, checks del PR\n- objetivo puntual de salida: estado del pipeline + criterio de aprobación\n- nivel de profundidad: medio"]}, "09-03-workflows-github-actions": {"title": "9.3 — Revisión de workflows de GitHub Actions", "desc": "Prompt para auditar los workflows del repositorio y verificar si cubren adecuadamente validación, pruebas, seguridad, despliegue y calidad. Detecta vacíos, riesgos y propone mejoras.\n\nCuándo usarlo: periódicamente como revisión de salud del pipeline, o al incorporar nuevos módulos o ambientes.", "formulas": ["Usa el prompt de revisión de workflows y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama: [RAMA PRINCIPAL]\n- documentos a revisar: .github/workflows/, README de CI/CD\n- objetivo puntual de salida: inventario de workflows con brechas y mejoras recomendadas\n- nivel de profundidad: medio"]}, "09-04-promotion-checklist": {"title": "9.4 — Promotion checklist: integración y despliegue entre ambientes", "desc": "Prompt para planificar y documentar la promoción de cambios entre ambientes (dev → qa → staging → prod): verificaciones previas, pasos de despliegue, validaciones post-despliegue, criterios de go/no-go y plan de rollback. Incluye consideraciones para entornos con agentes IA operando.\n\nCuándo usarlo: antes de cualquier despliegue a un ambiente superior, especialmente antes de ir a producción. También útil para definir el proceso estándar de promotion del proyecto.", "formulas": ["Usa el prompt de promotion checklist y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- cambio: [REFERENCIA AL ISSUE O PR]\n- rama fuente: [RAMA]\n- ambiente origen → destino: [ORIGEN → DESTINO]\n- stack de despliegue: [STACK]\n- migraciones de BD: [SÍ / NO]\n- cambios de infraestructura: [SÍ / NO]\n- documentos a revisar: CHANGELOG, PR diff, runbooks/, arquitectura\n- objetivo puntual de salida: checklist completo go/no-go + pasos de despliegue + plan de rollback\n- nivel de profundidad: alto"]}, "10-01-documentacion-tecnica": {"title": "10.1 — Actualizar documentación técnica", "desc": "Prompt para revisar y proponer actualizaciones a la documentación técnica afectada por un cambio: README, docs, arquitectura, diagramas, contratos, casos de uso, notas de despliegue y troubleshooting.\n\nCuándo usarlo: al cierre de cada cambio, antes de hacer merge a la rama principal.", "formulas": ["Usa el prompt de actualización de documentación técnica y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA INTEGRADA]\n- componentes: [COMPONENTES MODIFICADOS]\n- documentos a revisar: README, docs/, arquitectura, contratos API\n- objetivo puntual de salida: lista de documentos a actualizar con contenido propuesto\n- nivel de profundidad: medio"]}, "10-02-memoria-tecnica": {"title": "10.2 — Memoria técnica del cambio", "desc": "Prompt para generar una memoria técnica clara y ejecutiva del cambio realizado: contexto, problema, análisis, solución implementada, pruebas, riesgos, resultados y puntos pendientes.\n\nCuándo usarlo: al cierre de cada issue o sprint, como registro formal del trabajo realizado para auditoría y referencia futura.", "formulas": ["Usa el prompt de memoria técnica y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA INTEGRADA]\n- ambiente: [PROD / STAGING]\n- componentes: [COMPONENTES MODIFICADOS]\n- documentos a revisar: commits, PRs, diseño aprobado, resultados de pruebas\n- objetivo puntual de salida: memoria técnica completa para auditoría\n- nivel de profundidad: alto"]}, "10-03-release-changelog": {"title": "10.3 — Documentación de release o changelog", "desc": "Prompt para redactar las notas de release o changelog de un cambio con enfoque técnico y funcional: resumen, módulos impactados, correcciones, mejoras, riesgos y consideraciones de despliegue.\n\nCuándo usarlo: al preparar un release o al cerrar un sprint para documentar cambios entregados.", "formulas": ["Usa el prompt de release/changelog y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- versión: [TAG O VERSIÓN]\n- rama: [RAMA DE RELEASE]\n- issues incluidos: [LISTA DE ISSUES O PRs]\n- documentos a revisar: commits del período, PRs mergeados, issues cerrados\n- objetivo puntual de salida: changelog listo para publicar en GitHub Releases o CHANGELOG.md\n- nivel de profundidad: medio"]}, "11-01-troubleshooting": {"title": "11.1 — Troubleshooting de ambiente", "desc": "Prompt para analizar un problema de ambiente, despliegue, servicio, contenedor, pipeline o configuración: síntoma, servicios involucrados, hipótesis, comandos a revisar y ruta de resolución.\n\nCuándo usarlo: cuando un servicio falla, un despliegue no funciona como esperado, o hay un problema de configuración en cualquier ambiente.", "formulas": ["Usa el prompt de troubleshooting de ambiente y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- síntoma: [DESCRIPCIÓN DEL PROBLEMA]\n- ambiente: [DEV / QA / STAGING / PROD]\n- servicios involucrados: [CONTENEDORES, SERVICIOS, PIPELINES]\n- evidencias disponibles: [LOGS, ERRORES, CAPTURAS]\n- documentos a revisar: configuraciones, docker-compose, nginx, variables de entorno\n- objetivo puntual de salida: hipótesis ordenadas + comandos de diagnóstico + ruta de resolución\n- nivel de profundidad: alto"]}, "11-02-hardening-seguridad": {"title": "11.2 — Hardening y seguridad operativa", "desc": "Prompt para analizar el repositorio y la configuración operativa en busca de oportunidades de fortalecimiento de seguridad: hardening, manejo de secretos, permisos, exposición de servicios y riesgos de despliegue.\n\nCuándo usarlo: periódicamente como revisión de seguridad, antes de un despliegue a producción, o cuando se detectan hallazgos de seguridad en code review.", "formulas": ["Usa el prompt de hardening y seguridad y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama: [RAMA PRINCIPAL]\n- ambiente: [PROD / STAGING]\n- componentes: [INFRAESTRUCTURA, SERVICIOS, CONFIGURACIONES]\n- documentos a revisar: docker-compose, nginx, .env, workflows, permisos de GitHub\n- objetivo puntual de salida: reporte de hallazgos de seguridad con plan de mitigación priorizado\n- nivel de profundidad: alto"]}, "11-03-deuda-tecnica": {"title": "11.3 — Deuda técnica y mejora continua", "desc": "Prompt para identificar la deuda técnica del repositorio y generar un backlog priorizado de mejoras clasificado por arquitectura, código, pruebas, documentación, seguridad, CI/CD, observabilidad, datos y performance.\n\nCuándo usarlo: al cierre de un sprint, en revisiones técnicas periódicas, o cuando se quiere planificar mejoras estructurales del proyecto.", "formulas": ["Usa el prompt de deuda técnica y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama: [RAMA PRINCIPAL]\n- componentes: [MÓDULOS O ÁREAS A ANALIZAR]\n- documentos a revisar: código fuente, tests, CI/CD, arquitectura, docs\n- objetivo puntual de salida: backlog priorizado de deuda técnica con esfuerzo estimado\n- nivel de profundidad: alto"]}, "11-04-incident-response": {"title": "11.4 — Runbook de incident response en producción", "desc": "Prompt para ejecutar el proceso completo de respuesta a incidentes en producción: detección, clasificación de severidad, activación del equipo, diagnóstico, contención, resolución, comunicación, post-mortem y lecciones aprendidas. Compatible con entornos multi-agente.\n\nCuándo usarlo: cuando se detecta un incidente activo en producción, para documentar el proceso de respuesta a posteriori, o para diseñar el runbook estándar del proyecto antes de que ocurra el primer incidente.", "formulas": ["Usa el prompt de incident response y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- síntoma: [DESCRIPCIÓN DEL INCIDENTE]\n- sistema afectado: [SERVICIO]\n- ambiente: PROD\n- hora de detección: [HH:MM]\n- detectado por: [FUENTE]\n- stack: [STACK]\n- documentos a revisar: logs de producción, últimos deploys, runbooks/, métricas\n- objetivo puntual de salida: clasificación de severidad + pasos de diagnóstico + template de comunicación\n- nivel de profundidad: alto"]}, "12-orquestador": {"title": "12 — Prompt maestro orquestador del ciclo completo", "desc": "Prompt que coordina la totalidad del ciclo de ingeniería de software para una asignación: desde la comprensión del repositorio hasta la documentación final, pasando por análisis, diseño, implementación, pruebas e integración.\n\nCuándo usarlo: para asignaciones completas que requieren pasar por todas las fases, o cuando se trabaja con un agente que debe operar de forma autónoma sobre un issue de principio a fin.", "formulas": ["Usa el prompt maestro orquestador y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [PEGAR TEXTO COMPLETO]\n- rama objetivo: [RAMA DESTINO]\n- ambiente: [DEV / QA / STAGING / PROD]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: README, docs/, arquitectura, workflows, issues relacionados\n- objetivo puntual de salida: ciclo completo documentado listo para ejecución\n- nivel de profundidad: alto"]}};
 
@@ -3114,6 +3329,7 @@ function closeInfo() {
 /* ═══════════════════  WELCOME BANNER  ═════════════════════════ */
 var LS_WELCOME = 'AI_SDLC_welcome_seen';
 var LS_ONBOARD = 'AI_SDLC_onboarding_done';
+var LS_EMAIL  = 'AI_SDLC_email_collected';
 
 function initWelcomeBanner() {
   try {
@@ -3133,7 +3349,7 @@ function dismissWelcomeBanner() {
 
 /* ═══════════════════  ONBOARDING  ══════════════════════════════ */
 var _obStep = 0;
-var _obTotal = 3;
+var _obTotal = 4;
 
 function initOnboarding() {
   try {
@@ -3176,6 +3392,33 @@ function closeOnboarding(permanent) {
 }
 
 function skipOnboarding() { closeOnboarding(false); }
+
+function submitObEmail() {
+  try {
+    var input = document.getElementById('ob-email-input');
+    var btn   = document.getElementById('ob-email-submit-btn');
+    var email = input ? input.value.trim() : '';
+    if (!email || !email.includes('@')) {
+      if (input) input.focus();
+      return;
+    }
+    // Guardar localmente
+    localStorage.setItem(LS_EMAIL, email);
+    // Enviar a Mailchimp (POST silencioso — sin redirección)
+    var MC_URL = 'https://lionsystems.us22.list-manage.com/subscribe/post-json?u=MAILCHIMP_U&id=MAILCHIMP_ID&c=?';
+    var formData = 'EMAIL=' + encodeURIComponent(email) + '&b_MAILCHIMP_U_MAILCHIMP_ID=';
+    var script = document.createElement('script');
+    var callbackName = 'mc_cb_' + Date.now();
+    window[callbackName] = function() { delete window[callbackName]; };
+    // Construir URL JSONP (Mailchimp free tier)
+    var url = MC_URL + '&' + formData;
+    script.src = url;
+    document.body.appendChild(script);
+    // Feedback visual
+    if (btn) { btn.textContent = '✓ Listo'; btn.classList.add('ok'); btn.disabled = true; }
+    setTimeout(function() { obNext(); }, 900);
+  } catch(e) { obNext(); }
+}
 
 /* ═══════════════════  INIT  ════════════════════════════════════ */
 
@@ -3222,6 +3465,24 @@ document.addEventListener('DOMContentLoaded', function() {
   }, { root: content, threshold: 0.04, rootMargin: '-2% 0px -88% 0px' });
   targets.forEach(function(el) { obs.observe(el); });
 });
+
+/* ═══════ ROUTING client-side ═══════ */
+(function() {
+  function route() {
+    var path = window.location.pathname;
+    var isApp = path === '/app' || path.startsWith('/app/');
+    var lr = document.getElementById('landing-root');
+    var ar = document.getElementById('app-root');
+    if (lr) lr.classList.toggle('landing-hidden', isApp);
+    if (ar) ar.classList.toggle('app-hidden', !isApp);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', route);
+  } else {
+    route();
+  }
+  window.addEventListener('popstate', route);
+})();
 </script>
 </body>
 </html>

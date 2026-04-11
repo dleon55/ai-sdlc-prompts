@@ -874,6 +874,140 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   font-family: inherit; transition: all .12s;
 }
 .ob-prev:hover { border-color: #6366f1; color: #a5b4fc; }
+.ob-email-form { margin-top: .85rem; }
+.ob-email-form label { font-size: .74rem; color: var(--tx2); display: block; margin-bottom: .35rem; }
+.ob-email-input {
+  width: 100%; padding: .45rem .8rem; border-radius: 7px;
+  border: 1px solid var(--bdr2); background: var(--bg3); color: var(--tx);
+  font-size: .82rem; font-family: inherit; outline: none; box-sizing: border-box;
+  transition: border-color .15s;
+}
+.ob-email-input:focus { border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99,102,241,.15); }
+.ob-email-input::placeholder { color: var(--tx3); }
+.ob-email-submit {
+  margin-top: .55rem; width: 100%; padding: .42rem 1rem;
+  background: linear-gradient(90deg,#6366f1,#8b5cf6); border: none;
+  border-radius: 7px; color: #fff; font-size: .8rem; font-weight: 700;
+  cursor: pointer; font-family: inherit; transition: opacity .12s;
+}
+.ob-email-submit:hover { opacity: .88; }
+.ob-email-submit.ok { background: var(--grn); }
+.ob-email-note { font-size: .66rem; color: var(--tx3); margin-top: .35rem; text-align: center; }
+/* ═════════════════ LANDING PAGE ════════════════════════════════ */
+.landing {
+  min-height: 100vh; background: var(--bg);
+  display: flex; flex-direction: column; overflow-y: auto;
+}
+.landing-hidden { display: none !important; }
+.app-hidden { display: none !important; }
+.landing-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1rem 2rem; border-bottom: 1px solid var(--bdr);
+  background: var(--bg); position: sticky; top: 0; z-index: 100;
+}
+.landing-nav-logo { display: flex; align-items: center; gap: .55rem; }
+.landing-nav-logo h1 { font-size: .95rem; font-weight: 700; color: var(--tx); }
+.landing-nav-logo p { font-size: .65rem; color: var(--tx3); display: none; }
+.landing-nav-cta {
+  padding: .38rem 1.1rem; background: #6366f1; border: none;
+  border-radius: 7px; color: #fff; font-size: .8rem; font-weight: 700;
+  cursor: pointer; text-decoration: none; font-family: inherit;
+  transition: background .12s;
+}
+.landing-nav-cta:hover { background: #4f46e5; }
+.landing-hero {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; text-align: center;
+  padding: 5rem 1.5rem 3rem; max-width: 760px; margin: 0 auto;
+}
+.landing-badge {
+  display: inline-flex; align-items: center; gap: .4rem;
+  font-size: .7rem; font-weight: 700; color: #f59e0b;
+  background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.25);
+  border-radius: 20px; padding: .22rem .75rem; margin-bottom: 1.5rem;
+  text-transform: uppercase; letter-spacing: .08em;
+}
+.landing-hero h2 {
+  font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 800; line-height: 1.2;
+  color: var(--tx); margin-bottom: 1.1rem;
+}
+.landing-hero h2 em {
+  font-style: normal;
+  background: linear-gradient(90deg,#818cf8,#c084fc);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.landing-hero p {
+  font-size: 1rem; color: var(--tx2); line-height: 1.7;
+  margin-bottom: 2rem; max-width: 600px;
+}
+.landing-cta-group { display: flex; gap: .75rem; flex-wrap: wrap; justify-content: center; }
+.landing-cta-primary {
+  padding: .75rem 2rem; background: linear-gradient(90deg,#6366f1,#8b5cf6);
+  border: none; border-radius: 9px; color: #fff; font-size: .9rem; font-weight: 700;
+  cursor: pointer; text-decoration: none; font-family: inherit;
+  box-shadow: 0 4px 15px rgba(99,102,241,.35); transition: box-shadow .15s, transform .1s;
+}
+.landing-cta-primary:hover { box-shadow: 0 6px 22px rgba(99,102,241,.45); transform: translateY(-1px); }
+.landing-cta-secondary {
+  padding: .75rem 1.5rem; background: none; border: 1px solid var(--bdr2);
+  border-radius: 9px; color: var(--tx2); font-size: .9rem;
+  cursor: pointer; text-decoration: none; font-family: inherit;
+  transition: border-color .15s, color .15s;
+}
+.landing-cta-secondary:hover { border-color: #6366f1; color: #a5b4fc; }
+.landing-pain {
+  background: var(--bg2); border-top: 1px solid var(--bdr);
+  padding: 4rem 1.5rem;
+}
+.landing-pain-inner { max-width: 900px; margin: 0 auto; }
+.landing-pain h3 {
+  text-align: center; font-size: 1.3rem; font-weight: 700;
+  color: var(--tx); margin-bottom: .5rem;
+}
+.landing-pain-sub { text-align: center; color: var(--tx3); font-size: .85rem; margin-bottom: 2.5rem; }
+.landing-pain-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1rem;
+}
+.pain-card {
+  background: var(--bg); border: 1px solid var(--bdr);
+  border-radius: 10px; padding: 1.1rem 1.2rem;
+}
+.pain-card-icon { font-size: 1.4rem; margin-bottom: .5rem; }
+.pain-card h4 { font-size: .85rem; font-weight: 700; color: var(--tx); margin-bottom: .3rem; }
+.pain-card p { font-size: .78rem; color: var(--tx3); line-height: 1.6; }
+.landing-proof {
+  padding: 4rem 1.5rem; max-width: 900px; margin: 0 auto;
+}
+.landing-proof h3 {
+  text-align: center; font-size: 1.3rem; font-weight: 700;
+  color: var(--tx); margin-bottom: 2rem;
+}
+.proof-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem; margin-bottom: 3rem;
+}
+.proof-stat {
+  text-align: center; padding: 1.2rem;
+  background: var(--bg2); border: 1px solid var(--bdr); border-radius: 10px;
+}
+.proof-stat-num {
+  font-size: 2rem; font-weight: 800;
+  background: linear-gradient(90deg,#818cf8,#c084fc);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.proof-stat-label { font-size: .74rem; color: var(--tx3); margin-top: .2rem; }
+.landing-final {
+  background: linear-gradient(135deg,#1e1b4b,#0f1220);
+  border-top: 1px solid #4338ca; padding: 4rem 1.5rem; text-align: center;
+}
+.landing-final h3 { font-size: 1.4rem; font-weight: 800; color: #e0e7ff; margin-bottom: .75rem; }
+.landing-final p { font-size: .9rem; color: #a5b4fc; margin-bottom: 2rem; }
+.landing-footer {
+  border-top: 1px solid var(--bdr); padding: 1.2rem 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--bg2); font-size: .72rem; color: var(--tx3);
+}
 """
 
 JS = """
@@ -1440,6 +1574,7 @@ function closeInfo() {
 /* ═══════════════════  WELCOME BANNER  ═════════════════════════ */
 var LS_WELCOME = 'AI_SDLC_welcome_seen';
 var LS_ONBOARD = 'AI_SDLC_onboarding_done';
+var LS_EMAIL  = 'AI_SDLC_email_collected';
 
 function initWelcomeBanner() {
   try {
@@ -1459,7 +1594,7 @@ function dismissWelcomeBanner() {
 
 /* ═══════════════════  ONBOARDING  ══════════════════════════════ */
 var _obStep = 0;
-var _obTotal = 3;
+var _obTotal = 4;
 
 function initOnboarding() {
   try {
@@ -1502,6 +1637,33 @@ function closeOnboarding(permanent) {
 }
 
 function skipOnboarding() { closeOnboarding(false); }
+
+function submitObEmail() {
+  try {
+    var input = document.getElementById('ob-email-input');
+    var btn   = document.getElementById('ob-email-submit-btn');
+    var email = input ? input.value.trim() : '';
+    if (!email || !email.includes('@')) {
+      if (input) input.focus();
+      return;
+    }
+    // Guardar localmente
+    localStorage.setItem(LS_EMAIL, email);
+    // Enviar a Mailchimp (POST silencioso — sin redirección)
+    var MC_URL = 'https://lionsystems.us22.list-manage.com/subscribe/post-json?u=MAILCHIMP_U&id=MAILCHIMP_ID&c=?';
+    var formData = 'EMAIL=' + encodeURIComponent(email) + '&b_MAILCHIMP_U_MAILCHIMP_ID=';
+    var script = document.createElement('script');
+    var callbackName = 'mc_cb_' + Date.now();
+    window[callbackName] = function() { delete window[callbackName]; };
+    // Construir URL JSONP (Mailchimp free tier)
+    var url = MC_URL + '&' + formData;
+    script.src = url;
+    document.body.appendChild(script);
+    // Feedback visual
+    if (btn) { btn.textContent = '\u2713 Listo'; btn.classList.add('ok'); btn.disabled = true; }
+    setTimeout(function() { obNext(); }, 900);
+  } catch(e) { obNext(); }
+}
 
 /* ═══════════════════  INIT  ════════════════════════════════════ */
 
@@ -1549,6 +1711,96 @@ document.addEventListener('DOMContentLoaded', function() {
   targets.forEach(function(el) { obs.observe(el); });
 });
 """
+
+LANDING_JS = """
+/* ═══════ ROUTING client-side ═══════ */
+(function() {
+  function route() {
+    var path = window.location.pathname;
+    var isApp = path === '/app' || path.startsWith('/app/');
+    var lr = document.getElementById('landing-root');
+    var ar = document.getElementById('app-root');
+    if (lr) lr.classList.toggle('landing-hidden', isApp);
+    if (ar) ar.classList.toggle('app-hidden', !isApp);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', route);
+  } else {
+    route();
+  }
+  window.addEventListener('popstate', route);
+})();
+"""
+
+LANDING_HTML = (
+  '<div id="landing-root" class="landing">\n'
+  '  <nav class="landing-nav">\n'
+  '    <div class="landing-nav-logo">\n'
+  '      <img src="https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png"'
+  ' width="28" height="28" alt="Lionsystems" style="border-radius:4px;flex-shrink:0;">\n'
+  '      <h1>AI-SDLC Pro</h1>\n'
+  '    </div>\n'
+  '    <a class="landing-nav-cta" href="/app">Explorar prompts \u2192</a>\n'
+  '  </nav>\n'
+  '  <section class="landing-hero">\n'
+  '    <span class="landing-badge">\u25cf Framework profesional \u00b7 44 prompts</span>\n'
+  '    <h2>Deja de improvisar con IA.<br><em>Dirige cada fase del SDLC.</em></h2>\n'
+  '    <p>44 prompts estructurados para guiar a Copilot, Claude, Cursor y Windsurf\n'
+  'en an\u00e1lisis, dise\u00f1o, implementaci\u00f3n, pruebas, CI/CD y documentaci\u00f3n\n'
+  '\u2014 en espa\u00f1ol, listos para producci\u00f3n.</p>\n'
+  '    <div class="landing-cta-group">\n'
+  '      <a class="landing-cta-primary" href="/app">Explorar prompts gratis \u2192</a>\n'
+  '      <a class="landing-cta-secondary" href="https://github.com/dleon55/ai-sdlc-prompts"'
+  ' target="_blank" rel="noopener">Ver en GitHub \u2197</a>\n'
+  '    </div>\n'
+  '  </section>\n'
+  '  <section class="landing-pain">\n'
+  '    <div class="landing-pain-inner">\n'
+  '      <h3>\u00bfPor qu\u00e9 tus agentes IA producen resultados inconsistentes?</h3>\n'
+  '      <p class="landing-pain-sub">No es el modelo \u2014 es la falta de un prompt de direcci\u00f3n preciso</p>\n'
+  '      <div class="landing-pain-grid">\n'
+  '        <div class="pain-card"><div class="pain-card-icon">\U0001f3b2</div>\n'
+  '          <h4>Respuestas gen\u00e9ricas</h4>\n'
+  '          <p>El agente no sabe tu stack ni las reglas de tu proyecto \u2014 da c\u00f3digo gen\u00e9rico que necesitas reescribir.</p>\n'
+  '        </div>\n'
+  '        <div class="pain-card"><div class="pain-card-icon">\U0001f501</div>\n'
+  '          <h4>Repetir contexto en cada sesi\u00f3n</h4>\n'
+  '          <p>Explicas el proyecto desde cero cada vez. Pierdes tiempo y el agente pierde calidad de respuesta.</p>\n'
+  '        </div>\n'
+  '        <div class="pain-card"><div class="pain-card-icon">\U0001f9e9</div>\n'
+  '          <h4>Sin estructura SDLC</h4>\n'
+  '          <p>El agente salta directo a c\u00f3digo sin an\u00e1lisis ni dise\u00f1o. Resultado: deuda t\u00e9cnica desde el primer commit.</p>\n'
+  '        </div>\n'
+  '        <div class="pain-card"><div class="pain-card-icon">\u26a0\ufe0f</div>\n'
+  '          <h4>Multi-agente sin gobernanza</h4>\n'
+  '          <p>Copilot, Claude y Cursor reciben instrucciones contradictorias y producen artefactos incompatibles.</p>\n'
+  '        </div>\n'
+  '      </div>\n'
+  '    </div>\n'
+  '  </section>\n'
+  '  <section class="landing-proof">\n'
+  '    <h3>El framework en n\u00fameros</h3>\n'
+  '    <div class="proof-grid">\n'
+  '      <div class="proof-stat"><div class="proof-stat-num">44</div><div class="proof-stat-label">Prompts listos para usar</div></div>\n'
+  '      <div class="proof-stat"><div class="proof-stat-num">10</div><div class="proof-stat-label">Fases del ciclo SDLC</div></div>\n'
+  '      <div class="proof-stat"><div class="proof-stat-num">4</div><div class="proof-stat-label">Agentes IA cubiertos</div></div>\n'
+  '      <div class="proof-stat"><div class="proof-stat-num">0</div><div class="proof-stat-label">Costo para empezar</div></div>\n'
+  '    </div>\n'
+  '  </section>\n'
+  '  <section class="landing-final">\n'
+  '    <h3>Empieza a dirigir tus agentes IA hoy</h3>\n'
+  '    <p>Acceso gratuito. Sin registro. Sin tarjeta de cr\u00e9dito.</p>\n'
+  '    <div class="landing-cta-group">\n'
+  '      <a class="landing-cta-primary" href="/app">Abrir biblioteca de prompts \u2192</a>\n'
+  '    </div>\n'
+  '  </section>\n'
+  '  <footer class="landing-footer">\n'
+  '    <span>AI-SDLC Pro &copy; 2025 LionSystems</span>\n'
+  '    <a class="landing-cta-secondary" style="font-size:.72rem;padding:.25rem .75rem;"'
+  ' href="https://lionsystems.com.mx" target="_blank" rel="noopener">lionsystems.com.mx \u2197</a>\n'
+  '  </footer>\n'
+  '</div>\n'
+)
 
 
 def build():
@@ -1722,6 +1974,10 @@ def build():
         '<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-C5JKYNZ62F");</script>\n'
         '<style>' + CSS + '</style>\n'
         '</head>\n<body>\n'
+
+        + LANDING_HTML +
+
+        '<div id="app-root" class="app-hidden">\n'
 
         # header
         '<header>\n'
@@ -2078,11 +2334,27 @@ def build():
         '<br><br>El bot\u00f3n <span class="ob-highlight">&#9432;</span>'
         ' en cada card explica cu\u00e1ndo y c\u00f3mo usar ese prompt.</p>\n'
         '      </div>\n'
+        '      <div class="ob-step" id="ob-step-3">\n'
+        '        <div class="ob-step-badge"><span class="ob-step-badge-dot">4</span>\u00a0Rec\u00edbe nuevos prompts gratis</div>\n'
+        '        <h3>Mantente al tanto de cada actualizaci\u00f3n</h3>\n'
+        '        <p>Cada mes publicamos nuevos prompts y mejoras al framework.\n'
+        'D\u00e9janos tu email y ser\u00e1s el primero en saber.</p>\n'
+        '        <form class="ob-email-form" onsubmit="submitObEmail();return false;">\n'
+        '          <label for="ob-email-input">Correo electr\u00f3nico</label>\n'
+        '          <input class="ob-email-input" id="ob-email-input" type="email"'
+        ' placeholder="tu@correo.com" autocomplete="email" required>\n'
+        '          <button class="ob-email-submit" id="ob-email-submit-btn" type="submit">\n'
+        '            \u2709\ufe0f Recibir nuevos prompts gratis\n'
+        '          </button>\n'
+        '        </form>\n'
+        '        <p class="ob-email-note">Sin spam. Cancelar en cualquier momento.</p>\n'
+        '      </div>\n'
         '    </div>\n'
         '    <div class="ob-progress">\n'
         '      <div class="ob-dot on" id="ob-dot-0"></div>\n'
         '      <div class="ob-dot" id="ob-dot-1"></div>\n'
         '      <div class="ob-dot" id="ob-dot-2"></div>\n'
+        '      <div class="ob-dot" id="ob-dot-3"></div>\n'
         '    </div>\n'
         '    <div class="ob-footer">\n'
         '      <button class="ob-skip" onclick="closeOnboarding(true)">No volver a mostrar</button>\n'
@@ -2094,7 +2366,9 @@ def build():
         '  </div>\n'
         '</div>\n'
 
-        '<script>' + prompt_info_js + '\n' + JS + '</script>\n'
+        '</div>\n'  # close #app-root
+
+        '<script>' + prompt_info_js + '\n' + JS + LANDING_JS + '</script>\n'
         '</body>\n</html>\n'
     )
 
