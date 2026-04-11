@@ -779,7 +779,8 @@ var LS_KEY_PROJ = 'AI_SDLC_v1_projects';
 var LS_KEY_ACTV = 'AI_SDLC_v1_active';
 var EMPTY_VARS  = {
   repositorio: '', referencia: '', rama_actual: '',
-  rama_destino: '', ambiente: '', componentes: '', modulo: ''
+  rama_destino: '', ambiente: '', componentes: '', modulo: '',
+  stack: '', tipo_proyecto: '', metodologia: '', agentes: '', autonomia: ''
 };
 
 function genId() {
@@ -789,7 +790,11 @@ function genId() {
 function loadProjects() {
   try {
     var raw = localStorage.getItem(LS_KEY_PROJ);
-    return raw ? JSON.parse(raw) : null;
+    if (!raw) return null;
+    var list = JSON.parse(raw);
+    // Migración defensiva: garantizar que proyectos guardados tengan todos los campos nuevos
+    list.forEach(function(p) { p.vars = Object.assign({}, EMPTY_VARS, p.vars || {}); });
+    return list;
   } catch (e) { return null; }
 }
 
@@ -869,7 +874,10 @@ function switchProject(id) {
 var FIELD_VAR_MAP = {
   'vf-repositorio': 'repositorio', 'vf-referencia': 'referencia',
   'vf-rama-actual': 'rama_actual', 'vf-rama-destino': 'rama_destino',
-  'vf-ambiente': 'ambiente', 'vf-componentes': 'componentes', 'vf-modulo': 'modulo'
+  'vf-ambiente': 'ambiente', 'vf-componentes': 'componentes', 'vf-modulo': 'modulo',
+  'vf-stack': 'stack', 'vf-tipo-proyecto': 'tipo_proyecto',
+  'vf-metodologia': 'metodologia', 'vf-agentes': 'agentes',
+  'vf-autonomia': 'autonomia'
 };
 
 function syncPanelToProject() {
@@ -1005,7 +1013,7 @@ function toggleSidebar() {
 
 // Mapa: campo UI → array de tokens del prompt que sustituye
 var VAR_MAP = {
-  repositorio: ['NOMBRE O URL'],
+  repositorio: ['NOMBRE O URL', 'ORG/REPO', 'NOMBRE O URL DEL REPOSITORIO'],
   referencia:  ['REFERENCIA', 'PEGAR TEXTO O REFERENCIA', 'PEGAR TEXTO COMPLETO',
                  'PEGAR LISTA DE INCIDENTES', 'PEGAR REPORTE', 'PEGAR'],
   rama_actual: ['RAMA ACTUAL', 'RAMA CON LOS CAMBIOS', 'RAMA EN PRUEBAS',
@@ -1019,6 +1027,20 @@ var VAR_MAP = {
                 'COMPONENTES A MODIFICAR', 'COMPONENTES REVISADOS',
                 'RUTAS DE ARCHIVOS MODIFICADOS', 'FUNCIONES O UNIDADES A PROBAR'],
   modulo:      ['NOMBRE DEL PROCESO', 'INDICAR', 'SI YA CONOCES ALGUNO'],
+  stack:       ['STACK', 'STACK TECNOLÓGICO', 'STACK PRINCIPAL',
+                'ej. Python + FastAPI + PostgreSQL / Node + React + MongoDB / etc.',
+                'ej: Python 3.11 + FastAPI + PostgreSQL + Docker'],
+  tipo_proyecto: ['TIPO DE PROYECTO', 'TIPO',
+                  'frontend SPA / API REST / full-stack / microservicio / monorepo / librería / data science / IaC / otro'],
+  metodologia: ['METODOLOGÍA', 'METODOLOGÍA DE TRABAJO', 'METODOLOGÍA O "ninguna"',
+                'SCRUM / Kanban / Trunk-Based / GitFlow / GitHub Flow / RUP / otro',
+                'BRANCHING STRATEGY'],
+  agentes:     ['LISTA DE AGENTES', 'AGENTES A CONFIGURAR', 'AGENTES ACTIVOS',
+                'Copilot / Claude / Codex / Windsurf / Cursor / Antigravity',
+                'GitHub Copilot / Claude / Windsurf / Cursor / Codex / Antigravity / combinación'],
+  autonomia:   ['NIVEL DE AUTONOMÍA', 'NIVEL',
+                'solo análisis / análisis + propuesta / ejecución controlada / ejecución autónoma',
+                'BAJO / MEDIO / ALTO'],
 };
 
 function getVarValues() {
@@ -1044,9 +1066,18 @@ function applyVars(text) {
   return text;
 }
 
+function countFilledVars() {
+  var v = getVarValues();
+  return Object.values(v).filter(function(x){ return x.trim() !== ''; }).length;
+}
+
 function updateVarsBadge() {
   var badge = document.getElementById('vars-badge');
-  if (badge) badge.classList.toggle('show', hasActiveVars());
+  if (!badge) return;
+  var filled = countFilledVars();
+  var total = Object.keys(EMPTY_VARS).length;
+  badge.classList.toggle('show', filled > 0);
+  badge.textContent = filled + '/' + total;
 }
 
 function openVarPanel() {
@@ -1672,6 +1703,87 @@ def build():
         '<div class="var-tags">'
         '<span class="var-tag">[NOMBRE DEL PROCESO]</span>'
         '<span class="var-tag">[INDICAR]</span>'
+        '</div>'
+        '</div>\n'
+
+        # separador visual sección IA / agentes
+        '    <div style="margin:.2rem 0 .1rem;font-size:.6rem;font-weight:700;color:var(--tx3);'
+        'text-transform:uppercase;letter-spacing:.1em;border-top:1px solid var(--bdr);padding-top:.65rem;">'
+        '⚙ Stack &amp; Agentes IA</div>\n'
+
+        # stack tecnológico
+        '    <div class="var-group">'
+        '<label for="vf-stack">Stack tecnológico</label>'
+        '<input id="vf-stack" type="text" placeholder="ej: Python + FastAPI + PostgreSQL + Docker" oninput="syncProjectFromPanel();updateVarsBadge();">'
+        '<div class="var-tags">'
+        '<span class="var-tag">[STACK]</span>'
+        '<span class="var-tag">[STACK TECNOLÓGICO]</span>'
+        '</div>'
+        '</div>\n'
+
+        # tipo de proyecto
+        '    <div class="var-group">'
+        '<label for="vf-tipo-proyecto">Tipo de proyecto</label>'
+        '<select id="vf-tipo-proyecto" onchange="syncProjectFromPanel();updateVarsBadge();">'
+        '<option value="">-- seleccionar --</option>'
+        '<option>frontend SPA</option>'
+        '<option>API REST</option>'
+        '<option>full-stack</option>'
+        '<option>microservicio</option>'
+        '<option>monorepo</option>'
+        '<option>librería</option>'
+        '<option>data science</option>'
+        '<option>IaC</option>'
+        '<option>otro</option>'
+        '</select>'
+        '<div class="var-tags">'
+        '<span class="var-tag">[TIPO DE PROYECTO]</span>'
+        '<span class="var-tag">[TIPO]</span>'
+        '</div>'
+        '</div>\n'
+
+        # metodología
+        '    <div class="var-group">'
+        '<label for="vf-metodologia">Metodología / branching</label>'
+        '<select id="vf-metodologia" onchange="syncProjectFromPanel();updateVarsBadge();">'
+        '<option value="">-- seleccionar --</option>'
+        '<option>SCRUM</option>'
+        '<option>Kanban</option>'
+        '<option>GitHub Flow</option>'
+        '<option>GitFlow</option>'
+        '<option>Trunk-Based</option>'
+        '<option>RUP</option>'
+        '<option>otro</option>'
+        '</select>'
+        '<div class="var-tags">'
+        '<span class="var-tag">[METODOLOGÍA]</span>'
+        '<span class="var-tag">[BRANCHING STRATEGY]</span>'
+        '</div>'
+        '</div>\n'
+
+        # agentes IA activos
+        '    <div class="var-group">'
+        '<label for="vf-agentes">Agentes IA activos</label>'
+        '<input id="vf-agentes" type="text" placeholder="ej: Copilot, Claude, Codex" oninput="syncProjectFromPanel();updateVarsBadge();">'
+        '<div class="var-tags">'
+        '<span class="var-tag">[LISTA DE AGENTES]</span>'
+        '<span class="var-tag">[AGENTES A CONFIGURAR]</span>'
+        '</div>'
+        '</div>\n'
+
+        # nivel de autonomía
+        '    <div class="var-group">'
+        '<label for="vf-autonomia">Nivel de autonomía IA</label>'
+        '<select id="vf-autonomia" onchange="syncProjectFromPanel();updateVarsBadge();">'
+        '<option value="">-- seleccionar --</option>'
+        '<option>solo análisis</option>'
+        '<option>análisis + propuesta</option>'
+        '<option>ejecución controlada</option>'
+        '<option>ejecución autónoma</option>'
+        '</select>'
+        '<div class="var-tags">'
+        '<span class="var-tag">[NIVEL DE AUTONOMÍA]</span>'
+        '<span class="var-tag">[NIVEL]</span>'
         '</div>'
         '</div>\n'
 
