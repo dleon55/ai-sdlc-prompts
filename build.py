@@ -770,6 +770,95 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   header { padding: 0 .75rem; }
   .proj-quick-btn { max-width: 90px; padding: .22rem .45rem; }
 }
+
+/* ═════════════════ WELCOME BANNER ══════════════════════════════ */
+.welcome-banner {
+  background: linear-gradient(135deg,#12103a 0%,#0f1220 100%);
+  border-bottom: 1px solid #3730a3;
+  padding: .6rem 1.25rem .6rem calc(var(--side) + 1.5rem);
+  display: flex; align-items: center; gap: .85rem; flex-shrink: 0;
+}
+.welcome-banner.hidden { display: none; }
+.wb-lead { font-size: .7rem; font-weight: 700; color: #a5b4fc; white-space: nowrap; flex-shrink: 0; }
+.wb-pills { display: flex; align-items: center; gap: .45rem; flex: 1; flex-wrap: wrap; }
+.wb-pill {
+  display: flex; align-items: center; gap: .28rem;
+  font-size: .66rem; color: #c7d2fe;
+  background: rgba(99,102,241,.1); border: 1px solid rgba(99,102,241,.22);
+  border-radius: 20px; padding: .16rem .52rem; white-space: nowrap;
+}
+.wb-dismiss {
+  flex-shrink: 0; background: none; border: 1px solid var(--bdr2);
+  border-radius: 5px; color: var(--tx3); font-size: .64rem; padding: .16rem .48rem;
+  cursor: pointer; font-family: inherit; transition: all .12s;
+}
+.wb-dismiss:hover { border-color: #6366f1; color: #a5b4fc; }
+@media (max-width: 720px) { .welcome-banner { padding: .5rem .85rem; } }
+@media (max-width: 560px) { .wb-lead { display: none; } }
+
+/* ═════════════════ ONBOARDING OVERLAY ══════════════════════════ */
+.ob-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.76);
+  z-index: 900; display: flex; align-items: center; justify-content: center;
+  padding: 1.5rem;
+}
+.ob-overlay.hidden { display: none; }
+.ob-box {
+  background: var(--bg2); border: 1px solid #4338ca; border-radius: 14px;
+  width: 100%; max-width: 480px; box-shadow: 0 24px 64px rgba(0,0,0,.65); overflow: hidden;
+}
+.ob-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .9rem 1.2rem .8rem; border-bottom: 1px solid var(--bdr);
+  background: linear-gradient(135deg,#1e1b4b,#0f1220);
+}
+.ob-hdr h2 {
+  font-size: .9rem; font-weight: 700;
+  background: linear-gradient(90deg,#818cf8,#c084fc);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.ob-skip {
+  background: none; border: none; color: var(--tx3); font-size: .68rem;
+  cursor: pointer; font-family: inherit; transition: color .12s; padding: .15rem;
+}
+.ob-skip:hover { color: var(--tx2); }
+.ob-progress { display: flex; gap: 4px; padding: .5rem 1.2rem; background: var(--bg3); }
+.ob-prog-bar { height: 3px; flex: 1; border-radius: 2px; background: var(--bdr2); transition: background .25s; }
+.ob-prog-bar.done { background: #22c55e; }
+.ob-prog-bar.active { background: #6366f1; }
+.ob-step { display: none; padding: 1.1rem 1.2rem 1.2rem; }
+.ob-step.active { display: block; }
+.ob-step-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px; border-radius: 50%;
+  background: rgba(99,102,241,.12); border: 1px solid #6366f1;
+  color: #a5b4fc; font-size: .82rem; font-weight: 700; margin-bottom: .65rem;
+}
+.ob-step h3 { font-size: .9rem; font-weight: 700; color: var(--tx); margin-bottom: .35rem; }
+.ob-step p { font-size: .79rem; color: var(--tx2); line-height: 1.65; }
+.ob-tip {
+  margin-top: .65rem; padding: .4rem .7rem;
+  background: var(--bg3); border: 1px solid var(--bdr2);
+  border-left: 3px solid #6366f1; border-radius: 0 5px 5px 0;
+  font-size: .71rem; color: var(--tx3); line-height: 1.55;
+}
+.ob-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .7rem 1.2rem; border-top: 1px solid var(--bdr); background: var(--bg3);
+}
+.ob-nav-label { font-size: .68rem; color: var(--tx3); }
+.ob-next-btn {
+  padding: .32rem 1rem; background: #6366f1; border: none; border-radius: 6px;
+  color: #fff; font-size: .76rem; font-weight: 700; cursor: pointer;
+  font-family: inherit; transition: background .12s;
+}
+.ob-next-btn:hover { background: #4f46e5; }
+.ob-finish-btn {
+  padding: .32rem 1rem; background: var(--grn); border: none; border-radius: 6px;
+  color: #fff; font-size: .76rem; font-weight: 700; cursor: pointer;
+  font-family: inherit; transition: background .12s; display: none;
+}
+.ob-finish-btn:hover { background: #16a34a; }
 """
 
 JS = """
@@ -1333,6 +1422,73 @@ function closeInfo() {
   if (modal) modal.classList.remove('open');
 }
 
+/* ═══════════════════  WELCOME BANNER  ═════════════════════════ */
+var LS_WELCOME = 'AI_SDLC_welcome_seen';
+var LS_ONBOARD = 'AI_SDLC_onboarding_done';
+
+function initWelcomeBanner() {
+  try {
+    var banner = document.getElementById('welcome-banner');
+    if (!banner) return;
+    if (localStorage.getItem(LS_WELCOME) === '1') banner.classList.add('hidden');
+  } catch(e) {}
+}
+
+function dismissWelcomeBanner() {
+  try {
+    var banner = document.getElementById('welcome-banner');
+    if (banner) banner.classList.add('hidden');
+    localStorage.setItem(LS_WELCOME, '1');
+  } catch(e) {}
+}
+
+/* ═══════════════════  ONBOARDING  ══════════════════════════════ */
+var _obStep = 1;
+var _obTotal = 3;
+
+function initOnboarding() {
+  try {
+    if (localStorage.getItem(LS_ONBOARD) === '1') return;
+    var overlay = document.getElementById('onboarding-overlay');
+    if (overlay) overlay.classList.remove('hidden');
+    _obStep = 1;
+    renderObStep();
+  } catch(e) {}
+}
+
+function renderObStep() {
+  for (var i = 1; i <= _obTotal; i++) {
+    var step = document.getElementById('ob-step-' + i);
+    if (step) step.classList.toggle('active', i === _obStep);
+    var bar = document.getElementById('ob-bar-' + i);
+    if (bar) {
+      bar.classList.remove('done', 'active');
+      if (i < _obStep) bar.classList.add('done');
+      else if (i === _obStep) bar.classList.add('active');
+    }
+  }
+  var label = document.getElementById('ob-nav-label');
+  if (label) label.textContent = 'Paso ' + _obStep + ' de ' + _obTotal;
+  var nextBtn = document.getElementById('ob-next-btn');
+  var finishBtn = document.getElementById('ob-finish-btn');
+  if (nextBtn) nextBtn.style.display = _obStep < _obTotal ? 'inline-block' : 'none';
+  if (finishBtn) finishBtn.style.display = _obStep === _obTotal ? 'inline-block' : 'none';
+}
+
+function nextObStep() {
+  if (_obStep < _obTotal) { _obStep++; renderObStep(); }
+}
+
+function completeOnboarding() {
+  try {
+    var overlay = document.getElementById('onboarding-overlay');
+    if (overlay) overlay.classList.add('hidden');
+    localStorage.setItem(LS_ONBOARD, '1');
+  } catch(e) {}
+}
+
+function skipOnboarding() { completeOnboarding(); }
+
 /* ═══════════════════  INIT  ════════════════════════════════════ */
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -1344,6 +1500,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Restaurar estado del sidebar
   try { if (localStorage.getItem('AI_SDLC_sidebar') === '1') document.body.classList.add('sidebar-collapsed'); } catch(e) {}
+
+  // Welcome banner y onboarding — solo primera visita
+  initWelcomeBanner();
+  initOnboarding();
 
   // Cerrar proj-quick al hacer clic fuera
   document.addEventListener('click', function(e) {
@@ -1359,7 +1519,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') { closeInfo(); closeVarPanel(); closeProjectsModal(); closeProjQuick(); }
+    if (e.key === 'Escape') { closeInfo(); closeVarPanel(); closeProjectsModal(); closeProjQuick(); skipOnboarding(); }
   });
 
   var content = document.querySelector('.content');
@@ -1454,10 +1614,10 @@ def build():
         '<div class="fw-header">'
         '<span class="fw-badge">&#9888; Obligatorio</span>'
         + icon_svg("framework", SECTION_COLOR["00"], 18) +
-        '<span class="fw-title">Framework base — Pegar al inicio de cada prompt</span>'
+        '<span class="fw-title">&#128204; PASO 1 — Copia este bloque antes de usar cualquier prompt</span>'
         '</div>'
-        '<p class="fw-desc">Este bloque define el rol, el contexto multi-agente y las reglas obligatorias de ingeniería. '
-        'Cópialo y pégalo <strong>antes</strong> de cualquier prompt de la biblioteca.</p>'
+        '<p class="fw-desc">Este bloque define el rol del agente, el contexto multi-agente y las reglas obligatorias de ingenier\u00eda. '
+        'Sin \u00e9l, el agente responde de forma gen\u00e9rica. C\u00f3pialo y p\u00e9galo <strong>siempre primero</strong> en tu conversaci\u00f3n con el agente IA.</p>'
         '<div class="fw-body">'
         '<pre><code id="code-fw">' + fw_escaped + '</code></pre>'
         '</div>'
@@ -1541,7 +1701,7 @@ def build():
         '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="1.6">'
         '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/>'
         '</svg>'
-        '<div><h1>AI-SDLC Pro</h1><p>Biblioteca de Prompts &middot; Multi-agente &middot; Open Agent Manager</p></div>'
+        '<div><h1>AI-SDLC Pro</h1><p>' + str(total) + ' prompts para dirigir agentes IA en cada fase del SDLC &middot; Copilot &middot; Claude &middot; Cursor &middot; Windsurf</p></div>'
         '</div>\n'
         '  <div class="hdr-tags">'
         '<span class="tag">v3</span>'
@@ -1555,6 +1715,17 @@ def build():
         '<span class="hdr-brand-sub">Herramienta gratuita</span></div>'
         '</div>\n'
         '</header>\n'
+
+        # welcome banner (primer uso — se oculta con localStorage)
+        '<div class="welcome-banner" id="welcome-banner">\n'
+        '  <span class="wb-lead">&#128640; Bienvenido a AI-SDLC Pro</span>\n'
+        '  <div class="wb-pills">\n'
+        '    <span class="wb-pill">&#9654; Ciclo SDLC completo: del an\u00e1lisis al incident response</span>\n'
+        '    <span class="wb-pill">&#9656; Variables de contexto que adaptan cada prompt a tu proyecto</span>\n'
+        '    <span class="wb-pill">&#9656; Gobernanza multi-agente: Copilot, Claude, Cursor, Windsurf</span>\n'
+        '  </div>\n'
+        '  <button class="wb-dismiss" onclick="dismissWelcomeBanner()">Entendido &#x2715;</button>\n'
+        '</div>\n'
 
         # search bar
         '<div class="search-bar">\n'
@@ -1837,6 +2008,111 @@ def build():
         '    <button class="proj-add-btn"'
         ' onclick="createProject();renderProjectsModal();renderProjectSelector();syncPanelToProject();">'
         '+ Nuevo proyecto</button>\n'
+        '  </div>\n'
+        '</div>\n'
+
+        # onboarding overlay (primer uso — 3 pasos guiados)
+        '<div class="ob-overlay hidden" id="onboarding-overlay">\n'
+        '  <div class="ob-box">\n'
+        '    <div class="ob-hdr">\n'
+        '      <h2>&#128218; Gu\u00eda r\u00e1pida de inicio</h2>\n'
+        '      <button class="ob-skip" onclick="skipOnboarding()">Saltar</button>\n'
+        '    </div>\n'
+        '    <div class="ob-progress">\n'
+        '      <div class="ob-prog-bar active" id="ob-bar-1"></div>\n'
+        '      <div class="ob-prog-bar" id="ob-bar-2"></div>\n'
+        '      <div class="ob-prog-bar" id="ob-bar-3"></div>\n'
+        '    </div>\n'
+        '    <div class="ob-steps">\n'
+        '      <div class="ob-step active" id="ob-step-1">\n'
+        '        <div class="ob-step-num">1</div>\n'
+        '        <h3>Copia el Framework base</h3>\n'
+        '        <p>Cada prompt de esta biblioteca asume que el agente IA ya tiene contexto del proyecto. '
+        'El <strong>Framework base</strong> es ese contexto: define el rol del agente, las reglas de ingenier\u00eda y las restricciones multi-agente.</p>\n'
+        '        <div class="ob-tip">&#128204; Siempre pega el framework <strong>antes</strong> de cualquier prompt '
+        'en tu conversaci\u00f3n con Copilot, Claude, Cursor o Windsurf.</div>\n'
+        '      </div>\n'
+        '      <div class="ob-step" id="ob-step-2">\n'
+        '        <div class="ob-step-num">2</div>\n'
+        '        <h3>Configura las variables de tu proyecto</h3>\n'
+        '        <p>Los prompts usan tokens como <code style="font-family:monospace;font-size:.78rem;color:#a5b4fc">[REPOSITORIO]</code>, '
+        '<code style="font-family:monospace;font-size:.78rem;color:#a5b4fc">[STACK]</code>, '
+        '<code style="font-family:monospace;font-size:.78rem;color:#a5b4fc">[RAMA ACTUAL]</code>. '
+        'El <strong>panel de variables</strong> los sustituye autom\u00e1ticamente al copiar.</p>\n'
+        '        <div class="ob-tip">&#9881; Busca el bot\u00f3n <strong>Variables (X/12)</strong> en la barra de b\u00fasqueda '
+        'para abrir el panel y configurar tu proyecto.</div>\n'
+        '      </div>\n'
+        '      <div class="ob-step" id="ob-step-3">\n'
+        '        <div class="ob-step-num">3</div>\n'
+        '        <h3>Elige el prompt de la fase que necesitas</h3>\n'
+        '        <p>Los prompts est\u00e1n organizados por fase del SDLC: an\u00e1lisis, dise\u00f1o, implementaci\u00f3n, pruebas, CI/CD, documentaci\u00f3n y operaciones. '
+        'Usa el <strong>buscador</strong> o navega por la barra lateral por secci\u00f3n.</p>\n'
+        '        <div class="ob-tip">&#128161; Puedes seleccionar varios prompts a la vez con el modo <strong>Multi-select</strong> '
+        'para copiar una cadena completa de prompts encadenados.</div>\n'
+        '      </div>\n'
+        '    </div>\n'
+        '    <div class="ob-nav">\n'
+        '      <span class="ob-nav-label" id="ob-nav-label">Paso 1 de 3</span>\n'
+        '      <div style="display:flex;gap:.45rem;">\n'
+        '        <button class="ob-next-btn" id="ob-next-btn" onclick="nextObStep()">Siguiente &#8594;</button>\n'
+        '        <button class="ob-finish-btn" id="ob-finish-btn" onclick="completeOnboarding()">&#10003; Comenzar</button>\n'
+        '      </div>\n'
+        '    </div>\n'
+        '  </div>\n'
+        '</div>\n'
+
+        # ── Onboarding modal (UX-01) ──
+        '<div class="ob-overlay" id="ob-overlay">\n'
+        '  <div class="ob-box">\n'
+        '    <div class="ob-header">\n'
+        '      <div class="ob-header-text">\n'
+        '        <h2>Bienvenido a AI-SDLC Pro</h2>\n'
+        '        <p>3 cosas clave antes de copiar tu primer prompt.</p>\n'
+        '      </div>\n'
+        '      <button class="ob-close" onclick="closeOnboarding(false)" title="Cerrar">&#x2715;</button>\n'
+        '    </div>\n'
+        '    <div class="ob-steps">\n'
+        '      <div class="ob-step active" id="ob-step-0">\n'
+        '        <div class="ob-step-badge"><span class="ob-step-badge-dot">1</span>\u00a0El framework va primero</div>\n'
+        '        <h3>El sistema antepone el framework autom\u00e1ticamente</h3>\n'
+        '        <p>No tienes que copiarlo a mano. Cada vez que presiones'
+        ' <span class="ob-highlight">Copiar</span> en cualquier prompt,'
+        ' el bloque de framework se antepone solo con tu contexto incluido.</p>\n'
+        '        <div class="ob-tip">&#9888; El banner amarillo <strong>\u201c&#9888; Obligatorio\u201d</strong>'
+        ' al inicio contiene ese bloque. Ya est\u00e1 incluido en cada copia \u2014 no tienes que pegarlo manualmente.</div>\n'
+        '      </div>\n'
+        '      <div class="ob-step" id="ob-step-1">\n'
+        '        <div class="ob-step-badge"><span class="ob-step-badge-dot">2</span>\u00a0Configura tus variables</div>\n'
+        '        <h3>Rellena el contexto de tu proyecto antes de copiar</h3>\n'
+        '        <p>El bot\u00f3n <span class="ob-highlight">Variables</span> (barra superior)'
+        ' abre un panel donde escribes: repositorio, rama, issue, ambiente, stack y agentes IA activos.'
+        '<br><br>Esas variables reemplazan los <span class="ob-highlight">[PLACEHOLDER]</span>'
+        ' autom\u00e1ticamente en cada prompt copiado \u2014 sin edici\u00f3n manual.</p>\n'
+        '      </div>\n'
+        '      <div class="ob-step" id="ob-step-2">\n'
+        '        <div class="ob-step-badge"><span class="ob-step-badge-dot">3</span>\u00a0Sigue el orden del ciclo</div>\n'
+        '        <h3>Los prompts siguen el ciclo de ingenier\u00eda de software</h3>\n'
+        '        <p>El sidebar izquierdo lista las secciones en orden:\n'
+        '<br><br><strong>01</strong> Comprensi\u00f3n \u2192 <strong>02</strong> An\u00e1lisis'
+        ' \u2192 <strong>04</strong> Dise\u00f1o \u2192 <strong>05</strong> Plan'
+        ' \u2192 <strong>06</strong> Ejecuci\u00f3n \u2192 <strong>07</strong> Pruebas'
+        ' \u2192 <strong>09</strong> CI/CD \u2192 <strong>10</strong> Documentaci\u00f3n'
+        '<br><br>El bot\u00f3n <span class="ob-highlight">&#9432;</span>'
+        ' en cada card explica cu\u00e1ndo y c\u00f3mo usar ese prompt.</p>\n'
+        '      </div>\n'
+        '    </div>\n'
+        '    <div class="ob-progress">\n'
+        '      <div class="ob-dot on" id="ob-dot-0"></div>\n'
+        '      <div class="ob-dot" id="ob-dot-1"></div>\n'
+        '      <div class="ob-dot" id="ob-dot-2"></div>\n'
+        '    </div>\n'
+        '    <div class="ob-footer">\n'
+        '      <button class="ob-skip" onclick="closeOnboarding(true)">No volver a mostrar</button>\n'
+        '      <div class="ob-nav">\n'
+        '        <button class="ob-prev" id="ob-prev-btn" onclick="obPrev()" style="display:none">&#8249; Anterior</button>\n'
+        '        <button class="ob-next" id="ob-next-btn" onclick="obNext()">Siguiente &#8250;</button>\n'
+        '      </div>\n'
+        '    </div>\n'
         '  </div>\n'
         '</div>\n'
 
