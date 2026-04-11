@@ -1726,7 +1726,7 @@ def build():
         '<img src="https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png"'
         ' width="28" height="28" alt="Lionsystems" style="border-radius:4px;flex-shrink:0;">'
         '<div><span class="hdr-brand-text">Lionsystems</span>'
-        '<span class="hdr-brand-sub">Herramienta gratuita</span></div>'
+        '<span class="hdr-brand-sub">Prueba gratis &middot; Plan Pro</span></div>'
         '</div>\n'
         '</header>\n'
 
