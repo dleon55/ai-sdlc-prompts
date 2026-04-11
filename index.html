@@ -660,58 +660,73 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   background: var(--bg2); border: 1px solid #4338ca; border-radius: 14px;
   width: 100%; max-width: 480px; box-shadow: 0 24px 64px rgba(0,0,0,.65); overflow: hidden;
 }
-.ob-hdr {
-  display: flex; align-items: center; justify-content: space-between;
+.ob-header {
+  display: flex; align-items: flex-start; justify-content: space-between;
   padding: .9rem 1.2rem .8rem; border-bottom: 1px solid var(--bdr);
   background: linear-gradient(135deg,#1e1b4b,#0f1220);
 }
-.ob-hdr h2 {
+.ob-header h2 {
   font-size: .9rem; font-weight: 700;
   background: linear-gradient(90deg,#818cf8,#c084fc);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
 }
+.ob-header p { font-size: .72rem; color: var(--tx3); margin-top: .15rem; }
+.ob-close {
+  background: none; border: none; color: var(--tx3); font-size: 1rem;
+  cursor: pointer; line-height: 1; padding: .1rem .25rem; flex-shrink: 0;
+  transition: color .12s; margin-left: .5rem;
+}
+.ob-close:hover { color: var(--tx); }
 .ob-skip {
   background: none; border: none; color: var(--tx3); font-size: .68rem;
   cursor: pointer; font-family: inherit; transition: color .12s; padding: .15rem;
 }
 .ob-skip:hover { color: var(--tx2); }
-.ob-progress { display: flex; gap: 4px; padding: .5rem 1.2rem; background: var(--bg3); }
-.ob-prog-bar { height: 3px; flex: 1; border-radius: 2px; background: var(--bdr2); transition: background .25s; }
-.ob-prog-bar.done { background: #22c55e; }
-.ob-prog-bar.active { background: #6366f1; }
+.ob-progress { display: flex; gap: 6px; padding: .4rem 1.2rem; background: var(--bg3); align-items: center; justify-content: center; }
+.ob-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--bdr2); transition: background .25s; }
+.ob-dot.on { background: #6366f1; }
 .ob-step { display: none; padding: 1.1rem 1.2rem 1.2rem; }
 .ob-step.active { display: block; }
-.ob-step-num {
+.ob-step-badge {
+  display: flex; align-items: center; gap: .45rem;
+  font-size: .73rem; font-weight: 700; color: #a5b4fc;
+  margin-bottom: .55rem; text-transform: uppercase; letter-spacing: .04em;
+}
+.ob-step-badge-dot {
   display: inline-flex; align-items: center; justify-content: center;
-  width: 30px; height: 30px; border-radius: 50%;
-  background: rgba(99,102,241,.12); border: 1px solid #6366f1;
-  color: #a5b4fc; font-size: .82rem; font-weight: 700; margin-bottom: .65rem;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: rgba(99,102,241,.15); border: 1px solid #6366f1;
+  color: #a5b4fc; font-size: .72rem; font-weight: 700; flex-shrink: 0;
 }
 .ob-step h3 { font-size: .9rem; font-weight: 700; color: var(--tx); margin-bottom: .35rem; }
 .ob-step p { font-size: .79rem; color: var(--tx2); line-height: 1.65; }
+.ob-highlight {
+  background: rgba(99,102,241,.15); color: #a5b4fc;
+  padding: .05rem .3rem; border-radius: 3px; font-weight: 600; font-size: .9em;
+}
 .ob-tip {
   margin-top: .65rem; padding: .4rem .7rem;
   background: var(--bg3); border: 1px solid var(--bdr2);
   border-left: 3px solid #6366f1; border-radius: 0 5px 5px 0;
   font-size: .71rem; color: var(--tx3); line-height: 1.55;
 }
-.ob-nav {
+.ob-footer {
   display: flex; align-items: center; justify-content: space-between;
-  padding: .7rem 1.2rem; border-top: 1px solid var(--bdr); background: var(--bg3);
+  padding: .6rem 1.2rem; border-top: 1px solid var(--bdr); background: var(--bg3);
 }
-.ob-nav-label { font-size: .68rem; color: var(--tx3); }
-.ob-next-btn {
+.ob-nav { display: flex; align-items: center; gap: .5rem; }
+.ob-next {
   padding: .32rem 1rem; background: #6366f1; border: none; border-radius: 6px;
   color: #fff; font-size: .76rem; font-weight: 700; cursor: pointer;
   font-family: inherit; transition: background .12s;
 }
-.ob-next-btn:hover { background: #4f46e5; }
-.ob-finish-btn {
-  padding: .32rem 1rem; background: var(--grn); border: none; border-radius: 6px;
-  color: #fff; font-size: .76rem; font-weight: 700; cursor: pointer;
-  font-family: inherit; transition: background .12s; display: none;
+.ob-next:hover { background: #4f46e5; }
+.ob-prev {
+  padding: .32rem 1rem; background: none; border: 1px solid var(--bdr2); border-radius: 6px;
+  color: var(--tx2); font-size: .76rem; cursor: pointer;
+  font-family: inherit; transition: all .12s;
 }
-.ob-finish-btn:hover { background: #16a34a; }
+.ob-prev:hover { border-color: #6366f1; color: #a5b4fc; }
 </style>
 </head>
 <body>
