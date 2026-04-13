@@ -301,7 +301,18 @@ header {
 }
 .fw-title { font-size: .88rem; font-weight: 600; color: #fbbf24; flex: 1; }
 .fw-desc { font-size: .72rem; color: #92400e; padding: .5rem 1rem; }
-.fw-body { padding: 0; border-top: none; }
+.fw-expand {
+  flex-shrink: 0; background: none; border: none; cursor: pointer;
+  color: #92400e; width: 20px; height: 20px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 4px; transition: color .12s, background .12s;
+}
+.fw-expand:hover { color: #fbbf24; background: rgba(245, 158, 11, .15); }
+.fw-expand svg { transition: transform .18s; }
+.fw-expand.open svg { transform: rotate(180deg); }
+.fw-header { cursor: pointer; }
+.fw-body { display: none; padding: 0; border-top: none; }
+.fw-body.open { display: block; }
 .fw-body pre {
   margin: 0; padding: .85rem 1rem;
   background: #06040a; max-height: 340px; overflow-y: auto; border-radius: 0;
@@ -1350,6 +1361,34 @@ function clearVars() {
 
 /* ═══════════════════  TOGGLE CARD / COPY  ══════════════════════ */
 
+function toggleFramework() {
+  var b = document.querySelector('.fw-body');
+  var t = document.querySelector('.fw-expand');
+  var h = document.querySelector('.fw-header');
+  if (!b) return;
+  var isOpen = b.classList.toggle('open');
+  if (t) t.classList.toggle('open', isOpen);
+  // Guardar preferencia en localStorage
+  try {
+    localStorage.setItem('AI_SDLC_fw_expanded', isOpen ? '1' : '0');
+  } catch (e) {}
+}
+
+function initFrameworkState() {
+  // Restaurar estado del framework desde localStorage (colapsado por defecto)
+  var b = document.querySelector('.fw-body');
+  var t = document.querySelector('.fw-expand');
+  if (!b) return;
+  var saved = '';
+  try { saved = localStorage.getItem('AI_SDLC_fw_expanded') || ''; } catch (e) {}
+  // Por defecto colapsado (saved === '' o saved === '0' -> colapsado)
+  var isOpen = saved === '1';
+  if (isOpen) {
+    b.classList.add('open');
+    if (t) t.classList.add('open');
+  }
+}
+
 function toggleCard(pid) {
   var b = document.getElementById('cb-' + pid);
   var t = document.getElementById('ce-' + pid);
@@ -1681,6 +1720,9 @@ document.addEventListener('DOMContentLoaded', function() {
   initWelcomeBanner();
   initOnboarding();
 
+  // Inicializar estado del framework banner (colapsado por defecto)
+  initFrameworkState();
+
   // Cerrar proj-quick al hacer clic fuera
   document.addEventListener('click', function(e) {
     var wrap = document.getElementById('proj-quick');
@@ -1877,10 +1919,13 @@ def build():
     fw_escaped = h(fw_prompt)
     fw_block = (
         '<div class="framework-banner" id="sec-00" data-observe>'
-        '<div class="fw-header">'
+        '<div class="fw-header" onclick="toggleFramework()" title="Click para expandir/colapsar">'
         '<span class="fw-badge">&#9888; Obligatorio</span>'
         + icon_svg("framework", SECTION_COLOR["00"], 18) +
         '<span class="fw-title">&#128204; PASO 1 — Copia este bloque antes de usar cualquier prompt</span>'
+        '<button class="fw-expand" onclick="event.stopPropagation(); toggleFramework();" title="Expandir / colapsar">'
+        + chevron +
+        '</button>'
         '</div>'
         '<p class="fw-desc">Este bloque define el rol del agente, el contexto multi-agente y las reglas obligatorias de ingenier\u00eda. '
         'Sin \u00e9l, el agente responde de forma gen\u00e9rica. C\u00f3pialo y p\u00e9galo <strong>siempre primero</strong> en tu conversaci\u00f3n con el agente IA.</p>'
