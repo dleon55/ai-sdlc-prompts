@@ -1255,30 +1255,31 @@ var VAR_MAP = {
   referencia:  ['REFERENCIA', 'PEGAR TEXTO O REFERENCIA', 'PEGAR TEXTO COMPLETO',
                  'PEGAR LISTA DE INCIDENTES', 'PEGAR REPORTE', 'PEGAR'],
   rama_actual: ['RAMA ACTUAL', 'RAMA CON LOS CAMBIOS', 'RAMA EN PRUEBAS',
-                'RAMA AFECTADA', 'RAMA DE TRABAJO', 'RAMA DE PRUEBAS'],
+                 'RAMA AFECTADA', 'RAMA DE TRABAJO', 'RAMA DE PRUEBAS'],
   rama_destino:['RAMA OBJETIVO', 'RAMA PRINCIPAL', 'RAMA INTEGRADA',
-                'RAMA DESTINO', 'RAMA DE RELEASE', 'DEVELOP / MAIN / RELEASE'],
+                 'RAMA DESTINO', 'RAMA DE RELEASE', 'DEVELOP / MAIN / RELEASE'],
   ambiente:    ['DEV / QA / PROD', 'QA / STAGING', 'QA / STAGING / PROD',
-                'DEV / QA / STAGING / PROD', 'PROD / STAGING', 'DEV / QA',
-                'URL DEL AMBIENTE'],
+                 'DEV / QA / STAGING / PROD', 'PROD / STAGING', 'DEV / QA',
+                 'URL DEL AMBIENTE'],
   componentes: ['COMPONENTES INVOLUCRADOS', 'COMPONENTES MODIFICADOS',
-                'COMPONENTES A MODIFICAR', 'COMPONENTES REVISADOS',
-                'RUTAS DE ARCHIVOS MODIFICADOS', 'FUNCIONES O UNIDADES A PROBAR'],
-  modulo:      ['NOMBRE DEL PROCESO', 'INDICAR', 'SI YA CONOCES ALGUNO'],
+                 'COMPONENTES A MODIFICAR', 'COMPONENTES REVISADOS',
+                 'RUTAS DE ARCHIVOS MODIFICADOS', 'FUNCIONES O UNIDADES A PROBAR',
+                 'SI YA CONOCES ALGUNO'],
+  modulo:      ['NOMBRE DEL PROCESO', 'INDICAR'],
   stack:       ['STACK', 'STACK TECNOLÓGICO', 'STACK PRINCIPAL',
-                'ej. Python + FastAPI + PostgreSQL / Node + React + MongoDB / etc.',
-                'ej: Python 3.11 + FastAPI + PostgreSQL + Docker'],
+                 'ej. Python + FastAPI + PostgreSQL / Node + React + MongoDB / etc.',
+                 'ej: Python 3.11 + FastAPI + PostgreSQL + Docker'],
   tipo_proyecto: ['TIPO DE PROYECTO', 'TIPO',
-                  'frontend SPA / API REST / full-stack / microservicio / monorepo / librería / data science / IaC / otro'],
+                   'frontend SPA / API REST / full-stack / microservicio / monorepo / librería / data science / IaC / otro'],
   metodologia: ['METODOLOGÍA', 'METODOLOGÍA DE TRABAJO', 'METODOLOGÍA O "ninguna"',
-                'SCRUM / Kanban / Trunk-Based / GitFlow / GitHub Flow / RUP / otro',
-                'BRANCHING STRATEGY'],
+                 'SCRUM / Kanban / Trunk-Based / GitFlow / GitHub Flow / RUP / otro',
+                 'BRANCHING STRATEGY'],
   agentes:     ['LISTA DE AGENTES', 'AGENTES A CONFIGURAR', 'AGENTES ACTIVOS',
-                'Copilot / Claude / Codex / Windsurf / Cursor / Antigravity',
-                'GitHub Copilot / Claude / Windsurf / Cursor / Codex / Antigravity / combinación'],
+                 'Copilot / Claude / Codex / Windsurf / Cursor / Antigravity',
+                 'GitHub Copilot / Claude / Windsurf / Cursor / Codex / Antigravity / combinación'],
   autonomia:   ['NIVEL DE AUTONOMÍA', 'NIVEL',
-                'solo análisis / análisis + propuesta / ejecución controlada / ejecución autónoma',
-                'BAJO / MEDIO / ALTO'],
+                 'solo análisis / análisis + propuesta / ejecución controlada / ejecución autónoma',
+                 'BAJO / MEDIO / ALTO'],
 };
 
 function getVarValues() {
@@ -1502,7 +1503,7 @@ function filterPrompts(q) {
   var empty = document.getElementById('glbl-empty');
   if (empty) empty.style.display = total === 0 ? '' : 'none';
   var countEl = document.getElementById('vis-count');
-  if (countEl) countEl.textContent = total + ' prompts';
+  if (countEl) countEl.textContent = total + (q ? ' coincidencia' + (total!==1?'s':'') : ' prompts en total');
 }
 
 /* ═══════════════════  INFO MODAL  ══════════════════════════════ */
