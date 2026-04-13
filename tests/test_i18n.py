@@ -14,7 +14,7 @@ from i18n_strings import (
 )
 
 
-def test_supported_languages():
+def test_supported_languages() -> None:
     """Validar que hay exactamente 2 idiomas soportados"""
     assert len(SUPPORTED_LANGUAGES) == 2
     assert 'es' in SUPPORTED_LANGUAGES
@@ -22,13 +22,13 @@ def test_supported_languages():
     print("✓ SUPPORTED_LANGUAGES: es, en")
 
 
-def test_default_language():
+def test_default_language() -> None:
     """Validar que el idioma por defecto es español"""
     assert DEFAULT_LANGUAGE == 'es'
     print("✓ DEFAULT_LANGUAGE: es")
 
 
-def test_get_string_fallback():
+def test_get_string_fallback() -> None:
     """Validar fallback a idioma por defecto cuando el idioma no existe"""
     result = get_string('card_copy', 'fr')  # Francés no soportado
     assert result == UI_STRINGS['es']['card_copy']
@@ -101,7 +101,7 @@ def test_section_labels():
     print(f"✓ SECTION_LABELS_I18N: 13 secciones con traducción ES/EN")
 
 
-def run_all_tests():
+def run_all_tests() -> bool:
     """Ejecutar todas las pruebas"""
     print("=" * 60)
     print("PRUEBAS UNITARIAS I18N — Fase 5")
