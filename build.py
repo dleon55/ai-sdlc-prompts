@@ -1623,25 +1623,80 @@ function openInfoLang(pid, lang) {
   modal.classList.add('open');
 }
 
-function copyPromptLang(pid, lang, btn) {
-  // Copiar prompt del idioma especificado
+/* ════════════════════  HELPER COPIA UNIFICADO  ══════════════════════ */
+
+/**
+ * Prepara y copia el texto de un prompt al clipboard.
+ * Función helper unificada para copyPrompt() y copyPromptLang().
+ * 
+ * @param {string} pid - ID del prompt (ej: '01-01-arranque')
+ * @param {string} lang - Idioma ('es' o 'en')
+ * @param {HTMLElement} btn - Botón que disparó la acción (para feedback visual)
+ * @param {boolean} useGenericFlash - Si true usa flash(), si false usa feedback específico
+ * @returns {boolean} - true si se copió, false si falló
+ */
+function prepareAndCopyPrompt(pid, lang, btn, useGenericFlash) {
+  // Construir ID del elemento de código
   var codeId = 'code-' + pid + '-' + lang;
   var codeEl = document.getElementById(codeId);
-  if (!codeEl) return;
+  if (!codeEl) {
+    // Fallback: intentar sin sufijo de idioma (backward compatibility)
+    codeId = 'code-' + pid;
+    codeEl = document.getElementById(codeId);
+    if (!codeEl) return false;
+  }
   
-  var text = codeEl.textContent;
-  if (!text) return;
+  var raw = codeEl.textContent;
+  if (!raw) return false;
   
-  navigator.clipboard.writeText(text).then(function() {
-    var originalText = btn.innerHTML;
-    var okText = lang === 'en' ? 'Copied!' : 'Copiado!';
-    btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> ' + okText;
-    btn.classList.add('ok');
-    setTimeout(function() {
-      btn.innerHTML = originalText;
-      btn.classList.remove('ok');
-    }, 1200);
-  });
+  // Aplicar reemplazo de variables
+  var text = applyVars(raw);
+  
+  // Anteponer framework del idioma correspondiente (si no es el framework mismo)
+  if (pid !== 'fw') {
+    var fwId = 'code-fw-' + lang;
+    var fwEl = document.getElementById(fwId);
+    if (fwEl) {
+      var fw = applyVars(fwEl.textContent);
+      if (fw) text = fw + '\n\n---\n\n' + text;
+    }
+  }
+  
+  // Copiar al clipboard
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text)
+      .then(function() { 
+        if (useGenericFlash) {
+          flash(btn);
+        } else {
+          // Feedback específico con texto según idioma
+          var okText = lang === 'en' ? 'Copied!' : 'Copiado!';
+          var copyText = lang === 'en' ? 'Copy' : 'Copiar';
+          btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> ' + okText;
+          btn.classList.add('ok');
+          setTimeout(function() {
+            btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> ' + copyText;
+            btn.classList.remove('ok');
+          }, 1200);
+        }
+      })
+      .catch(function() { fbCopy(text, btn); });
+    return true;
+  } else { 
+    fbCopy(text, btn);
+    return true;
+  }
+}
+
+/* Wrapper para copia con idioma específico (botones "Copiar" en cards) */
+function copyPromptLang(pid, lang, btn) {
+  prepareAndCopyPrompt(pid, lang, btn, false);
+}
+
+/* Wrapper para copia genérica (botones legacy) */
+function copyPrompt(pid, btn) {
+  var lang = document.documentElement.getAttribute('data-lang') || 'es';
+  prepareAndCopyPrompt(pid, lang, btn, true);
 }
 
 /* ════════════════════  FIN INTERNACIONALIZACIÓN  ══════════════════════ */
@@ -1654,38 +1709,14 @@ function toggleCard(pid) {
   if (t) t.classList.toggle('open', isOpen);
 }
 
-function getFwText() {
-  var fw = document.getElementById('code-fw');
-  return fw ? fw.textContent : '';
-}
-
-function copyPrompt(pid, btn) {
-  var el = document.getElementById('code-' + pid);
-  if (!el) return;
-  var raw = el.textContent;
-  var text = applyVars(raw);
-  // Para prompts individuales (no el framework mismo), anteponer framework
-  if (pid !== 'fw') {
-    var fw = applyVars(getFwText());
-    if (fw) text = fw + '\\n\\n---\\n\\n' + text;
-  }
-  doCopy(text, btn);
-}
-
-function doCopy(text, btn) {
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text)
-      .then(function() { flash(btn); })
-      .catch(function() { fbCopy(text, btn); });
-  } else { fbCopy(text, btn); }
-}
-
+/* Función de fallback para copia (clipboard API no disponible) */
 function fbCopy(text, btn) {
   var t = document.createElement('textarea');
   t.value = text; t.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
   document.body.appendChild(t); t.focus(); t.select();
   try { document.execCommand('copy'); } catch(e) {}
-  document.body.removeChild(t); flash(btn);
+  document.body.removeChild(t);
+  if (btn) flash(btn);
 }
 
 function flash(btn) {
