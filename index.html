@@ -5982,7 +5982,6 @@ document.addEventListener('DOMContentLoaded', function() {
   targets.forEach(function(el) { obs.observe(el); });
 });
 
-/* ═══════ ROUTING client-side ═══════ */
 (function() {
   function route() {
     var path = window.location.pathname;
@@ -5991,23 +5990,18 @@ document.addEventListener('DOMContentLoaded', function() {
     var ar = document.getElementById('app-root');
     if (lr) lr.classList.toggle('landing-hidden', isApp);
     if (ar) ar.classList.toggle('app-hidden', !isApp);
-    // Scroll to top cuando cambiamos de vista
     if (isApp) window.scrollTo(0, 0);
   }
-
-  // Interceptar clicks en enlaces internos para navegación sin recarga
   function handleLinkClick(e) {
     var el = e.target.closest('a');
     if (!el) return;
     var href = el.getAttribute('href');
-    // Solo interceptar enlaces internos a /app
-    if (href && href.startsWith('/app')) {
+    if (href && href.indexOf('/app') === 0) {
       e.preventDefault();
       history.pushState({}, '', href);
       route();
     }
   }
-
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
       route();
