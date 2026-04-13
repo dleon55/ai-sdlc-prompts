@@ -8,6 +8,9 @@ import json
 from pathlib import Path
 from collections import defaultdict
 
+# Importar sistema de internacionalización
+from i18n_strings import get_string, get_section_label, SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE
+
 PROMPTS_DIR = Path(__file__).parent / "ai_sdlc_pro_prompts"
 OUTPUT_FILE = Path(__file__).parent / "index.html"
 
@@ -786,6 +789,45 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   .proj-quick-btn { max-width: 90px; padding: .22rem .45rem; }
 }
 
+/* ═════════════════ LANGUAGE SELECTOR ════════════════════════════ */
+.lang-selector {
+  display: flex; align-items: center; gap: .35rem;
+  margin-left: auto; margin-right: .75rem;
+}
+.lang-btn {
+  background: transparent; border: 1px solid var(--bdr);
+  color: var(--tx2); font-size: .7rem; font-weight: 500;
+  padding: .25rem .55rem; border-radius: 5px;
+  cursor: pointer; transition: all .12s ease;
+  display: flex; align-items: center; gap: .3rem;
+}
+.lang-btn:hover { border-color: var(--bdr2); color: var(--tx); background: var(--bg3); }
+.lang-btn.active { border-color: #6366f1; color: #6366f1; background: rgba(99,102,241,.12); }
+.lang-btn .flag { font-size: .85rem; }
+.lang-dropdown {
+  position: absolute; top: calc(100% + 6px); right: 0;
+  background: var(--bg2); border: 1px solid var(--bdr);
+  border-radius: 8px; padding: .35rem;
+  min-width: 140px; box-shadow: 0 8px 24px rgba(0,0,0,.4);
+  display: none; z-index: 400;
+}
+.lang-dropdown.open { display: block; }
+.lang-option {
+  display: flex; align-items: center; gap: .5rem;
+  padding: .5rem .75rem; cursor: pointer;
+  border-radius: 5px; font-size: .75rem; color: var(--tx2);
+  transition: all .1s;
+}
+.lang-option:hover { background: var(--bg3); color: var(--tx); }
+.lang-option.active { color: #6366f1; font-weight: 500; }
+.lang-option .flag { font-size: .9rem; }
+.lang-wrap { position: relative; }
+
+@media (max-width: 560px) {
+  .lang-btn .lang-label { display: none; }
+  .lang-btn { padding: .25rem; }
+}
+
 /* ═════════════════ WELCOME BANNER ══════════════════════════════ */
 .welcome-banner {
   background: linear-gradient(135deg,#12103a 0%,#0f1220 100%);
@@ -1393,6 +1435,126 @@ function initFrameworkState() {
   }
 }
 
+/* ════════════════════  INTERNACIONALIZACIÓN (i18n)  ══════════════════════ */
+
+var I18N_KEY = 'AI_SDLC_language';
+var I18N_DEFAULT = 'es';
+var I18N_SUPPORTED = ['es', 'en'];
+
+function detectBrowserLanguage() {
+  // 1. Detectar desde navigator.language (prioridad alta)
+  var navLang = navigator.language || navigator.userLanguage || '';
+  var primary = navLang.split('-')[0].toLowerCase();
+  
+  if (I18N_SUPPORTED.indexOf(primary) !== -1) {
+    return primary;
+  }
+  
+  // 2. Fallback: intentar navigator.languages (array ordenado)
+  if (navigator.languages && navigator.languages.length) {
+    for (var i = 0; i < navigator.languages.length; i++) {
+      var lang = navigator.languages[i].split('-')[0].toLowerCase();
+      if (I18N_SUPPORTED.indexOf(lang) !== -1) {
+        return lang;
+      }
+    }
+  }
+  
+  return I18N_DEFAULT;
+}
+
+function getCurrentLanguage() {
+  // Prioridad: localStorage > detección navegador > default
+  try {
+    var saved = localStorage.getItem(I18N_KEY);
+    if (saved && I18N_SUPPORTED.indexOf(saved) !== -1) {
+      return saved;
+    }
+  } catch (e) {}
+  
+  return detectBrowserLanguage();
+}
+
+function setLanguage(lang) {
+  if (I18N_SUPPORTED.indexOf(lang) === -1) {
+    lang = I18N_DEFAULT;
+  }
+  
+  // Guardar preferencia
+  try {
+    localStorage.setItem(I18N_KEY, lang);
+  } catch (e) {}
+  
+  // Actualizar HTML lang attribute para SEO/accessibilidad
+  document.documentElement.lang = lang;
+  document.documentElement.setAttribute('data-lang', lang);
+  
+  // Actualizar UI del selector
+  updateLanguageSelectorUI(lang);
+  
+  // Analytics (si GA4 disponible)
+  if (typeof gtag !== 'undefined') {
+    gtag('event', 'language_change', {
+      to_language: lang
+    });
+  }
+  
+  // Recargar para aplicar traducciones (en Fase 2 será dinámico)
+  // Por ahora recargamos para simplificar implementación
+  window.location.reload();
+}
+
+function initLanguageDetection() {
+  var lang = getCurrentLanguage();
+  
+  // Establecer atributos desde el inicio
+  document.documentElement.lang = lang;
+  document.documentElement.setAttribute('data-lang', lang);
+  
+  // Actualizar UI del selector si existe
+  updateLanguageSelectorUI(lang);
+}
+
+function updateLanguageSelectorUI(activeLang) {
+  // Actualizar botones del selector
+  var btns = document.querySelectorAll('.lang-btn');
+  btns.forEach(function(btn) {
+    var btnLang = btn.getAttribute('data-lang');
+    btn.classList.toggle('active', btnLang === activeLang);
+  });
+  
+  // Actualizar opciones del dropdown
+  var opts = document.querySelectorAll('.lang-option');
+  opts.forEach(function(opt) {
+    var optLang = opt.getAttribute('data-lang');
+    opt.classList.toggle('active', optLang === activeLang);
+  });
+}
+
+function toggleLanguageDropdown() {
+  var dd = document.getElementById('lang-dropdown');
+  if (!dd) return;
+  dd.classList.toggle('open');
+}
+
+function closeLanguageDropdown() {
+  var dd = document.getElementById('lang-dropdown');
+  if (!dd) return;
+  dd.classList.remove('open');
+}
+
+function onLanguageSelect(lang) {
+  var current = getCurrentLanguage();
+  if (lang === current) {
+    closeLanguageDropdown();
+    return;
+  }
+  
+  setLanguage(lang);
+}
+
+/* ════════════════════  FIN INTERNACIONALIZACIÓN  ══════════════════════ */
+
 function toggleCard(pid) {
   var b = document.getElementById('cb-' + pid);
   var t = document.getElementById('ce-' + pid);
@@ -1727,10 +1889,19 @@ document.addEventListener('DOMContentLoaded', function() {
   // Inicializar estado del framework banner (colapsado por defecto)
   initFrameworkState();
 
-  // Cerrar proj-quick al hacer clic fuera
+  // Inicializar detección de idioma (i18n)
+  initLanguageDetection();
+
+  // Cerrar proj-quick y lang-dropdown al hacer clic fuera
   document.addEventListener('click', function(e) {
     var wrap = document.getElementById('proj-quick');
     if (wrap && !wrap.contains(e.target)) closeProjQuick();
+    
+    var langBtn = document.getElementById('lang-btn');
+    var langDrop = document.getElementById('lang-dropdown');
+    if (langDrop && langBtn && !langBtn.contains(e.target) && !langDrop.contains(e.target)) {
+      closeLanguageDropdown();
+    }
   });
 
   // Cerrar modal de info al pulsar Escape o clic en overlay
@@ -1741,7 +1912,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') { closeInfo(); closeVarPanel(); closeProjectsModal(); closeProjQuick(); skipOnboarding(); }
+    if (e.key === 'Escape') { closeInfo(); closeVarPanel(); closeProjectsModal(); closeProjQuick(); closeLanguageDropdown(); skipOnboarding(); }
   });
 
   var content = document.querySelector('.content');
@@ -2047,6 +2218,19 @@ def build():
         '<div><span class="hdr-brand-text">Lionsystems</span>'
         '<span class="hdr-brand-sub">Prueba gratis &middot; Plan Pro</span></div>'
         '</div>\n'
+        '  <div class="lang-wrap">'
+        '    <button class="lang-btn" id="lang-btn" onclick="toggleLanguageDropdown()" title="Cambiar idioma / Change language">'
+        '      <span class="flag">&#127760;</span><span class="lang-label" id="current-lang-label">ES</span>'
+        '    </button>'
+        '    <div class="lang-dropdown" id="lang-dropdown">'
+        '      <div class="lang-option" data-lang="es" onclick="onLanguageSelect(\'es\')">'
+        '        <span class="flag">&#127466;&#127480;</span> Español'
+        '      </div>'
+        '      <div class="lang-option" data-lang="en" onclick="onLanguageSelect(\'en\')">'
+        '        <span class="flag">&#127482;&#127480;</span> English'
+        '      </div>'
+        '    </div>'
+        '  </div>\n'
         '</header>\n'
 
         # welcome banner (primer uso — se oculta con localStorage)
