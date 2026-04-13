@@ -1658,7 +1658,7 @@ function prepareAndCopyPrompt(pid, lang, btn, useGenericFlash) {
     var fwEl = document.getElementById(fwId);
     if (fwEl) {
       var fw = applyVars(fwEl.textContent);
-      if (fw) text = fw + '\n\n---\n\n' + text;
+      if (fw) text = fw + '\\\\n\\\\n---\\\\n\\\\n' + text;
     }
   }
   
