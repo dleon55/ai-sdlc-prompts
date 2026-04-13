@@ -13,6 +13,10 @@ from collections import defaultdict
 PROJECT_ROOT = Path(__file__).parent.parent
 PROMPTS_DIR = PROJECT_ROOT / "ai_sdlc_pro_prompts"
 
+# Importar constantes
+sys.path.insert(0, str(PROJECT_ROOT / "tests"))
+from constants import EXPECTED_PROMPT_COUNT
+
 
 def get_all_prompts():
     """Obtener lista de todos los prompts (archivos .md sin .en.md)"""

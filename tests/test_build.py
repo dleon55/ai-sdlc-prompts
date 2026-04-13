@@ -11,6 +11,13 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
+# Importar constantes
+sys.path.insert(0, str(PROJECT_ROOT / "tests"))
+from constants import (
+    MAX_INDEX_SIZE_KB, MIN_INDEX_SIZE_KB,
+    EXPECTED_HREFLANG_COUNT, MIN_DATA_LANG_MATCHES
+)
+
 
 def test_index_html_exists():
     """Validar que index.html existe"""
@@ -24,8 +31,9 @@ def test_index_html_size():
     index_file = PROJECT_ROOT / "index.html"
     size_bytes = index_file.stat().st_size
     size_kb = size_bytes / 1024
-    assert size_kb < 1024, f"index.html muy grande: {size_kb:.1f}KB (esperado < 1024KB)"
-    print(f"✓ index.html tamaño: {size_kb:.1f}KB (< 1024KB)")
+    assert size_kb < MAX_INDEX_SIZE_KB, f"index.html muy grande: {size_kb:.1f}KB (esperado < {MAX_INDEX_SIZE_KB}KB)"
+    assert size_kb > MIN_INDEX_SIZE_KB, f"index.html muy pequeño: {size_kb:.1f}KB (esperado > {MIN_INDEX_SIZE_KB}KB)"
+    print(f"✓ index.html tamaño: {size_kb:.1f}KB (en rango {MIN_INDEX_SIZE_KB}-{MAX_INDEX_SIZE_KB}KB)")
 
 
 def test_data_lang_es_present():
@@ -33,8 +41,8 @@ def test_data_lang_es_present():
     index_file = PROJECT_ROOT / "index.html"
     content = index_file.read_text(encoding='utf-8')
     matches = re.findall(r'data-lang="es"', content)
-    assert len(matches) > 0, "No se encontraron atributos data-lang='es'"
-    print(f"✓ data-lang='es' encontrado: {len(matches)} veces")
+    assert len(matches) >= MIN_DATA_LANG_MATCHES, f"Muy pocos data-lang='es': {len(matches)} (esperado >= {MIN_DATA_LANG_MATCHES})"
+    print(f"✓ data-lang='es' encontrado: {len(matches)} veces (>= {MIN_DATA_LANG_MATCHES})")
 
 
 def test_data_lang_en_present():
@@ -42,8 +50,8 @@ def test_data_lang_en_present():
     index_file = PROJECT_ROOT / "index.html"
     content = index_file.read_text(encoding='utf-8')
     matches = re.findall(r'data-lang="en"', content)
-    assert len(matches) > 0, "No se encontraron atributos data-lang='en'"
-    print(f"✓ data-lang='en' encontrado: {len(matches)} veces")
+    assert len(matches) >= MIN_DATA_LANG_MATCHES, f"Muy pocos data-lang='en': {len(matches)} (esperado >= {MIN_DATA_LANG_MATCHES})"
+    print(f"✓ data-lang='en' encontrado: {len(matches)} veces (>= {MIN_DATA_LANG_MATCHES})")
 
 
 def test_hreflang_es_present():
@@ -60,6 +68,15 @@ def test_hreflang_en_present():
     content = index_file.read_text(encoding='utf-8')
     assert 'hreflang="en"' in content, "hreflang='en' no encontrado"
     print("✓ hreflang='en' presente")
+
+
+def test_hreflang_count():
+    """Validar cantidad exacta de hreflang tags (es, en, x-default)"""
+    index_file = PROJECT_ROOT / "index.html"
+    content = index_file.read_text(encoding='utf-8')
+    matches = re.findall(r'hreflang="[^"]+"', content)
+    assert len(matches) >= EXPECTED_HREFLANG_COUNT, f"Muy pocos hreflang: {len(matches)} (esperado >= {EXPECTED_HREFLANG_COUNT})"
+    print(f"✓ hreflang tags: {len(matches)} (>= {EXPECTED_HREFLANG_COUNT})")
 
 
 def test_html_lang_attribute():
