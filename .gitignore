@@ -5,6 +5,8 @@ dist/
 _tmp_check.js
 _analysis.txt
 analyze_prompts.py
+server.py
+*.log
 
 # Python
 __pycache__/
