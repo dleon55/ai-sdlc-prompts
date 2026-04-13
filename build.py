@@ -828,6 +828,27 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   .lang-btn { padding: .25rem; }
 }
 
+/* ═════════════════ I18N LANGUAGE SWITCHING ════════════════════════ */
+/* Por defecto: ocultar cards con data-lang */
+.card[data-lang="en"] { display: none; }
+
+/* Cuando html lang=es: mostrar ES, ocultar EN */
+html[data-lang="es"] .card[data-lang="es"] { display: block; }
+html[data-lang="es"] .card[data-lang="en"] { display: none; }
+
+/* Cuando html lang=en: mostrar EN, ocultar ES */
+html[data-lang="en"] .card[data-lang="en"] { display: block; }
+html[data-lang="en"] .card[data-lang="es"] { display: none; }
+
+/* Framework banners: controlados por JS para transiciones suaves */
+.framework-banner.fw-lang-es { }
+.framework-banner.fw-lang-en { }
+
+/* Transición suave al cambiar idioma */
+.card { transition: opacity 0.15s ease; }
+html[data-lang="es"] .card[data-lang="es"],
+html[data-lang="en"] .card[data-lang="en"] { opacity: 1; }
+
 /* ═════════════════ WELCOME BANNER ══════════════════════════════ */
 .welcome-banner {
   background: linear-gradient(135deg,#12103a 0%,#0f1220 100%);
@@ -1492,6 +1513,9 @@ function setLanguage(lang) {
   // Actualizar UI del selector
   updateLanguageSelectorUI(lang);
   
+  // Actualizar visibilidad del framework banner
+  updateFrameworkVisibility(lang);
+  
   // Analytics (si GA4 disponible)
   if (typeof gtag !== 'undefined') {
     gtag('event', 'language_change', {
@@ -1499,9 +1523,21 @@ function setLanguage(lang) {
     });
   }
   
-  // Recargar para aplicar traducciones (en Fase 2 será dinámico)
-  // Por ahora recargamos para simplificar implementación
-  window.location.reload();
+  // Fase 3: Todos los prompts se actualizan dinámicamente vía CSS data-lang
+  // Las cards tienen data-lang="es" o data-lang="en" y se muestran/ocultan con CSS
+}
+
+function updateFrameworkVisibility(lang) {
+  // Mostrar/ocultar banners de framework según idioma
+  var fwEs = document.getElementById('sec-00-es');
+  var fwEn = document.getElementById('sec-00-en');
+  
+  if (fwEs) fwEs.style.display = (lang === 'es') ? 'block' : 'none';
+  if (fwEn) fwEn.style.display = (lang === 'en') ? 'block' : 'none';
+  
+  // Actualizar label del botón de idioma
+  var langLabel = document.getElementById('current-lang-label');
+  if (langLabel) langLabel.textContent = lang.toUpperCase();
 }
 
 function initLanguageDetection() {
@@ -1513,6 +1549,9 @@ function initLanguageDetection() {
   
   // Actualizar UI del selector si existe
   updateLanguageSelectorUI(lang);
+  
+  // Aplicar visibilidad del framework según idioma detectado
+  updateFrameworkVisibility(lang);
 }
 
 function updateLanguageSelectorUI(activeLang) {
@@ -1551,6 +1590,58 @@ function onLanguageSelect(lang) {
   }
   
   setLanguage(lang);
+}
+
+/* Funciones auxiliares para cards bilingües */
+function openInfoLang(pid, lang) {
+  // Abrir modal de info con datos del idioma especificado
+  var info = PROMPT_INFO[pid];
+  if (!info) return;
+  
+  var title = lang === 'en' ? info.title_en : info.title_es;
+  var desc = lang === 'en' ? info.desc_en : info.desc_es;
+  var formulas = lang === 'en' ? info.formulas_en : info.formulas_es;
+  
+  var modal = document.getElementById('info-modal');
+  var titleEl = document.getElementById('info-title');
+  var bodyEl = document.getElementById('info-body');
+  if (!modal || !titleEl || !bodyEl) return;
+  
+  var html = '<p class="info-desc">' + (desc || '') + '</p>';
+  if (formulas && formulas.length > 0) {
+    html += '<h4>' + (lang === 'en' ? 'Standard usage formula' : 'Fórmula de uso estándar') + '</h4>';
+    html += '<ul class="info-formulas">';
+    formulas.forEach(function(f) {
+      html += '<li><code>' + escapeHtml(f.formula || '') + '</code></li>';
+      if (f.desc) html += '<p class="info-formula-desc">' + f.desc + '</p>';
+    });
+    html += '</ul>';
+  }
+  
+  titleEl.textContent = title || '';
+  bodyEl.innerHTML = html;
+  modal.classList.add('open');
+}
+
+function copyPromptLang(pid, lang, btn) {
+  // Copiar prompt del idioma especificado
+  var codeId = 'code-' + pid + '-' + lang;
+  var codeEl = document.getElementById(codeId);
+  if (!codeEl) return;
+  
+  var text = codeEl.textContent;
+  if (!text) return;
+  
+  navigator.clipboard.writeText(text).then(function() {
+    var originalText = btn.innerHTML;
+    var okText = lang === 'en' ? 'Copied!' : 'Copiado!';
+    btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> ' + okText;
+    btn.classList.add('ok');
+    setTimeout(function() {
+      btn.innerHTML = originalText;
+      btn.classList.remove('ok');
+    }, 1200);
+  });
 }
 
 /* ════════════════════  FIN INTERNACIONALIZACIÓN  ══════════════════════ */
@@ -2021,23 +2112,40 @@ LANDING_HTML = (
 
 
 def build():
-    # ── leer framework ──
-    fw_file = PROMPTS_DIR / "00-framework.md"
-    _, fw_prompt, _, _ = parse_md(fw_file) if fw_file.exists() else ("", "", "", [])
+    # ── leer framework en ambos idiomas ──
+    fw_file_es = PROMPTS_DIR / "00-framework.md"
+    fw_file_en = PROMPTS_DIR / "00-framework.en.md"
+    _, fw_prompt_es, _, _ = parse_md(fw_file_es) if fw_file_es.exists() else ("", "", "", [])
+    _, fw_prompt_en, _, _ = parse_md(fw_file_en) if fw_file_en.exists() else ("", fw_prompt_es, "", [])
 
-    # ── leer prompts ──
+    # ── leer prompts (ES y EN) ──
     sections = defaultdict(list)
     for md_file in sorted(PROMPTS_DIR.glob("*.md")):
         name = md_file.stem
         if name == "00-framework":
             continue
+        # Saltar archivos .en.md (se procesan como pares)
+        if name.endswith(".en"):
+            continue
         parts = name.split("-")
         sk = parts[0]
         if sk not in SECTION_META:
             continue
-        title, prompt, description, formulas = parse_md(md_file)
-        sections[sk].append({"id": name, "title": title, "prompt": prompt,
-                              "description": description, "formulas": formulas})
+        # Leer versión ES
+        title_es, prompt_es, description_es, formulas_es = parse_md(md_file)
+        # Leer versión EN (fallback a ES si no existe)
+        en_file = md_file.with_suffix(".en.md")
+        if en_file.exists():
+            title_en, prompt_en, description_en, formulas_en = parse_md(en_file)
+        else:
+            title_en, prompt_en, description_en, formulas_en = title_es, prompt_es, description_es, formulas_es
+        sections[sk].append({
+            "id": name,
+            "title_es": title_es, "prompt_es": prompt_es,
+            "description_es": description_es, "formulas_es": formulas_es,
+            "title_en": title_en, "prompt_en": prompt_en,
+            "description_en": description_en, "formulas_en": formulas_en,
+        })
 
     total = sum(len(v) for v in sections.values())
 
@@ -2046,9 +2154,12 @@ def build():
     for sk, items in sections.items():
         for p in items:
             info_data[p["id"]] = {
-                "title": p["title"],
-                "desc":  p.get("description", ""),
-                "formulas": p.get("formulas", []),
+                "title_es": p["title_es"],
+                "title_en": p["title_en"],
+                "desc_es":  p.get("description_es", ""),
+                "desc_en":  p.get("description_en", ""),
+                "formulas_es": p.get("formulas_es", []),
+                "formulas_en": p.get("formulas_en", []),
             }
     prompt_info_js = "var PROMPT_INFO = " + json.dumps(info_data, ensure_ascii=False) + ";"
 
@@ -2089,11 +2200,14 @@ def build():
         )
     sidebar_html += '</div>'
 
-    # ── framework banner ──
+    # ── framework banner bilingüe ──
     chevron = chevron_svg()
-    fw_escaped = h(fw_prompt)
-    fw_block = (
-        '<div class="framework-banner" id="sec-00" data-observe>'
+    fw_escaped_es = h(fw_prompt_es)
+    fw_escaped_en = h(fw_prompt_en)
+    
+    # Banner en español (visible por defecto)
+    fw_block_es = (
+        '<div class="framework-banner fw-lang-es" id="sec-00-es" data-observe>'
         '<div class="fw-header" onclick="toggleFramework()" title="Click para expandir/colapsar">'
         '<span class="fw-badge">&#9888; Obligatorio</span>'
         + icon_svg("framework", SECTION_COLOR["00"], 18) +
@@ -2105,15 +2219,41 @@ def build():
         '<p class="fw-desc">Este bloque define el rol del agente, el contexto multi-agente y las reglas obligatorias de ingenier\u00eda. '
         'Sin \u00e9l, el agente responde de forma gen\u00e9rica. C\u00f3pialo y p\u00e9galo <strong>siempre primero</strong> en tu conversaci\u00f3n con el agente IA.</p>'
         '<div class="fw-body">'
-        '<pre><code id="code-fw">' + fw_escaped + '</code></pre>'
+        '<pre><code id="code-fw-es">' + fw_escaped_es + '</code></pre>'
         '</div>'
         '<div class="fw-copy-row">'
-        '<button class="fw-copy-btn" onclick="copyPrompt(\'fw\',this)">'
+        '<button class="fw-copy-btn" onclick="copyPrompt(\'fw-es\',this)">'
         + COPY_ICO + ' Copiar framework completo'
         '</button>'
         '</div>'
         '</div>'
     )
+    
+    # Banner en inglés (oculto por defecto)
+    fw_block_en = (
+        '<div class="framework-banner fw-lang-en" id="sec-00-en" data-observe style="display:none;">'
+        '<div class="fw-header" onclick="toggleFramework()" title="Click to expand/collapse">'
+        '<span class="fw-badge">&#9888; Required</span>'
+        + icon_svg("framework", SECTION_COLOR["00"], 18) +
+        '<span class="fw-title">&#128204; STEP 1 — Copy this block before using any prompt</span>'
+        '<button class="fw-expand" onclick="event.stopPropagation(); toggleFramework();" title="Expand / collapse">'
+        + chevron +
+        '</button>'
+        '</div>'
+        '<p class="fw-desc">This block defines the agent role, multi-agent context, and mandatory engineering rules. '
+        'Without it, the agent responds generically. Copy and paste it <strong>always first</strong> in your conversation with the AI agent.</p>'
+        '<div class="fw-body">'
+        '<pre><code id="code-fw-en">' + fw_escaped_en + '</code></pre>'
+        '</div>'
+        '<div class="fw-copy-row">'
+        '<button class="fw-copy-btn" onclick="copyPrompt(\'fw-en\',this)">'
+        + COPY_ICO + ' Copy complete framework'
+        '</button>'
+        '</div>'
+        '</div>'
+    )
+    
+    fw_block = fw_block_es + fw_block_en
 
     # ── section groups ──
     groups_html = ""
@@ -2140,32 +2280,65 @@ def build():
 
         for p in sections[sk]:
             pid = p["id"]
-            escaped_prompt = h(p["prompt"])
-            has_info = bool(p.get("description") or p.get("formulas"))
-            info_btn_html = (
-                '<button class="info-btn" onclick="openInfo(\'' + pid + '\')"'
-                ' title="Cuándo usar · Fórmula de uso estándar">&#9432;</button>'
-            ) if has_info else ''
+            has_info_es = bool(p.get("description_es") or p.get("formulas_es"))
+            has_info_en = bool(p.get("description_en") or p.get("formulas_en"))
 
+            # Card en Español
             groups_html += (
-                '<div class="card">'
+                '<div class="card" data-lang="es">'
                 '<div class="card-head">'
                 '<input type="checkbox" class="card-check" data-pid="' + pid + '"'
                 ' onchange="onCardCheck(this)" title="Seleccionar prompt">'
-                '<button class="card-expand" id="ce-' + pid + '"'
-                ' onclick="toggleCard(\'' + pid + '\')" title="Ver / ocultar prompt">'
+                '<button class="card-expand" id="ce-' + pid + '-es"'
+                ' onclick="toggleCard(\'' + pid + '-es\')" title="Ver / ocultar prompt">'
                 + chevron +
                 '</button>'
-                '<span class="card-title" onclick="toggleCard(\'' + pid + '\')">'
-                + h(p["title"]) +
+                '<span class="card-title" onclick="toggleCard(\'' + pid + '-es\')">'
+                + h(p["title_es"]) +
                 '</span>'
-                + info_btn_html +
-                '<button class="copy-btn" onclick="copyPrompt(\'' + pid + '\',this)">'
+            )
+            if has_info_es:
+                groups_html += (
+                    '<button class="info-btn" onclick="openInfoLang(\'' + pid + '\', \'es\')"'
+                    ' title="Cuándo usar · Fórmula de uso estándar">&#9432;</button>'
+                )
+            groups_html += (
+                '<button class="copy-btn" onclick="copyPromptLang(\'' + pid + '\', \'es\', this)">'
                 + COPY_ICO + ' Copiar'
                 '</button>'
                 '</div>'
-                '<div class="card-body" id="cb-' + pid + '">'
-                '<pre><code id="code-' + pid + '">' + escaped_prompt + '</code></pre>'
+                '<div class="card-body" id="cb-' + pid + '-es">'
+                '<pre><code id="code-' + pid + '-es">' + h(p["prompt_es"]) + '</code></pre>'
+                '</div>'
+                '</div>'
+            )
+
+            # Card en Inglés
+            groups_html += (
+                '<div class="card" data-lang="en">'
+                '<div class="card-head">'
+                '<input type="checkbox" class="card-check" data-pid="' + pid + '"'
+                ' onchange="onCardCheck(this)" title="Select prompt">'
+                '<button class="card-expand" id="ce-' + pid + '-en"'
+                ' onclick="toggleCard(\'' + pid + '-en\')" title="Show / hide prompt">'
+                + chevron +
+                '</button>'
+                '<span class="card-title" onclick="toggleCard(\'' + pid + '-en\')">'
+                + h(p["title_en"]) +
+                '</span>'
+            )
+            if has_info_en:
+                groups_html += (
+                    '<button class="info-btn" onclick="openInfoLang(\'' + pid + '\', \'en\')"'
+                    ' title="When to use · Standard usage formula">&#9432;</button>'
+                )
+            groups_html += (
+                '<button class="copy-btn" onclick="copyPromptLang(\'' + pid + '\', \'en\', this)">'
+                + COPY_ICO + ' Copy'
+                '</button>'
+                '</div>'
+                '<div class="card-body" id="cb-' + pid + '-en">'
+                '<pre><code id="code-' + pid + '-en">' + h(p["prompt_en"]) + '</code></pre>'
                 '</div>'
                 '</div>'
             )
@@ -2190,6 +2363,9 @@ def build():
         '<meta name="twitter:title" content="AI-SDLC Pro \u2014 Biblioteca de Prompts">\n'
         '<meta name="twitter:description" content="44 prompts para dirigir agentes IA en ingenieria de software. Copilot, Claude, Cursor, Windsurf.">\n'
         '<link rel="canonical" href="https://prompts.lionsystems.com.mx">\n'
+        '<link rel="alternate" hreflang="es" href="https://prompts.lionsystems.com.mx">\n'
+        '<link rel="alternate" hreflang="en" href="https://prompts.lionsystems.com.mx/?lang=en">\n'
+        '<link rel="alternate" hreflang="x-default" href="https://prompts.lionsystems.com.mx">\n'
         '<script async src="https://www.googletagmanager.com/gtag/js?id=G-C5JKYNZ62F"></script>\n'
         '<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-C5JKYNZ62F");</script>\n'
         '<style>' + CSS + '</style>\n'
