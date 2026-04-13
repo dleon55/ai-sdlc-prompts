@@ -215,6 +215,62 @@ SECTION_LABELS_I18N = {
 SUPPORTED_LANGUAGES = ['es', 'en']
 DEFAULT_LANGUAGE = 'es'
 
+# Strings de Landing Page
+LANDING_STRINGS = {
+    'es': {
+        'page_title': 'AI-SDLC Pro — Biblioteca de Prompts de Ingeniería de Software',
+        'meta_description': '44 prompts estructurados para dirigir agentes IA (Copilot, Claude, Cursor, Windsurf) en cada fase del ciclo de ingeniería de software. Framework SDLC profesional en español.',
+        'hero_title': 'La única biblioteca de prompts profesional para dirigir agentes IA en el ciclo completo de ingeniería de software',
+        'hero_subtitle': '44 prompts estructurados · Framework multi-agente · Variables de contexto · En español',
+        'cta_primary': 'Probar gratis',
+        'cta_secondary': 'Ver documentación',
+        'feature_1_title': 'Framework obligatorio incluido',
+        'feature_1_desc': 'Cada prompt incluye el contexto multi-agente y reglas de ingeniería necesarias para obtener outputs consistentes.',
+        'feature_2_title': 'Variables de tu proyecto',
+        'feature_2_desc': 'Configura tu repositorio, stack, ambiente y componentes. Los prompts se adaptan automáticamente.',
+        'feature_3_title': 'Ciclo SDLC completo',
+        'feature_3_desc': 'Desde la comprensión del repositorio hasta el incident response. 15 grupos, 44 prompts.',
+        'stats_prompts': '44 prompts',
+        'stats_sections': '15 secciones',
+        'stats_agents': '6 agentes IA',
+        'footer_copyright': 'AI-SDLC Pro © 2025 LionSystems',
+    },
+    'en': {
+        'page_title': 'AI-SDLC Pro — Software Engineering Prompt Library',
+        'meta_description': '44 structured prompts to direct AI agents (Copilot, Claude, Cursor, Windsurf) in every phase of the software engineering lifecycle. Professional SDLC framework.',
+        'hero_title': 'The only professional prompt library for directing AI agents through the complete software engineering lifecycle',
+        'hero_subtitle': '44 structured prompts · Multi-agent framework · Context variables · In English',
+        'cta_primary': 'Try for free',
+        'cta_secondary': 'View documentation',
+        'feature_1_title': 'Mandatory framework included',
+        'feature_1_desc': 'Each prompt includes the multi-agent context and engineering rules needed for consistent outputs.',
+        'feature_2_title': 'Your project variables',
+        'feature_2_desc': 'Configure your repository, stack, environment and components. Prompts adapt automatically.',
+        'feature_3_title': 'Complete SDLC cycle',
+        'feature_3_desc': 'From repository comprehension to incident response. 15 groups, 44 prompts.',
+        'stats_prompts': '44 prompts',
+        'stats_sections': '15 sections',
+        'stats_agents': '6 AI agents',
+        'footer_copyright': 'AI-SDLC Pro © 2025 LionSystems',
+    }
+}
+
+def get_landing_string(key: str, lang: str = 'es') -> str:
+    """
+    Obtiene un string de la landing page traducido.
+    
+    Args:
+        key: Clave del string en LANDING_STRINGS
+        lang: Código de idioma ('es' o 'en')
+    
+    Returns:
+        String traducido, o clave si no se encuentra
+    """
+    if lang not in SUPPORTED_LANGUAGES:
+        lang = DEFAULT_LANGUAGE
+    
+    return LANDING_STRINGS.get(lang, LANDING_STRINGS[DEFAULT_LANGUAGE]).get(key, key)
+
 def get_string(key: str, lang: str = 'es') -> str:
     """
     Obtiene un string de UI traducido.
