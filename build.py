@@ -169,13 +169,19 @@ CSS = """
   --warn: #f59e0b;
   --mono: 'JetBrains Mono','Fira Code','Cascadia Code','Courier New',monospace;
 }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }html[lang="es"] .card[data-lang="en"],
+html[lang="es"] .fw-lang-en { display: none !important; }
+
+html[lang="en"] .card[data-lang="es"],
+html[lang="en"] .fw-lang-es { display: none !important; }
 html { scroll-behavior: smooth; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background: var(--bg); color: var(--tx); font-size: 14px; line-height: 1.5;
-  display: flex; flex-direction: column; height: 100vh; overflow: hidden;
+  min-height: 100vh;
 }
+#app-root, #landing-root { min-height: 100vh; display: flex; flex-direction: column; }
+#app-root { overflow: visible; } /* Permite scroll del body */
 
 /* ═══════════════════════════ HEADER ════════════════════════════ */
 header {
@@ -183,7 +189,8 @@ header {
   background: var(--bg2);
   border-bottom: 1px solid var(--bdr);
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 1.5rem; z-index: 300;
+  padding: 0 1rem; z-index: 300;
+  position: sticky; top: 0;
 }
 .hdr-logo { display: flex; align-items: center; gap: .65rem; }
 .hdr-logo svg { flex-shrink: 0; }
@@ -231,13 +238,33 @@ header {
 .search-count { font-size: .7rem; color: var(--tx3); white-space: nowrap; }
 
 /* ═══════════════════════════ LAYOUT ════════════════════════════ */
-.layout { display: flex; flex: 1; overflow: hidden; }
+.layout { display: flex; flex: 1; }
 
 /* ═══════════════════════════ SIDEBAR ═══════════════════════════ */
 .sidebar {
   width: var(--side); flex-shrink: 0;
   background: var(--bg2); border-right: 1px solid var(--bdr);
-  overflow-y: auto; display: flex; flex-direction: column;
+  display: flex; flex-direction: column;
+  transition: transform .25s ease;
+}
+/* Estilo unificado de menú hamburguesa (Overlay) */
+@media (max-width: 1024px) {
+  .sidebar { 
+    position: fixed; top: var(--hdr); left: 0; bottom: 0; 
+    z-index: 400; transform: translateX(-100%); 
+    height: calc(100vh - var(--hdr));
+    overflow-y: auto; box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+  }
+  body.menu-open .sidebar { transform: translateX(0); }
+  .sidebar-overlay { 
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5); 
+    z-index: 399; display: none; 
+  }
+  body.menu-open .sidebar-overlay { display: block; }
+}
+@media (min-width: 1025px) {
+  .sidebar-collapsed .sidebar { width: 0; overflow: hidden; border-right: none; }
+  .menu-toggle-btn { display: none; }
 }
 .sidebar::-webkit-scrollbar { width: 3px; }
 .sidebar::-webkit-scrollbar-thumb { background: var(--bdr2); border-radius: 2px; }
@@ -277,7 +304,7 @@ header {
 
 /* ═══════════════════════════ CONTENT ═══════════════════════════ */
 .content {
-  flex: 1; overflow-y: auto; padding: 1.5rem 1.75rem 5rem;
+  flex: 1; padding: 1.5rem 1.75rem 5rem;
   min-width: 0;
 }
 .content::-webkit-scrollbar { width: 5px; }
@@ -1351,30 +1378,126 @@ function clearVars() {
 
 /* ═══════════════════  TOGGLE CARD / COPY  ══════════════════════ */
 
-function toggleCard(pid) {
-  var b = document.getElementById('cb-' + pid);
-  var t = document.getElementById('ce-' + pid);
+function toggleMenu() {
+  document.body.classList.toggle('menu-open');
+}
+
+function closeMenu() {
+  document.body.classList.remove('menu-open');
+}
+
+/* ═══════════════════  TOGGLE CARD / COPY  ══════════════════════ */
+
+function toggleFramework() {
+  var b = document.getElementById('fw-body');
+  var t = document.querySelector('.fw-expand');
   if (!b) return;
   var isOpen = b.classList.toggle('open');
   if (t) t.classList.toggle('open', isOpen);
+  try { localStorage.setItem('AI_SDLC_fw_expanded', isOpen ? '1' : '0'); } catch(e) {}
+}
+
+function initFrameworkState() {
+  var b = document.getElementById('fw-body');
+  var t = document.querySelector('.fw-expand');
+  if (!b) return;
+  var saved = '';
+  try { saved = localStorage.getItem('AI_SDLC_fw_expanded') || ''; } catch(e) {}
+  var isOpen = saved === '1';
+  if (isOpen) {
+    b.classList.add('open');
+    if (t) t.classList.add('open');
+  }
+}
+
+/* ════════════════════  INTERNACIONALIZACIÓN (i18n)  ══════════════════════ */
+
+var I18N_KEY = 'AI_SDLC_language';
+var I18N_DEFAULT = 'es';
+var I18N_SUPPORTED = ['es', 'en'];
+
+function detectBrowserLanguage() {
+  var navLang = navigator.language || navigator.userLanguage || '';
+  var primary = navLang.split('-')[0].toLowerCase();
+  if (I18N_SUPPORTED.indexOf(primary) !== -1) return primary;
+  return I18N_DEFAULT;
+}
+
+function getCurrentLanguage() {
+  try {
+    var saved = localStorage.getItem(I18N_KEY);
+    if (saved && I18N_SUPPORTED.indexOf(saved) !== -1) return saved;
+  } catch(e) {}
+  return detectBrowserLanguage();
+}
+
+function setLanguage(lang) {
+  if (I18N_SUPPORTED.indexOf(lang) === -1) lang = I18N_DEFAULT;
+  try { localStorage.setItem(I18N_KEY, lang); } catch(e) {}
+  document.documentElement.lang = lang;
+  document.documentElement.setAttribute('data-lang', lang);
+  
+  // Actualizar UI del selector
+  var langLabel = document.getElementById('current-lang-label');
+  if (langLabel) langLabel.textContent = lang.toUpperCase();
+  
+  // Actualizar visibilidad del framework banner
+  var fwEs = document.getElementById('sec-00-es');
+  var fwEn = document.getElementById('sec-00-en');
+  if (fwEs) fwEs.style.display = (lang === 'es') ? 'block' : 'none';
+  if (fwEn) fwEn.style.display = (lang === 'en') ? 'block' : 'none';
+}
+
+function initLanguageDetection() {
+  var lang = getCurrentLanguage();
+  setLanguage(lang);
+}
+
+function toggleLanguageDropdown() {
+  var dd = document.getElementById('lang-dropdown');
+  if (dd) dd.classList.toggle('open');
+}
+
+function onLanguageSelect(lang) {
+  setLanguage(lang);
+  var dd = document.getElementById('lang-dropdown');
+  if (dd) dd.classList.remove('open');
 }
 
 function getFwText() {
-  var fw = document.getElementById('code-fw');
-  return fw ? fw.textContent : '';
+  var lang = getCurrentLanguage();
+  var fwId = 'code-fw-' + lang;
+  var fwEl = document.getElementById(fwId) || document.getElementById('code-fw');
+  return fwEl ? fwEl.textContent : '';
+}
+
+function copyPromptLang(pid, lang, btn) {
+  var codeId = 'code-' + pid + '-' + lang;
+  var codeEl = document.getElementById(codeId);
+  if (!codeEl) return;
+  
+  var raw = codeEl.textContent;
+  var text = applyVars(raw);
+  
+  if (pid !== 'fw') {
+    var fwId = 'code-fw-' + lang;
+    var fwEl = document.getElementById(fwId) || document.getElementById('code-fw');
+    if (fwEl) {
+      var fw = applyVars(fwEl.textContent);
+      if (fw) text = fw + '\\n\\n---\\n\\n' + text;
+    }
+  }
+  doCopy(text, btn);
+}
+
+function openInfoLang(pid, lang) {
+  // Por ahora el modal de info es genérico, pero podemos adaptarlo
+  openInfo(pid);
 }
 
 function copyPrompt(pid, btn) {
-  var el = document.getElementById('code-' + pid);
-  if (!el) return;
-  var raw = el.textContent;
-  var text = applyVars(raw);
-  // Para prompts individuales (no el framework mismo), anteponer framework
-  if (pid !== 'fw') {
-    var fw = applyVars(getFwText());
-    if (fw) text = fw + '\\n\\n---\\n\\n' + text;
-  }
-  doCopy(text, btn);
+  var lang = getCurrentLanguage();
+  copyPromptLang(pid, lang, btn);
 }
 
 function doCopy(text, btn) {
@@ -1403,6 +1526,14 @@ function flash(btn) {
 /* ═══════════════════  MULTI-SELECT  ════════════════════════════ */
 
 var msMode = false;
+
+function toggleCard(pid) {
+  var b = document.getElementById('cb-' + pid);
+  var t = document.getElementById('ce-' + pid);
+  if (!b) return;
+  var isOpen = b.classList.toggle('open');
+  if (t) t.classList.toggle('open', isOpen);
+}
 
 function toggleMsMode() {
   msMode = !msMode;
@@ -1682,10 +1813,22 @@ document.addEventListener('DOMContentLoaded', function() {
   initWelcomeBanner();
   initOnboarding();
 
-  // Cerrar proj-quick al hacer clic fuera
+  initLanguageDetection();
+  initFrameworkState();
+
+  // Cerrar menús al hacer clic fuera
   document.addEventListener('click', function(e) {
     var wrap = document.getElementById('proj-quick');
     if (wrap && !wrap.contains(e.target)) closeProjQuick();
+    
+    var dd = document.getElementById('lang-dropdown');
+    var btn = document.getElementById('lang-btn');
+    if (dd && !dd.contains(e.target) && btn && !btn.contains(e.target)) closeLanguageDropdown();
+    
+    // Cerrar menú hamburguesa si se hace clic fuera del sidebar en móvil
+    if (document.body.classList.contains('menu-open') && !e.target.closest('.sidebar') && !e.target.closest('.menu-toggle-btn')) {
+      closeMenu();
+    }
   });
 
   // Cerrar modal de info al pulsar Escape o clic en overlay
@@ -1696,7 +1839,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') { closeInfo(); closeVarPanel(); closeProjectsModal(); closeProjQuick(); skipOnboarding(); }
+    if (e.key === 'Escape') { 
+      closeInfo(); closeVarPanel(); closeProjectsModal(); 
+      closeProjQuick(); skipOnboarding(); closeMenu(); closeLanguageDropdown();
+    }
   });
 
   var content = document.querySelector('.content');
@@ -1718,11 +1864,19 @@ LANDING_JS = """
 (function() {
   function route() {
     var path = window.location.pathname;
-    var isApp = path === '/app' || path.startsWith('/app/');
+    var search = window.location.search;
+    var hash = window.location.hash;
+    // Soporte para producción (/app) y local (?view=app o #app)
+    var isApp = path === '/app' || path.startsWith('/app/') || search.includes('view=app') || hash === '#app';
     var lr = document.getElementById('landing-root');
     var ar = document.getElementById('app-root');
     if (lr) lr.classList.toggle('landing-hidden', isApp);
     if (ar) ar.classList.toggle('app-hidden', !isApp);
+    
+    // Si entramos a la app, inicializar i18n si no se ha hecho
+    if (isApp && typeof initLanguageDetection === 'function') {
+      initLanguageDetection();
+    }
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', route);
@@ -1730,6 +1884,7 @@ LANDING_JS = """
     route();
   }
   window.addEventListener('popstate', route);
+  window.addEventListener('hashchange', route);
 })();
 """
 
@@ -1805,23 +1960,34 @@ LANDING_HTML = (
 
 
 def build():
-    # ── leer framework ──
-    fw_file = PROMPTS_DIR / "00-framework.md"
-    _, fw_prompt, _, _ = parse_md(fw_file) if fw_file.exists() else ("", "", "", [])
+    # ── leer framework en ambos idiomas ──
+    fw_file_es = PROMPTS_DIR / "00-framework.md"
+    fw_file_en = PROMPTS_DIR / "00-framework.en.md"
+    _, fw_prompt_es, _, _ = parse_md(fw_file_es) if fw_file_es.exists() else ("", "", "", [])
+    _, fw_prompt_en, _, _ = parse_md(fw_file_en) if fw_file_en.exists() else ("", fw_prompt_es, "", [])
 
-    # ── leer prompts ──
+    # ── leer prompts (ES y EN) ──
     sections = defaultdict(list)
     for md_file in sorted(PROMPTS_DIR.glob("*.md")):
         name = md_file.stem
-        if name == "00-framework":
-            continue
+        if name == "00-framework": continue
+        if name.endswith(".en"): continue
         parts = name.split("-")
         sk = parts[0]
-        if sk not in SECTION_META:
-            continue
-        title, prompt, description, formulas = parse_md(md_file)
-        sections[sk].append({"id": name, "title": title, "prompt": prompt,
-                              "description": description, "formulas": formulas})
+        if sk not in SECTION_META: continue
+        title_es, prompt_es, description_es, formulas_es = parse_md(md_file)
+        en_file = md_file.with_suffix(".en.md")
+        if en_file.exists():
+            title_en, prompt_en, description_en, formulas_en = parse_md(en_file)
+        else:
+            title_en, prompt_en, description_en, formulas_en = title_es, prompt_es, description_es, formulas_es
+        sections[sk].append({
+            "id": name,
+            "title_es": title_es, "prompt_es": prompt_es,
+            "description_es": description_es, "formulas_es": formulas_es,
+            "title_en": title_en, "prompt_en": prompt_en,
+            "description_en": description_en, "formulas_en": formulas_en,
+        })
 
     total = sum(len(v) for v in sections.values())
 
@@ -1830,9 +1996,9 @@ def build():
     for sk, items in sections.items():
         for p in items:
             info_data[p["id"]] = {
-                "title": p["title"],
-                "desc":  p.get("description", ""),
-                "formulas": p.get("formulas", []),
+                "title_es": p["title_es"], "title_en": p["title_en"],
+                "desc_es":  p.get("description_es", ""), "desc_en": p.get("description_en", ""),
+                "formulas_es": p.get("formulas_es", []), "formulas_en": p.get("formulas_en", []),
             }
     prompt_info_js = "var PROMPT_INFO = " + json.dumps(info_data, ensure_ascii=False) + ";"
 
@@ -1873,28 +2039,60 @@ def build():
         )
     sidebar_html += '</div>'
 
-    # ── framework banner ──
+    # ── framework banner bilingüe ──
     chevron = chevron_svg()
-    fw_escaped = h(fw_prompt)
-    fw_block = (
-        '<div class="framework-banner" id="sec-00" data-observe>'
-        '<div class="fw-header">'
+    fw_escaped_es = h(fw_prompt_es)
+    fw_escaped_en = h(fw_prompt_en)
+    
+    # Banner en español (visible por defecto)
+    fw_block_es = (
+        '<div class="framework-banner fw-lang-es" id="sec-00-es" data-observe>'
+        '<div class="fw-header" onclick="toggleFramework()" title="Click para expandir/colapsar">'
         '<span class="fw-badge">&#9888; Obligatorio</span>'
         + icon_svg("framework", SECTION_COLOR["00"], 18) +
         '<span class="fw-title">&#128204; PASO 1 — Copia este bloque antes de usar cualquier prompt</span>'
+        '<button class="fw-expand" onclick="event.stopPropagation(); toggleFramework();" title="Expandir / colapsar">'
+        + chevron +
+        '</button>'
         '</div>'
         '<p class="fw-desc">Este bloque define el rol del agente, el contexto multi-agente y las reglas obligatorias de ingenier\u00eda. '
         'Sin \u00e9l, el agente responde de forma gen\u00e9rica. C\u00f3pialo y p\u00e9galo <strong>siempre primero</strong> en tu conversaci\u00f3n con el agente IA.</p>'
-        '<div class="fw-body">'
-        '<pre><code id="code-fw">' + fw_escaped + '</code></pre>'
+        '<div class="fw-body" id="fw-body">' # ID unificado para el colapso
+        '<pre><code id="code-fw-es">' + fw_escaped_es + '</code></pre>'
         '</div>'
         '<div class="fw-copy-row">'
-        '<button class="fw-copy-btn" onclick="copyPrompt(\'fw\',this)">'
+        '<button class="fw-copy-btn" onclick="copyPrompt(\'fw-es\',this)">'
         + COPY_ICO + ' Copiar framework completo'
         '</button>'
         '</div>'
         '</div>'
     )
+    
+    # Banner en inglés (oculto por defecto)
+    fw_block_en = (
+        '<div class="framework-banner fw-lang-en" id="sec-00-en" data-observe style="display:none;">'
+        '<div class="fw-header" onclick="toggleFramework()" title="Click to expand/collapse">'
+        '<span class="fw-badge">&#9888; Required</span>'
+        + icon_svg("framework", SECTION_COLOR["00"], 18) +
+        '<span class="fw-title">&#128204; STEP 1 — Copy this block before using any prompt</span>'
+        '<button class="fw-expand" onclick="event.stopPropagation(); toggleFramework();" title="Expand / collapse">'
+        + chevron +
+        '</button>'
+        '</div>'
+        '<p class="fw-desc">This block defines the agent role, multi-agent context, and mandatory engineering rules. '
+        'Without it, the agent responds generically. Copy and paste it <strong>always first</strong> in your conversation with the AI agent.</p>'
+        '<div class="fw-body">'
+        '<pre><code id="code-fw-en">' + fw_escaped_en + '</code></pre>'
+        '</div>'
+        '<div class="fw-copy-row">'
+        '<button class="fw-copy-btn" onclick="copyPrompt(\'fw-en\',this)">'
+        + COPY_ICO + ' Copy complete framework'
+        '</button>'
+        '</div>'
+        '</div>'
+    )
+    
+    fw_block = fw_block_es + fw_block_en
 
     # ── section groups ──
     groups_html = ""
@@ -1921,32 +2119,65 @@ def build():
 
         for p in sections[sk]:
             pid = p["id"]
-            escaped_prompt = h(p["prompt"])
-            has_info = bool(p.get("description") or p.get("formulas"))
-            info_btn_html = (
-                '<button class="info-btn" onclick="openInfo(\'' + pid + '\')"'
-                ' title="Cuándo usar · Fórmula de uso estándar">&#9432;</button>'
-            ) if has_info else ''
+            has_info_es = bool(p.get("description_es") or p.get("formulas_es"))
+            has_info_en = bool(p.get("description_en") or p.get("formulas_en"))
 
+            # Card en Español
             groups_html += (
-                '<div class="card">'
+                '<div class="card" data-lang="es">'
                 '<div class="card-head">'
                 '<input type="checkbox" class="card-check" data-pid="' + pid + '"'
                 ' onchange="onCardCheck(this)" title="Seleccionar prompt">'
-                '<button class="card-expand" id="ce-' + pid + '"'
-                ' onclick="toggleCard(\'' + pid + '\')" title="Ver / ocultar prompt">'
+                '<button class="card-expand" id="ce-' + pid + '-es"'
+                ' onclick="toggleCard(\'' + pid + '-es\')" title="Ver / ocultar prompt">'
                 + chevron +
                 '</button>'
-                '<span class="card-title" onclick="toggleCard(\'' + pid + '\')">'
-                + h(p["title"]) +
+                '<span class="card-title" onclick="toggleCard(\'' + pid + '-es\')">'
+                + h(p["title_es"]) +
                 '</span>'
-                + info_btn_html +
-                '<button class="copy-btn" onclick="copyPrompt(\'' + pid + '\',this)">'
+            )
+            if has_info_es:
+                groups_html += (
+                    '<button class="info-btn" onclick="openInfoLang(\'' + pid + '\', \'es\')"'
+                    ' title="Cuándo usar · Fórmula de uso estándar">&#9432;</button>'
+                )
+            groups_html += (
+                '<button class="copy-btn" onclick="copyPromptLang(\'' + pid + '\', \'es\', this)">'
                 + COPY_ICO + ' Copiar'
                 '</button>'
                 '</div>'
-                '<div class="card-body" id="cb-' + pid + '">'
-                '<pre><code id="code-' + pid + '">' + escaped_prompt + '</code></pre>'
+                '<div class="card-body" id="cb-' + pid + '-es">'
+                '<pre><code id="code-' + pid + '-es">' + h(p["prompt_es"]) + '</code></pre>'
+                '</div>'
+                '</div>'
+            )
+
+            # Card en Inglés
+            groups_html += (
+                '<div class="card" data-lang="en">'
+                '<div class="card-head">'
+                '<input type="checkbox" class="card-check" data-pid="' + pid + '"'
+                ' onchange="onCardCheck(this)" title="Select prompt">'
+                '<button class="card-expand" id="ce-' + pid + '-en"'
+                ' onclick="toggleCard(\'' + pid + '-en\')" title="Show / hide prompt">'
+                + chevron +
+                '</button>'
+                '<span class="card-title" onclick="toggleCard(\'' + pid + '-en\')">'
+                + h(p["title_en"]) +
+                '</span>'
+            )
+            if has_info_en:
+                groups_html += (
+                    '<button class="info-btn" onclick="openInfoLang(\'' + pid + '\', \'en\')"'
+                    ' title="When to use · Standard usage formula">&#9432;</button>'
+                )
+            groups_html += (
+                '<button class="copy-btn" onclick="copyPromptLang(\'' + pid + '\', \'en\', this)">'
+                + COPY_ICO + ' Copy'
+                '</button>'
+                '</div>'
+                '<div class="card-body" id="cb-' + pid + '-en">'
+                '<pre><code id="code-' + pid + '-en">' + h(p["prompt_en"]) + '</code></pre>'
                 '</div>'
                 '</div>'
             )
@@ -1980,25 +2211,39 @@ def build():
 
         '<div id="app-root" class="app-hidden">\n'
 
-        # header
         '<header>\n'
         '  <div class="hdr-logo">'
-        '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="1.6">'
-        '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/>'
-        '</svg>'
-        '<div><h1>AI-SDLC Pro</h1><p>' + str(total) + ' prompts para dirigir agentes IA en cada fase del SDLC &middot; Copilot &middot; Claude &middot; Cursor &middot; Windsurf</p></div>'
-        '</div>\n'
+        '    <button class="menu-toggle-btn" onclick="toggleMenu()" title="Menú">'
+        '      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
+        '        <line x1="3" y1="12" x2="21" y2="12"></line>'
+        '        <line x1="3" y1="6" x2="21" y2="6"></line>'
+        '        <line x1="3" y1="18" x2="21" y2="18"></line>'
+        '      </svg>'
+        '    </button>'
+        '    <div class="hdr-logo-icon">'
+        '      <img src="https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png" width="28" height="28" alt="Lionsystems" style="border-radius:4px;flex-shrink:0;">'
+        '    </div>'
+        '    <div>'
+        '      <h1>AI-SDLC Pro</h1>'
+        '      <p>Biblioteca de Prompts / Lionsystems</p>'
+        '    </div>'
+        '  </div>\n'
         '  <div class="hdr-tags">'
-        '<span class="tag">v3</span>'
-        '<span class="tag">' + str(total) + ' prompts</span>'
-        '<span class="tag tag-warn">&#9888; Incluir framework antes de cada prompt</span>'
-        '</div>\n'
-        '  <div class="hdr-brand">'
-        '<img src="https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png"'
-        ' width="28" height="28" alt="Lionsystems" style="border-radius:4px;flex-shrink:0;">'
-        '<div><span class="hdr-brand-text">Lionsystems</span>'
-        '<span class="hdr-brand-sub">Prueba gratis &middot; Plan Pro</span></div>'
-        '</div>\n'
+        '    <div class="tag">v1.2.0</div>'
+        '    <div class="lang-wrap">'
+        '      <button class="lang-btn" id="lang-btn" onclick="toggleLanguageDropdown()" title="Cambiar idioma / Change language">'
+        '        <span class="flag">&#127760;</span><span class="lang-label" id="current-lang-label">ES</span>'
+        '      </button>'
+        '      <div class="lang-dropdown" id="lang-dropdown">'
+        '        <div class="lang-option" data-lang="es" onclick="onLanguageSelect(\'es\')">Español</div>'
+        '        <div class="lang-option" data-lang="en" onclick="onLanguageSelect(\'en\')">English</div>'
+        '      </div>'
+        '    </div>'
+        '    <div class="hdr-brand">'
+        '      <div><span class="hdr-brand-text">Lionsystems</span>'
+        '      <span class="hdr-brand-sub">Prueba gratis &middot; Plan Pro</span></div>'
+        '    </div>'
+        '  </div>\n'
         '</header>\n'
 
         # welcome banner (primer uso — se oculta con localStorage)
