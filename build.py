@@ -1495,6 +1495,10 @@ function toggleLanguageDropdown() {
 
 function onLanguageSelect(lang) {
   setLanguage(lang);
+  closeLanguageDropdown();
+}
+
+function closeLanguageDropdown() {
   var dd = document.getElementById('lang-dropdown');
   if (dd) dd.classList.remove('open');
 }
@@ -1633,10 +1637,11 @@ function onSecCheck(cb) {
 function copySelected(btn) {
   var checks = getSelected();
   if (!checks.length) return;
+  var lang = getCurrentLanguage();
   // obtener prompts en orden DOM (orden de proceso)
   var parts = checks.map(function(cb) {
     var pid = cb.dataset.pid;
-    var el = document.getElementById('code-' + pid);
+    var el = document.getElementById('code-' + pid + '-' + lang);
     return el ? applyVars(el.textContent) : '';
   }).filter(Boolean);
   var fw = applyVars(getFwText());
