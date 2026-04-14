@@ -1347,10 +1347,10 @@ function hasActiveVars() {
   return Object.values(v).some(function(x){ return x.trim() !== ''; });
 }
 
-function applyVars(text) {
-  var v = getVarValues();
+function applyVars(text, overrides) {
+  var v = Object.assign({}, getVarValues(), overrides || {});
   Object.keys(VAR_MAP).forEach(function(field) {
-    var val = v[field].trim();
+    var val = (v[field] || '').trim();
     if (!val) return;
     VAR_MAP[field].forEach(function(token) {
       var rx = new RegExp('\\\\[' + token.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&') + '\\\\]', 'g');
@@ -1515,14 +1515,15 @@ function copyPromptLang(pid, lang, btn) {
   var codeEl = document.getElementById(codeId);
   if (!codeEl) return;
   
+  var title = btn.dataset.title || '';
   var raw = codeEl.textContent;
-  var text = applyVars(raw);
+  var text = applyVars(raw, { modulo: title });
   
   if (pid !== 'fw') {
     var fwId = 'code-fw-' + lang;
     var fwEl = document.getElementById(fwId) || document.getElementById('code-fw');
     if (fwEl) {
-      var fw = applyVars(fwEl.textContent);
+      var fw = applyVars(fwEl.textContent, { modulo: title });
       if (fw) text = fw + '\\n\\n---\\n\\n' + text;
     }
   }
@@ -2182,6 +2183,12 @@ def build():
             has_info_es = bool(p.get("description_es") or p.get("formulas_es"))
             has_info_en = bool(p.get("description_en") or p.get("formulas_en"))
 
+            # Limpiar títulos (remover prefijos numéricos tipo "01-01 — ")
+            clean_t_es = re.sub(r'^[0-9.-]+\s*[—–-]\s*', '', p["title_es"])
+            clean_t_en = re.sub(r'^[0-9.-]+\s*[—–-]\s*', '', p["title_en"])
+            t_es_attr = clean_t_es.replace('"', '&quot;')
+            t_en_attr = clean_t_en.replace('"', '&quot;')
+
             # Card en Español
             groups_html += (
                 '<div class="card" data-lang="es">'
@@ -2202,7 +2209,7 @@ def build():
                     ' title="Cuándo usar · Fórmula de uso estándar">&#9432;</button>'
                 )
             groups_html += (
-                '<button class="copy-btn" onclick="copyPromptLang(\'' + pid + '\', \'es\', this)">'
+                '<button class="copy-btn" data-title="' + t_es_attr + '" onclick="copyPromptLang(\'' + pid + '\', \'es\', this)">'
                 + COPY_ICO + ' Copiar'
                 '</button>'
                 '</div>'
@@ -2232,7 +2239,7 @@ def build():
                     ' title="When to use · Standard usage formula">&#9432;</button>'
                 )
             groups_html += (
-                '<button class="copy-btn" onclick="copyPromptLang(\'' + pid + '\', \'en\', this)">'
+                '<button class="copy-btn" data-title="' + t_en_attr + '" onclick="copyPromptLang(\'' + pid + '\', \'en\', this)">'
                 + COPY_ICO + ' Copy'
                 '</button>'
                 '</div>'
