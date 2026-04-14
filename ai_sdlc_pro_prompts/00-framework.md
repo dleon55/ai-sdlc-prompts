@@ -44,14 +44,14 @@ Usa esta fórmula para obtener mejores resultados al invocar cualquier prompt:
 
 ```text
 Quiero que uses el prompt de [NOMBRE DEL PROCESO] y lo adaptes a:
-- repositorio:
-- issue o requerimiento:
-- rama:
-- ambiente:
-- componentes:
-- documentos a revisar:
-- objetivo puntual de salida:
-- nivel de profundidad:
+- repositorio: [NOMBRE O URL]
+- issue o requerimiento: [REFERENCIA]
+- rama: [RAMA ACTUAL]
+- ambiente: [DEV / QA / PROD]
+- componentes: [COMPONENTES INVOLUCRADOS]
+- documentos a revisar: [RUTAS DE ARCHIVOS...]
+- objetivo puntual de salida: [INDICAR]
+- nivel de profundidad: [NIVEL]
 ```
 
 ### Ejemplo real

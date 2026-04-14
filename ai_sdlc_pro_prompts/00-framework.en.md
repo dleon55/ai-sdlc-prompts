@@ -44,14 +44,14 @@ Use this formula to get better results when invoking any prompt:
 
 ```text
 I want you to use the prompt from [PROCESS NAME] and adapt it to:
-- repository:
-- issue or requirement:
-- branch:
-- environment:
-- components:
-- documents to review:
-- specific output objective:
-- depth level:
+- repository: [ORG/REPO]
+- issue or requirement: [REFERENCE]
+- branch: [CURRENT BRANCH]
+- environment: [DEV / QA / PROD]
+- components: [INVOLVED COMPONENTS]
+- documents to review: [FILE PATHS...]
+- specific output objective: [INDICATE]
+- depth level: [LEVEL]
 ```
 
 ### Real example

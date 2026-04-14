@@ -1050,14 +1050,14 @@ Reglas obligatorias:
 ---
 
 Quiero que uses el prompt de [NOMBRE DEL PROCESO] y lo adaptes a:
-- repositorio:
-- issue o requerimiento:
-- rama:
-- ambiente:
-- componentes:
-- documentos a revisar:
-- objetivo puntual de salida:
-- nivel de profundidad:</code></pre></div><div class="fw-copy-row"><button class="fw-copy-btn" onclick="copyPromptLang('fw', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar framework completo</button></div></div><div class="framework-banner fw-lang-en" id="sec-00-en" data-observe><div class="fw-header" onclick="toggleFramework()" title="Click to expand/collapse"><span class="fw-badge">&#9888; Required</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg><span class="fw-title">&#128204; STEP 1 — Copy this block before using any prompt</span><button class="fw-expand" id="fe-00-en" onclick="event.stopPropagation(); toggleFramework();" title="Expand / collapse"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div><div class="fw-body" id="fb-00-en"><p class="fw-desc">This block defines the agent role, multi-agent context, and mandatory engineering rules. Without it, the agent responds generically. Copy and paste it <strong>always first</strong> in your conversation with the AI agent.</p><pre><code id="code-fw-en">Act as a Computer Systems Engineer, Senior Software Engineer, Solutions Architect, Technical-Functional Analyst, DBA, Server Administrator and specialist in QA, DevOps and DevSecOps, with practical experience in PSP, RUP, ITIL, SCRUM, CI/CD, GitHub, Docker, Linux, cloud architecture and full stack development.
+- repositorio: [NOMBRE O URL]
+- issue o requerimiento: [REFERENCIA]
+- rama: [RAMA ACTUAL]
+- ambiente: [DEV / QA / PROD]
+- componentes: [COMPONENTES INVOLUCRADOS]
+- documentos a revisar: [RUTAS DE ARCHIVOS...]
+- objetivo puntual de salida: [INDICAR]
+- nivel de profundidad: [NIVEL]</code></pre></div><div class="fw-copy-row"><button class="fw-copy-btn" onclick="copyPromptLang('fw', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar framework completo</button></div></div><div class="framework-banner fw-lang-en" id="sec-00-en" data-observe><div class="fw-header" onclick="toggleFramework()" title="Click to expand/collapse"><span class="fw-badge">&#9888; Required</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg><span class="fw-title">&#128204; STEP 1 — Copy this block before using any prompt</span><button class="fw-expand" id="fe-00-en" onclick="event.stopPropagation(); toggleFramework();" title="Expand / collapse"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div><div class="fw-body" id="fb-00-en"><p class="fw-desc">This block defines the agent role, multi-agent context, and mandatory engineering rules. Without it, the agent responds generically. Copy and paste it <strong>always first</strong> in your conversation with the AI agent.</p><pre><code id="code-fw-en">Act as a Computer Systems Engineer, Senior Software Engineer, Solutions Architect, Technical-Functional Analyst, DBA, Server Administrator and specialist in QA, DevOps and DevSecOps, with practical experience in PSP, RUP, ITIL, SCRUM, CI/CD, GitHub, Docker, Linux, cloud architecture and full stack development.
 
 You are operating in a multi-agent environment under Open Agent Manager. Other agents may be working in parallel on the same repository and workspace.
 
@@ -1084,14 +1084,14 @@ Mandatory rules:
 ---
 
 I want you to use the prompt from [PROCESS NAME] and adapt it to:
-- repository:
-- issue or requirement:
-- branch:
-- environment:
-- components:
-- documents to review:
-- specific output objective:
-- depth level:
+- repository: [ORG/REPO]
+- issue or requirement: [REFERENCE]
+- branch: [CURRENT BRANCH]
+- environment: [DEV / QA / PROD]
+- components: [INVOLVED COMPONENTS]
+- documents to review: [FILE PATHS...]
+- specific output objective: [INDICATE]
+- depth level: [LEVEL]
 
 ---
 
@@ -5233,32 +5233,32 @@ function toggleSidebar() {
 // Mapa: campo UI → array de tokens del prompt que sustituye
 var VAR_MAP = {
   repositorio: ['NOMBRE O URL', 'ORG/REPO', 'NOMBRE O URL DEL REPOSITORIO'],
-  referencia:  ['REFERENCIA', 'PEGAR TEXTO O REFERENCIA', 'PEGAR TEXTO COMPLETO',
+  referencia:  ['REFERENCIA', 'REFERENCE', 'PEGAR TEXTO O REFERENCIA', 'PEGAR TEXTO COMPLETO',
                  'PEGAR LISTA DE INCIDENTES', 'PEGAR REPORTE', 'PEGAR'],
-  rama_actual: ['RAMA ACTUAL', 'RAMA CON LOS CAMBIOS', 'RAMA EN PRUEBAS',
+  rama_actual: ['RAMA ACTUAL', 'CURRENT BRANCH', 'RAMA CON LOS CAMBIOS', 'RAMA EN PRUEBAS',
                  'RAMA AFECTADA', 'RAMA DE TRABAJO', 'RAMA DE PRUEBAS'],
-  rama_destino:['RAMA OBJETIVO', 'RAMA PRINCIPAL', 'RAMA INTEGRADA',
+  rama_destino:['RAMA OBJETIVO', 'TARGET BRANCH', 'RAMA PRINCIPAL', 'RAMA INTEGRADA',
                  'RAMA DESTINO', 'RAMA DE RELEASE', 'DEVELOP / MAIN / RELEASE'],
-  ambiente:    ['DEV / QA / PROD', 'QA / STAGING', 'QA / STAGING / PROD',
+  ambiente:    ['DEV / QA / PROD', 'ENVIRONMENT', 'QA / STAGING', 'QA / STAGING / PROD',
                  'DEV / QA / STAGING / PROD', 'PROD / STAGING', 'DEV / QA',
                  'URL DEL AMBIENTE'],
-  componentes: ['COMPONENTES INVOLUCRADOS', 'COMPONENTES MODIFICADOS',
+  componentes: ['COMPONENTES INVOLUCRADOS', 'INVOLVED COMPONENTS', 'COMPONENTES MODIFICADOS',
                  'COMPONENTES A MODIFICAR', 'COMPONENTES REVISADOS',
-                 'RUTAS DE ARCHIVOS MODIFICADOS', 'FUNCIONES O UNIDADES A PROBAR',
+                 'RUTAS DE ARCHIVOS MODIFICADOS', 'FILE PATHS...', 'FUNCIONES O UNIDADES A PROBAR',
                  'SI YA CONOCES ALGUNO'],
-  modulo:      ['NOMBRE DEL PROCESO', 'INDICAR'],
+  modulo:      ['NOMBRE DEL PROCESO', 'PROCESS NAME', 'INDICAR', 'INDICATE'],
   stack:       ['STACK', 'STACK TECNOLÓGICO', 'STACK PRINCIPAL',
                  'ej. Python + FastAPI + PostgreSQL / Node + React + MongoDB / etc.',
                  'ej: Python 3.11 + FastAPI + PostgreSQL + Docker'],
-  tipo_proyecto: ['TIPO DE PROYECTO', 'TIPO',
+  tipo_proyecto: ['TIPO DE PROYECTO', 'PROJECT TYPE', 'TIPO',
                    'frontend SPA / API REST / full-stack / microservicio / monorepo / librería / data science / IaC / otro'],
-  metodologia: ['METODOLOGÍA', 'METODOLOGÍA DE TRABAJO', 'METODOLOGÍA O "ninguna"',
+  metodologia: ['METODOLOGÍA', 'METHODOLOGY', 'METODOLOGÍA DE TRABAJO', 'METODOLOGÍA O "ninguna"',
                  'SCRUM / Kanban / Trunk-Based / GitFlow / GitHub Flow / RUP / otro',
                  'BRANCHING STRATEGY'],
-  agentes:     ['LISTA DE AGENTES', 'AGENTES A CONFIGURAR', 'AGENTES ACTIVOS',
+  agentes:     ['LISTA DE AGENTES', 'AI AGENTS', 'AGENTES A CONFIGURAR', 'AGENTES ACTIVOS',
                  'Copilot / Claude / Codex / Windsurf / Cursor / Antigravity',
                  'GitHub Copilot / Claude / Windsurf / Cursor / Codex / Antigravity / combinación'],
-  autonomia:   ['NIVEL DE AUTONOMÍA', 'NIVEL',
+  autonomia:   ['NIVEL DE AUTONOMÍA', 'AUTONOMY LEVEL', 'NIVEL', 'LEVEL',
                  'solo análisis / análisis + propuesta / ejecución controlada / ejecución autónoma',
                  'BAJO / MEDIO / ALTO'],
 };
