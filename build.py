@@ -169,11 +169,14 @@ CSS = """
   --warn: #f59e0b;
   --mono: 'JetBrains Mono','Fira Code','Cascadia Code','Courier New',monospace;
 }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }html[lang="es"] .card[data-lang="en"],
-html[lang="es"] .fw-lang-en { display: none !important; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html[lang="es"] .card[data-lang="en"],
+html[lang="es"] .fw-lang-en,
+html[lang="es"] .sid-lang-en { display: none !important; }
 
 html[lang="en"] .card[data-lang="es"],
-html[lang="en"] .fw-lang-es { display: none !important; }
+html[lang="en"] .fw-lang-es,
+html[lang="en"] .sid-lang-es { display: none !important; }
 html { scroll-behavior: smooth; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -213,6 +216,28 @@ header {
 }
 .hdr-brand-text { font-size: .7rem; font-weight: 700; letter-spacing: .04em; color: #f59e0b; }
 .hdr-brand-sub { font-size: .58rem; color: var(--tx3); display: block; line-height: 1.1; }
+
+.lang-wrap { position: relative; }
+.lang-btn {
+  background: var(--bg3); border: 1px solid var(--bdr2); border-radius: 6px;
+  color: var(--tx2); padding: 5px 10px; cursor: pointer; display: flex; align-items: center; gap: 6px;
+  font-size: .72rem; font-weight: 600; transition: all .2s;
+}
+.lang-btn:hover { border-color: #6366f1; color: #fff; }
+.lang-label { font-family: var(--mono); }
+.lang-dropdown {
+  position: absolute; top: calc(100% + 5px); right: 0; background: var(--bg2);
+  border: 1px solid var(--bdr2); border-radius: 8px; min-width: 110px;
+  display: none; flex-direction: column; overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 1000;
+}
+.lang-dropdown.open { display: flex; }
+.lang-option {
+  padding: 8px 12px; font-size: .78rem; color: var(--tx2); cursor: pointer;
+  transition: background .2s, color .2s;
+}
+.lang-option:hover { background: var(--bg3); color: #fff; }
+.lang-option[selected] { color: #6366f1; font-weight: 700; }
 
 /* ═══════════════════════════ SEARCH BAR ════════════════════════ */
 .search-bar {
@@ -328,7 +353,10 @@ header {
 }
 .fw-title { font-size: .88rem; font-weight: 600; color: #fbbf24; flex: 1; }
 .fw-desc { font-size: .72rem; color: #92400e; padding: .5rem 1rem; }
-.fw-body { padding: 0; border-top: none; }
+.fw-body { padding: 0; border-top: none; display: none; }
+.fw-body.open { display: block; }
+.fw-expand svg { transition: transform .2s ease; }
+.fw-expand.open svg { transform: rotate(180deg); }
 .fw-body pre {
   margin: 0; padding: .85rem 1rem;
   background: #06040a; max-height: 340px; overflow-y: auto; border-radius: 0;
@@ -1389,24 +1417,31 @@ function closeMenu() {
 /* ═══════════════════  TOGGLE CARD / COPY  ══════════════════════ */
 
 function toggleFramework() {
-  var b = document.getElementById('fw-body');
-  var t = document.querySelector('.fw-expand');
-  if (!b) return;
-  var isOpen = b.classList.toggle('open');
-  if (t) t.classList.toggle('open', isOpen);
-  try { localStorage.setItem('AI_SDLC_fw_expanded', isOpen ? '1' : '0'); } catch(e) {}
+  var lang = getCurrentLanguage();
+  // Sincronizamos el estado de ambos (es/en) para consistencia al cambiar de idioma
+  ['es', 'en'].forEach(function(l) {
+    var b = document.getElementById('fb-00-' + l);
+    var t = document.getElementById('fe-00-' + l);
+    if (!b) return;
+    var isOpen = b.classList.toggle('open');
+    if (t) t.classList.toggle('open', isOpen);
+    if (l === lang) { // Solo guardamos una vez
+       try { localStorage.setItem('AI_SDLC_fw_expanded', isOpen ? '1' : '0'); } catch(e) {}
+    }
+  });
 }
 
 function initFrameworkState() {
-  var b = document.getElementById('fw-body');
-  var t = document.querySelector('.fw-expand');
-  if (!b) return;
   var saved = '';
   try { saved = localStorage.getItem('AI_SDLC_fw_expanded') || ''; } catch(e) {}
   var isOpen = saved === '1';
   if (isOpen) {
-    b.classList.add('open');
-    if (t) t.classList.add('open');
+    ['es', 'en'].forEach(function(l) {
+      var b = document.getElementById('fb-00-' + l);
+      var t = document.getElementById('fe-00-' + l);
+      if (b) b.classList.add('open');
+      if (t) t.classList.add('open');
+    });
   }
 }
 
@@ -2012,28 +2047,48 @@ def build():
     fw_color = SECTION_COLOR["00"]
     fw_icon_key = SECTION_META["00"][1]
 
+    # ── Sidebar ──
     sidebar_html = (
         '<div class="sid-section">'
-        '<div class="sid-label">Framework</div>'
-        '<a class="sid-link sid-framework" href="#sec-00">'
-        + icon_svg(fw_icon_key, fw_color, 14) +
-        '<span class="sid-text">00 — Framework base</span>'
+        '<div class="sid-label sid-lang-es">Framework</div>'
+        '<div class="sid-label sid-lang-en">Framework</div>'
+        '<a class="sid-link sid-framework active" href="#sec-00" onclick="closeMenu()">'
+        '<span class="sid-icon">' + icon_svg(fw_icon_key, fw_color, 15) + '</span>'
+        '<span class="sid-text sid-lang-es">00 — Framework base</span>'
+        '<span class="sid-text sid-lang-en">00 — Base Framework</span>'
         '<span class="sid-badge">★</span>'
         '</a>'
         '</div>'
         '<div class="sid-section">'
-        '<div class="sid-label">Prompts</div>'
+        '<div class="sid-label sid-lang-es">Prompts</div>'
+        '<div class="sid-label sid-lang-en">Prompts</div>'
     )
 
+    # Mapeo de labels para sidebar (usado en generación estática)
+    SEC_LABELS = {
+        'es': {
+            '01': 'Comprensión', '02': 'Análisis', '03': 'Incidentes', '04': 'Diseño',
+            '05': 'Planificación', '06': 'Ejecución', '07': 'Pruebas', '08': 'Revisión',
+            '09': 'Integración', '10': 'Documentación', '11': 'Operaciones', '12': 'Orquestador'
+        },
+        'en': {
+            '01': 'Comprehension', '02': 'Analysis', '03': 'Incidents', '04': 'Design',
+            '05': 'Planning', '06': 'Execution', '07': 'Testing', '08': 'Review',
+            '09': 'Integration', '10': 'Documentation', '11': 'Operations', '12': 'Orchestrator'
+        }
+    }
+
     for sk in sorted(k for k in sections if k != "00"):
-        label = SECTION_LABEL.get(sk, sk)
+        label_es = SEC_LABELS['es'].get(sk, sk)
+        label_en = SEC_LABELS['en'].get(sk, sk)
         icon_key = SECTION_META.get(sk, ("", "docs"))[1]
         color = SECTION_COLOR.get(sk, "#6366f1")
         cnt = len(sections[sk])
         sidebar_html += (
-            '<a class="sid-link" href="#sec-' + sk + '">'
-            + icon_svg(icon_key, color, 14) +
-            '<span class="sid-text">' + sk + ' — ' + label + '</span>'
+            '<a class="sid-link" href="#sec-' + sk + '" onclick="closeMenu()">'
+            + icon_svg(icon_key, color, 15) +
+            '<span class="sid-text sid-lang-es">' + sk + ' — ' + label_es + '</span>'
+            '<span class="sid-text sid-lang-en">' + sk + ' — ' + label_en + '</span>'
             '<span class="sid-badge">' + str(cnt) + '</span>'
             '</a>'
         )
@@ -2044,48 +2099,48 @@ def build():
     fw_escaped_es = h(fw_prompt_es)
     fw_escaped_en = h(fw_prompt_en)
     
-    # Banner en español (visible por defecto)
+    # Banner en español
     fw_block_es = (
         '<div class="framework-banner fw-lang-es" id="sec-00-es" data-observe>'
         '<div class="fw-header" onclick="toggleFramework()" title="Click para expandir/colapsar">'
         '<span class="fw-badge">&#9888; Obligatorio</span>'
         + icon_svg("framework", SECTION_COLOR["00"], 18) +
         '<span class="fw-title">&#128204; PASO 1 — Copia este bloque antes de usar cualquier prompt</span>'
-        '<button class="fw-expand" onclick="event.stopPropagation(); toggleFramework();" title="Expandir / colapsar">'
+        '<button class="fw-expand" id="fe-00-es" onclick="event.stopPropagation(); toggleFramework();" title="Expandir / colapsar">'
         + chevron +
         '</button>'
         '</div>'
+        '<div class="fw-body" id="fb-00-es">'
         '<p class="fw-desc">Este bloque define el rol del agente, el contexto multi-agente y las reglas obligatorias de ingenier\u00eda. '
         'Sin \u00e9l, el agente responde de forma gen\u00e9rica. C\u00f3pialo y p\u00e9galo <strong>siempre primero</strong> en tu conversaci\u00f3n con el agente IA.</p>'
-        '<div class="fw-body" id="fw-body">' # ID unificado para el colapso
         '<pre><code id="code-fw-es">' + fw_escaped_es + '</code></pre>'
         '</div>'
         '<div class="fw-copy-row">'
-        '<button class="fw-copy-btn" onclick="copyPrompt(\'fw-es\',this)">'
+        '<button class="fw-copy-btn" onclick="copyPromptLang(\'fw\', \'es\', this)">'
         + COPY_ICO + ' Copiar framework completo'
         '</button>'
         '</div>'
         '</div>'
     )
     
-    # Banner en inglés (oculto por defecto)
+    # Banner en inglés
     fw_block_en = (
-        '<div class="framework-banner fw-lang-en" id="sec-00-en" data-observe style="display:none;">'
+        '<div class="framework-banner fw-lang-en" id="sec-00-en" data-observe>'
         '<div class="fw-header" onclick="toggleFramework()" title="Click to expand/collapse">'
         '<span class="fw-badge">&#9888; Required</span>'
         + icon_svg("framework", SECTION_COLOR["00"], 18) +
         '<span class="fw-title">&#128204; STEP 1 — Copy this block before using any prompt</span>'
-        '<button class="fw-expand" onclick="event.stopPropagation(); toggleFramework();" title="Expand / collapse">'
+        '<button class="fw-expand" id="fe-00-en" onclick="event.stopPropagation(); toggleFramework();" title="Expand / collapse">'
         + chevron +
         '</button>'
         '</div>'
+        '<div class="fw-body" id="fb-00-en">'
         '<p class="fw-desc">This block defines the agent role, multi-agent context, and mandatory engineering rules. '
         'Without it, the agent responds generically. Copy and paste it <strong>always first</strong> in your conversation with the AI agent.</p>'
-        '<div class="fw-body">'
         '<pre><code id="code-fw-en">' + fw_escaped_en + '</code></pre>'
         '</div>'
         '<div class="fw-copy-row">'
-        '<button class="fw-copy-btn" onclick="copyPrompt(\'fw-en\',this)">'
+        '<button class="fw-copy-btn" onclick="copyPromptLang(\'fw\', \'en\', this)">'
         + COPY_ICO + ' Copy complete framework'
         '</button>'
         '</div>'
