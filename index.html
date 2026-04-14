@@ -16,9 +16,6 @@
 <meta name="twitter:title" content="AI-SDLC Pro — Biblioteca de Prompts">
 <meta name="twitter:description" content="44 prompts para dirigir agentes IA en ingenieria de software. Copilot, Claude, Cursor, Windsurf.">
 <link rel="canonical" href="https://prompts.lionsystems.com.mx">
-<link rel="alternate" hreflang="es" href="https://prompts.lionsystems.com.mx">
-<link rel="alternate" hreflang="en" href="https://prompts.lionsystems.com.mx/?lang=en">
-<link rel="alternate" hreflang="x-default" href="https://prompts.lionsystems.com.mx">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-C5JKYNZ62F"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-C5JKYNZ62F");</script>
 <style>
@@ -39,14 +36,19 @@
   --warn: #f59e0b;
   --mono: 'JetBrains Mono','Fira Code','Cascadia Code','Courier New',monospace;
 }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }html[lang="es"] .card[data-lang="en"],
+html[lang="es"] .fw-lang-en { display: none !important; }
+
+html[lang="en"] .card[data-lang="es"],
+html[lang="en"] .fw-lang-es { display: none !important; }
 html { scroll-behavior: smooth; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background: var(--bg); color: var(--tx); font-size: 14px; line-height: 1.5;
   min-height: 100vh;
-  overflow-y: auto;
 }
+#app-root, #landing-root { min-height: 100vh; display: flex; flex-direction: column; }
+#app-root { overflow: visible; } /* Permite scroll del body */
 
 /* ═══════════════════════════ HEADER ════════════════════════════ */
 header {
@@ -54,7 +56,8 @@ header {
   background: var(--bg2);
   border-bottom: 1px solid var(--bdr);
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 1.5rem; z-index: 300;
+  padding: 0 1rem; z-index: 300;
+  position: sticky; top: 0;
 }
 .hdr-logo { display: flex; align-items: center; gap: .65rem; }
 .hdr-logo svg { flex-shrink: 0; }
@@ -108,11 +111,27 @@ header {
 .sidebar {
   width: var(--side); flex-shrink: 0;
   background: var(--bg2); border-right: 1px solid var(--bdr);
-  overflow-y: auto; display: flex; flex-direction: column;
-  position: sticky;
-  top: 0;
-  height: calc(100vh - var(--hdr) - var(--bar));
-  align-self: flex-start;
+  display: flex; flex-direction: column;
+  transition: transform .25s ease;
+}
+/* Estilo unificado de menú hamburguesa (Overlay) */
+@media (max-width: 1024px) {
+  .sidebar { 
+    position: fixed; top: var(--hdr); left: 0; bottom: 0; 
+    z-index: 400; transform: translateX(-100%); 
+    height: calc(100vh - var(--hdr));
+    overflow-y: auto; box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+  }
+  body.menu-open .sidebar { transform: translateX(0); }
+  .sidebar-overlay { 
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5); 
+    z-index: 399; display: none; 
+  }
+  body.menu-open .sidebar-overlay { display: block; }
+}
+@media (min-width: 1025px) {
+  .sidebar-collapsed .sidebar { width: 0; overflow: hidden; border-right: none; }
+  .menu-toggle-btn { display: none; }
 }
 .sidebar::-webkit-scrollbar { width: 3px; }
 .sidebar::-webkit-scrollbar-thumb { background: var(--bdr2); border-radius: 2px; }
@@ -154,8 +173,9 @@ header {
 .content {
   flex: 1; padding: 1.5rem 1.75rem 5rem;
   min-width: 0;
-  min-height: calc(100vh - var(--hdr) - var(--bar));
 }
+.content::-webkit-scrollbar { width: 5px; }
+.content::-webkit-scrollbar-thumb { background: var(--bdr2); border-radius: 3px; }
 
 /* ────── Framework banner ────── */
 .framework-banner {
@@ -175,18 +195,7 @@ header {
 }
 .fw-title { font-size: .88rem; font-weight: 600; color: #fbbf24; flex: 1; }
 .fw-desc { font-size: .72rem; color: #92400e; padding: .5rem 1rem; }
-.fw-expand {
-  flex-shrink: 0; background: none; border: none; cursor: pointer;
-  color: #92400e; width: 20px; height: 20px;
-  display: flex; align-items: center; justify-content: center;
-  border-radius: 4px; transition: color .12s, background .12s;
-}
-.fw-expand:hover { color: #fbbf24; background: rgba(245, 158, 11, .15); }
-.fw-expand svg { transition: transform .18s; }
-.fw-expand.open svg { transform: rotate(180deg); }
-.fw-header { cursor: pointer; }
-.fw-body { display: none; padding: 0; border-top: none; }
-.fw-body.open { display: block; }
+.fw-body { padding: 0; border-top: none; }
 .fw-body pre {
   margin: 0; padding: .85rem 1rem;
   background: #06040a; max-height: 340px; overflow-y: auto; border-radius: 0;
@@ -656,66 +665,6 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   .proj-quick-btn { max-width: 90px; padding: .22rem .45rem; }
 }
 
-/* ═════════════════ LANGUAGE SELECTOR ════════════════════════════ */
-.lang-selector {
-  display: flex; align-items: center; gap: .35rem;
-  margin-left: auto; margin-right: .75rem;
-}
-.lang-btn {
-  background: transparent; border: 1px solid var(--bdr);
-  color: var(--tx2); font-size: .7rem; font-weight: 500;
-  padding: .25rem .55rem; border-radius: 5px;
-  cursor: pointer; transition: all .12s ease;
-  display: flex; align-items: center; gap: .3rem;
-}
-.lang-btn:hover { border-color: var(--bdr2); color: var(--tx); background: var(--bg3); }
-.lang-btn.active { border-color: #6366f1; color: #6366f1; background: rgba(99,102,241,.12); }
-.lang-btn .flag { font-size: .85rem; }
-.lang-dropdown {
-  position: absolute; top: calc(100% + 6px); right: 0;
-  background: var(--bg2); border: 1px solid var(--bdr);
-  border-radius: 8px; padding: .35rem;
-  min-width: 140px; box-shadow: 0 8px 24px rgba(0,0,0,.4);
-  display: none; z-index: 400;
-}
-.lang-dropdown.open { display: block; }
-.lang-option {
-  display: flex; align-items: center; gap: .5rem;
-  padding: .5rem .75rem; cursor: pointer;
-  border-radius: 5px; font-size: .75rem; color: var(--tx2);
-  transition: all .1s;
-}
-.lang-option:hover { background: var(--bg3); color: var(--tx); }
-.lang-option.active { color: #6366f1; font-weight: 500; }
-.lang-option .flag { font-size: .9rem; }
-.lang-wrap { position: relative; }
-
-@media (max-width: 560px) {
-  .lang-btn .lang-label { display: none; }
-  .lang-btn { padding: .25rem; }
-}
-
-/* ═════════════════ I18N LANGUAGE SWITCHING ════════════════════════ */
-/* Por defecto: ocultar cards con data-lang */
-.card[data-lang="en"] { display: none; }
-
-/* Cuando html lang=es: mostrar ES, ocultar EN */
-html[data-lang="es"] .card[data-lang="es"] { display: block; }
-html[data-lang="es"] .card[data-lang="en"] { display: none; }
-
-/* Cuando html lang=en: mostrar EN, ocultar ES */
-html[data-lang="en"] .card[data-lang="en"] { display: block; }
-html[data-lang="en"] .card[data-lang="es"] { display: none; }
-
-/* Framework banners: controlados por JS para transiciones suaves */
-.framework-banner.fw-lang-es { }
-.framework-banner.fw-lang-en { }
-
-/* Transición suave al cambiar idioma */
-.card { transition: opacity 0.15s ease; }
-html[data-lang="es"] .card[data-lang="es"],
-html[data-lang="en"] .card[data-lang="en"] { opacity: 1; }
-
 /* ═════════════════ WELCOME BANNER ══════════════════════════════ */
 .welcome-banner {
   background: linear-gradient(135deg,#12103a 0%,#0f1220 100%);
@@ -1022,10 +971,8 @@ en análisis, diseño, implementación, pruebas, CI/CD y documentación
 </div>
 <div id="app-root" class="app-hidden">
 <header>
-  <div class="hdr-logo"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="1.6"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg><div><h1>AI-SDLC Pro</h1><p>44 prompts para dirigir agentes IA en cada fase del SDLC &middot; Copilot &middot; Claude &middot; Cursor &middot; Windsurf</p></div></div>
-  <div class="hdr-tags"><span class="tag">v3</span><span class="tag">44 prompts</span><span class="tag tag-warn">&#9888; Incluir framework antes de cada prompt</span></div>
-  <div class="hdr-brand"><img src="https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png" width="28" height="28" alt="Lionsystems" style="border-radius:4px;flex-shrink:0;"><div><span class="hdr-brand-text">Lionsystems</span><span class="hdr-brand-sub">Prueba gratis &middot; Plan Pro</span></div></div>
-  <div class="lang-wrap">    <button class="lang-btn" id="lang-btn" onclick="toggleLanguageDropdown()" title="Cambiar idioma / Change language">      <span class="flag">&#127760;</span><span class="lang-label" id="current-lang-label">ES</span>    </button>    <div class="lang-dropdown" id="lang-dropdown">      <div class="lang-option" data-lang="es" onclick="onLanguageSelect('es')">        <span class="flag">&#127466;&#127480;</span> Español      </div>      <div class="lang-option" data-lang="en" onclick="onLanguageSelect('en')">        <span class="flag">&#127482;&#127480;</span> English      </div>    </div>  </div>
+  <div class="hdr-logo">    <button class="menu-toggle-btn" onclick="toggleMenu()" title="Menú">      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">        <line x1="3" y1="12" x2="21" y2="12"></line>        <line x1="3" y1="6" x2="21" y2="6"></line>        <line x1="3" y1="18" x2="21" y2="18"></line>      </svg>    </button>    <div class="hdr-logo-icon">      <img src="https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png" width="28" height="28" alt="Lionsystems" style="border-radius:4px;flex-shrink:0;">    </div>    <div>      <h1>AI-SDLC Pro</h1>      <p>Biblioteca de Prompts / Lionsystems</p>    </div>  </div>
+  <div class="hdr-tags">    <div class="tag">v1.2.0</div>    <div class="lang-wrap">      <button class="lang-btn" id="lang-btn" onclick="toggleLanguageDropdown()" title="Cambiar idioma / Change language">        <span class="flag">&#127760;</span><span class="lang-label" id="current-lang-label">ES</span>      </button>      <div class="lang-dropdown" id="lang-dropdown">        <div class="lang-option" data-lang="es" onclick="onLanguageSelect('es')">Español</div>        <div class="lang-option" data-lang="en" onclick="onLanguageSelect('en')">English</div>      </div>    </div>    <div class="hdr-brand">      <div><span class="hdr-brand-text">Lionsystems</span>      <span class="hdr-brand-sub">Prueba gratis &middot; Plan Pro</span></div>    </div>  </div>
 </header>
 <div class="welcome-banner" id="welcome-banner">
   <span class="wb-lead">&#128640; Bienvenido a AI-SDLC Pro</span>
@@ -1048,7 +995,7 @@ en análisis, diseño, implementación, pruebas, CI/CD y documentación
   <nav class="sidebar">
 <div class="sidebar-header"><span class="sidebar-label-text">Nav</span><button class="sidebar-collapse-btn" onclick="toggleSidebar()" title="Colapsar / expandir menú"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/></svg></button></div><div class="sid-section"><div class="sid-label">Framework</div><a class="sid-link sid-framework" href="#sec-00"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg><span class="sid-text">00 — Framework base</span><span class="sid-badge">★</span></a></div><div class="sid-section"><div class="sid-label">Prompts</div><a class="sid-link" href="#sec-01"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"/></svg><span class="sid-text">01 — Comprensión del repositorio</span><span class="sid-badge">2</span></a><a class="sid-link" href="#sec-02"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z"/></svg><span class="sid-text">02 — Análisis</span><span class="sid-badge">3</span></a><a class="sid-link" href="#sec-03"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M12 12.75c1.148 0 2.278.08 3.383.237 1.037.146 1.866.966 1.866 2.013 0 3.728-2.35 6.75-5.25 6.75S6.75 18.728 6.75 15c0-1.046.83-1.867 1.866-2.013A24.204 24.204 0 0112 12.75zm0 0c2.883 0 5.647.508 8.207 1.44a23.91 23.91 0 01-1.152 6.06M12 12.75c-2.883 0-5.647.508-8.208 1.44a23.91 23.91 0 001.153 6.06M12 12.75a2.25 2.25 0 002.248-2.354M12 12.75a2.25 2.25 0 01-2.248-2.354M12 8.25c.995 0 1.971-.08 2.922-.236.403-.066.74-.358.795-.762a3.778 3.778 0 00-.399-2.25M12 8.25c-.995 0-1.97-.08-2.922-.236-.402-.066-.74-.358-.795-.762a3.778 3.778 0 01.4-2.25m0 0a5.002 5.002 0 019.45 0m-9.45 0A5.002 5.002 0 002.55 5.764"/></svg><span class="sid-text">03 — Incidentes</span><span class="sid-badge">2</span></a><a class="sid-link" href="#sec-04"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"/></svg><span class="sid-text">04 — Diseño de solución</span><span class="sid-badge">4</span></a><a class="sid-link" href="#sec-05"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg><span class="sid-text">05 — Plan de implementación</span><span class="sid-badge">2</span></a><a class="sid-link" href="#sec-06"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z"/></svg><span class="sid-text">06 — Ejecución</span><span class="sid-badge">2</span></a><a class="sid-link" href="#sec-07"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"/></svg><span class="sid-text">07 — Pruebas</span><span class="sid-badge">6</span></a><a class="sid-link" href="#sec-08"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0118 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3l1.5 1.5 3-3.75"/></svg><span class="sid-text">08 — Revisión y remediación</span><span class="sid-badge">3</span></a><a class="sid-link" href="#sec-09"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#14b8a6" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/></svg><span class="sid-text">09 — Integración y CI/CD</span><span class="sid-badge">4</span></a><a class="sid-link" href="#sec-10"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a3e635" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg><span class="sid-text">10 — Documentación</span><span class="sid-badge">3</span></a><a class="sid-link" href="#sec-11"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 01.9 2.7m0 0a3 3 0 01-3 3m0 3h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008zm-3 6h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008z"/></svg><span class="sid-text">11 — Operaciones</span><span class="sid-badge">4</span></a><a class="sid-link" href="#sec-12"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 16.875h3.375m0 0h3.375m-3.375 0V13.5m0 3.375v3.375M6 10.5h2.25a2.25 2.25 0 002.25-2.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v2.25A2.25 2.25 0 006 10.5zm0 9.75h2.25A2.25 2.25 0 0010.5 18v-2.25a2.25 2.25 0 00-2.25-2.25H6a2.25 2.25 0 00-2.25 2.25V18A2.25 2.25 0 006 20.25zm9.75-9.75H18a2.25 2.25 0 002.25-2.25V6A2.25 2.25 0 0018 3.75h-2.25A2.25 2.25 0 0013.5 6v2.25a2.25 2.25 0 002.25 2.25z"/></svg><span class="sid-text">12 — Orquestador</span><span class="sid-badge">1</span></a></div>  </nav>
   <div class="content">
-<div class="framework-banner fw-lang-es" id="sec-00-es" data-observe><div class="fw-header" onclick="toggleFramework()" title="Click para expandir/colapsar"><span class="fw-badge">&#9888; Obligatorio</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg><span class="fw-title">&#128204; PASO 1 — Copia este bloque antes de usar cualquier prompt</span><button class="fw-expand" onclick="event.stopPropagation(); toggleFramework();" title="Expandir / colapsar"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div><p class="fw-desc">Este bloque define el rol del agente, el contexto multi-agente y las reglas obligatorias de ingeniería. Sin él, el agente responde de forma genérica. Cópialo y pégalo <strong>siempre primero</strong> en tu conversación con el agente IA.</p><div class="fw-body"><pre><code id="code-fw-es">Actúa como un Ingeniero en Sistemas Computacionales, Ingeniero de Software Senior, Arquitecto de Soluciones, Analista Técnico-Funcional, DBA, Server Administrator y especialista en QA, DevOps y DevSecOps, con experiencia práctica en PSP, RUP, ITIL, SCRUM, CI/CD, GitHub, Docker, Linux, arquitectura cloud y desarrollo full stack.
+<div class="framework-banner fw-lang-es" id="sec-00-es" data-observe><div class="fw-header" onclick="toggleFramework()" title="Click para expandir/colapsar"><span class="fw-badge">&#9888; Obligatorio</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg><span class="fw-title">&#128204; PASO 1 — Copia este bloque antes de usar cualquier prompt</span><button class="fw-expand" onclick="event.stopPropagation(); toggleFramework();" title="Expandir / colapsar"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div><p class="fw-desc">Este bloque define el rol del agente, el contexto multi-agente y las reglas obligatorias de ingeniería. Sin él, el agente responde de forma genérica. Cópialo y pégalo <strong>siempre primero</strong> en tu conversación con el agente IA.</p><div class="fw-body" id="fw-body"><pre><code id="code-fw-es">Actúa como un Ingeniero en Sistemas Computacionales, Ingeniero de Software Senior, Arquitecto de Soluciones, Analista Técnico-Funcional, DBA, Server Administrator y especialista en QA, DevOps y DevSecOps, con experiencia práctica en PSP, RUP, ITIL, SCRUM, CI/CD, GitHub, Docker, Linux, arquitectura cloud y desarrollo full stack.
 
 Estás operando en un entorno multi-agente bajo Open Agent Manager. Otros agentes pueden estar trabajando en paralelo sobre el mismo repositorio y el mismo espacio de trabajo.
 
@@ -5261,30 +5208,31 @@ var VAR_MAP = {
   referencia:  ['REFERENCIA', 'PEGAR TEXTO O REFERENCIA', 'PEGAR TEXTO COMPLETO',
                  'PEGAR LISTA DE INCIDENTES', 'PEGAR REPORTE', 'PEGAR'],
   rama_actual: ['RAMA ACTUAL', 'RAMA CON LOS CAMBIOS', 'RAMA EN PRUEBAS',
-                'RAMA AFECTADA', 'RAMA DE TRABAJO', 'RAMA DE PRUEBAS'],
+                 'RAMA AFECTADA', 'RAMA DE TRABAJO', 'RAMA DE PRUEBAS'],
   rama_destino:['RAMA OBJETIVO', 'RAMA PRINCIPAL', 'RAMA INTEGRADA',
-                'RAMA DESTINO', 'RAMA DE RELEASE', 'DEVELOP / MAIN / RELEASE'],
+                 'RAMA DESTINO', 'RAMA DE RELEASE', 'DEVELOP / MAIN / RELEASE'],
   ambiente:    ['DEV / QA / PROD', 'QA / STAGING', 'QA / STAGING / PROD',
-                'DEV / QA / STAGING / PROD', 'PROD / STAGING', 'DEV / QA',
-                'URL DEL AMBIENTE'],
+                 'DEV / QA / STAGING / PROD', 'PROD / STAGING', 'DEV / QA',
+                 'URL DEL AMBIENTE'],
   componentes: ['COMPONENTES INVOLUCRADOS', 'COMPONENTES MODIFICADOS',
-                'COMPONENTES A MODIFICAR', 'COMPONENTES REVISADOS',
-                'RUTAS DE ARCHIVOS MODIFICADOS', 'FUNCIONES O UNIDADES A PROBAR'],
-  modulo:      ['NOMBRE DEL PROCESO', 'INDICAR', 'SI YA CONOCES ALGUNO'],
+                 'COMPONENTES A MODIFICAR', 'COMPONENTES REVISADOS',
+                 'RUTAS DE ARCHIVOS MODIFICADOS', 'FUNCIONES O UNIDADES A PROBAR',
+                 'SI YA CONOCES ALGUNO'],
+  modulo:      ['NOMBRE DEL PROCESO', 'INDICAR'],
   stack:       ['STACK', 'STACK TECNOLÓGICO', 'STACK PRINCIPAL',
-                'ej. Python + FastAPI + PostgreSQL / Node + React + MongoDB / etc.',
-                'ej: Python 3.11 + FastAPI + PostgreSQL + Docker'],
+                 'ej. Python + FastAPI + PostgreSQL / Node + React + MongoDB / etc.',
+                 'ej: Python 3.11 + FastAPI + PostgreSQL + Docker'],
   tipo_proyecto: ['TIPO DE PROYECTO', 'TIPO',
-                  'frontend SPA / API REST / full-stack / microservicio / monorepo / librería / data science / IaC / otro'],
+                   'frontend SPA / API REST / full-stack / microservicio / monorepo / librería / data science / IaC / otro'],
   metodologia: ['METODOLOGÍA', 'METODOLOGÍA DE TRABAJO', 'METODOLOGÍA O "ninguna"',
-                'SCRUM / Kanban / Trunk-Based / GitFlow / GitHub Flow / RUP / otro',
-                'BRANCHING STRATEGY'],
+                 'SCRUM / Kanban / Trunk-Based / GitFlow / GitHub Flow / RUP / otro',
+                 'BRANCHING STRATEGY'],
   agentes:     ['LISTA DE AGENTES', 'AGENTES A CONFIGURAR', 'AGENTES ACTIVOS',
-                'Copilot / Claude / Codex / Windsurf / Cursor / Antigravity',
-                'GitHub Copilot / Claude / Windsurf / Cursor / Codex / Antigravity / combinación'],
+                 'Copilot / Claude / Codex / Windsurf / Cursor / Antigravity',
+                 'GitHub Copilot / Claude / Windsurf / Cursor / Codex / Antigravity / combinación'],
   autonomia:   ['NIVEL DE AUTONOMÍA', 'NIVEL',
-                'solo análisis / análisis + propuesta / ejecución controlada / ejecución autónoma',
-                'BAJO / MEDIO / ALTO'],
+                 'solo análisis / análisis + propuesta / ejecución controlada / ejecución autónoma',
+                 'BAJO / MEDIO / ALTO'],
 };
 
 function getVarValues() {
@@ -5356,27 +5304,31 @@ function clearVars() {
 
 /* ═══════════════════  TOGGLE CARD / COPY  ══════════════════════ */
 
+function toggleMenu() {
+  document.body.classList.toggle('menu-open');
+}
+
+function closeMenu() {
+  document.body.classList.remove('menu-open');
+}
+
+/* ═══════════════════  TOGGLE CARD / COPY  ══════════════════════ */
+
 function toggleFramework() {
-  var b = document.querySelector('.fw-body');
+  var b = document.getElementById('fw-body');
   var t = document.querySelector('.fw-expand');
-  var h = document.querySelector('.fw-header');
   if (!b) return;
   var isOpen = b.classList.toggle('open');
   if (t) t.classList.toggle('open', isOpen);
-  // Guardar preferencia en localStorage
-  try {
-    localStorage.setItem('AI_SDLC_fw_expanded', isOpen ? '1' : '0');
-  } catch (e) {}
+  try { localStorage.setItem('AI_SDLC_fw_expanded', isOpen ? '1' : '0'); } catch(e) {}
 }
 
 function initFrameworkState() {
-  // Restaurar estado del framework desde localStorage (colapsado por defecto)
-  var b = document.querySelector('.fw-body');
+  var b = document.getElementById('fw-body');
   var t = document.querySelector('.fw-expand');
   if (!b) return;
   var saved = '';
-  try { saved = localStorage.getItem('AI_SDLC_fw_expanded') || ''; } catch (e) {}
-  // Por defecto colapsado (saved === '' o saved === '0' -> colapsado)
+  try { saved = localStorage.getItem('AI_SDLC_fw_expanded') || ''; } catch(e) {}
   var isOpen = saved === '1';
   if (isOpen) {
     b.classList.add('open');
@@ -5391,260 +5343,103 @@ var I18N_DEFAULT = 'es';
 var I18N_SUPPORTED = ['es', 'en'];
 
 function detectBrowserLanguage() {
-  // 1. Detectar desde navigator.language (prioridad alta)
   var navLang = navigator.language || navigator.userLanguage || '';
   var primary = navLang.split('-')[0].toLowerCase();
-  
-  if (I18N_SUPPORTED.indexOf(primary) !== -1) {
-    return primary;
-  }
-  
-  // 2. Fallback: intentar navigator.languages (array ordenado)
-  if (navigator.languages && navigator.languages.length) {
-    for (var i = 0; i < navigator.languages.length; i++) {
-      var lang = navigator.languages[i].split('-')[0].toLowerCase();
-      if (I18N_SUPPORTED.indexOf(lang) !== -1) {
-        return lang;
-      }
-    }
-  }
-  
+  if (I18N_SUPPORTED.indexOf(primary) !== -1) return primary;
   return I18N_DEFAULT;
 }
 
 function getCurrentLanguage() {
-  // Prioridad: localStorage > detección navegador > default
   try {
     var saved = localStorage.getItem(I18N_KEY);
-    if (saved && I18N_SUPPORTED.indexOf(saved) !== -1) {
-      return saved;
-    }
-  } catch (e) {}
-  
+    if (saved && I18N_SUPPORTED.indexOf(saved) !== -1) return saved;
+  } catch(e) {}
   return detectBrowserLanguage();
 }
 
 function setLanguage(lang) {
-  if (I18N_SUPPORTED.indexOf(lang) === -1) {
-    lang = I18N_DEFAULT;
-  }
-  
-  // Guardar preferencia
-  try {
-    localStorage.setItem(I18N_KEY, lang);
-  } catch (e) {}
-  
-  // Actualizar HTML lang attribute para SEO/accessibilidad
+  if (I18N_SUPPORTED.indexOf(lang) === -1) lang = I18N_DEFAULT;
+  try { localStorage.setItem(I18N_KEY, lang); } catch(e) {}
   document.documentElement.lang = lang;
   document.documentElement.setAttribute('data-lang', lang);
   
   // Actualizar UI del selector
-  updateLanguageSelectorUI(lang);
-  
-  // Actualizar visibilidad del framework banner
-  updateFrameworkVisibility(lang);
-  
-  // Analytics (si GA4 disponible)
-  if (typeof gtag !== 'undefined') {
-    gtag('event', 'language_change', {
-      to_language: lang
-    });
-  }
-  
-  // Fase 3: Todos los prompts se actualizan dinámicamente vía CSS data-lang
-  // Las cards tienen data-lang="es" o data-lang="en" y se muestran/ocultan con CSS
-}
-
-function updateFrameworkVisibility(lang) {
-  // Mostrar/ocultar banners de framework según idioma
-  var fwEs = document.getElementById('sec-00-es');
-  var fwEn = document.getElementById('sec-00-en');
-  
-  if (fwEs) fwEs.style.display = (lang === 'es') ? 'block' : 'none';
-  if (fwEn) fwEn.style.display = (lang === 'en') ? 'block' : 'none';
-  
-  // Actualizar label del botón de idioma
   var langLabel = document.getElementById('current-lang-label');
   if (langLabel) langLabel.textContent = lang.toUpperCase();
+  
+  // Actualizar visibilidad del framework banner
+  var fwEs = document.getElementById('sec-00-es');
+  var fwEn = document.getElementById('sec-00-en');
+  if (fwEs) fwEs.style.display = (lang === 'es') ? 'block' : 'none';
+  if (fwEn) fwEn.style.display = (lang === 'en') ? 'block' : 'none';
 }
 
 function initLanguageDetection() {
   var lang = getCurrentLanguage();
-  
-  // Establecer atributos desde el inicio
-  document.documentElement.lang = lang;
-  document.documentElement.setAttribute('data-lang', lang);
-  
-  // Actualizar UI del selector si existe
-  updateLanguageSelectorUI(lang);
-  
-  // Aplicar visibilidad del framework según idioma detectado
-  updateFrameworkVisibility(lang);
-}
-
-function updateLanguageSelectorUI(activeLang) {
-  // Actualizar botones del selector
-  var btns = document.querySelectorAll('.lang-btn');
-  btns.forEach(function(btn) {
-    var btnLang = btn.getAttribute('data-lang');
-    btn.classList.toggle('active', btnLang === activeLang);
-  });
-  
-  // Actualizar opciones del dropdown
-  var opts = document.querySelectorAll('.lang-option');
-  opts.forEach(function(opt) {
-    var optLang = opt.getAttribute('data-lang');
-    opt.classList.toggle('active', optLang === activeLang);
-  });
+  setLanguage(lang);
 }
 
 function toggleLanguageDropdown() {
   var dd = document.getElementById('lang-dropdown');
-  if (!dd) return;
-  dd.classList.toggle('open');
-}
-
-function closeLanguageDropdown() {
-  var dd = document.getElementById('lang-dropdown');
-  if (!dd) return;
-  dd.classList.remove('open');
+  if (dd) dd.classList.toggle('open');
 }
 
 function onLanguageSelect(lang) {
-  var current = getCurrentLanguage();
-  if (lang === current) {
-    closeLanguageDropdown();
-    return;
-  }
-  
   setLanguage(lang);
+  var dd = document.getElementById('lang-dropdown');
+  if (dd) dd.classList.remove('open');
 }
 
-/* Funciones auxiliares para cards bilingües */
-function openInfoLang(pid, lang) {
-  // Abrir modal de info con datos del idioma especificado
-  var info = PROMPT_INFO[pid];
-  if (!info) return;
-  
-  var title = lang === 'en' ? info.title_en : info.title_es;
-  var desc = lang === 'en' ? info.desc_en : info.desc_es;
-  var formulas = lang === 'en' ? info.formulas_en : info.formulas_es;
-  
-  var modal = document.getElementById('info-modal');
-  var titleEl = document.getElementById('info-title');
-  var bodyEl = document.getElementById('info-body');
-  if (!modal || !titleEl || !bodyEl) return;
-  
-  var html = '<p class="info-desc">' + (desc || '') + '</p>';
-  if (formulas && formulas.length > 0) {
-    html += '<h4>' + (lang === 'en' ? 'Standard usage formula' : 'Fórmula de uso estándar') + '</h4>';
-    html += '<ul class="info-formulas">';
-    formulas.forEach(function(f) {
-      html += '<li><code>' + escapeHtml(f.formula || '') + '</code></li>';
-      if (f.desc) html += '<p class="info-formula-desc">' + f.desc + '</p>';
-    });
-    html += '</ul>';
-  }
-  
-  titleEl.textContent = title || '';
-  bodyEl.innerHTML = html;
-  modal.classList.add('open');
+function getFwText() {
+  var lang = getCurrentLanguage();
+  var fwId = 'code-fw-' + lang;
+  var fwEl = document.getElementById(fwId) || document.getElementById('code-fw');
+  return fwEl ? fwEl.textContent : '';
 }
 
-/* ════════════════════  HELPER COPIA UNIFICADO  ══════════════════════ */
-
-/**
- * Prepara y copia el texto de un prompt al clipboard.
- * Función helper unificada para copyPrompt() y copyPromptLang().
- * 
- * @param {string} pid - ID del prompt (ej: '01-01-arranque')
- * @param {string} lang - Idioma ('es' o 'en')
- * @param {HTMLElement} btn - Botón que disparó la acción (para feedback visual)
- * @param {boolean} useGenericFlash - Si true usa flash(), si false usa feedback específico
- * @returns {boolean} - true si se copió, false si falló
- */
-function prepareAndCopyPrompt(pid, lang, btn, useGenericFlash) {
-  // Construir ID del elemento de código
+function copyPromptLang(pid, lang, btn) {
   var codeId = 'code-' + pid + '-' + lang;
   var codeEl = document.getElementById(codeId);
-  if (!codeEl) {
-    // Fallback: intentar sin sufijo de idioma (backward compatibility)
-    codeId = 'code-' + pid;
-    codeEl = document.getElementById(codeId);
-    if (!codeEl) return false;
-  }
+  if (!codeEl) return;
   
   var raw = codeEl.textContent;
-  if (!raw) return false;
-  
-  // Aplicar reemplazo de variables
   var text = applyVars(raw);
   
-  // Anteponer framework del idioma correspondiente (si no es el framework mismo)
   if (pid !== 'fw') {
     var fwId = 'code-fw-' + lang;
-    var fwEl = document.getElementById(fwId);
+    var fwEl = document.getElementById(fwId) || document.getElementById('code-fw');
     if (fwEl) {
       var fw = applyVars(fwEl.textContent);
-      if (fw) text = fw + '\\n\\n---\\n\\n' + text;
+      if (fw) text = fw + '\n\n---\n\n' + text;
     }
   }
-  
-  // Copiar al clipboard
+  doCopy(text, btn);
+}
+
+function openInfoLang(pid, lang) {
+  // Por ahora el modal de info es genérico, pero podemos adaptarlo
+  openInfo(pid);
+}
+
+function copyPrompt(pid, btn) {
+  var lang = getCurrentLanguage();
+  copyPromptLang(pid, lang, btn);
+}
+
+function doCopy(text, btn) {
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(text)
-      .then(function() { 
-        if (useGenericFlash) {
-          flash(btn);
-        } else {
-          // Feedback específico con texto según idioma
-          var okText = lang === 'en' ? 'Copied!' : 'Copiado!';
-          var copyText = lang === 'en' ? 'Copy' : 'Copiar';
-          btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> ' + okText;
-          btn.classList.add('ok');
-          setTimeout(function() {
-            btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> ' + copyText;
-            btn.classList.remove('ok');
-          }, 1200);
-        }
-      })
+      .then(function() { flash(btn); })
       .catch(function() { fbCopy(text, btn); });
-    return true;
-  } else { 
-    fbCopy(text, btn);
-    return true;
-  }
+  } else { fbCopy(text, btn); }
 }
 
-/* Wrapper para copia con idioma específico (botones "Copiar" en cards) */
-function copyPromptLang(pid, lang, btn) {
-  prepareAndCopyPrompt(pid, lang, btn, false);
-}
-
-/* Wrapper para copia genérica (botones legacy) */
-function copyPrompt(pid, btn) {
-  var lang = document.documentElement.getAttribute('data-lang') || 'es';
-  prepareAndCopyPrompt(pid, lang, btn, true);
-}
-
-/* ════════════════════  FIN INTERNACIONALIZACIÓN  ══════════════════════ */
-
-function toggleCard(pid) {
-  var b = document.getElementById('cb-' + pid);
-  var t = document.getElementById('ce-' + pid);
-  if (!b) return;
-  var isOpen = b.classList.toggle('open');
-  if (t) t.classList.toggle('open', isOpen);
-}
-
-/* Función de fallback para copia (clipboard API no disponible) */
 function fbCopy(text, btn) {
   var t = document.createElement('textarea');
   t.value = text; t.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
   document.body.appendChild(t); t.focus(); t.select();
   try { document.execCommand('copy'); } catch(e) {}
-  document.body.removeChild(t);
-  if (btn) flash(btn);
+  document.body.removeChild(t); flash(btn);
 }
 
 function flash(btn) {
@@ -5657,6 +5452,14 @@ function flash(btn) {
 /* ═══════════════════  MULTI-SELECT  ════════════════════════════ */
 
 var msMode = false;
+
+function toggleCard(pid) {
+  var b = document.getElementById('cb-' + pid);
+  var t = document.getElementById('ce-' + pid);
+  if (!b) return;
+  var isOpen = b.classList.toggle('open');
+  if (t) t.classList.toggle('open', isOpen);
+}
 
 function toggleMsMode() {
   msMode = !msMode;
@@ -5757,7 +5560,7 @@ function filterPrompts(q) {
   var empty = document.getElementById('glbl-empty');
   if (empty) empty.style.display = total === 0 ? '' : 'none';
   var countEl = document.getElementById('vis-count');
-  if (countEl) countEl.textContent = total + ' prompts';
+  if (countEl) countEl.textContent = total + (q ? ' coincidencia' + (total!==1?'s':'') : ' prompts en total');
 }
 
 /* ═══════════════════  INFO MODAL  ══════════════════════════════ */
@@ -5936,21 +5739,21 @@ document.addEventListener('DOMContentLoaded', function() {
   initWelcomeBanner();
   initOnboarding();
 
-  // Inicializar estado del framework banner (colapsado por defecto)
+  initLanguageDetection();
   initFrameworkState();
 
-  // Inicializar detección de idioma (i18n)
-  initLanguageDetection();
-
-  // Cerrar proj-quick y lang-dropdown al hacer clic fuera
+  // Cerrar menús al hacer clic fuera
   document.addEventListener('click', function(e) {
     var wrap = document.getElementById('proj-quick');
     if (wrap && !wrap.contains(e.target)) closeProjQuick();
     
-    var langBtn = document.getElementById('lang-btn');
-    var langDrop = document.getElementById('lang-dropdown');
-    if (langDrop && langBtn && !langBtn.contains(e.target) && !langDrop.contains(e.target)) {
-      closeLanguageDropdown();
+    var dd = document.getElementById('lang-dropdown');
+    var btn = document.getElementById('lang-btn');
+    if (dd && !dd.contains(e.target) && btn && !btn.contains(e.target)) closeLanguageDropdown();
+    
+    // Cerrar menú hamburguesa si se hace clic fuera del sidebar en móvil
+    if (document.body.classList.contains('menu-open') && !e.target.closest('.sidebar') && !e.target.closest('.menu-toggle-btn')) {
+      closeMenu();
     }
   });
 
@@ -5962,7 +5765,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') { closeInfo(); closeVarPanel(); closeProjectsModal(); closeProjQuick(); closeLanguageDropdown(); skipOnboarding(); }
+    if (e.key === 'Escape') { 
+      closeInfo(); closeVarPanel(); closeProjectsModal(); 
+      closeProjQuick(); skipOnboarding(); closeMenu(); closeLanguageDropdown();
+    }
   });
 
   var content = document.querySelector('.content');
@@ -5978,36 +5784,31 @@ document.addEventListener('DOMContentLoaded', function() {
   targets.forEach(function(el) { obs.observe(el); });
 });
 
+/* ═══════ ROUTING client-side ═══════ */
 (function() {
   function route() {
     var path = window.location.pathname;
-    var isApp = path === '/app' || path.startsWith('/app/');
+    var search = window.location.search;
+    var hash = window.location.hash;
+    // Soporte para producción (/app) y local (?view=app o #app)
+    var isApp = path === '/app' || path.startsWith('/app/') || search.includes('view=app') || hash === '#app';
     var lr = document.getElementById('landing-root');
     var ar = document.getElementById('app-root');
     if (lr) lr.classList.toggle('landing-hidden', isApp);
     if (ar) ar.classList.toggle('app-hidden', !isApp);
-    if (isApp) window.scrollTo(0, 0);
-  }
-  function handleLinkClick(e) {
-    var el = e.target.closest('a');
-    if (!el) return;
-    var href = el.getAttribute('href');
-    if (href && href.indexOf('/app') === 0) {
-      e.preventDefault();
-      history.pushState({}, '', href);
-      route();
+    
+    // Si entramos a la app, inicializar i18n si no se ha hecho
+    if (isApp && typeof initLanguageDetection === 'function') {
+      initLanguageDetection();
     }
   }
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() {
-      route();
-      document.body.addEventListener('click', handleLinkClick);
-    });
+    document.addEventListener('DOMContentLoaded', route);
   } else {
     route();
-    document.body.addEventListener('click', handleLinkClick);
   }
   window.addEventListener('popstate', route);
+  window.addEventListener('hashchange', route);
 })();
 </script>
 </body>

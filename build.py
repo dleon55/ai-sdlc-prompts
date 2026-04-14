@@ -8,9 +8,6 @@ import json
 from pathlib import Path
 from collections import defaultdict
 
-# Importar sistema de internacionalización
-from i18n_strings import get_string, get_section_label, SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE
-
 PROMPTS_DIR = Path(__file__).parent / "ai_sdlc_pro_prompts"
 OUTPUT_FILE = Path(__file__).parent / "index.html"
 
@@ -172,14 +169,19 @@ CSS = """
   --warn: #f59e0b;
   --mono: 'JetBrains Mono','Fira Code','Cascadia Code','Courier New',monospace;
 }
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }html[lang="es"] .card[data-lang="en"],
+html[lang="es"] .fw-lang-en { display: none !important; }
+
+html[lang="en"] .card[data-lang="es"],
+html[lang="en"] .fw-lang-es { display: none !important; }
 html { scroll-behavior: smooth; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background: var(--bg); color: var(--tx); font-size: 14px; line-height: 1.5;
   min-height: 100vh;
-  overflow-y: auto;
 }
+#app-root, #landing-root { min-height: 100vh; display: flex; flex-direction: column; }
+#app-root { overflow: visible; } /* Permite scroll del body */
 
 /* ═══════════════════════════ HEADER ════════════════════════════ */
 header {
@@ -187,7 +189,8 @@ header {
   background: var(--bg2);
   border-bottom: 1px solid var(--bdr);
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0 1.5rem; z-index: 300;
+  padding: 0 1rem; z-index: 300;
+  position: sticky; top: 0;
 }
 .hdr-logo { display: flex; align-items: center; gap: .65rem; }
 .hdr-logo svg { flex-shrink: 0; }
@@ -241,11 +244,27 @@ header {
 .sidebar {
   width: var(--side); flex-shrink: 0;
   background: var(--bg2); border-right: 1px solid var(--bdr);
-  overflow-y: auto; display: flex; flex-direction: column;
-  position: sticky;
-  top: 0;
-  height: calc(100vh - var(--hdr) - var(--bar));
-  align-self: flex-start;
+  display: flex; flex-direction: column;
+  transition: transform .25s ease;
+}
+/* Estilo unificado de menú hamburguesa (Overlay) */
+@media (max-width: 1024px) {
+  .sidebar { 
+    position: fixed; top: var(--hdr); left: 0; bottom: 0; 
+    z-index: 400; transform: translateX(-100%); 
+    height: calc(100vh - var(--hdr));
+    overflow-y: auto; box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+  }
+  body.menu-open .sidebar { transform: translateX(0); }
+  .sidebar-overlay { 
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5); 
+    z-index: 399; display: none; 
+  }
+  body.menu-open .sidebar-overlay { display: block; }
+}
+@media (min-width: 1025px) {
+  .sidebar-collapsed .sidebar { width: 0; overflow: hidden; border-right: none; }
+  .menu-toggle-btn { display: none; }
 }
 .sidebar::-webkit-scrollbar { width: 3px; }
 .sidebar::-webkit-scrollbar-thumb { background: var(--bdr2); border-radius: 2px; }
@@ -287,8 +306,9 @@ header {
 .content {
   flex: 1; padding: 1.5rem 1.75rem 5rem;
   min-width: 0;
-  min-height: calc(100vh - var(--hdr) - var(--bar));
 }
+.content::-webkit-scrollbar { width: 5px; }
+.content::-webkit-scrollbar-thumb { background: var(--bdr2); border-radius: 3px; }
 
 /* ────── Framework banner ────── */
 .framework-banner {
@@ -308,18 +328,7 @@ header {
 }
 .fw-title { font-size: .88rem; font-weight: 600; color: #fbbf24; flex: 1; }
 .fw-desc { font-size: .72rem; color: #92400e; padding: .5rem 1rem; }
-.fw-expand {
-  flex-shrink: 0; background: none; border: none; cursor: pointer;
-  color: #92400e; width: 20px; height: 20px;
-  display: flex; align-items: center; justify-content: center;
-  border-radius: 4px; transition: color .12s, background .12s;
-}
-.fw-expand:hover { color: #fbbf24; background: rgba(245, 158, 11, .15); }
-.fw-expand svg { transition: transform .18s; }
-.fw-expand.open svg { transform: rotate(180deg); }
-.fw-header { cursor: pointer; }
-.fw-body { display: none; padding: 0; border-top: none; }
-.fw-body.open { display: block; }
+.fw-body { padding: 0; border-top: none; }
 .fw-body pre {
   margin: 0; padding: .85rem 1rem;
   background: #06040a; max-height: 340px; overflow-y: auto; border-radius: 0;
@@ -788,66 +797,6 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   header { padding: 0 .75rem; }
   .proj-quick-btn { max-width: 90px; padding: .22rem .45rem; }
 }
-
-/* ═════════════════ LANGUAGE SELECTOR ════════════════════════════ */
-.lang-selector {
-  display: flex; align-items: center; gap: .35rem;
-  margin-left: auto; margin-right: .75rem;
-}
-.lang-btn {
-  background: transparent; border: 1px solid var(--bdr);
-  color: var(--tx2); font-size: .7rem; font-weight: 500;
-  padding: .25rem .55rem; border-radius: 5px;
-  cursor: pointer; transition: all .12s ease;
-  display: flex; align-items: center; gap: .3rem;
-}
-.lang-btn:hover { border-color: var(--bdr2); color: var(--tx); background: var(--bg3); }
-.lang-btn.active { border-color: #6366f1; color: #6366f1; background: rgba(99,102,241,.12); }
-.lang-btn .flag { font-size: .85rem; }
-.lang-dropdown {
-  position: absolute; top: calc(100% + 6px); right: 0;
-  background: var(--bg2); border: 1px solid var(--bdr);
-  border-radius: 8px; padding: .35rem;
-  min-width: 140px; box-shadow: 0 8px 24px rgba(0,0,0,.4);
-  display: none; z-index: 400;
-}
-.lang-dropdown.open { display: block; }
-.lang-option {
-  display: flex; align-items: center; gap: .5rem;
-  padding: .5rem .75rem; cursor: pointer;
-  border-radius: 5px; font-size: .75rem; color: var(--tx2);
-  transition: all .1s;
-}
-.lang-option:hover { background: var(--bg3); color: var(--tx); }
-.lang-option.active { color: #6366f1; font-weight: 500; }
-.lang-option .flag { font-size: .9rem; }
-.lang-wrap { position: relative; }
-
-@media (max-width: 560px) {
-  .lang-btn .lang-label { display: none; }
-  .lang-btn { padding: .25rem; }
-}
-
-/* ═════════════════ I18N LANGUAGE SWITCHING ════════════════════════ */
-/* Por defecto: ocultar cards con data-lang */
-.card[data-lang="en"] { display: none; }
-
-/* Cuando html lang=es: mostrar ES, ocultar EN */
-html[data-lang="es"] .card[data-lang="es"] { display: block; }
-html[data-lang="es"] .card[data-lang="en"] { display: none; }
-
-/* Cuando html lang=en: mostrar EN, ocultar ES */
-html[data-lang="en"] .card[data-lang="en"] { display: block; }
-html[data-lang="en"] .card[data-lang="es"] { display: none; }
-
-/* Framework banners: controlados por JS para transiciones suaves */
-.framework-banner.fw-lang-es { }
-.framework-banner.fw-lang-en { }
-
-/* Transición suave al cambiar idioma */
-.card { transition: opacity 0.15s ease; }
-html[data-lang="es"] .card[data-lang="es"],
-html[data-lang="en"] .card[data-lang="en"] { opacity: 1; }
 
 /* ═════════════════ WELCOME BANNER ══════════════════════════════ */
 .welcome-banner {
@@ -1333,30 +1282,31 @@ var VAR_MAP = {
   referencia:  ['REFERENCIA', 'PEGAR TEXTO O REFERENCIA', 'PEGAR TEXTO COMPLETO',
                  'PEGAR LISTA DE INCIDENTES', 'PEGAR REPORTE', 'PEGAR'],
   rama_actual: ['RAMA ACTUAL', 'RAMA CON LOS CAMBIOS', 'RAMA EN PRUEBAS',
-                'RAMA AFECTADA', 'RAMA DE TRABAJO', 'RAMA DE PRUEBAS'],
+                 'RAMA AFECTADA', 'RAMA DE TRABAJO', 'RAMA DE PRUEBAS'],
   rama_destino:['RAMA OBJETIVO', 'RAMA PRINCIPAL', 'RAMA INTEGRADA',
-                'RAMA DESTINO', 'RAMA DE RELEASE', 'DEVELOP / MAIN / RELEASE'],
+                 'RAMA DESTINO', 'RAMA DE RELEASE', 'DEVELOP / MAIN / RELEASE'],
   ambiente:    ['DEV / QA / PROD', 'QA / STAGING', 'QA / STAGING / PROD',
-                'DEV / QA / STAGING / PROD', 'PROD / STAGING', 'DEV / QA',
-                'URL DEL AMBIENTE'],
+                 'DEV / QA / STAGING / PROD', 'PROD / STAGING', 'DEV / QA',
+                 'URL DEL AMBIENTE'],
   componentes: ['COMPONENTES INVOLUCRADOS', 'COMPONENTES MODIFICADOS',
-                'COMPONENTES A MODIFICAR', 'COMPONENTES REVISADOS',
-                'RUTAS DE ARCHIVOS MODIFICADOS', 'FUNCIONES O UNIDADES A PROBAR'],
-  modulo:      ['NOMBRE DEL PROCESO', 'INDICAR', 'SI YA CONOCES ALGUNO'],
+                 'COMPONENTES A MODIFICAR', 'COMPONENTES REVISADOS',
+                 'RUTAS DE ARCHIVOS MODIFICADOS', 'FUNCIONES O UNIDADES A PROBAR',
+                 'SI YA CONOCES ALGUNO'],
+  modulo:      ['NOMBRE DEL PROCESO', 'INDICAR'],
   stack:       ['STACK', 'STACK TECNOLÓGICO', 'STACK PRINCIPAL',
-                'ej. Python + FastAPI + PostgreSQL / Node + React + MongoDB / etc.',
-                'ej: Python 3.11 + FastAPI + PostgreSQL + Docker'],
+                 'ej. Python + FastAPI + PostgreSQL / Node + React + MongoDB / etc.',
+                 'ej: Python 3.11 + FastAPI + PostgreSQL + Docker'],
   tipo_proyecto: ['TIPO DE PROYECTO', 'TIPO',
-                  'frontend SPA / API REST / full-stack / microservicio / monorepo / librería / data science / IaC / otro'],
+                   'frontend SPA / API REST / full-stack / microservicio / monorepo / librería / data science / IaC / otro'],
   metodologia: ['METODOLOGÍA', 'METODOLOGÍA DE TRABAJO', 'METODOLOGÍA O "ninguna"',
-                'SCRUM / Kanban / Trunk-Based / GitFlow / GitHub Flow / RUP / otro',
-                'BRANCHING STRATEGY'],
+                 'SCRUM / Kanban / Trunk-Based / GitFlow / GitHub Flow / RUP / otro',
+                 'BRANCHING STRATEGY'],
   agentes:     ['LISTA DE AGENTES', 'AGENTES A CONFIGURAR', 'AGENTES ACTIVOS',
-                'Copilot / Claude / Codex / Windsurf / Cursor / Antigravity',
-                'GitHub Copilot / Claude / Windsurf / Cursor / Codex / Antigravity / combinación'],
+                 'Copilot / Claude / Codex / Windsurf / Cursor / Antigravity',
+                 'GitHub Copilot / Claude / Windsurf / Cursor / Codex / Antigravity / combinación'],
   autonomia:   ['NIVEL DE AUTONOMÍA', 'NIVEL',
-                'solo análisis / análisis + propuesta / ejecución controlada / ejecución autónoma',
-                'BAJO / MEDIO / ALTO'],
+                 'solo análisis / análisis + propuesta / ejecución controlada / ejecución autónoma',
+                 'BAJO / MEDIO / ALTO'],
 };
 
 function getVarValues() {
@@ -1428,27 +1378,31 @@ function clearVars() {
 
 /* ═══════════════════  TOGGLE CARD / COPY  ══════════════════════ */
 
+function toggleMenu() {
+  document.body.classList.toggle('menu-open');
+}
+
+function closeMenu() {
+  document.body.classList.remove('menu-open');
+}
+
+/* ═══════════════════  TOGGLE CARD / COPY  ══════════════════════ */
+
 function toggleFramework() {
-  var b = document.querySelector('.fw-body');
+  var b = document.getElementById('fw-body');
   var t = document.querySelector('.fw-expand');
-  var h = document.querySelector('.fw-header');
   if (!b) return;
   var isOpen = b.classList.toggle('open');
   if (t) t.classList.toggle('open', isOpen);
-  // Guardar preferencia en localStorage
-  try {
-    localStorage.setItem('AI_SDLC_fw_expanded', isOpen ? '1' : '0');
-  } catch (e) {}
+  try { localStorage.setItem('AI_SDLC_fw_expanded', isOpen ? '1' : '0'); } catch(e) {}
 }
 
 function initFrameworkState() {
-  // Restaurar estado del framework desde localStorage (colapsado por defecto)
-  var b = document.querySelector('.fw-body');
+  var b = document.getElementById('fw-body');
   var t = document.querySelector('.fw-expand');
   if (!b) return;
   var saved = '';
-  try { saved = localStorage.getItem('AI_SDLC_fw_expanded') || ''; } catch (e) {}
-  // Por defecto colapsado (saved === '' o saved === '0' -> colapsado)
+  try { saved = localStorage.getItem('AI_SDLC_fw_expanded') || ''; } catch(e) {}
   var isOpen = saved === '1';
   if (isOpen) {
     b.classList.add('open');
@@ -1463,260 +1417,103 @@ var I18N_DEFAULT = 'es';
 var I18N_SUPPORTED = ['es', 'en'];
 
 function detectBrowserLanguage() {
-  // 1. Detectar desde navigator.language (prioridad alta)
   var navLang = navigator.language || navigator.userLanguage || '';
   var primary = navLang.split('-')[0].toLowerCase();
-  
-  if (I18N_SUPPORTED.indexOf(primary) !== -1) {
-    return primary;
-  }
-  
-  // 2. Fallback: intentar navigator.languages (array ordenado)
-  if (navigator.languages && navigator.languages.length) {
-    for (var i = 0; i < navigator.languages.length; i++) {
-      var lang = navigator.languages[i].split('-')[0].toLowerCase();
-      if (I18N_SUPPORTED.indexOf(lang) !== -1) {
-        return lang;
-      }
-    }
-  }
-  
+  if (I18N_SUPPORTED.indexOf(primary) !== -1) return primary;
   return I18N_DEFAULT;
 }
 
 function getCurrentLanguage() {
-  // Prioridad: localStorage > detección navegador > default
   try {
     var saved = localStorage.getItem(I18N_KEY);
-    if (saved && I18N_SUPPORTED.indexOf(saved) !== -1) {
-      return saved;
-    }
-  } catch (e) {}
-  
+    if (saved && I18N_SUPPORTED.indexOf(saved) !== -1) return saved;
+  } catch(e) {}
   return detectBrowserLanguage();
 }
 
 function setLanguage(lang) {
-  if (I18N_SUPPORTED.indexOf(lang) === -1) {
-    lang = I18N_DEFAULT;
-  }
-  
-  // Guardar preferencia
-  try {
-    localStorage.setItem(I18N_KEY, lang);
-  } catch (e) {}
-  
-  // Actualizar HTML lang attribute para SEO/accessibilidad
+  if (I18N_SUPPORTED.indexOf(lang) === -1) lang = I18N_DEFAULT;
+  try { localStorage.setItem(I18N_KEY, lang); } catch(e) {}
   document.documentElement.lang = lang;
   document.documentElement.setAttribute('data-lang', lang);
   
   // Actualizar UI del selector
-  updateLanguageSelectorUI(lang);
-  
-  // Actualizar visibilidad del framework banner
-  updateFrameworkVisibility(lang);
-  
-  // Analytics (si GA4 disponible)
-  if (typeof gtag !== 'undefined') {
-    gtag('event', 'language_change', {
-      to_language: lang
-    });
-  }
-  
-  // Fase 3: Todos los prompts se actualizan dinámicamente vía CSS data-lang
-  // Las cards tienen data-lang="es" o data-lang="en" y se muestran/ocultan con CSS
-}
-
-function updateFrameworkVisibility(lang) {
-  // Mostrar/ocultar banners de framework según idioma
-  var fwEs = document.getElementById('sec-00-es');
-  var fwEn = document.getElementById('sec-00-en');
-  
-  if (fwEs) fwEs.style.display = (lang === 'es') ? 'block' : 'none';
-  if (fwEn) fwEn.style.display = (lang === 'en') ? 'block' : 'none';
-  
-  // Actualizar label del botón de idioma
   var langLabel = document.getElementById('current-lang-label');
   if (langLabel) langLabel.textContent = lang.toUpperCase();
+  
+  // Actualizar visibilidad del framework banner
+  var fwEs = document.getElementById('sec-00-es');
+  var fwEn = document.getElementById('sec-00-en');
+  if (fwEs) fwEs.style.display = (lang === 'es') ? 'block' : 'none';
+  if (fwEn) fwEn.style.display = (lang === 'en') ? 'block' : 'none';
 }
 
 function initLanguageDetection() {
   var lang = getCurrentLanguage();
-  
-  // Establecer atributos desde el inicio
-  document.documentElement.lang = lang;
-  document.documentElement.setAttribute('data-lang', lang);
-  
-  // Actualizar UI del selector si existe
-  updateLanguageSelectorUI(lang);
-  
-  // Aplicar visibilidad del framework según idioma detectado
-  updateFrameworkVisibility(lang);
-}
-
-function updateLanguageSelectorUI(activeLang) {
-  // Actualizar botones del selector
-  var btns = document.querySelectorAll('.lang-btn');
-  btns.forEach(function(btn) {
-    var btnLang = btn.getAttribute('data-lang');
-    btn.classList.toggle('active', btnLang === activeLang);
-  });
-  
-  // Actualizar opciones del dropdown
-  var opts = document.querySelectorAll('.lang-option');
-  opts.forEach(function(opt) {
-    var optLang = opt.getAttribute('data-lang');
-    opt.classList.toggle('active', optLang === activeLang);
-  });
+  setLanguage(lang);
 }
 
 function toggleLanguageDropdown() {
   var dd = document.getElementById('lang-dropdown');
-  if (!dd) return;
-  dd.classList.toggle('open');
-}
-
-function closeLanguageDropdown() {
-  var dd = document.getElementById('lang-dropdown');
-  if (!dd) return;
-  dd.classList.remove('open');
+  if (dd) dd.classList.toggle('open');
 }
 
 function onLanguageSelect(lang) {
-  var current = getCurrentLanguage();
-  if (lang === current) {
-    closeLanguageDropdown();
-    return;
-  }
-  
   setLanguage(lang);
+  var dd = document.getElementById('lang-dropdown');
+  if (dd) dd.classList.remove('open');
 }
 
-/* Funciones auxiliares para cards bilingües */
-function openInfoLang(pid, lang) {
-  // Abrir modal de info con datos del idioma especificado
-  var info = PROMPT_INFO[pid];
-  if (!info) return;
-  
-  var title = lang === 'en' ? info.title_en : info.title_es;
-  var desc = lang === 'en' ? info.desc_en : info.desc_es;
-  var formulas = lang === 'en' ? info.formulas_en : info.formulas_es;
-  
-  var modal = document.getElementById('info-modal');
-  var titleEl = document.getElementById('info-title');
-  var bodyEl = document.getElementById('info-body');
-  if (!modal || !titleEl || !bodyEl) return;
-  
-  var html = '<p class="info-desc">' + (desc || '') + '</p>';
-  if (formulas && formulas.length > 0) {
-    html += '<h4>' + (lang === 'en' ? 'Standard usage formula' : 'Fórmula de uso estándar') + '</h4>';
-    html += '<ul class="info-formulas">';
-    formulas.forEach(function(f) {
-      html += '<li><code>' + escapeHtml(f.formula || '') + '</code></li>';
-      if (f.desc) html += '<p class="info-formula-desc">' + f.desc + '</p>';
-    });
-    html += '</ul>';
-  }
-  
-  titleEl.textContent = title || '';
-  bodyEl.innerHTML = html;
-  modal.classList.add('open');
+function getFwText() {
+  var lang = getCurrentLanguage();
+  var fwId = 'code-fw-' + lang;
+  var fwEl = document.getElementById(fwId) || document.getElementById('code-fw');
+  return fwEl ? fwEl.textContent : '';
 }
 
-/* ════════════════════  HELPER COPIA UNIFICADO  ══════════════════════ */
-
-/**
- * Prepara y copia el texto de un prompt al clipboard.
- * Función helper unificada para copyPrompt() y copyPromptLang().
- * 
- * @param {string} pid - ID del prompt (ej: '01-01-arranque')
- * @param {string} lang - Idioma ('es' o 'en')
- * @param {HTMLElement} btn - Botón que disparó la acción (para feedback visual)
- * @param {boolean} useGenericFlash - Si true usa flash(), si false usa feedback específico
- * @returns {boolean} - true si se copió, false si falló
- */
-function prepareAndCopyPrompt(pid, lang, btn, useGenericFlash) {
-  // Construir ID del elemento de código
+function copyPromptLang(pid, lang, btn) {
   var codeId = 'code-' + pid + '-' + lang;
   var codeEl = document.getElementById(codeId);
-  if (!codeEl) {
-    // Fallback: intentar sin sufijo de idioma (backward compatibility)
-    codeId = 'code-' + pid;
-    codeEl = document.getElementById(codeId);
-    if (!codeEl) return false;
-  }
+  if (!codeEl) return;
   
   var raw = codeEl.textContent;
-  if (!raw) return false;
-  
-  // Aplicar reemplazo de variables
   var text = applyVars(raw);
   
-  // Anteponer framework del idioma correspondiente (si no es el framework mismo)
   if (pid !== 'fw') {
     var fwId = 'code-fw-' + lang;
-    var fwEl = document.getElementById(fwId);
+    var fwEl = document.getElementById(fwId) || document.getElementById('code-fw');
     if (fwEl) {
       var fw = applyVars(fwEl.textContent);
-      if (fw) text = fw + '\\\\n\\\\n---\\\\n\\\\n' + text;
+      if (fw) text = fw + '\\n\\n---\\n\\n' + text;
     }
   }
-  
-  // Copiar al clipboard
+  doCopy(text, btn);
+}
+
+function openInfoLang(pid, lang) {
+  // Por ahora el modal de info es genérico, pero podemos adaptarlo
+  openInfo(pid);
+}
+
+function copyPrompt(pid, btn) {
+  var lang = getCurrentLanguage();
+  copyPromptLang(pid, lang, btn);
+}
+
+function doCopy(text, btn) {
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(text)
-      .then(function() { 
-        if (useGenericFlash) {
-          flash(btn);
-        } else {
-          // Feedback específico con texto según idioma
-          var okText = lang === 'en' ? 'Copied!' : 'Copiado!';
-          var copyText = lang === 'en' ? 'Copy' : 'Copiar';
-          btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> ' + okText;
-          btn.classList.add('ok');
-          setTimeout(function() {
-            btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> ' + copyText;
-            btn.classList.remove('ok');
-          }, 1200);
-        }
-      })
+      .then(function() { flash(btn); })
       .catch(function() { fbCopy(text, btn); });
-    return true;
-  } else { 
-    fbCopy(text, btn);
-    return true;
-  }
+  } else { fbCopy(text, btn); }
 }
 
-/* Wrapper para copia con idioma específico (botones "Copiar" en cards) */
-function copyPromptLang(pid, lang, btn) {
-  prepareAndCopyPrompt(pid, lang, btn, false);
-}
-
-/* Wrapper para copia genérica (botones legacy) */
-function copyPrompt(pid, btn) {
-  var lang = document.documentElement.getAttribute('data-lang') || 'es';
-  prepareAndCopyPrompt(pid, lang, btn, true);
-}
-
-/* ════════════════════  FIN INTERNACIONALIZACIÓN  ══════════════════════ */
-
-function toggleCard(pid) {
-  var b = document.getElementById('cb-' + pid);
-  var t = document.getElementById('ce-' + pid);
-  if (!b) return;
-  var isOpen = b.classList.toggle('open');
-  if (t) t.classList.toggle('open', isOpen);
-}
-
-/* Función de fallback para copia (clipboard API no disponible) */
 function fbCopy(text, btn) {
   var t = document.createElement('textarea');
   t.value = text; t.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
   document.body.appendChild(t); t.focus(); t.select();
   try { document.execCommand('copy'); } catch(e) {}
-  document.body.removeChild(t);
-  if (btn) flash(btn);
+  document.body.removeChild(t); flash(btn);
 }
 
 function flash(btn) {
@@ -1729,6 +1526,14 @@ function flash(btn) {
 /* ═══════════════════  MULTI-SELECT  ════════════════════════════ */
 
 var msMode = false;
+
+function toggleCard(pid) {
+  var b = document.getElementById('cb-' + pid);
+  var t = document.getElementById('ce-' + pid);
+  if (!b) return;
+  var isOpen = b.classList.toggle('open');
+  if (t) t.classList.toggle('open', isOpen);
+}
 
 function toggleMsMode() {
   msMode = !msMode;
@@ -1829,7 +1634,7 @@ function filterPrompts(q) {
   var empty = document.getElementById('glbl-empty');
   if (empty) empty.style.display = total === 0 ? '' : 'none';
   var countEl = document.getElementById('vis-count');
-  if (countEl) countEl.textContent = total + ' prompts';
+  if (countEl) countEl.textContent = total + (q ? ' coincidencia' + (total!==1?'s':'') : ' prompts en total');
 }
 
 /* ═══════════════════  INFO MODAL  ══════════════════════════════ */
@@ -2008,21 +1813,21 @@ document.addEventListener('DOMContentLoaded', function() {
   initWelcomeBanner();
   initOnboarding();
 
-  // Inicializar estado del framework banner (colapsado por defecto)
+  initLanguageDetection();
   initFrameworkState();
 
-  // Inicializar detección de idioma (i18n)
-  initLanguageDetection();
-
-  // Cerrar proj-quick y lang-dropdown al hacer clic fuera
+  // Cerrar menús al hacer clic fuera
   document.addEventListener('click', function(e) {
     var wrap = document.getElementById('proj-quick');
     if (wrap && !wrap.contains(e.target)) closeProjQuick();
     
-    var langBtn = document.getElementById('lang-btn');
-    var langDrop = document.getElementById('lang-dropdown');
-    if (langDrop && langBtn && !langBtn.contains(e.target) && !langDrop.contains(e.target)) {
-      closeLanguageDropdown();
+    var dd = document.getElementById('lang-dropdown');
+    var btn = document.getElementById('lang-btn');
+    if (dd && !dd.contains(e.target) && btn && !btn.contains(e.target)) closeLanguageDropdown();
+    
+    // Cerrar menú hamburguesa si se hace clic fuera del sidebar en móvil
+    if (document.body.classList.contains('menu-open') && !e.target.closest('.sidebar') && !e.target.closest('.menu-toggle-btn')) {
+      closeMenu();
     }
   });
 
@@ -2034,7 +1839,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') { closeInfo(); closeVarPanel(); closeProjectsModal(); closeProjQuick(); closeLanguageDropdown(); skipOnboarding(); }
+    if (e.key === 'Escape') { 
+      closeInfo(); closeVarPanel(); closeProjectsModal(); 
+      closeProjQuick(); skipOnboarding(); closeMenu(); closeLanguageDropdown();
+    }
   });
 
   var content = document.querySelector('.content');
@@ -2052,36 +1860,31 @@ document.addEventListener('DOMContentLoaded', function() {
 """
 
 LANDING_JS = """
+/* ═══════ ROUTING client-side ═══════ */
 (function() {
   function route() {
     var path = window.location.pathname;
-    var isApp = path === '/app' || path.startsWith('/app/');
+    var search = window.location.search;
+    var hash = window.location.hash;
+    // Soporte para producción (/app) y local (?view=app o #app)
+    var isApp = path === '/app' || path.startsWith('/app/') || search.includes('view=app') || hash === '#app';
     var lr = document.getElementById('landing-root');
     var ar = document.getElementById('app-root');
     if (lr) lr.classList.toggle('landing-hidden', isApp);
     if (ar) ar.classList.toggle('app-hidden', !isApp);
-    if (isApp) window.scrollTo(0, 0);
-  }
-  function handleLinkClick(e) {
-    var el = e.target.closest('a');
-    if (!el) return;
-    var href = el.getAttribute('href');
-    if (href && href.indexOf('/app') === 0) {
-      e.preventDefault();
-      history.pushState({}, '', href);
-      route();
+    
+    // Si entramos a la app, inicializar i18n si no se ha hecho
+    if (isApp && typeof initLanguageDetection === 'function') {
+      initLanguageDetection();
     }
   }
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function() {
-      route();
-      document.body.addEventListener('click', handleLinkClick);
-    });
+    document.addEventListener('DOMContentLoaded', route);
   } else {
     route();
-    document.body.addEventListener('click', handleLinkClick);
   }
   window.addEventListener('popstate', route);
+  window.addEventListener('hashchange', route);
 })();
 """
 
@@ -2167,18 +1970,12 @@ def build():
     sections = defaultdict(list)
     for md_file in sorted(PROMPTS_DIR.glob("*.md")):
         name = md_file.stem
-        if name == "00-framework":
-            continue
-        # Saltar archivos .en.md (se procesan como pares)
-        if name.endswith(".en"):
-            continue
+        if name == "00-framework": continue
+        if name.endswith(".en"): continue
         parts = name.split("-")
         sk = parts[0]
-        if sk not in SECTION_META:
-            continue
-        # Leer versión ES
+        if sk not in SECTION_META: continue
         title_es, prompt_es, description_es, formulas_es = parse_md(md_file)
-        # Leer versión EN (fallback a ES si no existe)
         en_file = md_file.with_suffix(".en.md")
         if en_file.exists():
             title_en, prompt_en, description_en, formulas_en = parse_md(en_file)
@@ -2199,12 +1996,9 @@ def build():
     for sk, items in sections.items():
         for p in items:
             info_data[p["id"]] = {
-                "title_es": p["title_es"],
-                "title_en": p["title_en"],
-                "desc_es":  p.get("description_es", ""),
-                "desc_en":  p.get("description_en", ""),
-                "formulas_es": p.get("formulas_es", []),
-                "formulas_en": p.get("formulas_en", []),
+                "title_es": p["title_es"], "title_en": p["title_en"],
+                "desc_es":  p.get("description_es", ""), "desc_en": p.get("description_en", ""),
+                "formulas_es": p.get("formulas_es", []), "formulas_en": p.get("formulas_en", []),
             }
     prompt_info_js = "var PROMPT_INFO = " + json.dumps(info_data, ensure_ascii=False) + ";"
 
@@ -2263,7 +2057,7 @@ def build():
         '</div>'
         '<p class="fw-desc">Este bloque define el rol del agente, el contexto multi-agente y las reglas obligatorias de ingenier\u00eda. '
         'Sin \u00e9l, el agente responde de forma gen\u00e9rica. C\u00f3pialo y p\u00e9galo <strong>siempre primero</strong> en tu conversaci\u00f3n con el agente IA.</p>'
-        '<div class="fw-body">'
+        '<div class="fw-body" id="fw-body">' # ID unificado para el colapso
         '<pre><code id="code-fw-es">' + fw_escaped_es + '</code></pre>'
         '</div>'
         '<div class="fw-copy-row">'
@@ -2408,9 +2202,6 @@ def build():
         '<meta name="twitter:title" content="AI-SDLC Pro \u2014 Biblioteca de Prompts">\n'
         '<meta name="twitter:description" content="44 prompts para dirigir agentes IA en ingenieria de software. Copilot, Claude, Cursor, Windsurf.">\n'
         '<link rel="canonical" href="https://prompts.lionsystems.com.mx">\n'
-        '<link rel="alternate" hreflang="es" href="https://prompts.lionsystems.com.mx">\n'
-        '<link rel="alternate" hreflang="en" href="https://prompts.lionsystems.com.mx/?lang=en">\n'
-        '<link rel="alternate" hreflang="x-default" href="https://prompts.lionsystems.com.mx">\n'
         '<script async src="https://www.googletagmanager.com/gtag/js?id=G-C5JKYNZ62F"></script>\n'
         '<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-C5JKYNZ62F");</script>\n'
         '<style>' + CSS + '</style>\n'
@@ -2420,36 +2211,37 @@ def build():
 
         '<div id="app-root" class="app-hidden">\n'
 
-        # header
         '<header>\n'
         '  <div class="hdr-logo">'
-        '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="1.6">'
-        '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/>'
-        '</svg>'
-        '<div><h1>AI-SDLC Pro</h1><p>' + str(total) + ' prompts para dirigir agentes IA en cada fase del SDLC &middot; Copilot &middot; Claude &middot; Cursor &middot; Windsurf</p></div>'
-        '</div>\n'
-        '  <div class="hdr-tags">'
-        '<span class="tag">v3</span>'
-        '<span class="tag">' + str(total) + ' prompts</span>'
-        '<span class="tag tag-warn">&#9888; Incluir framework antes de cada prompt</span>'
-        '</div>\n'
-        '  <div class="hdr-brand">'
-        '<img src="https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png"'
-        ' width="28" height="28" alt="Lionsystems" style="border-radius:4px;flex-shrink:0;">'
-        '<div><span class="hdr-brand-text">Lionsystems</span>'
-        '<span class="hdr-brand-sub">Prueba gratis &middot; Plan Pro</span></div>'
-        '</div>\n'
-        '  <div class="lang-wrap">'
-        '    <button class="lang-btn" id="lang-btn" onclick="toggleLanguageDropdown()" title="Cambiar idioma / Change language">'
-        '      <span class="flag">&#127760;</span><span class="lang-label" id="current-lang-label">ES</span>'
+        '    <button class="menu-toggle-btn" onclick="toggleMenu()" title="Menú">'
+        '      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
+        '        <line x1="3" y1="12" x2="21" y2="12"></line>'
+        '        <line x1="3" y1="6" x2="21" y2="6"></line>'
+        '        <line x1="3" y1="18" x2="21" y2="18"></line>'
+        '      </svg>'
         '    </button>'
-        '    <div class="lang-dropdown" id="lang-dropdown">'
-        '      <div class="lang-option" data-lang="es" onclick="onLanguageSelect(\'es\')">'
-        '        <span class="flag">&#127466;&#127480;</span> Español'
+        '    <div class="hdr-logo-icon">'
+        '      <img src="https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png" width="28" height="28" alt="Lionsystems" style="border-radius:4px;flex-shrink:0;">'
+        '    </div>'
+        '    <div>'
+        '      <h1>AI-SDLC Pro</h1>'
+        '      <p>Biblioteca de Prompts / Lionsystems</p>'
+        '    </div>'
+        '  </div>\n'
+        '  <div class="hdr-tags">'
+        '    <div class="tag">v1.2.0</div>'
+        '    <div class="lang-wrap">'
+        '      <button class="lang-btn" id="lang-btn" onclick="toggleLanguageDropdown()" title="Cambiar idioma / Change language">'
+        '        <span class="flag">&#127760;</span><span class="lang-label" id="current-lang-label">ES</span>'
+        '      </button>'
+        '      <div class="lang-dropdown" id="lang-dropdown">'
+        '        <div class="lang-option" data-lang="es" onclick="onLanguageSelect(\'es\')">Español</div>'
+        '        <div class="lang-option" data-lang="en" onclick="onLanguageSelect(\'en\')">English</div>'
         '      </div>'
-        '      <div class="lang-option" data-lang="en" onclick="onLanguageSelect(\'en\')">'
-        '        <span class="flag">&#127482;&#127480;</span> English'
-        '      </div>'
+        '    </div>'
+        '    <div class="hdr-brand">'
+        '      <div><span class="hdr-brand-text">Lionsystems</span>'
+        '      <span class="hdr-brand-sub">Prueba gratis &middot; Plan Pro</span></div>'
         '    </div>'
         '  </div>\n'
         '</header>\n'
