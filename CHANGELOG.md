@@ -6,6 +6,17 @@ Este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 
 ---
 
+## [1.7.0] — 2026-04-19
+
+### Added
+- **8 nuevos prompts — Priority 2: DAST, Pentesting, Secrets, Performance** (4 temas × ES+EN):
+  - `13-05` — DAST / Análisis Dinámico de Seguridad: superficie de ataque, transporte TLS, autenticación/sesión, inyección, control de acceso, exposición de información
+  - `13-06` — Ethical Hacking / Pentesting: alcance y reglas de compromiso, reconocimiento OSINT, explotación controlada, cadenas de ataque, informe técnico + resumen ejecutivo
+  - `13-08` — Gestión de Secretos y Credenciales: detección en código/historial/CI-CD, clasificación, evaluación de prácticas, plan de remediación, política de rotación
+  - `07-11` — Implementación de pruebas de performance: scripts ejecutables k6/Locust/JMeter/Artillery para load/stress/spike/soak/benchmark con thresholds codificados e integración CI/CD
+- Todos los prompts incluyen versión bilingüe (ES + EN)
+- `00-framework.md` actualizado con 07-11, 13-05, 13-06, 13-08
+
 ## [1.6.0] — 2026-04-19
 
 ### Added

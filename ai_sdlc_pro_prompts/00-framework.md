@@ -111,6 +111,7 @@ Usa el prompt de análisis de causa raíz y adáptalo a:
 | `07-08-implementacion-pruebas-integracion.md` | 7.8 | Implementación de código de pruebas de integración ejecutables |
 | `07-09-implementacion-pruebas-e2e.md` | 7.9 | Implementación de scripts E2E ejecutables |
 | `07-10-implementacion-pruebas-humo.md` | 7.10 | Implementación de script de smoke test ejecutable en pipeline |
+| `07-11-implementacion-pruebas-performance.md` | 7.11 | Implementación de scripts de performance y carga ejecutables |
 | `08-01-revision-estatica.md` | 8.1 | Revisión estática de código |
 | `08-02-cumplimiento-requerimiento.md` | 8.2 | Revisión de cumplimiento contra requerimiento |
 | `08-03-remediacion-maestro.md` | 8.3 | Prompt maestro de remediación de revisión estática |
@@ -133,7 +134,10 @@ Usa el prompt de análisis de causa raíz y adáptalo a:
 | `13-02-sca-analisis-dependencias.md` | 13.2 | Análisis de composición de software (SCA) — CVEs en dependencias |
 | `13-03-secure-sdlc-revision.md` | 13.3 | Revisión Secure SDLC — OWASP SAMM / NIST SSDF |
 | `13-04-threat-modeling.md` | 13.4 | Modelado de amenazas — metodología STRIDE |
+| `13-05-dast-analisis-dinamico-seguridad.md` | 13.5 | Análisis dinámico de seguridad (DAST) — inyección, sesión, transporte |
+| `13-06-ethical-hacking-pentesting.md` | 13.6 | Ethical hacking y pruebas de penetración estructuradas |
 | `13-07-gestion-vulnerabilidades-cves.md` | 13.7 | Gestión del ciclo de vida de vulnerabilidades y CVEs |
+| `13-08-gestion-secretos-credenciales.md` | 13.8 | Gestión y auditoría de secretos y credenciales |
 
 ---
 

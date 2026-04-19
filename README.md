@@ -1,6 +1,6 @@
 # AI-SDLC Pro — Biblioteca de Prompts de Ingeniería de Software
 
-Biblioteca interactiva de prompts estructurados bajo el **AI-SDLC Enterprise Framework**: **54 prompts** organizados en **16 grupos** que cubren el ciclo completo de ingeniería de software asistida por IA.
+Biblioteca interactiva de prompts estructurados bajo el **AI-SDLC Enterprise Framework**: **58 prompts** organizados en **16 grupos** que cubren el ciclo completo de ingeniería de software asistida por IA.
 
 ## Entornos activos
 
@@ -27,7 +27,7 @@ Biblioteca interactiva de prompts estructurados bajo el **AI-SDLC Enterprise Fra
 ## Estructura del proyecto
 
 ```
-ai_sdlc_pro_prompts/    # 54 prompts Markdown (16 grupos, ciclo SDLC completo)
+ai_sdlc_pro_prompts/    # 58 prompts Markdown (16 grupos, ciclo SDLC completo)
 build.py                # Generador: produce index.html desde los .md
 extract_vars.py         # Analiza tokens [PLACEHOLDER] en los prompts
 verify_clean.py         # QA gate: valida prompts limpios (integrado en CI)
@@ -97,14 +97,14 @@ El push a `main` también actualiza GitHub Pages automáticamente vía el workfl
 | 04 | Diseño de solución (diseño, Mermaid, casos de uso, ADR) | 4 |
 | 05 | Plan de implementación (plan, riesgos) | 2 |
 | 06 | Ejecución (multi-agente, commits) | 2 |
-| 07 | Pruebas (unitarias, integración, E2E, humo, automatización, performance) | 6 |
+| 07 | Pruebas (diseño + implementación: unitarias, integración, E2E, humo, automatización, performance) | 7 |
 | 08 | Revisión y remediación (estática, cumplimiento, maestro) | 3 |
 | 09 | Integración y CI/CD (ramas, monitoreo, workflows, promotion) | 4 |
 | 10 | Documentación (técnica, memoria, changelog) | 3 |
 | 11 | Operaciones (troubleshooting, hardening, deuda técnica, incident response) | 4 |
 | 12 | Orquestador maestro (ciclo completo) | 1 |
-| 13 | Seguridad y DevSecOps (SAST, SCA, Secure SDLC, Threat Modeling, CVE Management) | 5 |
-| **Total** | | **54** |
+| 13 | Seguridad y DevSecOps (SAST, SCA, Secure SDLC, Threat Modeling, DAST, Pentesting, CVE, Secrets) | 8 |
+| **Total** | | **58** |
 
 ---
 
