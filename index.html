@@ -1014,14 +1014,14 @@ en análisis, diseño, implementación, pruebas, CI/CD y documentación
 <div class="search-bar">
   <div class="proj-quick" id="proj-quick"><button class="proj-quick-btn" id="proj-quick-btn" onclick="toggleProjQuick(event)" title="Cambiar proyecto activo"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M3 12h18M3 17h18"/></svg><span class="proj-quick-name" id="proj-quick-name">Proyecto</span><span class="proj-quick-chevron"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button><div class="proj-quick-dropdown" id="proj-quick-dropdown"></div></div>
   <div class="search-wrap"><span class="search-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></span><input type="text" placeholder="Buscar por nombre o contenido del prompt..." oninput="filterPrompts(this.value)" autocomplete="off"></div>
-  <span class="search-count" id="vis-count">49 prompts</span>
+  <span class="search-count" id="vis-count">54 prompts</span>
   <span class="vars-active-badge" id="vars-badge">&#9632; Vars activas</span>
   <button class="ms-toggle-btn" id="ms-toggle-btn" onclick="toggleMsMode()" title="Activar selección múltiple"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="13" height="13" rx="2"/><path d="M8 10l3 3 5-5"/></svg><span class="ms-label"> Multi-select</span></button>
   <button class="var-toggle-btn" id="var-toggle-btn" onclick="toggleVarPanel()" title="Panel de variables"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg><span class="var-label"> Variables</span></button>
 </div>
 <div class="layout">
   <nav class="sidebar">
-<div class="sidebar-header"><span class="sidebar-label-text">Nav</span><button class="sidebar-collapse-btn" onclick="toggleSidebar()" title="Colapsar / expandir menú"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/></svg></button></div><div class="sid-section"><div class="sid-label sid-lang-es">Framework</div><div class="sid-label sid-lang-en">Framework</div><a class="sid-link sid-framework active" href="#sec-00" onclick="closeMenu()"><span class="sid-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg></span><span class="sid-text sid-lang-es">00 — Framework base</span><span class="sid-text sid-lang-en">00 — Base Framework</span><span class="sid-badge">★</span></a></div><div class="sid-section"><div class="sid-label sid-lang-es">Prompts</div><div class="sid-label sid-lang-en">Prompts</div><a class="sid-link" href="#sec-01" onclick="closeMenu()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"/></svg><span class="sid-text sid-lang-es">01 — Comprensión</span><span class="sid-text sid-lang-en">01 — Comprehension</span><span class="sid-badge">2</span></a><a class="sid-link" href="#sec-02" onclick="closeMenu()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z"/></svg><span class="sid-text sid-lang-es">02 — Análisis</span><span class="sid-text sid-lang-en">02 — Analysis</span><span class="sid-badge">3</span></a><a class="sid-link" href="#sec-03" onclick="closeMenu()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M12 12.75c1.148 0 2.278.08 3.383.237 1.037.146 1.866.966 1.866 2.013 0 3.728-2.35 6.75-5.25 6.75S6.75 18.728 6.75 15c0-1.046.83-1.867 1.866-2.013A24.204 24.204 0 0112 12.75zm0 0c2.883 0 5.647.508 8.207 1.44a23.91 23.91 0 01-1.152 6.06M12 12.75c-2.883 0-5.647.508-8.208 1.44a23.91 23.91 0 001.153 6.06M12 12.75a2.25 2.25 0 002.248-2.354M12 12.75a2.25 2.25 0 01-2.248-2.354M12 8.25c.995 0 1.971-.08 2.922-.236.403-.066.74-.358.795-.762a3.778 3.778 0 00-.399-2.25M12 8.25c-.995 0-1.97-.08-2.922-.236-.402-.066-.74-.358-.795-.762a3.778 3.778 0 01.4-2.25m0 0a5.002 5.002 0 019.45 0m-9.45 0A5.002 5.002 0 002.55 5.764"/></svg><span class="sid-text sid-lang-es">03 — Incidentes</span><span class="sid-text sid-lang-en">03 — Incidents</span><span class="sid-badge">2</span></a><a class="sid-link" href="#sec-04" onclick="closeMenu()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"/></svg><span class="sid-text sid-lang-es">04 — Diseño</span><span class="sid-text sid-lang-en">04 — Design</span><span class="sid-badge">4</span></a><a class="sid-link" href="#sec-05" onclick="closeMenu()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg><span class="sid-text sid-lang-es">05 — Planificación</span><span class="sid-text sid-lang-en">05 — Planning</span><span class="sid-badge">2</span></a><a class="sid-link" href="#sec-06" onclick="closeMenu()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z"/></svg><span class="sid-text sid-lang-es">06 — Ejecución</span><span class="sid-text sid-lang-en">06 — Execution</span><span class="sid-badge">2</span></a><a class="sid-link" href="#sec-07" onclick="closeMenu()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"/></svg><span class="sid-text sid-lang-es">07 — Pruebas</span><span class="sid-text sid-lang-en">07 — Testing</span><span class="sid-badge">11</span></a><a class="sid-link" href="#sec-08" onclick="closeMenu()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0118 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3l1.5 1.5 3-3.75"/></svg><span class="sid-text sid-lang-es">08 — Revisión</span><span class="sid-text sid-lang-en">08 — Review</span><span class="sid-badge">3</span></a><a class="sid-link" href="#sec-09" onclick="closeMenu()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#14b8a6" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/></svg><span class="sid-text sid-lang-es">09 — Integración</span><span class="sid-text sid-lang-en">09 — Integration</span><span class="sid-badge">4</span></a><a class="sid-link" href="#sec-10" onclick="closeMenu()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a3e635" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg><span class="sid-text sid-lang-es">10 — Documentación</span><span class="sid-text sid-lang-en">10 — Documentation</span><span class="sid-badge">3</span></a><a class="sid-link" href="#sec-11" onclick="closeMenu()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 01.9 2.7m0 0a3 3 0 01-3 3m0 3h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008zm-3 6h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008z"/></svg><span class="sid-text sid-lang-es">11 — Operaciones</span><span class="sid-text sid-lang-en">11 — Operations</span><span class="sid-badge">4</span></a><a class="sid-link" href="#sec-12" onclick="closeMenu()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 16.875h3.375m0 0h3.375m-3.375 0V13.5m0 3.375v3.375M6 10.5h2.25a2.25 2.25 0 002.25-2.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v2.25A2.25 2.25 0 006 10.5zm0 9.75h2.25A2.25 2.25 0 0010.5 18v-2.25a2.25 2.25 0 00-2.25-2.25H6a2.25 2.25 0 00-2.25 2.25V18A2.25 2.25 0 006 20.25zm9.75-9.75H18a2.25 2.25 0 002.25-2.25V6A2.25 2.25 0 0018 3.75h-2.25A2.25 2.25 0 0013.5 6v2.25a2.25 2.25 0 002.25 2.25z"/></svg><span class="sid-text sid-lang-es">12 — Orquestador</span><span class="sid-text sid-lang-en">12 — Orchestrator</span><span class="sid-badge">1</span></a></div>  </nav>
+<div class="sidebar-header"><span class="sidebar-label-text">Nav</span><button class="sidebar-collapse-btn" onclick="toggleSidebar()" title="Colapsar / expandir menú"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/></svg></button></div><div class="sid-section"><div class="sid-label sid-lang-es">Framework</div><div class="sid-label sid-lang-en">Framework</div><a class="sid-link sid-framework active" href="#sec-00" onclick="closeMenu()"><span class="sid-icon"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg></span><span class="sid-text sid-lang-es">00 — Framework base</span><span class="sid-text sid-lang-en">00 — Base Framework</span><span class="sid-badge">★</span></a></div><div class="sid-section"><div class="sid-label sid-lang-es">Prompts</div><div class="sid-label sid-lang-en">Prompts</div><a class="sid-link" href="#sec-01" onclick="closeMenu()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"/></svg><span class="sid-text sid-lang-es">01 — Comprensión</span><span class="sid-text sid-lang-en">01 — Comprehension</span><span class="sid-badge">2</span></a><a class="sid-link" href="#sec-02" onclick="closeMenu()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z"/></svg><span class="sid-text sid-lang-es">02 — Análisis</span><span class="sid-text sid-lang-en">02 — Analysis</span><span class="sid-badge">3</span></a><a class="sid-link" href="#sec-03" onclick="closeMenu()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M12 12.75c1.148 0 2.278.08 3.383.237 1.037.146 1.866.966 1.866 2.013 0 3.728-2.35 6.75-5.25 6.75S6.75 18.728 6.75 15c0-1.046.83-1.867 1.866-2.013A24.204 24.204 0 0112 12.75zm0 0c2.883 0 5.647.508 8.207 1.44a23.91 23.91 0 01-1.152 6.06M12 12.75c-2.883 0-5.647.508-8.208 1.44a23.91 23.91 0 001.153 6.06M12 12.75a2.25 2.25 0 002.248-2.354M12 12.75a2.25 2.25 0 01-2.248-2.354M12 8.25c.995 0 1.971-.08 2.922-.236.403-.066.74-.358.795-.762a3.778 3.778 0 00-.399-2.25M12 8.25c-.995 0-1.97-.08-2.922-.236-.402-.066-.74-.358-.795-.762a3.778 3.778 0 01.4-2.25m0 0a5.002 5.002 0 019.45 0m-9.45 0A5.002 5.002 0 002.55 5.764"/></svg><span class="sid-text sid-lang-es">03 — Incidentes</span><span class="sid-text sid-lang-en">03 — Incidents</span><span class="sid-badge">2</span></a><a class="sid-link" href="#sec-04" onclick="closeMenu()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"/></svg><span class="sid-text sid-lang-es">04 — Diseño</span><span class="sid-text sid-lang-en">04 — Design</span><span class="sid-badge">4</span></a><a class="sid-link" href="#sec-05" onclick="closeMenu()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg><span class="sid-text sid-lang-es">05 — Planificación</span><span class="sid-text sid-lang-en">05 — Planning</span><span class="sid-badge">2</span></a><a class="sid-link" href="#sec-06" onclick="closeMenu()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 7.5l3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0021 18V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v12a2.25 2.25 0 002.25 2.25z"/></svg><span class="sid-text sid-lang-es">06 — Ejecución</span><span class="sid-text sid-lang-en">06 — Execution</span><span class="sid-badge">2</span></a><a class="sid-link" href="#sec-07" onclick="closeMenu()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"/></svg><span class="sid-text sid-lang-es">07 — Pruebas</span><span class="sid-text sid-lang-en">07 — Testing</span><span class="sid-badge">11</span></a><a class="sid-link" href="#sec-08" onclick="closeMenu()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ec4899" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M11.35 3.836c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m8.9-4.414c.376.023.75.05 1.124.08 1.131.094 1.976 1.057 1.976 2.192V16.5A2.25 2.25 0 0118 18.75h-2.25m-7.5-10.5H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V18.75m-7.5-10.5h6.375c.621 0 1.125.504 1.125 1.125v9.375m-8.25-3l1.5 1.5 3-3.75"/></svg><span class="sid-text sid-lang-es">08 — Revisión</span><span class="sid-text sid-lang-en">08 — Review</span><span class="sid-badge">3</span></a><a class="sid-link" href="#sec-09" onclick="closeMenu()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#14b8a6" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/></svg><span class="sid-text sid-lang-es">09 — Integración</span><span class="sid-text sid-lang-en">09 — Integration</span><span class="sid-badge">4</span></a><a class="sid-link" href="#sec-10" onclick="closeMenu()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a3e635" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg><span class="sid-text sid-lang-es">10 — Documentación</span><span class="sid-text sid-lang-en">10 — Documentation</span><span class="sid-badge">3</span></a><a class="sid-link" href="#sec-11" onclick="closeMenu()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 01.9 2.7m0 0a3 3 0 01-3 3m0 3h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008zm-3 6h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008z"/></svg><span class="sid-text sid-lang-es">11 — Operaciones</span><span class="sid-text sid-lang-en">11 — Operations</span><span class="sid-badge">4</span></a><a class="sid-link" href="#sec-12" onclick="closeMenu()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#c084fc" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 16.875h3.375m0 0h3.375m-3.375 0V13.5m0 3.375v3.375M6 10.5h2.25a2.25 2.25 0 002.25-2.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v2.25A2.25 2.25 0 006 10.5zm0 9.75h2.25A2.25 2.25 0 0010.5 18v-2.25a2.25 2.25 0 00-2.25-2.25H6a2.25 2.25 0 00-2.25 2.25V18A2.25 2.25 0 006 20.25zm9.75-9.75H18a2.25 2.25 0 002.25-2.25V6A2.25 2.25 0 0018 3.75h-2.25A2.25 2.25 0 0013.5 6v2.25a2.25 2.25 0 002.25 2.25z"/></svg><span class="sid-text sid-lang-es">12 — Orquestador</span><span class="sid-text sid-lang-en">12 — Orchestrator</span><span class="sid-badge">1</span></a><a class="sid-link" href="#sec-13" onclick="closeMenu()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg><span class="sid-text sid-lang-es">13 — 13</span><span class="sid-text sid-lang-en">13 — 13</span><span class="sid-badge">5</span></a></div>  </nav>
   <div class="content">
 <div class="framework-banner fw-lang-es" id="sec-00-es" data-observe><div class="fw-header" onclick="toggleFramework()" title="Click para expandir/colapsar"><span class="fw-badge">&#9888; Obligatorio</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg><span class="fw-title">&#128204; PASO 1 — Copia este bloque antes de usar cualquier prompt</span><button class="fw-expand" id="fe-00-es" onclick="event.stopPropagation(); toggleFramework();" title="Expandir / colapsar"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div><div class="fw-body" id="fb-00-es"><p class="fw-desc">Este bloque define el rol del agente, el contexto multi-agente y las reglas obligatorias de ingeniería. Sin él, el agente responde de forma genérica. Cópialo y pégalo <strong>siempre primero</strong> en tu conversación con el agente IA.</p><pre><code id="code-fw-es">Actúa como un Ingeniero en Sistemas Computacionales, Ingeniero de Software Senior, Arquitecto de Soluciones, Analista Técnico-Funcional, DBA, Server Administrator y especialista en QA, DevOps y DevSecOps, con experiencia práctica en PSP, RUP, ITIL, SCRUM, CI/CD, GitHub, Docker, Linux, arquitectura cloud y desarrollo full stack.
 
@@ -5267,6 +5267,1002 @@ Use the master orchestrator prompt and adapt it to:
 - components: [INVOLVED COMPONENTS]
 - documents to review: README, docs/, architecture, workflows, related issues
 - specific output objective: documented complete cycle ready for execution
+- depth level: high</code></pre></div></div></div></div><div class="section-group" id="sec-13" data-observe><div class="section-header-row"><input type="checkbox" class="sec-check" title="Seleccionar toda la sección" onchange="onSecCheck(this)"><span class="sec-num" style="color:#dc2626;border-color:#dc262622;background:#dc262611">13</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"/></svg><span class="sec-label">Seguridad y DevSecOps</span><span class="sec-count">5</span></div><div class="cards-grid"><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="13-01-sast-analisis-seguridad-codigo" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-13-01-sast-analisis-seguridad-codigo-es" onclick="toggleCard('13-01-sast-analisis-seguridad-codigo-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('13-01-sast-analisis-seguridad-codigo-es')">13.1 — SAST: Análisis estático de seguridad de código</span><button class="info-btn" onclick="openInfoLang('13-01-sast-analisis-seguridad-codigo', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="SAST: Análisis estático de seguridad de código" onclick="copyPromptLang('13-01-sast-analisis-seguridad-codigo', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-13-01-sast-analisis-seguridad-codigo-es"><pre><code id="code-13-01-sast-analisis-seguridad-codigo-es">Objetivo:
+Realiza un análisis estático de seguridad (SAST) del código indicado, identificando
+vulnerabilidades, patrones inseguros y deuda de seguridad según OWASP Top 10 y
+buenas prácticas de desarrollo seguro.
+
+Pasos:
+
+1. RECONOCIMIENTO DEL CÓDIGO
+   - Identifica el lenguaje, framework y versión.
+   - Mapea los puntos de entrada de datos: endpoints HTTP, formularios, argumentos
+     de CLI, colas de mensajes, imports de archivos, variables de entorno.
+   - Identifica las salidas: respuestas HTTP, logs, archivos generados, BD, APIs externas.
+   - Detecta el modelo de autenticación y autorización en uso.
+
+2. ANÁLISIS POR CATEGORÍA OWASP TOP 10 (2021)
+   Para cada categoría, reporta: ¿aplica al código?, hallazgos encontrados, severidad.
+
+   A01 — Broken Access Control
+   - Verificación de permisos en cada endpoint/función sensible
+   - Exposición de IDs directos (IDOR)
+   - Bypass de autorización por manipulación de parámetros
+
+   A02 — Cryptographic Failures
+   - Datos sensibles en texto plano (contraseñas, tokens, PII)
+   - Algoritmos débiles o deprecados (MD5, SHA1, DES, ECB)
+   - Certificados, claves hardcodeadas o en código fuente
+
+   A03 — Injection
+   - SQL Injection (queries concatenadas, sin parametrizar)
+   - Command Injection (llamadas a OS con input de usuario)
+   - LDAP, XPath, NoSQL Injection
+   - Template Injection (SSTI)
+
+   A04 — Insecure Design
+   - Lógica de negocio explotable
+   - Ausencia de rate limiting en operaciones críticas
+   - Flujos sin validación de estado
+
+   A05 — Security Misconfiguration
+   - Headers HTTP de seguridad ausentes (CSP, HSTS, X-Frame-Options, etc.)
+   - Modo debug habilitado o stack traces expuestos
+   - CORS permisivo (*) en APIs privadas
+   - Configuración de errores verbosa
+
+   A06 — Vulnerable and Outdated Components
+   - Dependencias con CVEs conocidos (remitir a 13-02 para análisis completo)
+   - Versiones de runtime o framework desactualizadas
+
+   A07 — Identification and Authentication Failures
+   - Ausencia de límite de intentos de login / protección contra fuerza bruta
+   - Tokens de sesión predecibles o sin expiración
+   - Recuperación de contraseña insegura
+
+   A08 — Software and Data Integrity Failures
+   - Deserialización insegura de datos externos
+   - Ausencia de verificación de integridad en actualizaciones o pipelines
+   - Dependencias sin lock files o pinning de versión
+
+   A09 — Security Logging and Monitoring Failures
+   - Ausencia de logging de eventos de seguridad (logins fallidos, cambios de permisos)
+   - Datos sensibles en logs
+   - Sin alertas sobre patrones anómalos
+
+   A10 — Server-Side Request Forgery (SSRF)
+   - Llamadas a URLs construidas con input del usuario
+   - Ausencia de validación de esquema y host en URLs externas
+
+3. ANÁLISIS ADICIONAL
+   - Secrets hardcodeados: claves API, contraseñas, tokens en código o comentarios
+   - Manejo de errores: ¿se exponen detalles internos al cliente?
+   - Validación de inputs: ¿se valida tipo, longitud y formato en la capa correcta?
+   - Race conditions en operaciones críticas (pagos, stock, permisos)
+   - Dependencias de terceros cargadas desde CDN sin integridad (SRI)
+
+4. HERRAMIENTAS RECOMENDADAS
+   Según el lenguaje detectado, indica los comandos exactos para ejecutar SAST
+   automático como complemento a este análisis:
+   - Python: bandit, semgrep, pylint-django (si aplica)
+   - JavaScript/TypeScript: eslint-plugin-security, semgrep, njsscan
+   - Java: SpotBugs + FindSecBugs, SonarQube
+   - PHP: PHPCS Security Audit, Psalm
+   - Go: gosec, staticcheck
+   - Ruby: brakeman
+   - Genérico: semgrep con ruleset p/owasp-top-ten
+
+5. CLASIFICACIÓN DE HALLAZGOS
+   Usa la escala CVSS v3.1 para severidad:
+   - CRÍTICO (CVSS 9.0-10.0): explotable remotamente, sin autenticación, impacto total
+   - ALTO (CVSS 7.0-8.9): explotable con condiciones mínimas
+   - MEDIO (CVSS 4.0-6.9): explotable con condiciones específicas
+   - BAJO (CVSS 0.1-3.9): impacto limitado o difícil explotación
+   - INFORMATIVO: best practice, no es vulnerabilidad
+
+Entrega:
+- tabla de hallazgos con severidad, categoría OWASP, componente, descripción y remediación,
+- lista de herramientas SAST recomendadas con comandos de ejecución,
+- resumen ejecutivo: nivel de riesgo global del código analizado,
+- plan de remediación priorizado por severidad.</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="13-01-sast-analisis-seguridad-codigo" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-13-01-sast-analisis-seguridad-codigo-en" onclick="toggleCard('13-01-sast-analisis-seguridad-codigo-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('13-01-sast-analisis-seguridad-codigo-en')">13.1 — SAST: Static Application Security Testing</span><button class="copy-btn" data-title="SAST: Static Application Security Testing" onclick="copyPromptLang('13-01-sast-analisis-seguridad-codigo', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-13-01-sast-analisis-seguridad-codigo-en"><pre><code id="code-13-01-sast-analisis-seguridad-codigo-en">Objective:
+Perform a static security analysis (SAST) of the indicated code, identifying
+vulnerabilities, insecure patterns, and security debt according to OWASP Top 10
+and secure development best practices.
+
+Steps:
+
+1. CODE RECONNAISSANCE
+   - Identify the language, framework, and version.
+   - Map data entry points: HTTP endpoints, forms, CLI arguments,
+     message queues, file imports, environment variables.
+   - Identify outputs: HTTP responses, logs, generated files, DB, external APIs.
+   - Detect the authentication and authorization model in use.
+
+2. OWASP TOP 10 (2021) ANALYSIS BY CATEGORY
+   For each category, report: does it apply to the code?, findings, severity.
+
+   A01 — Broken Access Control
+   - Permission verification at each sensitive endpoint/function
+   - Direct ID exposure (IDOR)
+   - Authorization bypass via parameter manipulation
+
+   A02 — Cryptographic Failures
+   - Sensitive data in plaintext (passwords, tokens, PII)
+   - Weak or deprecated algorithms (MD5, SHA1, DES, ECB)
+   - Hardcoded certificates, keys, or secrets in source code
+
+   A03 — Injection
+   - SQL Injection (concatenated queries, not parameterized)
+   - Command Injection (OS calls with user input)
+   - LDAP, XPath, NoSQL Injection
+   - Template Injection (SSTI)
+
+   A04 — Insecure Design
+   - Exploitable business logic
+   - Absence of rate limiting on critical operations
+   - Flows without state validation
+
+   A05 — Security Misconfiguration
+   - Missing HTTP security headers (CSP, HSTS, X-Frame-Options, etc.)
+   - Debug mode enabled or stack traces exposed
+   - Permissive CORS (*) on private APIs
+   - Verbose error configuration
+
+   A06 — Vulnerable and Outdated Components
+   - Dependencies with known CVEs (refer to 13-02 for full analysis)
+   - Outdated runtime or framework versions
+
+   A07 — Identification and Authentication Failures
+   - No login attempt limit / brute force protection
+   - Predictable session tokens or without expiration
+   - Insecure password recovery
+
+   A08 — Software and Data Integrity Failures
+   - Insecure deserialization of external data
+   - No integrity verification in updates or pipelines
+   - Dependencies without lock files or version pinning
+
+   A09 — Security Logging and Monitoring Failures
+   - Absence of security event logging (failed logins, permission changes)
+   - Sensitive data in logs
+   - No alerts on anomalous patterns
+
+   A10 — Server-Side Request Forgery (SSRF)
+   - Calls to URLs built with user input
+   - No schema and host validation on external URLs
+
+3. ADDITIONAL ANALYSIS
+   - Hardcoded secrets: API keys, passwords, tokens in code or comments
+   - Error handling: are internal details exposed to the client?
+   - Input validation: is type, length, and format validated at the correct layer?
+   - Race conditions on critical operations (payments, inventory, permissions)
+   - Third-party dependencies loaded from CDN without integrity (SRI)
+
+4. RECOMMENDED TOOLS
+   Based on the detected language, provide exact commands for automated SAST
+   as a complement to this analysis:
+   - Python: bandit, semgrep, pylint-django (if applicable)
+   - JavaScript/TypeScript: eslint-plugin-security, semgrep, njsscan
+   - Java: SpotBugs + FindSecBugs, SonarQube
+   - PHP: PHPCS Security Audit, Psalm
+   - Go: gosec, staticcheck
+   - Ruby: brakeman
+   - Generic: semgrep with ruleset p/owasp-top-ten
+
+5. FINDINGS CLASSIFICATION
+   Use CVSS v3.1 scale for severity:
+   - CRITICAL (CVSS 9.0-10.0): remotely exploitable, no auth, total impact
+   - HIGH (CVSS 7.0-8.9): exploitable with minimal conditions
+   - MEDIUM (CVSS 4.0-6.9): exploitable under specific conditions
+   - LOW (CVSS 0.1-3.9): limited impact or difficult exploitation
+   - INFORMATIONAL: best practice, not a vulnerability
+
+Deliverables:
+- findings table with severity, OWASP category, component, description, and remediation,
+- recommended SAST tools list with execution commands,
+- executive summary: overall risk level of the analyzed code,
+- prioritized remediation plan by severity.
+
+---
+
+Use the SAST prompt and adapt it to:
+- repository: [NAME OR URL]
+- branch: [BRANCH TO ANALYZE]
+- files or modules to review: [PATHS — or &quot;entire repository&quot;]
+- language and framework: [AUTO-DETECT]
+- authentication model: [JWT / session / OAuth2 / API key / other]
+- sensitive data handled: [PII / financial / credentials / none]
+- documents to review: threat model if available (13-04), architecture, API contracts
+- specific output goal: complete SAST report with remediation plan by severity
+- depth level: high</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="13-02-sca-analisis-dependencias" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-13-02-sca-analisis-dependencias-es" onclick="toggleCard('13-02-sca-analisis-dependencias-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('13-02-sca-analisis-dependencias-es')">13.2 — SCA: Análisis de composición de software y dependencias</span><button class="info-btn" onclick="openInfoLang('13-02-sca-analisis-dependencias', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="SCA: Análisis de composición de software y dependencias" onclick="copyPromptLang('13-02-sca-analisis-dependencias', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-13-02-sca-analisis-dependencias-es"><pre><code id="code-13-02-sca-analisis-dependencias-es">Objetivo:
+Analiza las dependencias de terceros del proyecto para identificar vulnerabilidades
+conocidas (CVEs), licencias problemáticas, dependencias abandonadas y riesgos de
+cadena de suministro (supply chain attack).
+
+Pasos:
+
+1. INVENTARIO DE DEPENDENCIAS
+   Identifica los archivos de gestión de dependencias presentes:
+   - Python: requirements.txt, requirements-dev.txt, Pipfile, pyproject.toml
+   - JavaScript/Node: package.json, package-lock.json, yarn.lock, pnpm-lock.yaml
+   - Java: pom.xml, build.gradle
+   - Ruby: Gemfile, Gemfile.lock
+   - Go: go.mod, go.sum
+   - PHP: composer.json, composer.lock
+   - .NET: *.csproj, packages.config
+
+   Para cada archivo detectado:
+   - lista el total de dependencias directas
+   - lista el total de dependencias transitivas (si el lock file está disponible)
+   - identifica si se usa pinning exacto de versiones o rangos permisivos
+
+2. HERRAMIENTAS DE ANÁLISIS RECOMENDADAS
+   Según el lenguaje detectado, proporciona los comandos exactos para ejecutar el análisis:
+   - Python: pip-audit, safety check, dependabot
+   - JavaScript: npm audit, yarn audit, npm audit --json
+   - Java: OWASP Dependency-Check, mvn dependency-check:check
+   - Ruby: bundle audit
+   - Go: govulncheck ./...
+   - PHP: composer audit
+   - Multi-lenguaje: Snyk (snyk test), Trivy (trivy fs .), Grype (grype dir:.)
+   - GitHub: Dependabot alerts + Security Advisories
+
+3. ANÁLISIS DE VULNERABILIDADES CONOCIDAS
+   Para cada vulnerabilidad detectada (o simulada si no hay acceso a ejecución):
+   - paquete afectado y versión instalada
+   - CVE ID y puntuación CVSS v3.1
+   - descripción del impacto
+   - versión con fix disponible
+   - si no hay fix: mitigación alternativa
+   - si el proyecto realmente usa la funcionalidad vulnerable (análisis de alcance)
+
+4. ANÁLISIS DE LICENCIAS
+   Clasifica las licencias encontradas:
+   - PERMISIVAS (MIT, BSD, Apache 2.0): sin restricciones comerciales
+   - COPYLEFT DÉBIL (LGPL, MPL): condiciones específicas de distribución
+   - COPYLEFT FUERTE (GPL, AGPL): requiere apertura del código si se distribuye
+   - PROBLEMÁTICAS o SIN LICENCIA: riesgo legal — escalar a legal/compliance
+
+5. SALUD DE LAS DEPENDENCIAS
+   Para las 20 dependencias más críticas (por uso y acceso a datos):
+   - última versión disponible vs versión instalada
+   - fecha del último commit en el repositorio de la dependencia
+   - número de mantenedores activos
+   - si la dependencia fue abandonada o deprecada oficialmente
+   - si la dependencia tiene más de 2 años sin actualizarse: marcar como riesgo
+
+6. RIESGOS DE CADENA DE SUMINISTRO (Supply Chain)
+   Evalúa los siguientes vectores:
+   - ¿Se usa lock file con hashes de integridad? (npm --integrity, pip hash)
+   - ¿Se publican las dependencias desde registros oficiales? (npmjs.com, pypi.org)
+   - ¿Hay dependencias con nombres similares a paquetes populares? (typosquatting)
+   - ¿El pipeline de CI valida la integridad de las dependencias antes de instalarlas?
+   - ¿Se usan dependencias de repositorios git directamente (sin versión fija)?
+
+7. PRIORIZACIÓN Y PLAN DE REMEDIACIÓN
+   Clasifica los hallazgos:
+   - CRÍTICO: CVE con CVSS ≥ 9.0 o licencia GPL en producto comercial
+   - ALTO: CVE con CVSS 7.0-8.9 o dependencia abandonada en ruta crítica
+   - MEDIO: CVE con CVSS 4.0-6.9 o dependencia desactualizada &gt; 2 años
+   - BAJO: CVE con CVSS &lt; 4.0 o licencia ambigua
+   - INFORMATIVO: dependencia con actualizaciones menores disponibles
+
+Entrega:
+- inventario de dependencias con versiones y estado de seguridad,
+- tabla de CVEs encontrados con severidad y fix disponible,
+- tabla de licencias con clasificación de riesgo,
+- reporte de salud de dependencias críticas,
+- plan de actualización priorizado,
+- comandos de remediación listos para ejecutar.</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="13-02-sca-analisis-dependencias" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-13-02-sca-analisis-dependencias-en" onclick="toggleCard('13-02-sca-analisis-dependencias-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('13-02-sca-analisis-dependencias-en')">13.2 — SCA: Software Composition Analysis and Dependencies</span><button class="copy-btn" data-title="SCA: Software Composition Analysis and Dependencies" onclick="copyPromptLang('13-02-sca-analisis-dependencias', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-13-02-sca-analisis-dependencias-en"><pre><code id="code-13-02-sca-analisis-dependencias-en">Objective:
+Analyze the project's third-party dependencies to identify known vulnerabilities
+(CVEs), problematic licenses, abandoned dependencies, and supply chain attack risks.
+
+Steps:
+
+1. DEPENDENCY INVENTORY
+   Identify the dependency management files present:
+   - Python: requirements.txt, requirements-dev.txt, Pipfile, pyproject.toml
+   - JavaScript/Node: package.json, package-lock.json, yarn.lock, pnpm-lock.yaml
+   - Java: pom.xml, build.gradle
+   - Ruby: Gemfile, Gemfile.lock
+   - Go: go.mod, go.sum
+   - PHP: composer.json, composer.lock
+   - .NET: *.csproj, packages.config
+
+   For each detected file:
+   - list the total direct dependencies
+   - list the total transitive dependencies (if lock file is available)
+   - identify whether exact version pinning or permissive ranges are used
+
+2. RECOMMENDED ANALYSIS TOOLS
+   Based on the detected language, provide exact commands for the analysis:
+   - Python: pip-audit, safety check, dependabot
+   - JavaScript: npm audit, yarn audit, npm audit --json
+   - Java: OWASP Dependency-Check, mvn dependency-check:check
+   - Ruby: bundle audit
+   - Go: govulncheck ./...
+   - PHP: composer audit
+   - Multi-language: Snyk (snyk test), Trivy (trivy fs .), Grype (grype dir:.)
+   - GitHub: Dependabot alerts + Security Advisories
+
+3. KNOWN VULNERABILITY ANALYSIS
+   For each detected vulnerability (or simulated if no execution access):
+   - affected package and installed version
+   - CVE ID and CVSS v3.1 score
+   - impact description
+   - version with available fix
+   - if no fix: alternative mitigation
+   - whether the project actually uses the vulnerable functionality (scope analysis)
+
+4. LICENSE ANALYSIS
+   Classify the licenses found:
+   - PERMISSIVE (MIT, BSD, Apache 2.0): no commercial restrictions
+   - WEAK COPYLEFT (LGPL, MPL): specific distribution conditions
+   - STRONG COPYLEFT (GPL, AGPL): requires code openness if distributed
+   - PROBLEMATIC or NO LICENSE: legal risk — escalate to legal/compliance
+
+5. DEPENDENCY HEALTH
+   For the 20 most critical dependencies (by usage and data access):
+   - latest available version vs installed version
+   - date of last commit in the dependency's repository
+   - number of active maintainers
+   - whether the dependency has been officially abandoned or deprecated
+   - if the dependency has not been updated for more than 2 years: flag as risk
+
+6. SUPPLY CHAIN RISKS
+   Evaluate the following vectors:
+   - Is a lock file with integrity hashes used? (npm --integrity, pip hash)
+   - Are dependencies published from official registries? (npmjs.com, pypi.org)
+   - Are there dependencies with names similar to popular packages? (typosquatting)
+   - Does the CI pipeline validate dependency integrity before installing?
+   - Are dependencies used directly from git repositories (without fixed version)?
+
+7. PRIORITIZATION AND REMEDIATION PLAN
+   Classify findings:
+   - CRITICAL: CVE with CVSS ≥ 9.0 or GPL license in commercial product
+   - HIGH: CVE with CVSS 7.0-8.9 or abandoned dependency in critical path
+   - MEDIUM: CVE with CVSS 4.0-6.9 or dependency outdated &gt; 2 years
+   - LOW: CVE with CVSS &lt; 4.0 or ambiguous license
+   - INFORMATIONAL: dependency with minor updates available
+
+Deliverables:
+- dependency inventory with versions and security status,
+- CVE findings table with severity and available fix,
+- license classification risk table,
+- critical dependency health report,
+- prioritized update plan,
+- remediation commands ready to execute.
+
+---
+
+Use the SCA prompt and adapt it to:
+- repository: [NAME OR URL]
+- branch: [MAIN OR WORKING BRANCH]
+- language(s): [AUTO-DETECT]
+- product type: [COMMERCIAL / OPEN SOURCE / INTERNAL] — affects license analysis
+- preferred tool: [AUTO-DETECT / npm audit / pip-audit / Snyk / Trivy]
+- documents to review: dependency files, lock files, active Dependabot alerts
+- specific output goal: CVE + license report + update plan
+- depth level: high</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="13-03-secure-sdlc-revision" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-13-03-secure-sdlc-revision-es" onclick="toggleCard('13-03-secure-sdlc-revision-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('13-03-secure-sdlc-revision-es')">13.3 — Revisión de desarrollo de software seguro (Secure SDLC)</span><button class="info-btn" onclick="openInfoLang('13-03-secure-sdlc-revision', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Revisión de desarrollo de software seguro (Secure SDLC)" onclick="copyPromptLang('13-03-secure-sdlc-revision', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-13-03-secure-sdlc-revision-es"><pre><code id="code-13-03-secure-sdlc-revision-es">Objetivo:
+Verifica el nivel de madurez de seguridad del proyecto evaluando si se han aplicado
+los controles requeridos en cada fase del ciclo de desarrollo de software seguro
+(Secure SDLC), y genera un plan de mejora para las brechas encontradas.
+
+Fases y controles a evaluar:
+
+1. FASE DE REQUERIMIENTOS Y DISEÑO
+   □ ¿Se realizó modelado de amenazas (threat modeling) antes de implementar?
+   □ ¿Se definieron requerimientos de seguridad explícitos (no asumidos)?
+   □ ¿Se identificaron datos sensibles y su clasificación (PII, financiero, confidencial)?
+   □ ¿Se diseñó el modelo de autenticación y autorización antes de codificar?
+   □ ¿Se consideraron los principios de diseño seguro?
+     - Menor privilegio (least privilege)
+     - Defense in depth
+     - Fail securely
+     - Separation of concerns
+     - No security by obscurity
+   □ ¿Se documentó la superficie de ataque del sistema?
+
+2. FASE DE IMPLEMENTACIÓN
+   □ ¿Se siguieron guías de codificación segura para el lenguaje/framework del proyecto?
+   □ ¿Se valida y sanitiza todo input en la capa correcta (no solo en el cliente)?
+   □ ¿Se usan consultas parametrizadas / ORM para acceso a base de datos?
+   □ ¿Se aplica encoding de salida para prevenir XSS?
+   □ ¿Se manejan errores sin exponer información interna al cliente?
+   □ ¿Se usan cabeceras HTTP de seguridad? (CSP, HSTS, X-Content-Type-Options, etc.)
+   □ ¿Los secretos se gestionan vía variables de entorno o vault, nunca en código?
+   □ ¿Las contraseñas se almacenan con hashing adaptativo (bcrypt, Argon2, scrypt)?
+   □ ¿Se aplica HTTPS en todos los endpoints, incluyendo internos?
+   □ ¿Se limita el tamaño y tipo de archivos en upload endpoints?
+
+3. FASE DE PRUEBAS DE SEGURIDAD
+   □ ¿Se ejecutó SAST como parte del pipeline CI? (ver 13-01)
+   □ ¿Se ejecutó SCA / análisis de dependencias? (ver 13-02)
+   □ ¿Se realizaron pruebas de seguridad dinámicas (DAST) sobre el ambiente de QA?
+   □ ¿Se ejecutaron pruebas de autenticación y autorización (roles, permisos, JWT)?
+   □ ¿Se realizaron pruebas de inyección básicas (SQL, Command, SSTI)?
+   □ ¿Se revisaron manualmente los endpoints más críticos?
+   □ ¿El QA gate del CI falla si hay hallazgos de seguridad de severidad alta o crítica?
+
+4. FASE DE REVISIÓN DE CÓDIGO (CODE REVIEW)
+   □ ¿Existe un checklist de revisión de código con ítems de seguridad?
+   □ ¿Al menos un revisor tiene conocimiento de seguridad de aplicaciones?
+   □ ¿Se revisaron los cambios en autenticación, autorización y manejo de datos?
+   □ ¿Se identificaron y documentaron supuestos de seguridad en el código?
+   □ ¿Se revisaron los logs para confirmar que no incluyen datos sensibles?
+
+5. FASE DE CI/CD Y DESPLIEGUE
+   □ ¿El pipeline CI incluye lint de seguridad, SAST y SCA automático?
+   □ ¿Las imágenes Docker están basadas en versiones oficiales y mínimas (distroless, alpine)?
+   □ ¿Los contenedores corren como usuario no root?
+   □ ¿Los secretos de producción se gestionan con un sistema dedicado? (Vault, AWS Secrets Manager, etc.)
+   □ ¿Se aplica el principio de menor privilegio en los permisos del servicio?
+   □ ¿Existe un proceso de rollback probado ante despliegues con problema de seguridad?
+   □ ¿Los artefactos de build están firmados o verificados con checksum?
+
+6. FASE DE OPERACIONES Y MONITOREO
+   □ ¿Se registran eventos de seguridad en logs estructurados?
+     (logins fallidos, cambios de permisos, acceso a datos sensibles)
+   □ ¿Hay alertas configuradas para patrones anómalos?
+   □ ¿Existe un proceso de respuesta a incidentes de seguridad? (ver 11-04)
+   □ ¿Se realiza revisión periódica de accesos y permisos?
+   □ ¿Se aplican parches de seguridad en tiempo razonable?
+     (crítico: ≤24h, alto: ≤7 días, medio: ≤30 días)
+   □ ¿Se realizan penetration tests o revisiones de seguridad periódicas? (ver 13-06)
+
+7. MADUREZ POR DOMINIO (OWASP SAMM simplificado)
+   Evalúa el nivel actual para cada dominio en escala 0-3:
+   - Gobernanza (políticas, formación, cumplimiento)
+   - Diseño (threat modeling, requisitos de seguridad)
+   - Implementación (codificación segura, gestión de defectos)
+   - Verificación (pruebas de seguridad, revisión de código)
+   - Operaciones (gestión de incidentes, gestión de entornos)
+
+Entrega:
+- checklist completo con estado de cada control (✅ cumple / ⚠️ parcial / ❌ no cumple / N/A),
+- nivel de madurez por fase (0-3),
+- resumen de brechas críticas,
+- plan de mejora priorizado con responsable y plazo sugerido,
+- roadmap de madurez: qué alcanzar en el próximo sprint / trimestre / semestre.</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="13-03-secure-sdlc-revision" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-13-03-secure-sdlc-revision-en" onclick="toggleCard('13-03-secure-sdlc-revision-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('13-03-secure-sdlc-revision-en')">13.3 — Secure SDLC Review</span><button class="copy-btn" data-title="Secure SDLC Review" onclick="copyPromptLang('13-03-secure-sdlc-revision', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-13-03-secure-sdlc-revision-en"><pre><code id="code-13-03-secure-sdlc-revision-en">Objective:
+Verify the project's security maturity level by evaluating whether required controls
+have been applied in each phase of the Secure SDLC, and generate an improvement plan
+for identified gaps.
+
+Phases and controls to evaluate:
+
+1. REQUIREMENTS AND DESIGN PHASE
+   □ Was threat modeling performed before implementation?
+   □ Were explicit security requirements defined (not assumed)?
+   □ Were sensitive data identified and classified (PII, financial, confidential)?
+   □ Was the authentication and authorization model designed before coding?
+   □ Were secure design principles considered?
+     - Least privilege
+     - Defense in depth
+     - Fail securely
+     - Separation of concerns
+     - No security by obscurity
+   □ Was the system attack surface documented?
+
+2. IMPLEMENTATION PHASE
+   □ Were secure coding guidelines followed for the project's language/framework?
+   □ Is all input validated and sanitized at the correct layer (not just on the client)?
+   □ Are parameterized queries / ORM used for database access?
+   □ Is output encoding applied to prevent XSS?
+   □ Are errors handled without exposing internal information to the client?
+   □ Are HTTP security headers applied? (CSP, HSTS, X-Content-Type-Options, etc.)
+   □ Are secrets managed via environment variables or vault, never in code?
+   □ Are passwords stored with adaptive hashing (bcrypt, Argon2, scrypt)?
+   □ Is HTTPS enforced on all endpoints, including internal ones?
+   □ Is file size and type limited on upload endpoints?
+
+3. SECURITY TESTING PHASE
+   □ Was SAST executed as part of the CI pipeline? (see 13-01)
+   □ Was SCA / dependency analysis performed? (see 13-02)
+   □ Was dynamic security testing (DAST) performed on the QA environment?
+   □ Were authentication and authorization tests performed (roles, permissions, JWT)?
+   □ Were basic injection tests performed (SQL, Command, SSTI)?
+   □ Were the most critical endpoints manually reviewed?
+   □ Does the CI QA gate fail if there are high or critical severity security findings?
+
+4. CODE REVIEW PHASE
+   □ Is there a code review checklist with security items?
+   □ Does at least one reviewer have application security knowledge?
+   □ Were changes to authentication, authorization, and data handling reviewed?
+   □ Were security assumptions in the code identified and documented?
+   □ Were logs reviewed to confirm they do not include sensitive data?
+
+5. CI/CD AND DEPLOYMENT PHASE
+   □ Does the CI pipeline include security linting, SAST, and automated SCA?
+   □ Are Docker images based on official and minimal versions (distroless, alpine)?
+   □ Do containers run as a non-root user?
+   □ Are production secrets managed with a dedicated system? (Vault, AWS Secrets Manager, etc.)
+   □ Is least privilege applied to service permissions?
+   □ Is there a tested rollback process for security-problematic deployments?
+   □ Are build artifacts signed or verified with checksums?
+
+6. OPERATIONS AND MONITORING PHASE
+   □ Are security events recorded in structured logs?
+     (failed logins, permission changes, sensitive data access)
+   □ Are alerts configured for anomalous patterns?
+   □ Is there a security incident response process? (see 11-04)
+   □ Is periodic review of access and permissions performed?
+   □ Are security patches applied in a reasonable timeframe?
+     (critical: ≤24h, high: ≤7 days, medium: ≤30 days)
+   □ Are periodic penetration tests or security reviews performed? (see 13-06)
+
+7. MATURITY BY DOMAIN (simplified OWASP SAMM)
+   Evaluate the current level for each domain on a 0-3 scale:
+   - Governance (policies, training, compliance)
+   - Design (threat modeling, security requirements)
+   - Implementation (secure coding, defect management)
+   - Verification (security testing, code review)
+   - Operations (incident management, environment management)
+
+Deliverables:
+- complete checklist with status for each control (✅ compliant / ⚠️ partial / ❌ non-compliant / N/A),
+- maturity level per phase (0-3),
+- summary of critical gaps,
+- prioritized improvement plan with owner and suggested timeline,
+- maturity roadmap: what to achieve in the next sprint / quarter / semester.
+
+---
+
+Use the Secure SDLC review prompt and adapt it to:
+- repository: [NAME OR URL]
+- branch: [MAIN BRANCH]
+- current cycle phase: [DESIGN / IMPLEMENTATION / QA / PRE-RELEASE / OPERATIONS]
+- available results: [SAST 13-01 / SCA 13-02 / Threat Model 13-04 / none]
+- project type: [NEW / INCREMENTAL CHANGE / MAINTENANCE]
+- target environment: [DEV / QA / STAGING / PROD]
+- documents to review: architecture, CI/CD workflows, project security policies
+- specific output goal: complete checklist + improvement plan with maturity levels
+- depth level: high</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="13-04-threat-modeling" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-13-04-threat-modeling-es" onclick="toggleCard('13-04-threat-modeling-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('13-04-threat-modeling-es')">13.4 — Modelado de amenazas (Threat Modeling)</span><button class="info-btn" onclick="openInfoLang('13-04-threat-modeling', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Modelado de amenazas (Threat Modeling)" onclick="copyPromptLang('13-04-threat-modeling', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-13-04-threat-modeling-es"><pre><code id="code-13-04-threat-modeling-es">Objetivo:
+Realiza el modelado de amenazas del sistema o componente indicado usando la
+metodología STRIDE, identifica las superficies de ataque, los actores maliciosos,
+los vectores de amenaza y los controles de mitigación requeridos.
+
+Pasos:
+
+1. DESCRIPCIÓN DEL SISTEMA
+   Describe el sistema o componente a analizar:
+   - propósito del sistema
+   - actores legítimos (usuarios, sistemas, servicios externos)
+   - datos que procesa, almacena o transmite
+   - límites de confianza (trust boundaries): dónde cambia el nivel de confianza
+     entre componentes (ej: internet → load balancer, cliente → API, API → BD)
+   - tecnologías involucradas: lenguaje, framework, base de datos, colas, APIs externas
+
+2. DIAGRAMA DE FLUJO DE DATOS (DFD nivel 0 y nivel 1)
+   Genera en texto estructurado (para convertir a diagrama) los componentes y flujos:
+   - entidades externas (usuarios, sistemas externos)
+   - procesos (servicios, funciones, módulos)
+   - almacenes de datos (BD, caché, archivos, sesiones)
+   - flujos de datos entre componentes (indicar si son confiables o no confiables)
+   - límites de confianza (representar con línea punteada)
+
+3. IDENTIFICACIÓN DE AMENAZAS — METODOLOGÍA STRIDE
+   Para cada componente y flujo significativo, evalúa las 6 categorías STRIDE:
+
+   S — Spoofing (Suplantación de identidad)
+   ¿Puede un atacante hacerse pasar por un usuario u componente legítimo?
+   - Ejemplos: credenciales robadas, JWT falsificados, ARP spoofing, DNS spoofing
+   - Controles típicos: autenticación fuerte (MFA), certificados TLS mutuos, firmas digitales
+
+   T — Tampering (Manipulación)
+   ¿Puede un atacante modificar datos en tránsito o en reposo sin detección?
+   - Ejemplos: SQL injection, modificación de parámetros de URL, man-in-the-middle
+   - Controles típicos: HTTPS, firma de mensajes (HMAC), validación de integridad, ORM
+
+   R — Repudiation (Repudio)
+   ¿Puede un actor negar haber realizado una acción?
+   - Ejemplos: ausencia de logs de auditoría, logs manipulables, sin firma de transacciones
+   - Controles típicos: logging de auditoría inmutable, firma de transacciones, timestamps
+
+   I — Information Disclosure (Divulgación de información)
+   ¿Puede un atacante acceder a datos a los que no tiene derecho?
+   - Ejemplos: IDOR, errores con stack trace, archivos de configuración expuestos,
+     datos en logs, directorios listables
+   - Controles típicos: control de acceso, encoding de salida, manejo de errores seguro,
+     principio de menor privilegio
+
+   D — Denial of Service (Denegación de servicio)
+   ¿Puede un atacante degradar o interrumpir el servicio?
+   - Ejemplos: flood de requests, queries costosas sin límite, uploads ilimitados,
+     recursión infinita, lock de base de datos
+   - Controles típicos: rate limiting, timeouts, paginación, validación de tamaño de input,
+     circuit breaker
+
+   E — Elevation of Privilege (Escalada de privilegios)
+   ¿Puede un atacante obtener más privilegios de los asignados?
+   - Ejemplos: IDOR con acceso a recursos de otros usuarios, bypassear verificación de rol,
+     command injection que ejecuta como root, JWT con rol manipulable
+   - Controles típicos: autorización en backend (nunca solo en cliente), tokens firmados,
+     verificación de pertenencia de recursos, sandbox
+
+4. ÁRBOL DE AMENAZAS (Attack Trees) — top 3 escenarios de mayor riesgo
+   Para los 3 escenarios más críticos identificados:
+   - nombre del escenario de ataque
+   - objetivo del atacante
+   - precondiciones necesarias
+   - pasos del ataque (árbol de decisiones)
+   - probabilidad estimada: [ALTA / MEDIA / BAJA]
+   - impacto estimado: [CRÍTICO / ALTO / MEDIO / BAJO]
+
+5. CLASIFICACIÓN DE AMENAZAS POR RIESGO
+   Prioriza todas las amenazas identificadas con:
+   - ID de amenaza
+   - categoría STRIDE
+   - componente afectado
+   - descripción del vector
+   - probabilidad (1-3)
+   - impacto (1-3)
+   - riesgo = probabilidad × impacto (1-9)
+   - control de mitigación propuesto
+   - estado: [SIN MITIGAR / MITIGADO / ACEPTADO]
+
+6. SUPERFICIE DE ATAQUE
+   Documenta la superficie de ataque total del sistema:
+   - endpoints HTTP/API expuestos (internos y externos)
+   - interfaces de usuario (web, mobile, CLI)
+   - colas de mensajes o eventos
+   - importación/exportación de archivos
+   - integraciones con terceros (webhooks, OAuth, APIs)
+   - interfaces de administración
+   - scripts de mantenimiento o batch jobs
+
+7. RECOMENDACIONES DE ARQUITECTURA DE SEGURIDAD
+   Lista los controles de seguridad a implementar o validar antes del desarrollo,
+   agrupados por capa:
+   - Capa de red: WAF, firewall, segmentación, TLS
+   - Capa de aplicación: autenticación, autorización, validación, rate limiting
+   - Capa de datos: cifrado en reposo, cifrado en tránsito, acceso mínimo a BD
+   - Capa de operaciones: logging de seguridad, alertas, rotación de secretos
+
+Entrega:
+- DFD textual del sistema con límites de confianza marcados,
+- tabla completa de amenazas STRIDE con riesgo y mitigación,
+- top 3 árboles de amenaza con pasos de ataque,
+- mapa de superficie de ataque,
+- lista de controles de seguridad requeridos por capa,
+- este documento sirve como input obligatorio para 13-01 (SAST) y 13-03 (Secure SDLC).</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="13-04-threat-modeling" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-13-04-threat-modeling-en" onclick="toggleCard('13-04-threat-modeling-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('13-04-threat-modeling-en')">13.4 — Threat Modeling</span><button class="copy-btn" data-title="Threat Modeling" onclick="copyPromptLang('13-04-threat-modeling', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-13-04-threat-modeling-en"><pre><code id="code-13-04-threat-modeling-en">Objective:
+Perform threat modeling of the indicated system or component using the STRIDE
+methodology, identify attack surfaces, malicious actors, threat vectors,
+and required mitigation controls.
+
+Steps:
+
+1. SYSTEM DESCRIPTION
+   Describe the system or component to analyze:
+   - system purpose
+   - legitimate actors (users, systems, external services)
+   - data processed, stored, or transmitted
+   - trust boundaries: where the trust level changes between components
+     (e.g., internet → load balancer, client → API, API → DB)
+   - involved technologies: language, framework, database, queues, external APIs
+
+2. DATA FLOW DIAGRAM (DFD level 0 and level 1)
+   Generate in structured text (to convert to diagram) the components and flows:
+   - external entities (users, external systems)
+   - processes (services, functions, modules)
+   - data stores (DB, cache, files, sessions)
+   - data flows between components (indicate if trusted or untrusted)
+   - trust boundaries (represent with dotted line)
+
+3. THREAT IDENTIFICATION — STRIDE METHODOLOGY
+   For each significant component and flow, evaluate the 6 STRIDE categories:
+
+   S — Spoofing (Identity impersonation)
+   Can an attacker impersonate a legitimate user or component?
+   - Examples: stolen credentials, forged JWTs, ARP spoofing, DNS spoofing
+   - Typical controls: strong authentication (MFA), mutual TLS certificates, digital signatures
+
+   T — Tampering (Modification)
+   Can an attacker modify data in transit or at rest without detection?
+   - Examples: SQL injection, URL parameter manipulation, man-in-the-middle
+   - Typical controls: HTTPS, message signing (HMAC), integrity validation, ORM
+
+   R — Repudiation (Denial of actions)
+   Can an actor deny having performed an action?
+   - Examples: absence of audit logs, manipulable logs, no transaction signing
+   - Typical controls: immutable audit logging, transaction signing, timestamps
+
+   I — Information Disclosure
+   Can an attacker access data they're not entitled to?
+   - Examples: IDOR, stack trace in errors, exposed config files,
+     data in logs, listable directories
+   - Typical controls: access control, output encoding, secure error handling,
+     least privilege principle
+
+   D — Denial of Service
+   Can an attacker degrade or interrupt the service?
+   - Examples: request flood, costly unconstrained queries, unlimited uploads,
+     infinite recursion, database lock
+   - Typical controls: rate limiting, timeouts, pagination, input size validation,
+     circuit breaker
+
+   E — Elevation of Privilege
+   Can an attacker obtain more privileges than assigned?
+   - Examples: IDOR accessing other users' resources, bypassing role verification,
+     command injection running as root, manipulable JWT role
+   - Typical controls: backend authorization (never client-side only), signed tokens,
+     resource ownership verification, sandbox
+
+4. ATTACK TREES — top 3 highest-risk scenarios
+   For the 3 most critical identified scenarios:
+   - attack scenario name
+   - attacker objective
+   - required preconditions
+   - attack steps (decision tree)
+   - estimated likelihood: [HIGH / MEDIUM / LOW]
+   - estimated impact: [CRITICAL / HIGH / MEDIUM / LOW]
+
+5. THREAT CLASSIFICATION BY RISK
+   Prioritize all identified threats with:
+   - threat ID
+   - STRIDE category
+   - affected component
+   - vector description
+   - likelihood (1-3)
+   - impact (1-3)
+   - risk = likelihood × impact (1-9)
+   - proposed mitigation control
+   - status: [UNMITIGATED / MITIGATED / ACCEPTED]
+
+6. ATTACK SURFACE
+   Document the total attack surface of the system:
+   - exposed HTTP/API endpoints (internal and external)
+   - user interfaces (web, mobile, CLI)
+   - message queues or event streams
+   - file import/export
+   - third-party integrations (webhooks, OAuth, APIs)
+   - administration interfaces
+   - maintenance scripts or batch jobs
+
+7. SECURITY ARCHITECTURE RECOMMENDATIONS
+   List the security controls to implement or validate before development,
+   grouped by layer:
+   - Network layer: WAF, firewall, segmentation, TLS
+   - Application layer: authentication, authorization, validation, rate limiting
+   - Data layer: encryption at rest, encryption in transit, minimal DB access
+   - Operations layer: security logging, alerts, secret rotation
+
+Deliverables:
+- textual DFD of the system with marked trust boundaries,
+- complete STRIDE threat table with risk and mitigation,
+- top 3 attack trees with attack steps,
+- attack surface map,
+- required security controls list by layer,
+- this document serves as mandatory input for 13-01 (SAST) and 13-03 (Secure SDLC).
+
+---
+
+Use the threat modeling prompt and adapt it to:
+- repository: [NAME OR URL]
+- system or feature to model: [DESCRIPTION]
+- legitimate actors: [USERS, EXTERNAL SYSTEMS]
+- sensitive data involved: [PII / financial / credentials / none]
+- external integrations: [LIST OF EXTERNAL APIS OR SERVICES]
+- authentication model: [JWT / session / OAuth2 / API key]
+- documents to review: solution design (04-01), use cases (04-03),
+  diagrams (04-02), repository architecture
+- specific output goal: STRIDE threat model + mitigation controls
+- depth level: high</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="13-07-gestion-vulnerabilidades-cves" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-13-07-gestion-vulnerabilidades-cves-es" onclick="toggleCard('13-07-gestion-vulnerabilidades-cves-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('13-07-gestion-vulnerabilidades-cves-es')">13.7 — Análisis de vulnerabilidades y gestión de CVEs</span><button class="info-btn" onclick="openInfoLang('13-07-gestion-vulnerabilidades-cves', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Análisis de vulnerabilidades y gestión de CVEs" onclick="copyPromptLang('13-07-gestion-vulnerabilidades-cves', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-13-07-gestion-vulnerabilidades-cves-es"><pre><code id="code-13-07-gestion-vulnerabilidades-cves-es">Objetivo:
+Realiza el triaje, clasificación, priorización y gestión de vulnerabilidades detectadas,
+convirtiendo los hallazgos de seguridad en un backlog accionable con SLAs de remediación,
+propietario asignado y criterios de cierre verificables.
+
+Pasos:
+
+1. CONSOLIDACIÓN DE HALLAZGOS
+   Consolida todas las vulnerabilidades reportadas desde las diferentes fuentes:
+   - herramienta o fuente de origen (SAST, SCA, DAST, pentesting, escáner, manual)
+   - ID original del hallazgo en la herramienta fuente
+   - componente, archivo, línea o dependencia afectada
+   - descripción técnica del problema
+   - elimina duplicados: si la misma vulnerabilidad aparece en múltiples fuentes,
+     consolida en un único ítem referenciando todas las fuentes
+
+2. TRIAJE Y VALIDACIÓN
+   Para cada hallazgo, determina si es un verdadero positivo:
+   - ¿Es el código vulnerable realmente ejecutable en el contexto del proyecto?
+   - ¿Existe algún control compensatorio que mitigue el riesgo?
+   - ¿Es un falso positivo de la herramienta? (documentar el razonamiento)
+   - ¿Es una vulnerabilidad conocida y aceptada previamente?
+   
+   Clasifica el resultado del triaje:
+   - VERDADERO POSITIVO: requiere remediación
+   - FALSO POSITIVO: documentar y suprimir en la herramienta
+   - ACEPTADO CON RIESGO: registrar decisión con aprobación y fecha de revisión
+   - FUERA DE ALCANCE: documentar por qué no aplica
+
+3. PUNTUACIÓN Y SEVERIDAD
+   Para cada verdadero positivo, calcula o valida la severidad usando CVSS v3.1:
+
+   Vector base:
+   - Vector de ataque (AV): Red / Adyacente / Local / Físico
+   - Complejidad de ataque (AC): Bajo / Alto
+   - Privilegios requeridos (PR): Ninguno / Bajo / Alto
+   - Interacción de usuario (UI): Ninguna / Requerida
+   - Alcance (S): Sin cambio / Cambiado
+   - Impacto en Confidencialidad (C): Alto / Bajo / Ninguno
+   - Impacto en Integridad (I): Alto / Bajo / Ninguno
+   - Impacto en Disponibilidad (A): Alto / Bajo / Ninguno
+
+   Ajuste contextual (Environmental Score):
+   - ¿Cuál es el impacto real en el negocio si se explota esta vulnerabilidad?
+   - ¿Los datos expuestos son públicos, internos o altamente confidenciales?
+   - ¿El sistema afectado es crítico para la operación del negocio?
+
+   Escala de severidad ajustada:
+   - CRÍTICO (CVSS ≥ 9.0): amenaza inmediata — SLA 24 horas
+   - ALTO (CVSS 7.0-8.9): riesgo significativo — SLA 7 días
+   - MEDIO (CVSS 4.0-6.9): riesgo moderado — SLA 30 días
+   - BAJO (CVSS 0.1-3.9): riesgo limitado — SLA 90 días
+   - INFORMATIVO: sin SLA — evaluar en próxima revisión de deuda técnica
+
+4. ANÁLISIS DE EXPLOTABILIDAD
+   Para los hallazgos críticos y altos, evalúa:
+   - ¿Existe exploit público conocido? (Exploit-DB, Metasploit, PoC en GitHub)
+   - ¿Está siendo explotado activamente (KEV — CISA Known Exploited Vulnerabilities)?
+   - ¿Requiere autenticación para ser explotado?
+   - ¿Es necesario acceso a red interna o puede explotarse desde internet?
+   - EPSS score si disponible (Exploit Prediction Scoring System)
+
+   Si existe exploit público activo → escalar SLA a inmediato, independiente del CVSS.
+
+5. PLAN DE REMEDIACIÓN
+   Para cada vulnerabilidad, define:
+   
+   a) Remediación preferida (fix permanente):
+      - qué cambio exacto se debe hacer (actualizar dependencia, cambiar código, configurar)
+      - archivos o componentes afectados
+      - esfuerzo estimado: [&lt; 1h / medio día / 1 día / &gt; 1 día]
+      - riesgo de regresión del fix: [bajo / medio / alto]
+
+   b) Mitigación temporal (si el fix tarda):
+      - control compensatorio que reduce el riesgo mientras se implementa el fix
+      - ejemplos: WAF rule, feature flag, validación adicional en capa superior, patch temporal
+
+   c) Verificación del fix:
+      - cómo verificar que la vulnerabilidad fue correctamente remediada
+      - prueba o comando específico para confirmar el cierre
+
+6. BACKLOG DE SEGURIDAD
+   Genera el backlog de issues de seguridad listo para crear en GitHub Issues / Jira:
+   - título: [SEVERIDAD] [CVE-ID o SAST-ID] — Descripción breve del problema
+   - etiquetas: security, [severidad], [categoría OWASP si aplica]
+   - descripción: vector, impacto, componente afectado, pasos de remediación
+   - criterios de aceptación: qué debe cumplirse para cerrar el issue
+   - fecha límite según SLA
+
+7. MÉTRICAS Y REPORTING
+   Genera las métricas del estado de seguridad del proyecto:
+   - Mean Time to Detect (MTTD): tiempo promedio entre introducción y detección
+   - Mean Time to Remediate (MTTR): tiempo promedio de remediación por severidad
+   - Deuda de seguridad total: suma de vulnerabilidades abiertas ponderadas por severidad
+   - Tendencia: ¿el número de vulnerabilidades sube, baja o se mantiene?
+   - Cumplimiento de SLAs: % de vulnerabilidades cerradas dentro del SLA definido
+
+Entrega:
+- tabla consolidada de vulnerabilidades con triaje y severidad CVSS,
+- backlog de seguridad en formato de issues listo para crear,
+- plan de remediación priorizado con SLAs y propietarios,
+- métricas del estado de seguridad del proyecto,
+- dashboard resumen para reporte ejecutivo.</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="13-07-gestion-vulnerabilidades-cves" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-13-07-gestion-vulnerabilidades-cves-en" onclick="toggleCard('13-07-gestion-vulnerabilidades-cves-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('13-07-gestion-vulnerabilidades-cves-en')">13.7 — Vulnerability Analysis and CVE Management</span><button class="copy-btn" data-title="Vulnerability Analysis and CVE Management" onclick="copyPromptLang('13-07-gestion-vulnerabilidades-cves', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-13-07-gestion-vulnerabilidades-cves-en"><pre><code id="code-13-07-gestion-vulnerabilidades-cves-en">Objective:
+Perform triage, classification, prioritization, and management of detected vulnerabilities,
+converting security findings into an actionable backlog with remediation SLAs,
+assigned owners, and verifiable closure criteria.
+
+Steps:
+
+1. FINDINGS CONSOLIDATION
+   Consolidate all reported vulnerabilities from different sources:
+   - originating tool or source (SAST, SCA, DAST, pentesting, scanner, manual)
+   - original finding ID in the source tool
+   - affected component, file, line, or dependency
+   - technical description of the issue
+   - eliminate duplicates: if the same vulnerability appears in multiple sources,
+     consolidate into a single item referencing all sources
+
+2. TRIAGE AND VALIDATION
+   For each finding, determine if it is a true positive:
+   - Is the vulnerable code actually executable in the project's context?
+   - Is there any compensating control that mitigates the risk?
+   - Is it a tool false positive? (document the reasoning)
+   - Is it a previously known and accepted vulnerability?
+   
+   Classify the triage result:
+   - TRUE POSITIVE: remediation required
+   - FALSE POSITIVE: document and suppress in the tool
+   - ACCEPTED WITH RISK: record decision with approval and review date
+   - OUT OF SCOPE: document why it does not apply
+
+3. SCORING AND SEVERITY
+   For each true positive, calculate or validate severity using CVSS v3.1:
+
+   Base vector:
+   - Attack Vector (AV): Network / Adjacent / Local / Physical
+   - Attack Complexity (AC): Low / High
+   - Privileges Required (PR): None / Low / High
+   - User Interaction (UI): None / Required
+   - Scope (S): Unchanged / Changed
+   - Confidentiality Impact (C): High / Low / None
+   - Integrity Impact (I): High / Low / None
+   - Availability Impact (A): High / Low / None
+
+   Contextual adjustment (Environmental Score):
+   - What is the actual business impact if this vulnerability is exploited?
+   - Are the exposed data public, internal, or highly confidential?
+   - Is the affected system critical to business operations?
+
+   Adjusted severity scale:
+   - CRITICAL (CVSS ≥ 9.0): immediate threat — SLA 24 hours
+   - HIGH (CVSS 7.0-8.9): significant risk — SLA 7 days
+   - MEDIUM (CVSS 4.0-6.9): moderate risk — SLA 30 days
+   - LOW (CVSS 0.1-3.9): limited risk — SLA 90 days
+   - INFORMATIONAL: no SLA — evaluate in next technical debt review
+
+4. EXPLOITABILITY ANALYSIS
+   For critical and high findings, evaluate:
+   - Does a known public exploit exist? (Exploit-DB, Metasploit, PoC on GitHub)
+   - Is it being actively exploited (KEV — CISA Known Exploited Vulnerabilities)?
+   - Does exploitation require authentication?
+   - Is internal network access needed, or can it be exploited from the internet?
+   - EPSS score if available (Exploit Prediction Scoring System)
+
+   If a public active exploit exists → escalate SLA to immediate, regardless of CVSS.
+
+5. REMEDIATION PLAN
+   For each vulnerability, define:
+   
+   a) Preferred remediation (permanent fix):
+      - what exact change must be made (update dependency, change code, configure)
+      - affected files or components
+      - estimated effort: [&lt; 1h / half day / 1 day / &gt; 1 day]
+      - regression risk of the fix: [low / medium / high]
+
+   b) Temporary mitigation (if fix takes time):
+      - compensating control that reduces risk while the fix is implemented
+      - examples: WAF rule, feature flag, additional validation in upper layer, temporary patch
+
+   c) Fix verification:
+      - how to verify the vulnerability was correctly remediated
+      - specific test or command to confirm closure
+
+6. SECURITY BACKLOG
+   Generate the security issues backlog ready to create in GitHub Issues / Jira:
+   - title: [SEVERITY] [CVE-ID or SAST-ID] — Brief problem description
+   - labels: security, [severity], [OWASP category if applicable]
+   - description: vector, impact, affected component, remediation steps
+   - acceptance criteria: what must be met to close the issue
+   - deadline according to SLA
+
+7. METRICS AND REPORTING
+   Generate security status metrics for the project:
+   - Mean Time to Detect (MTTD): average time between introduction and detection
+   - Mean Time to Remediate (MTTR): average remediation time by severity
+   - Total security debt: sum of open vulnerabilities weighted by severity
+   - Trend: is the number of vulnerabilities rising, falling, or stable?
+   - SLA compliance: % of vulnerabilities closed within defined SLA
+
+Deliverables:
+- consolidated vulnerability table with triage and CVSS severity,
+- security backlog in issues format ready to create,
+- prioritized remediation plan with SLAs and owners,
+- project security status metrics,
+- summary dashboard for executive reporting.
+
+---
+
+Use the vulnerability and CVE management prompt and adapt it to:
+- repository: [NAME OR URL]
+- finding sources: [SAST 13-01 / SCA 13-02 / DAST / pentesting / Dependabot alert]
+- attached results: [ATTACH TOOL REPORTS]
+- target environment: [DEV / QA / STAGING / PROD]
+- system criticality: [CRITICAL / HIGH / MEDIUM — based on business impact]
+- defined SLAs: [USE STANDARD / CUSTOMIZE: critical=Xh, high=Xd, medium=Xd]
+- documents to review: previous vulnerability records, security CHANGELOG
+- specific output goal: prioritized security backlog + status metrics
 - depth level: high</code></pre></div></div></div></div>    <div class="glbl-empty" id="glbl-empty" style="display:none"><p>Sin resultados.</p><small>Intenta con otro término de búsqueda.</small></div>
   </div>
 </div>
@@ -5376,7 +6372,7 @@ Déjanos tu email y serás el primero en saber.</p>
   </div>
 </div>
 </div>
-<script>var PROMPT_INFO = {"00-B-01-scaffolding-repositorio": {"title_es": "0-B.1 — Scaffolding de repositorio nuevo", "title_en": "0-B.1 — Repository Scaffolding for New Project", "desc_es": "Prompt para diseñar y generar la estructura base de un repositorio nuevo: directorios, archivos de configuración, gobierno y estándares, a partir del tipo de proyecto, metodología y stack tecnológico seleccionados.\n\nCuándo usarlo: al iniciar un proyecto nuevo, al migrar un proyecto sin estructura formal, o al estandarizar un repositorio existente que creció sin guía.", "desc_en": "", "formulas_es": ["Usa el prompt de scaffolding de repositorio y adáptalo a:\n- nombre del repo: [NOMBRE]\n- tipo de proyecto: [TIPO]\n- metodología: [METODOLOGÍA]\n- stack: [STACK]\n- plataforma CI/hosting: [PLATAFORMA]\n- equipo: [COMPOSICIÓN]\n- licencia: [TIPO DE LICENCIA]\n- objetivo puntual de salida: árbol de directorios + tabla de archivos + contenido base de README, CONTRIBUTING, .gitignore, Dockerfile\n- nivel de profundidad: alto"], "formulas_en": []}, "00-B-02-gobernanza-ia-agentes": {"title_es": "0-B.2 — Configuración de archivos de gobernanza para agentes IA", "title_en": "0-B.2 — AI Agent Governance Configuration Files", "desc_es": "Prompt para generar los archivos de configuración y gobierno que controlan el comportamiento de los agentes IA sobre el repositorio: instrucciones de rol, reglas de codificación, restricciones de seguridad, contexto del proyecto y protocolo de trabajo. Compatible con GitHub Copilot, Claude, Windsurf, Cursor, Codex y otros agentes.\n\nCuándo usarlo: al iniciar un repositorio nuevo, al incorporar agentes IA a un proyecto existente, o cuando los agentes no siguen las convenciones ni el marco de trabajo del proyecto.", "desc_en": "", "formulas_es": ["Usa el prompt de gobernanza de agentes IA y adáptalo a:\n- nombre del proyecto: [NOMBRE]\n- stack: [STACK]\n- metodología: [METODOLOGÍA]\n- agentes a configurar: [LISTA DE AGENTES]\n- nivel de autonomía: [NIVEL]\n- reglas críticas del proyecto: [REGLAS ESPECÍFICAS]\n- documentos a revisar: README, CONTRIBUTING, estructura del repo, workflows existentes\n- objetivo puntual de salida: archivos .github/copilot-instructions.md, .windsurfrules, AGENTS.md, docs/ai-governance.md con contenido completo\n- nivel de profundidad: alto"], "formulas_en": []}, "00-B-03-github-configuracion": {"title_es": "0-B.3 — Configuración de repositorio GitHub (protecciones, plantillas y settings)", "title_en": "0-B.3 — GitHub Repository Configuration (Protections, Templates, and Settings)", "desc_es": "Prompt para configurar el repositorio GitHub de forma completa y segura: protección de ramas, plantillas de issues y PRs, Dependabot, GitHub Actions permissions, Environments, secrets y quality gates. Alinea la plataforma con la metodología y el nivel de madurez del equipo.\n\nCuándo usarlo: al crear un repositorio nuevo, al estandarizar uno existente, o cuando el repo no tiene protecciones formales y se va a incorporar IA o múltiples contribuidores.", "desc_en": "", "formulas_es": ["Usa el prompt de configuración de repositorio GitHub y adáptalo a:\n- repositorio: [ORG/REPO]\n- metodología: [BRANCHING STRATEGY]\n- stack CI: [GITHUB ACTIONS / OTRO]\n- ambientes: [DEV / STAGING / PROD]\n- equipo: [COMPOSICIÓN]\n- documentos a revisar: workflows existentes, README, CONTRIBUTING\n- objetivo puntual de salida: archivos ISSUE_TEMPLATE/, PR_TEMPLATE, dependabot.yml, CODEOWNERS + comandos gh CLI para branch protection\n- nivel de profundidad: alto"], "formulas_en": []}, "00-B-04-metodologia-framework": {"title_es": "0-B.4 — Selección y configuración de metodología y marco de trabajo", "title_en": "0-B.4 — Methodology and Framework Selection and Configuration", "desc_es": "Prompt para seleccionar, documentar y configurar operativamente la metodología y el marco de trabajo del proyecto: definición de flujo de trabajo, ceremonies, roles, estrategia de branching, Definition of Ready, Definition of Done, y cómo se integra el trabajo de agentes IA en el proceso.\n\nCuándo usarlo: al iniciar un proyecto, al formalizar uno existente que creció sin metodología, o cuando se incorporan agentes IA y se necesita definir su lugar en el proceso.", "desc_en": "", "formulas_es": ["Usa el prompt de metodología y marco de trabajo y adáptalo a:\n- tipo de proyecto: [TIPO]\n- tamaño del equipo: [NÚMERO + AGENTES IA]\n- frecuencia de entregas: [CADENCIA]\n- metodología candidata: [METODOLOGÍA O \"ninguna\"]\n- nivel de madurez: [BAJO / MEDIO / ALTO]\n- documentos a revisar: README, CONTRIBUTING, issues actuales, estructura del repo\n- objetivo puntual de salida: estrategia de branches documentada + DoR + DoD + flujo de issue para humanos y agentes IA\n- nivel de profundidad: alto"], "formulas_en": []}, "00-B-05-stack-calidad-codigo": {"title_es": "0-B.5 — Configuración de stack y herramientas de calidad de código", "title_en": "0-B.5 — Stack and Code Quality Tools Configuration", "desc_es": "Prompt para seleccionar y configurar las herramientas de calidad de código según el stack del proyecto: linters, formatters, analizadores estáticos, pre-commit hooks, coverage mínimo y quality gates en CI. Genera los archivos de configuración listos para usar.\n\nCuándo usarlo: al iniciar un proyecto, al estandarizar calidad en uno existente, o cuando se incorporan agentes IA que deben respetar las convenciones del stack.", "desc_en": "", "formulas_es": ["Usa el prompt de configuración de stack y calidad de código y adáptalo a:\n- lenguaje(s): [LENGUAJES]\n- frameworks: [FRAMEWORKS]\n- plataforma CI: [CI]\n- cobertura mínima: [PORCENTAJE]\n- nivel de restricción: [PERMISIVO / BALANCEADO / ESTRICTO]\n- objetivo puntual de salida: archivos de configuración completos + workflow CI quality gates + comandos de bootstrap\n- nivel de profundidad: alto"], "formulas_en": []}, "00-C-01-issue-para-agente-ia": {"title_es": "0-C.1 — Documentar un issue listo para ejecución por agente IA", "title_en": "0-C.1 — Document an Issue Ready for AI Agent Execution", "desc_es": "Prompt para redactar un issue GitHub de alta calidad que pueda ser ejecutado por un agente IA de forma autónoma y controlada: con contexto suficiente, criterios de aceptación verificables, restricciones explícitas, archivos involucrados y checklist de validación humana post-ejecución.\n\nCuándo usarlo: antes de asignar cualquier tarea a un agente IA (Copilot Agent, Claude, Codex, Windsurf), para garantizar que el agente opere con contexto completo y dentro de límites seguros.", "desc_en": "", "formulas_es": ["Usa el prompt de issue para agente IA y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- título del issue: [TÍTULO]\n- tipo: [TIPO]\n- descripción del requerimiento: [DESCRIPCIÓN]\n- archivos involucrados: [LISTA]\n- criterios de aceptación: [CRITERIOS]\n- restricciones: [RESTRICCIONES]\n- agente asignado: [AGENTE]\n- nivel de autonomía: [NIVEL]\n- objetivo puntual de salida: issue completo listo para crear en GitHub con gh issue create\n- nivel de profundidad: alto"], "formulas_en": []}, "00-C-02-plan-mode-multiagente": {"title_es": "0-C.2 — Modo plan seguro y coordinación multi-agente", "title_en": "0-C.2 — Safe Plan Mode and Multi-Agent Coordination", "desc_es": "Prompt para ejecutar cualquier tarea en modo plan antes de implementar: el agente analiza, diseña y propone sin tocar el código. Incluye el protocolo de coordinación para entornos donde múltiples agentes (Copilot, Claude, Codex, Windsurf, Antigravity) operan en paralelo sobre el mismo repositorio, previniendo conflictos, sobreescrituras y pérdida de trabajo.\n\nCuándo usarlo: siempre antes de ejecutar tareas de alto impacto, cuando hay más de un agente activo en el repo, o cuando se trabaja en `mode:plan` en Agent Manager o GitHub Copilot Agent.", "desc_en": "", "formulas_es": ["Usa el prompt de modo plan y coordinación multi-agente y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- tarea o issue: [REFERENCIA]\n- rama objetivo: [BRANCH]\n- agentes activos en paralelo: [LISTA O \"ninguno conocido\"]\n- modo: [SOLO PLAN / PLAN + EJECUCIÓN CONTROLADA]\n- documentos a revisar: git log reciente, PRs abiertos, AGENTS.md\n- objetivo puntual de salida: plan de implementación con tabla de archivos + detección de conflictos + reserva de rama\n- nivel de profundidad: alto"], "formulas_en": []}, "00-C-03-configuracion-por-agente": {"title_es": "0-C.3 — Configuración específica por tipo de agente IA", "title_en": "0-C.3 — Configuration Specific to Each AI Agent Type", "desc_es": "Prompt y referencia para configurar el comportamiento, las instrucciones y las restricciones de cada tipo de agente IA según sus capacidades y mecanismos propios: GitHub Copilot (Agent / Chat / Edits), Claude (Anthropic), OpenAI Codex, Windsurf, Cursor y Chrome Antigravity. Garantiza que cada agente opere con el contexto del proyecto y dentro de las reglas de equipo.\n\nCuándo usarlo: al incorporar un nuevo tipo de agente al proyecto, al detectar que un agente no sigue las convenciones, o al configurar un entorno multi-agente por primera vez.", "desc_en": "", "formulas_es": ["Usa el prompt de configuración por tipo de agente y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- agentes activos: [LISTA]\n- stack: [STACK]\n- metodología: [METODOLOGÍA]\n- reglas críticas: [REGLAS ESPECÍFICAS DEL PROYECTO]\n- nivel de autonomía: [NIVEL]\n- documentos a revisar: README, CONTRIBUTING, AGENTS.md existente (si hay), estructura del repo\n- objetivo puntual de salida: archivos de instrucciones completos para cada agente activo + tabla comparativa\n- nivel de profundidad: alto"], "formulas_en": []}, "01-01-arranque-comprension-repositorio": {"title_es": "01-01-arranque-comprension-repositorio", "title_en": "1.1 Prompt for repository technical inventory", "desc_es": "", "desc_en": "", "formulas_es": [], "formulas_en": []}, "01-02-analisis-procesos": {"title_es": "1.2 — Localizar procesos, procedimientos y políticas del proyecto", "title_en": "1.2 — Locate processes, procedures and project policies", "desc_es": "Prompt de arranque para mapear todo el gobierno del proyecto: procesos, procedimientos, políticas, estándares, branching strategy, estrategia QA, CI/CD y reglas de ingeniería. Establece qué sí existe, qué está incompleto y qué no existe.\n\nCuándo usarlo: antes de cualquier trabajo de análisis o implementación, para entender el marco de gobierno del proyecto y evitar violar reglas ya definidas.", "desc_en": "", "formulas_es": ["Usa el prompt de localización de procesos y políticas y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama: [RAMA ACTUAL]\n- documentos a revisar: README, docs/, .github/, workflows/\n- objetivo puntual de salida: matriz de gobierno del proyecto con estado de completitud\n- nivel de profundidad: medio"], "formulas_en": []}, "02-01-analisis-issue": {"title_es": "2.1 — Análisis funcional de un requerimiento, issue o cambio", "title_en": "2.1 — Functional analysis of a requirement, issue or change", "desc_es": "Prompt para analizar un requerimiento, issue o cambio y determinar su alcance funcional: flujo de negocio afectado, actores, comportamiento actual vs esperado, criterios de aceptación y riesgos.\n\nCuándo usarlo: como primer paso al recibir una tarea, antes de cualquier análisis técnico o diseño.", "desc_en": "", "formulas_es": ["Usa el prompt de análisis funcional y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [PEGAR TEXTO O REFERENCIA]\n- rama: [RAMA ACTUAL]\n- ambiente: [DEV / QA / PROD]\n- componentes: [SI YA CONOCES ALGUNO]\n- documentos a revisar: README, docs/, casos de uso existentes\n- objetivo puntual de salida: alcance funcional completo con criterios de aceptación\n- nivel de profundidad: alto"], "formulas_en": []}, "02-02-analisis-tecnico": {"title_es": "2.2 — Análisis técnico profundo de código existente", "title_en": "2.2 — Deep technical analysis of existing code", "desc_es": "Prompt para analizar cómo funciona realmente el código existente hoy: flujo end-to-end, acoplamientos, deuda técnica, validaciones faltantes y riesgos de regresión.\n\nCuándo usarlo: después del análisis funcional (`02-01`) y antes del análisis de impacto cruzado (`02-03`) y el diseño de la solución (`02-04`).", "desc_en": "", "formulas_es": ["Usa el prompt de análisis técnico profundo y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA ACTUAL]\n- ambiente: [DEV / QA / PROD]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: código fuente, esquema de BD, contratos API\n- objetivo puntual de salida: flujo actual documentado con hallazgos técnicos\n- nivel de profundidad: alto", "Usa el prompt de análisis técnico profundo y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA ACTUAL]\n- ambiente: [DEV / QA / PROD]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: código fuente, esquema de BD, contratos API\n- objetivo puntual de salida: flujo actual documentado + matriz de impacto cruzado\n- nivel de profundidad: alto"], "formulas_en": []}, "02-03-impacto-cruzado": {"title_es": "2.3 — Análisis de impacto cruzado", "title_en": "2.3 — Cross-impact analysis", "desc_es": "Prompt para evaluar el impacto del cambio en todos los módulos, procesos, datos, integraciones, ambientes y pipelines del sistema. Detecta impactos directos e indirectos y genera una matriz de severidad.\n\nCuándo usarlo: después del análisis técnico profundo (`02-02`) y antes del diseño de la solución (`04-01`).", "desc_en": "", "formulas_es": ["Usa el prompt de análisis de impacto cruzado y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA ACTUAL]\n- ambiente: [DEV / QA / PROD]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: arquitectura, contratos API, esquema de BD\n- objetivo puntual de salida: matriz de impacto cruzado con severidad por componente\n- nivel de profundidad: alto"], "formulas_en": []}, "03-01-incidentes-github": {"title_es": "3.1 — Revisión de incidentes reportados por tester contra GitHub Issues", "title_en": "3.1 — Review of incidents reported by tester against GitHub Issues", "desc_es": "Prompt para normalizar incidentes de testing, compararlos contra issues existentes en GitHub, detectar duplicados, incompletos o mal documentados, y redactar los que no existen con el estándar del proyecto.\n\nCuándo usarlo: al recibir un reporte de ciclo de QA, antes de gestionar cualquier defecto en GitHub.", "desc_en": "", "formulas_es": ["Usa el prompt de revisión de incidentes y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- reporte de QA: [PEGAR LISTA DE INCIDENTES]\n- rama: [RAMA EN PRUEBAS]\n- ambiente: [QA / STAGING]\n- módulos probados: [MÓDULOS]\n- documentos a revisar: issues abiertos y cerrados en GitHub, estándar de documentación de issues\n- objetivo puntual de salida: matriz QA vs GitHub + issues redactados para crear/actualizar\n- nivel de profundidad: alto"], "formulas_en": []}, "03-02-causa-raiz": {"title_es": "3.2 — Análisis de causa raíz", "title_en": "3.2 — Root cause analysis", "desc_es": "Prompt para investigar un defecto o incidente y determinar la causa raíz real, no solo el síntoma. Incluye formulación de hipótesis, validación con evidencia y recomendación de remediación.\n\nCuándo usarlo: al investigar defectos en QA o producción, cuando el síntoma está claro pero la causa no.", "desc_en": "", "formulas_es": ["Usa el prompt de análisis de causa raíz y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue: [NÚMERO O REFERENCIA]\n- rama: [RAMA AFECTADA]\n- ambiente: [QA / STAGING / PROD]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: logs, código, commits recientes, configuraciones\n- objetivo puntual: confirmar causa raíz y proponer plan de solución\n- nivel de profundidad: alto", "Usa el prompt de análisis de causa raíz y adáptalo a:\n- repositorio: urgemy-api\n- issue: #842\n- rama: urgemy-test\n- ambiente: QA\n- componentes: api, notificaciones push, postgres\n- documentos a revisar: README, docs/notificaciones, workflows, issues relacionados\n- objetivo puntual: confirmar causa raíz y proponer plan de solución\n- nivel de profundidad: alto"], "formulas_en": []}, "04-01-diseno-solucion": {"title_es": "4.1 — Diseño funcional y técnico de solución", "title_en": "4.1 — Functional and technical solution design", "desc_es": "Prompt para diseñar la solución completa antes de implementar: objetivo, alcance, supuestos, restricciones, cambios por componente, riesgos, dependencias, estrategia de validación y rollback.\n\nCuándo usarlo: una vez completado el análisis funcional, técnico y de impacto, antes de planificar o ejecutar cualquier cambio.", "desc_en": "", "formulas_es": ["Usa el prompt de diseño de solución y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA OBJETIVO]\n- ambiente: [DEV / QA / PROD]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: análisis previo, arquitectura, contratos\n- objetivo puntual de salida: diseño completo con riesgos y estrategia de rollback\n- nivel de profundidad: alto"], "formulas_en": []}, "04-02-diagramas-mermaid": {"title_es": "4.2 — Generar diagramas Mermaid", "title_en": "4.2 — Generate Mermaid diagrams", "desc_es": "Prompt para generar diagramas Mermaid que documenten la solución: flujo actual y propuesto, secuencia, componentes y entidad-relación. Los diagramas deben ser consistentes con el código y la arquitectura real.\n\nCuándo usarlo: durante o después del diseño de la solución (`04-01`), para documentar y comunicar visualmente los cambios.", "desc_en": "", "formulas_es": ["Usa el prompt de diagramas Mermaid y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: diseño aprobado, arquitectura, código fuente\n- objetivo puntual de salida: conjunto de diagramas Mermaid para documentación técnica\n- nivel de profundidad: medio"], "formulas_en": []}, "04-03-casos-de-uso": {"title_es": "4.3 — Diseño de casos de uso", "title_en": "4.3 — Use case design", "desc_es": "Prompt para documentar formalmente los casos de uso del requerimiento o módulo analizado: actores, disparadores, flujos principal y alternos, reglas de negocio y criterios de aceptación.\n\nCuándo usarlo: durante la fase de diseño, para formalizar el comportamiento esperado del sistema antes de implementar.", "desc_en": "", "formulas_es": ["Usa el prompt de diseño de casos de uso y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- módulo: [MÓDULO O FUNCIONALIDAD]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: análisis funcional, documentación existente de CU\n- objetivo puntual de salida: casos de uso formales listos para revisión y validación\n- nivel de profundidad: alto"], "formulas_en": []}, "04-04-adr-decisiones-arquitectura": {"title_es": "4.4 — Architecture Decision Records (ADR)", "title_en": "4.4 — Architecture Decision Records (ADR)", "desc_es": "Prompt para documentar decisiones arquitectónicas de forma estructurada: contexto del problema, opciones evaluadas, decisión tomada, consecuencias y estado. Genera ADRs numerados y versionados que quedan como registro permanente del por qué del diseño.\n\nCuándo usarlo: al tomar una decisión arquitectónica significativa (elección de tecnología, patrón de diseño, estrategia de integración, estructura de datos), al documentar decisiones pasadas que no quedaron registradas, o como revisión al inicio de un proyecto.", "desc_en": "", "formulas_es": ["Usa el prompt de Architecture Decision Records y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- número ADR: [ADR-NNN]\n- título: [TÍTULO DE LA DECISIÓN]\n- contexto del proyecto: [STACK, RESTRICCIONES, EQUIPO]\n- opciones evaluadas: [LISTA DE ALTERNATIVAS CONSIDERADAS]\n- documentos a revisar: README, arquitectura existente, issues relacionados\n- objetivo puntual de salida: ADR completo listo para guardar en docs/decisions/\n- nivel de profundidad: alto"], "formulas_en": []}, "05-01-plan-implementacion": {"title_es": "5.1 — Plan de implementación detallado", "title_en": "5.1 — Detailed implementation plan", "desc_es": "Prompt para elaborar un plan de implementación ejecutable y trazable: actividades previas, cambios por componente, migraciones, pruebas, despliegue, rollback y evidencias esperadas por paso.\n\nCuándo usarlo: después del diseño aprobado (`04-01`), antes de ejecutar cualquier cambio en el repositorio.", "desc_en": "", "formulas_es": ["Usa el prompt de plan de implementación y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA OBJETIVO]\n- ambiente: [DEV / QA / PROD]\n- componentes: [COMPONENTES A MODIFICAR]\n- documentos a revisar: diseño aprobado, arquitectura, contratos\n- objetivo puntual de salida: plan de implementación ejecutable paso a paso\n- nivel de profundidad: alto"], "formulas_en": []}, "05-02-riesgos-implementacion": {"title_es": "5.2 — Análisis de riesgos e impacto de implementación", "title_en": "5.2 — Implementation risk and impact analysis", "desc_es": "Prompt para identificar y clasificar los riesgos de implementación: funcionales, técnicos, de datos, seguridad, operación, concurrencia de agentes, integración y despliegue. Genera una matriz de riesgos con probabilidad, impacto y plan de mitigación.\n\nCuándo usarlo: en paralelo al plan de implementación (`05-01`), antes de ejecutar cualquier cambio.", "desc_en": "", "formulas_es": ["Usa el prompt de análisis de riesgos de implementación y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA OBJETIVO]\n- ambiente: [DEV / QA / PROD]\n- componentes: [COMPONENTES A MODIFICAR]\n- documentos a revisar: diseño aprobado, arquitectura, historial de incidentes\n- objetivo puntual de salida: matriz de riesgos completa con plan de mitigación\n- nivel de profundidad: alto"], "formulas_en": []}, "06-01-implementacion-multiagente": {"title_es": "6.1 — Implementación multi-agente segura", "title_en": "6.1 — Secure multi-agent implementation", "desc_es": "Prompt de ejecución controlada para implementar la solución aprobada en un entorno donde múltiples agentes pueden estar modificando el repositorio en paralelo. Prioriza cambios mínimos, commits atómicos y detección de conflictos.\n\nCuándo usarlo: durante la fase de ejecución, después de que el plan (`05-01`) y los riesgos (`05-02`) han sido aprobados.", "desc_en": "", "formulas_es": ["Usa el prompt de implementación multi-agente y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA DE TRABAJO]\n- ambiente: [DEV / QA]\n- componentes: [ARCHIVOS Y MÓDULOS A MODIFICAR]\n- documentos a revisar: plan de implementación aprobado, diseño técnico\n- objetivo puntual de salida: cambios aplicados con commits atómicos y sin conflictos\n- nivel de profundidad: alto"], "formulas_en": []}, "06-02-commits": {"title_es": "6.2 — Generación de mensajes de commit de calidad", "title_en": "6.2 — Quality commit message generation", "desc_es": "Prompt para generar mensajes de commit pequeños, claros y trazables, alineados al estándar del proyecto. Incluye alternativas si el cambio debe dividirse en múltiples commits.\n\nCuándo usarlo: antes de hacer commit de cualquier cambio, para garantizar trazabilidad y consistencia con el historial del repositorio.", "desc_en": "", "formulas_es": ["Usa el prompt de mensajes de commit y adáptalo a:\n- issue: [NÚMERO O REFERENCIA]\n- tipo de cambio: [feat / fix / refactor / docs / test / chore]\n- componente: [MÓDULO O ARCHIVO AFECTADO]\n- descripción breve: [QUÉ SE HIZO EN UNA LÍNEA]\n- objetivo puntual de salida: commit principal + alternativas si aplica dividir", "Usa el prompt de mensajes de commit y adáptalo a:\n- issue: #842\n- tipo de cambio: fix\n- componente: api/notificaciones\n- descripción breve: corrige envío duplicado de notificaciones push al actualizar orden", "fix(api/notificaciones): corrige envío duplicado al actualizar orden #842\n\nfeat(auth): agrega validación de expiración de token en middleware #123\n\nrefactor(db): extrae consulta de usuarios a repositorio separado #456\n\ndocs(readme): actualiza instrucciones de despliegue en Docker #78\n\ntest(pagos): agrega casos borde para monto negativo en procesador #99"], "formulas_en": ["fix(api/notifications): fixes duplicate sending when updating order #842\n\nfeat(auth): adds token expiration validation in middleware #123\n\nrefactor(db): extracts user query to separate repository #456\n\ndocs(readme): updates deployment instructions in Docker #78\n\ntest(payments): adds edge cases for negative amount in processor #99"]}, "07-00-deteccion-stack-pruebas": {"title_es": "7.0 — Detección de stack de pruebas", "title_en": "7.0 — Test Stack Detection", "desc_es": "Prompt para detectar y documentar el stack de pruebas activo en el repositorio. Produce un perfil de stack de pruebas estructurado que se adjunta como contexto a los prompts de implementación (`07-07` al `07-10`), eliminando la necesidad de que cada agente re-descubra las herramientas y convenciones del proyecto.\n\nCuándo usarlo: una sola vez por proyecto, o cuando el stack de pruebas cambie. El perfil generado se reutiliza en todas las ejecuciones de los prompts de implementación de pruebas.", "desc_en": "", "formulas_es": ["Usa el prompt de detección de stack de pruebas y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama: [RAMA PRINCIPAL O DE TRABAJO]\n- documentos a revisar: archivos de configuración raíz, package.json/pyproject.toml,\n  .github/workflows/, directorio de tests existente\n- objetivo puntual de salida: perfil de stack de pruebas completo y verificado\n- nivel de profundidad: medio"], "formulas_en": []}, "07-01-pruebas-unitarias": {"title_es": "7.1 — Diseño de pruebas unitarias", "title_en": "7.1 — Unit test design", "desc_es": "Prompt para diseñar la suite de pruebas unitarias que valide los cambios propuestos o implementados: escenarios positivos, negativos y casos borde por cada función o unidad bajo prueba.\n\nCuándo usarlo: después de implementar cambios, en paralelo a la implementación, o como referencia antes de escribir código.", "desc_en": "", "formulas_es": ["Usa el prompt de pruebas unitarias y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA DE PRUEBAS]\n- ambiente: [DEV / QA]\n- componentes: [FUNCIONES O UNIDADES A PROBAR]\n- documentos a revisar: código implementado, criterios de aceptación\n- objetivo puntual de salida: matriz completa de pruebas unitarias con cobertura\n- nivel de profundidad: alto"], "formulas_en": []}, "07-02-pruebas-integracion": {"title_es": "7.2 — Diseño de pruebas de integración", "title_en": "7.2 — Integration test design", "desc_es": "Prompt para definir las pruebas de integración que validen la interacción entre módulos, servicios, APIs, base de datos e integraciones involucradas en el cambio.\n\nCuándo usarlo: después de las pruebas unitarias (`07-01`), para validar que los módulos funcionan correctamente en conjunto.", "desc_en": "", "formulas_es": ["Usa el prompt de pruebas de integración y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA DE PRUEBAS]\n- ambiente: [QA / STAGING]\n- componentes: [MÓDULOS E INTEGRACIONES A PROBAR]\n- documentos a revisar: contratos API, diseño de integración, datos de prueba disponibles\n- objetivo puntual de salida: plan de pruebas de integración con casos de error\n- nivel de profundidad: alto"], "formulas_en": []}, "07-03-pruebas-e2e": {"title_es": "7.3 — Diseño de pruebas E2E", "title_en": "7.3 — E2E test design", "desc_es": "Prompt para diseñar pruebas end-to-end de los casos de uso impactados por el cambio: desde el actor hasta el resultado final, incluyendo evidencia requerida y regresiones relacionadas.\n\nCuándo usarlo: después de las pruebas de integración (`07-02`), para validar el flujo completo desde la perspectiva del usuario.", "desc_en": "", "formulas_es": ["Usa el prompt de pruebas E2E y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA DE PRUEBAS]\n- ambiente: [QA / STAGING]\n- componentes: [FLUJOS Y MÓDULOS A PROBAR]\n- documentos a revisar: casos de uso, criterios de aceptación, flujos documentados\n- objetivo puntual de salida: plan de pruebas E2E con evidencia requerida por caso\n- nivel de profundidad: alto"], "formulas_en": []}, "07-04-pruebas-humo": {"title_es": "7.4 — Pruebas de humo", "title_en": "7.4 — Smoke tests", "desc_es": "Prompt para definir un plan de pruebas de humo que valide rápidamente que el sistema sigue operativo después de un cambio o despliegue: autenticación, flujos críticos, módulos, integraciones mínimas y errores visibles.\n\nCuándo usarlo: inmediatamente después de un despliegue o merge, para una validación rápida de salud del sistema antes de pruebas completas.", "desc_en": "", "formulas_es": ["Usa el prompt de pruebas de humo y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama o versión desplegada: [REFERENCIA]\n- ambiente: [QA / STAGING / PROD]\n- módulos críticos: [MÓDULOS QUE DEBEN FUNCIONAR]\n- documentos a revisar: flujos críticos documentados, última versión estable\n- objetivo puntual de salida: checklist de humo ejecutable en menos de 15 minutos\n- nivel de profundidad: bajo"], "formulas_en": []}, "07-05-automatizacion-antigravity": {"title_es": "7.5 — Automatización en navegador con Chrome Antigravity", "title_en": "7.5 — Browser automation with Chrome Antigravity", "desc_es": "Prompt para diseñar y documentar una estrategia de pruebas automatizadas en navegador usando Chrome Antigravity: escenarios, navegación, selectors, datos de prueba, validaciones visuales y puntos frágiles del flujo.\n\nCuándo usarlo: para automatizar pruebas E2E o de regresión de flujos críticos impactados por el cambio.", "desc_en": "", "formulas_es": ["Usa el prompt de automatización con Antigravity y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- flujos a automatizar: [FLUJOS CRÍTICOS A CUBRIR]\n- ambiente: [QA / STAGING]\n- URL base: [URL DEL AMBIENTE]\n- documentos a revisar: casos de uso, plan E2E, diseño de UI\n- objetivo puntual de salida: estrategia de automatización con pasos, selectors y validaciones\n- nivel de profundidad: alto"], "formulas_en": []}, "07-06-pruebas-performance-carga": {"title_es": "7.6 — Pruebas de performance y carga", "title_en": "7.6 — Performance and load tests", "desc_es": "Prompt para diseñar una estrategia de pruebas de performance, carga, stress y benchmark para los componentes impactados por un cambio: escenarios, umbrales de aceptación, herramientas, datos de prueba y criterios de fallo.\n\nCuándo usarlo: antes de desplegar a producción cambios que afecten APIs, consultas de base de datos, procesos batch, generación de archivos o cualquier componente con requerimientos de rendimiento. También como revisión periódica de salud del sistema.", "desc_en": "", "formulas_es": ["Usa el prompt de pruebas de performance y carga y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- componentes a probar: [LISTA]\n- ambiente: [QA / STAGING]\n- SLA objetivo: [TIEMPOS DE RESPUESTA ACEPTABLES]\n- usuarios concurrentes esperados: [NÚMERO]\n- herramienta: [k6 / Locust / JMeter / Artillery]\n- documentos a revisar: arquitectura, contratos de API, requerimientos de performance\n- objetivo puntual de salida: estrategia completa + script base + tabla de umbrales\n- nivel de profundidad: alto"], "formulas_en": []}, "07-07-implementacion-pruebas-unitarias": {"title_es": "7.7 — Implementación de pruebas unitarias", "title_en": "7.7 — Unit Test Implementation", "desc_es": "Prompt para generar el código ejecutable de las pruebas unitarias a partir del diseño definido en `07-01`. Produce archivos de prueba listos para ejecutar en el framework de pruebas del proyecto.\n\nCuándo usarlo: después de completar el diseño de pruebas unitarias (`07-01`), cuando el agente tiene acceso al código fuente y al framework de pruebas del proyecto.", "desc_en": "", "formulas_es": ["Usa el prompt de implementación de pruebas unitarias y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA DE TRABAJO]\n- framework de pruebas: [AUTO-DETECTAR / pytest / Jest / Vitest / JUnit / RSpec / etc.]\n- matriz de pruebas: [ADJUNTA O REFERENCIA AL DOCUMENTO DE 07-01]\n- documentos a revisar: código fuente de las unidades bajo prueba, configuración del framework\n- objetivo puntual de salida: archivos de prueba ejecutables con cobertura ≥ 80%\n- nivel de profundidad: alto"], "formulas_en": []}, "07-08-implementacion-pruebas-integracion": {"title_es": "7.8 — Implementación de pruebas de integración", "title_en": "7.8 — Integration Test Implementation", "desc_es": "Prompt para generar el código ejecutable de las pruebas de integración a partir del diseño definido en `07-02`. Valida la interacción real entre módulos, servicios, APIs y base de datos usando el framework de pruebas del proyecto.\n\nCuándo usarlo: después de completar el diseño de pruebas de integración (`07-02`), cuando el entorno de pruebas (base de datos, servicios dependientes) está disponible o puede ser simulado con contenedores o stubs.", "desc_en": "", "formulas_es": ["Usa el prompt de implementación de pruebas de integración y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA DE TRABAJO]\n- framework de pruebas: [AUTO-DETECTAR / pytest / Jest / Spring Test / etc.]\n- herramientas de integración: [AUTO-DETECTAR / Testcontainers / WireMock / MSW / etc.]\n- plan de integración: [ADJUNTA O REFERENCIA AL DOCUMENTO DE 07-02]\n- documentos a revisar: contratos API, esquema de base de datos, configuración de servicios\n- objetivo puntual de salida: pruebas de integración ejecutables con flujos críticos cubiertos\n- nivel de profundidad: alto"], "formulas_en": []}, "07-09-implementacion-pruebas-e2e": {"title_es": "7.9 — Implementación de pruebas E2E", "title_en": "7.9 — E2E Test Implementation", "desc_es": "Prompt para generar el código ejecutable de las pruebas end-to-end a partir del diseño definido en `07-03`. Produce scripts de automatización que validan flujos completos desde la interfaz de usuario hasta el resultado final, usando el framework E2E del proyecto.\n\nCuándo usarlo: después de completar el diseño de pruebas E2E (`07-03`), cuando la aplicación está desplegada en un entorno de pruebas accesible (QA o staging).", "desc_en": "", "formulas_es": ["Usa el prompt de implementación de pruebas E2E y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA DE TRABAJO]\n- framework E2E: [AUTO-DETECTAR / Playwright / Cypress / Selenium / Robot Framework / etc.]\n- URL del entorno de pruebas: [URL DE QA O STAGING]\n- plan E2E: [ADJUNTA O REFERENCIA AL DOCUMENTO DE 07-03]\n- documentos a revisar: casos de uso, flujos de pantalla, credenciales de prueba\n- objetivo puntual de salida: scripts E2E ejecutables que cubran los flujos críticos del plan\n- nivel de profundidad: alto"], "formulas_en": []}, "07-10-implementacion-pruebas-humo": {"title_es": "7.10 — Implementación de pruebas de humo", "title_en": "7.10 — Smoke Test Implementation", "desc_es": "Prompt para generar el script ejecutable de pruebas de humo a partir del checklist definido en `07-04`. Produce un artefacto automatizable que valida en minutos que el sistema está operativo después de un despliegue.\n\nCuándo usarlo: después de completar el diseño de pruebas de humo (`07-04`), como paso inmediato post-despliegue para decidir si el ambiente está listo para pruebas completas o requiere rollback.", "desc_en": "", "formulas_es": ["Usa el prompt de implementación de pruebas de humo y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama o versión desplegada: [REFERENCIA]\n- ambiente: [QA / STAGING / PROD]\n- tipo de script preferido: [AUTO-DETECTAR / API / UI / Shell / Mixto]\n- framework E2E disponible: [Playwright / Cypress / ninguno / etc.]\n- checklist de humo: [ADJUNTA O REFERENCIA AL DOCUMENTO DE 07-04]\n- documentos a revisar: endpoints de salud disponibles, flujos críticos documentados\n- objetivo puntual de salida: script ejecutable en pipeline que corra en < 15 minutos\n- nivel de profundidad: bajo"], "formulas_en": []}, "08-01-revision-estatica": {"title_es": "8.1 — Revisión estática de código", "title_en": "8.1 — Static code review", "desc_es": "Prompt para realizar una revisión estática del código relacionado con el cambio: calidad, mantenibilidad, seguridad, complejidad, manejo de errores y consistencia con los estándares del proyecto.\n\nCuándo usarlo: después de implementar cambios, antes de abrir un PR o hacer merge.", "desc_en": "", "formulas_es": ["Usa el prompt de revisión estática y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama: [RAMA CON LOS CAMBIOS]\n- archivos a revisar: [RUTAS DE ARCHIVOS MODIFICADOS]\n- documentos a revisar: estándares de código del proyecto, arquitectura\n- objetivo puntual de salida: reporte de hallazgos clasificados por criticidad\n- nivel de profundidad: alto"], "formulas_en": []}, "08-02-cumplimiento-requerimiento": {"title_es": "8.2 — Revisión de cumplimiento contra requerimiento", "title_en": "8.2 — Requirement compliance review", "desc_es": "Prompt para validar si la implementación realmente cumple con el issue, requerimiento, caso de uso y criterios de aceptación. Compara lo solicitado, lo diseñado, lo implementado y lo probado.\n\nCuándo usarlo: antes de cerrar un issue o abrir un PR para merge, como paso de cierre de calidad.", "desc_en": "", "formulas_es": ["Usa el prompt de cumplimiento contra requerimiento y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA CON LOS CAMBIOS]\n- documentos a revisar: issue original, diseño aprobado, código implementado, resultados de pruebas\n- objetivo puntual de salida: matriz de cumplimiento con brechas y acciones requeridas\n- nivel de profundidad: alto"], "formulas_en": []}, "08-03-remediacion-maestro": {"title_es": "8.3 — Remediación de revisión estática (prompt maestro)", "title_en": "8.3 — Static review remediation (master prompt)", "desc_es": "Prompt maestro de nivel producción para analizar un reporte de revisión estática con hallazgos críticos, medios y menores, y generar un plan integral de corrección controlado, priorizado y seguro para entornos multi-agente.\n\nCuándo usarlo: cuando se recibe un reporte de revisión estática y se necesita un plan estructurado de corrección, no solo parches superficiales.", "desc_en": "", "formulas_es": ["Usa el prompt maestro de remediación y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- reporte de revisión estática: [PEGAR REPORTE]\n- rama: [RAMA CON LOS CAMBIOS]\n- ambiente: [DEV / QA]\n- componentes: [COMPONENTES REVISADOS]\n- documentos a revisar: código fuente, arquitectura, contratos\n- objetivo puntual de salida: plan de remediación ejecutable y priorizado\n- nivel de profundidad: alto"], "formulas_en": []}, "09-01-integracion-ramas": {"title_es": "9.1 — Integración controlada con ramas", "title_en": "9.1 — Controlled integration with branches", "desc_es": "Prompt para planificar la integración de cambios con otras ramas activas: análisis de conflictos potenciales, estrategia recomendada (merge, rebase, cherry-pick) y riesgos de concurrencia con otros agentes o desarrolladores.\n\nCuándo usarlo: antes de hacer merge a cualquier rama destino, especialmente en entornos con cambios concurrentes.", "desc_en": "", "formulas_es": ["Usa el prompt de integración controlada y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama origen: [RAMA CON LOS CAMBIOS]\n- rama destino: [DEVELOP / MAIN / RELEASE]\n- ambiente: [QA / STAGING / PROD]\n- componentes: [COMPONENTES MODIFICADOS]\n- documentos a revisar: historial de commits, ramas activas, PRs abiertos\n- objetivo puntual de salida: estrategia de integración con plan de resolución de conflictos\n- nivel de profundidad: alto"], "formulas_en": []}, "09-02-monitoreo-ci": {"title_es": "9.2 — Monitoreo de CI local y remoto", "title_en": "9.2 — Local and remote CI monitoring", "desc_es": "Prompt para revisar el estado del pipeline de CI local y en GitHub y determinar si los cambios están listos para integrarse: lint, build, pruebas, quality gates, artefactos y checks del PR.\n\nCuándo usarlo: antes de abrir o aprobar un PR, antes de hacer merge a cualquier rama protegida.", "desc_en": "", "formulas_es": ["Usa el prompt de monitoreo CI y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama: [RAMA DEL PR O INTEGRACIÓN]\n- ambiente: [QA / STAGING / PROD]\n- componentes: [COMPONENTES MODIFICADOS]\n- documentos a revisar: .github/workflows/, logs de CI, checks del PR\n- objetivo puntual de salida: estado del pipeline + criterio de aprobación\n- nivel de profundidad: medio"], "formulas_en": []}, "09-03-workflows-github-actions": {"title_es": "9.3 — Revisión de workflows de GitHub Actions", "title_en": "9.3 — GitHub Actions workflows review", "desc_es": "Prompt para auditar los workflows del repositorio y verificar si cubren adecuadamente validación, pruebas, seguridad, despliegue y calidad. Detecta vacíos, riesgos y propone mejoras.\n\nCuándo usarlo: periódicamente como revisión de salud del pipeline, o al incorporar nuevos módulos o ambientes.", "desc_en": "", "formulas_es": ["Usa el prompt de revisión de workflows y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama: [RAMA PRINCIPAL]\n- documentos a revisar: .github/workflows/, README de CI/CD\n- objetivo puntual de salida: inventario de workflows con brechas y mejoras recomendadas\n- nivel de profundidad: medio"], "formulas_en": []}, "09-04-promotion-checklist": {"title_es": "9.4 — Promotion checklist: integración y despliegue entre ambientes", "title_en": "9.4 — Promotion checklist: integration and deployment between environments", "desc_es": "Prompt para planificar y documentar la promoción de cambios entre ambientes (dev → qa → staging → prod): verificaciones previas, pasos de despliegue, validaciones post-despliegue, criterios de go/no-go y plan de rollback. Incluye consideraciones para entornos con agentes IA operando.\n\nCuándo usarlo: antes de cualquier despliegue a un ambiente superior, especialmente antes de ir a producción. También útil para definir el proceso estándar de promotion del proyecto.", "desc_en": "", "formulas_es": ["Usa el prompt de promotion checklist y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- cambio: [REFERENCIA AL ISSUE O PR]\n- rama fuente: [RAMA]\n- ambiente origen → destino: [ORIGEN → DESTINO]\n- stack de despliegue: [STACK]\n- migraciones de BD: [SÍ / NO]\n- cambios de infraestructura: [SÍ / NO]\n- documentos a revisar: CHANGELOG, PR diff, runbooks/, arquitectura\n- objetivo puntual de salida: checklist completo go/no-go + pasos de despliegue + plan de rollback\n- nivel de profundidad: alto"], "formulas_en": []}, "10-01-documentacion-tecnica": {"title_es": "10.1 — Actualizar documentación técnica", "title_en": "10.1 — Update technical documentation", "desc_es": "Prompt para revisar y proponer actualizaciones a la documentación técnica afectada por un cambio: README, docs, arquitectura, diagramas, contratos, casos de uso, notas de despliegue y troubleshooting.\n\nCuándo usarlo: al cierre de cada cambio, antes de hacer merge a la rama principal.", "desc_en": "", "formulas_es": ["Usa el prompt de actualización de documentación técnica y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA INTEGRADA]\n- componentes: [COMPONENTES MODIFICADOS]\n- documentos a revisar: README, docs/, arquitectura, contratos API\n- objetivo puntual de salida: lista de documentos a actualizar con contenido propuesto\n- nivel de profundidad: medio"], "formulas_en": []}, "10-02-memoria-tecnica": {"title_es": "10.2 — Memoria técnica del cambio", "title_en": "10.2 — Technical memory of the change", "desc_es": "Prompt para generar una memoria técnica clara y ejecutiva del cambio realizado: contexto, problema, análisis, solución implementada, pruebas, riesgos, resultados y puntos pendientes.\n\nCuándo usarlo: al cierre de cada issue o sprint, como registro formal del trabajo realizado para auditoría y referencia futura.", "desc_en": "", "formulas_es": ["Usa el prompt de memoria técnica y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA INTEGRADA]\n- ambiente: [PROD / STAGING]\n- componentes: [COMPONENTES MODIFICADOS]\n- documentos a revisar: commits, PRs, diseño aprobado, resultados de pruebas\n- objetivo puntual de salida: memoria técnica completa para auditoría\n- nivel de profundidad: alto"], "formulas_en": []}, "10-03-release-changelog": {"title_es": "10.3 — Documentación de release o changelog", "title_en": "10.3 — Release or changelog documentation", "desc_es": "Prompt para redactar las notas de release o changelog de un cambio con enfoque técnico y funcional: resumen, módulos impactados, correcciones, mejoras, riesgos y consideraciones de despliegue.\n\nCuándo usarlo: al preparar un release o al cerrar un sprint para documentar cambios entregados.", "desc_en": "", "formulas_es": ["Usa el prompt de release/changelog y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- versión: [TAG O VERSIÓN]\n- rama: [RAMA DE RELEASE]\n- issues incluidos: [LISTA DE ISSUES O PRs]\n- documentos a revisar: commits del período, PRs mergeados, issues cerrados\n- objetivo puntual de salida: changelog listo para publicar en GitHub Releases o CHANGELOG.md\n- nivel de profundidad: medio"], "formulas_en": []}, "11-01-troubleshooting": {"title_es": "11.1 — Troubleshooting de ambiente", "title_en": "11.1 — Environment troubleshooting", "desc_es": "Prompt para analizar un problema de ambiente, despliegue, servicio, contenedor, pipeline o configuración: síntoma, servicios involucrados, hipótesis, comandos a revisar y ruta de resolución.\n\nCuándo usarlo: cuando un servicio falla, un despliegue no funciona como esperado, o hay un problema de configuración en cualquier ambiente.", "desc_en": "", "formulas_es": ["Usa el prompt de troubleshooting de ambiente y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- síntoma: [DESCRIPCIÓN DEL PROBLEMA]\n- ambiente: [DEV / QA / STAGING / PROD]\n- servicios involucrados: [CONTENEDORES, SERVICIOS, PIPELINES]\n- evidencias disponibles: [LOGS, ERRORES, CAPTURAS]\n- documentos a revisar: configuraciones, docker-compose, nginx, variables de entorno\n- objetivo puntual de salida: hipótesis ordenadas + comandos de diagnóstico + ruta de resolución\n- nivel de profundidad: alto"], "formulas_en": []}, "11-02-hardening-seguridad": {"title_es": "11.2 — Hardening y seguridad operativa", "title_en": "11.2 — Security hardening and operations", "desc_es": "Prompt para analizar el repositorio y la configuración operativa en busca de oportunidades de fortalecimiento de seguridad: hardening, manejo de secretos, permisos, exposición de servicios y riesgos de despliegue.\n\nCuándo usarlo: periódicamente como revisión de seguridad, antes de un despliegue a producción, o cuando se detectan hallazgos de seguridad en code review.", "desc_en": "", "formulas_es": ["Usa el prompt de hardening y seguridad y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama: [RAMA PRINCIPAL]\n- ambiente: [PROD / STAGING]\n- componentes: [INFRAESTRUCTURA, SERVICIOS, CONFIGURACIONES]\n- documentos a revisar: docker-compose, nginx, .env, workflows, permisos de GitHub\n- objetivo puntual de salida: reporte de hallazgos de seguridad con plan de mitigación priorizado\n- nivel de profundidad: alto"], "formulas_en": []}, "11-03-deuda-tecnica": {"title_es": "11.3 — Deuda técnica y mejora continua", "title_en": "11.3 — Technical debt and continuous improvement", "desc_es": "Prompt para identificar la deuda técnica del repositorio y generar un backlog priorizado de mejoras clasificado por arquitectura, código, pruebas, documentación, seguridad, CI/CD, observabilidad, datos y performance.\n\nCuándo usarlo: al cierre de un sprint, en revisiones técnicas periódicas, o cuando se quiere planificar mejoras estructurales del proyecto.", "desc_en": "", "formulas_es": ["Usa el prompt de deuda técnica y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama: [RAMA PRINCIPAL]\n- componentes: [MÓDULOS O ÁREAS A ANALIZAR]\n- documentos a revisar: código fuente, tests, CI/CD, arquitectura, docs\n- objetivo puntual de salida: backlog priorizado de deuda técnica con esfuerzo estimado\n- nivel de profundidad: alto"], "formulas_en": []}, "11-04-incident-response": {"title_es": "11.4 — Runbook de incident response en producción", "title_en": "11.4 — Production incident response runbook", "desc_es": "Prompt para ejecutar el proceso completo de respuesta a incidentes en producción: detección, clasificación de severidad, activación del equipo, diagnóstico, contención, resolución, comunicación, post-mortem y lecciones aprendidas. Compatible con entornos multi-agente.\n\nCuándo usarlo: cuando se detecta un incidente activo en producción, para documentar el proceso de respuesta a posteriori, o para diseñar el runbook estándar del proyecto antes de que ocurra el primer incidente.", "desc_en": "", "formulas_es": ["Usa el prompt de incident response y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- síntoma: [DESCRIPCIÓN DEL INCIDENTE]\n- sistema afectado: [SERVICIO]\n- ambiente: PROD\n- hora de detección: [HH:MM]\n- detectado por: [FUENTE]\n- stack: [STACK]\n- documentos a revisar: logs de producción, últimos deploys, runbooks/, métricas\n- objetivo puntual de salida: clasificación de severidad + pasos de diagnóstico + template de comunicación\n- nivel de profundidad: alto"], "formulas_en": []}, "12-orquestador": {"title_es": "12 — Prompt maestro orquestador del ciclo completo", "title_en": "12 — Master orchestrator prompt for complete cycle", "desc_es": "Prompt que coordina la totalidad del ciclo de ingeniería de software para una asignación: desde la comprensión del repositorio hasta la documentación final, pasando por análisis, diseño, implementación, pruebas e integración.\n\nCuándo usarlo: para asignaciones completas que requieren pasar por todas las fases, o cuando se trabaja con un agente que debe operar de forma autónoma sobre un issue de principio a fin.", "desc_en": "", "formulas_es": ["Usa el prompt maestro orquestador y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [PEGAR TEXTO COMPLETO]\n- rama objetivo: [RAMA DESTINO]\n- ambiente: [DEV / QA / STAGING / PROD]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: README, docs/, arquitectura, workflows, issues relacionados\n- objetivo puntual de salida: ciclo completo documentado listo para ejecución\n- nivel de profundidad: alto"], "formulas_en": []}};
+<script>var PROMPT_INFO = {"00-B-01-scaffolding-repositorio": {"title_es": "0-B.1 — Scaffolding de repositorio nuevo", "title_en": "0-B.1 — Repository Scaffolding for New Project", "desc_es": "Prompt para diseñar y generar la estructura base de un repositorio nuevo: directorios, archivos de configuración, gobierno y estándares, a partir del tipo de proyecto, metodología y stack tecnológico seleccionados.\n\nCuándo usarlo: al iniciar un proyecto nuevo, al migrar un proyecto sin estructura formal, o al estandarizar un repositorio existente que creció sin guía.", "desc_en": "", "formulas_es": ["Usa el prompt de scaffolding de repositorio y adáptalo a:\n- nombre del repo: [NOMBRE]\n- tipo de proyecto: [TIPO]\n- metodología: [METODOLOGÍA]\n- stack: [STACK]\n- plataforma CI/hosting: [PLATAFORMA]\n- equipo: [COMPOSICIÓN]\n- licencia: [TIPO DE LICENCIA]\n- objetivo puntual de salida: árbol de directorios + tabla de archivos + contenido base de README, CONTRIBUTING, .gitignore, Dockerfile\n- nivel de profundidad: alto"], "formulas_en": []}, "00-B-02-gobernanza-ia-agentes": {"title_es": "0-B.2 — Configuración de archivos de gobernanza para agentes IA", "title_en": "0-B.2 — AI Agent Governance Configuration Files", "desc_es": "Prompt para generar los archivos de configuración y gobierno que controlan el comportamiento de los agentes IA sobre el repositorio: instrucciones de rol, reglas de codificación, restricciones de seguridad, contexto del proyecto y protocolo de trabajo. Compatible con GitHub Copilot, Claude, Windsurf, Cursor, Codex y otros agentes.\n\nCuándo usarlo: al iniciar un repositorio nuevo, al incorporar agentes IA a un proyecto existente, o cuando los agentes no siguen las convenciones ni el marco de trabajo del proyecto.", "desc_en": "", "formulas_es": ["Usa el prompt de gobernanza de agentes IA y adáptalo a:\n- nombre del proyecto: [NOMBRE]\n- stack: [STACK]\n- metodología: [METODOLOGÍA]\n- agentes a configurar: [LISTA DE AGENTES]\n- nivel de autonomía: [NIVEL]\n- reglas críticas del proyecto: [REGLAS ESPECÍFICAS]\n- documentos a revisar: README, CONTRIBUTING, estructura del repo, workflows existentes\n- objetivo puntual de salida: archivos .github/copilot-instructions.md, .windsurfrules, AGENTS.md, docs/ai-governance.md con contenido completo\n- nivel de profundidad: alto"], "formulas_en": []}, "00-B-03-github-configuracion": {"title_es": "0-B.3 — Configuración de repositorio GitHub (protecciones, plantillas y settings)", "title_en": "0-B.3 — GitHub Repository Configuration (Protections, Templates, and Settings)", "desc_es": "Prompt para configurar el repositorio GitHub de forma completa y segura: protección de ramas, plantillas de issues y PRs, Dependabot, GitHub Actions permissions, Environments, secrets y quality gates. Alinea la plataforma con la metodología y el nivel de madurez del equipo.\n\nCuándo usarlo: al crear un repositorio nuevo, al estandarizar uno existente, o cuando el repo no tiene protecciones formales y se va a incorporar IA o múltiples contribuidores.", "desc_en": "", "formulas_es": ["Usa el prompt de configuración de repositorio GitHub y adáptalo a:\n- repositorio: [ORG/REPO]\n- metodología: [BRANCHING STRATEGY]\n- stack CI: [GITHUB ACTIONS / OTRO]\n- ambientes: [DEV / STAGING / PROD]\n- equipo: [COMPOSICIÓN]\n- documentos a revisar: workflows existentes, README, CONTRIBUTING\n- objetivo puntual de salida: archivos ISSUE_TEMPLATE/, PR_TEMPLATE, dependabot.yml, CODEOWNERS + comandos gh CLI para branch protection\n- nivel de profundidad: alto"], "formulas_en": []}, "00-B-04-metodologia-framework": {"title_es": "0-B.4 — Selección y configuración de metodología y marco de trabajo", "title_en": "0-B.4 — Methodology and Framework Selection and Configuration", "desc_es": "Prompt para seleccionar, documentar y configurar operativamente la metodología y el marco de trabajo del proyecto: definición de flujo de trabajo, ceremonies, roles, estrategia de branching, Definition of Ready, Definition of Done, y cómo se integra el trabajo de agentes IA en el proceso.\n\nCuándo usarlo: al iniciar un proyecto, al formalizar uno existente que creció sin metodología, o cuando se incorporan agentes IA y se necesita definir su lugar en el proceso.", "desc_en": "", "formulas_es": ["Usa el prompt de metodología y marco de trabajo y adáptalo a:\n- tipo de proyecto: [TIPO]\n- tamaño del equipo: [NÚMERO + AGENTES IA]\n- frecuencia de entregas: [CADENCIA]\n- metodología candidata: [METODOLOGÍA O \"ninguna\"]\n- nivel de madurez: [BAJO / MEDIO / ALTO]\n- documentos a revisar: README, CONTRIBUTING, issues actuales, estructura del repo\n- objetivo puntual de salida: estrategia de branches documentada + DoR + DoD + flujo de issue para humanos y agentes IA\n- nivel de profundidad: alto"], "formulas_en": []}, "00-B-05-stack-calidad-codigo": {"title_es": "0-B.5 — Configuración de stack y herramientas de calidad de código", "title_en": "0-B.5 — Stack and Code Quality Tools Configuration", "desc_es": "Prompt para seleccionar y configurar las herramientas de calidad de código según el stack del proyecto: linters, formatters, analizadores estáticos, pre-commit hooks, coverage mínimo y quality gates en CI. Genera los archivos de configuración listos para usar.\n\nCuándo usarlo: al iniciar un proyecto, al estandarizar calidad en uno existente, o cuando se incorporan agentes IA que deben respetar las convenciones del stack.", "desc_en": "", "formulas_es": ["Usa el prompt de configuración de stack y calidad de código y adáptalo a:\n- lenguaje(s): [LENGUAJES]\n- frameworks: [FRAMEWORKS]\n- plataforma CI: [CI]\n- cobertura mínima: [PORCENTAJE]\n- nivel de restricción: [PERMISIVO / BALANCEADO / ESTRICTO]\n- objetivo puntual de salida: archivos de configuración completos + workflow CI quality gates + comandos de bootstrap\n- nivel de profundidad: alto"], "formulas_en": []}, "00-C-01-issue-para-agente-ia": {"title_es": "0-C.1 — Documentar un issue listo para ejecución por agente IA", "title_en": "0-C.1 — Document an Issue Ready for AI Agent Execution", "desc_es": "Prompt para redactar un issue GitHub de alta calidad que pueda ser ejecutado por un agente IA de forma autónoma y controlada: con contexto suficiente, criterios de aceptación verificables, restricciones explícitas, archivos involucrados y checklist de validación humana post-ejecución.\n\nCuándo usarlo: antes de asignar cualquier tarea a un agente IA (Copilot Agent, Claude, Codex, Windsurf), para garantizar que el agente opere con contexto completo y dentro de límites seguros.", "desc_en": "", "formulas_es": ["Usa el prompt de issue para agente IA y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- título del issue: [TÍTULO]\n- tipo: [TIPO]\n- descripción del requerimiento: [DESCRIPCIÓN]\n- archivos involucrados: [LISTA]\n- criterios de aceptación: [CRITERIOS]\n- restricciones: [RESTRICCIONES]\n- agente asignado: [AGENTE]\n- nivel de autonomía: [NIVEL]\n- objetivo puntual de salida: issue completo listo para crear en GitHub con gh issue create\n- nivel de profundidad: alto"], "formulas_en": []}, "00-C-02-plan-mode-multiagente": {"title_es": "0-C.2 — Modo plan seguro y coordinación multi-agente", "title_en": "0-C.2 — Safe Plan Mode and Multi-Agent Coordination", "desc_es": "Prompt para ejecutar cualquier tarea en modo plan antes de implementar: el agente analiza, diseña y propone sin tocar el código. Incluye el protocolo de coordinación para entornos donde múltiples agentes (Copilot, Claude, Codex, Windsurf, Antigravity) operan en paralelo sobre el mismo repositorio, previniendo conflictos, sobreescrituras y pérdida de trabajo.\n\nCuándo usarlo: siempre antes de ejecutar tareas de alto impacto, cuando hay más de un agente activo en el repo, o cuando se trabaja en `mode:plan` en Agent Manager o GitHub Copilot Agent.", "desc_en": "", "formulas_es": ["Usa el prompt de modo plan y coordinación multi-agente y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- tarea o issue: [REFERENCIA]\n- rama objetivo: [BRANCH]\n- agentes activos en paralelo: [LISTA O \"ninguno conocido\"]\n- modo: [SOLO PLAN / PLAN + EJECUCIÓN CONTROLADA]\n- documentos a revisar: git log reciente, PRs abiertos, AGENTS.md\n- objetivo puntual de salida: plan de implementación con tabla de archivos + detección de conflictos + reserva de rama\n- nivel de profundidad: alto"], "formulas_en": []}, "00-C-03-configuracion-por-agente": {"title_es": "0-C.3 — Configuración específica por tipo de agente IA", "title_en": "0-C.3 — Configuration Specific to Each AI Agent Type", "desc_es": "Prompt y referencia para configurar el comportamiento, las instrucciones y las restricciones de cada tipo de agente IA según sus capacidades y mecanismos propios: GitHub Copilot (Agent / Chat / Edits), Claude (Anthropic), OpenAI Codex, Windsurf, Cursor y Chrome Antigravity. Garantiza que cada agente opere con el contexto del proyecto y dentro de las reglas de equipo.\n\nCuándo usarlo: al incorporar un nuevo tipo de agente al proyecto, al detectar que un agente no sigue las convenciones, o al configurar un entorno multi-agente por primera vez.", "desc_en": "", "formulas_es": ["Usa el prompt de configuración por tipo de agente y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- agentes activos: [LISTA]\n- stack: [STACK]\n- metodología: [METODOLOGÍA]\n- reglas críticas: [REGLAS ESPECÍFICAS DEL PROYECTO]\n- nivel de autonomía: [NIVEL]\n- documentos a revisar: README, CONTRIBUTING, AGENTS.md existente (si hay), estructura del repo\n- objetivo puntual de salida: archivos de instrucciones completos para cada agente activo + tabla comparativa\n- nivel de profundidad: alto"], "formulas_en": []}, "01-01-arranque-comprension-repositorio": {"title_es": "01-01-arranque-comprension-repositorio", "title_en": "1.1 Prompt for repository technical inventory", "desc_es": "", "desc_en": "", "formulas_es": [], "formulas_en": []}, "01-02-analisis-procesos": {"title_es": "1.2 — Localizar procesos, procedimientos y políticas del proyecto", "title_en": "1.2 — Locate processes, procedures and project policies", "desc_es": "Prompt de arranque para mapear todo el gobierno del proyecto: procesos, procedimientos, políticas, estándares, branching strategy, estrategia QA, CI/CD y reglas de ingeniería. Establece qué sí existe, qué está incompleto y qué no existe.\n\nCuándo usarlo: antes de cualquier trabajo de análisis o implementación, para entender el marco de gobierno del proyecto y evitar violar reglas ya definidas.", "desc_en": "", "formulas_es": ["Usa el prompt de localización de procesos y políticas y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama: [RAMA ACTUAL]\n- documentos a revisar: README, docs/, .github/, workflows/\n- objetivo puntual de salida: matriz de gobierno del proyecto con estado de completitud\n- nivel de profundidad: medio"], "formulas_en": []}, "02-01-analisis-issue": {"title_es": "2.1 — Análisis funcional de un requerimiento, issue o cambio", "title_en": "2.1 — Functional analysis of a requirement, issue or change", "desc_es": "Prompt para analizar un requerimiento, issue o cambio y determinar su alcance funcional: flujo de negocio afectado, actores, comportamiento actual vs esperado, criterios de aceptación y riesgos.\n\nCuándo usarlo: como primer paso al recibir una tarea, antes de cualquier análisis técnico o diseño.", "desc_en": "", "formulas_es": ["Usa el prompt de análisis funcional y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [PEGAR TEXTO O REFERENCIA]\n- rama: [RAMA ACTUAL]\n- ambiente: [DEV / QA / PROD]\n- componentes: [SI YA CONOCES ALGUNO]\n- documentos a revisar: README, docs/, casos de uso existentes\n- objetivo puntual de salida: alcance funcional completo con criterios de aceptación\n- nivel de profundidad: alto"], "formulas_en": []}, "02-02-analisis-tecnico": {"title_es": "2.2 — Análisis técnico profundo de código existente", "title_en": "2.2 — Deep technical analysis of existing code", "desc_es": "Prompt para analizar cómo funciona realmente el código existente hoy: flujo end-to-end, acoplamientos, deuda técnica, validaciones faltantes y riesgos de regresión.\n\nCuándo usarlo: después del análisis funcional (`02-01`) y antes del análisis de impacto cruzado (`02-03`) y el diseño de la solución (`02-04`).", "desc_en": "", "formulas_es": ["Usa el prompt de análisis técnico profundo y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA ACTUAL]\n- ambiente: [DEV / QA / PROD]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: código fuente, esquema de BD, contratos API\n- objetivo puntual de salida: flujo actual documentado con hallazgos técnicos\n- nivel de profundidad: alto", "Usa el prompt de análisis técnico profundo y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA ACTUAL]\n- ambiente: [DEV / QA / PROD]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: código fuente, esquema de BD, contratos API\n- objetivo puntual de salida: flujo actual documentado + matriz de impacto cruzado\n- nivel de profundidad: alto"], "formulas_en": []}, "02-03-impacto-cruzado": {"title_es": "2.3 — Análisis de impacto cruzado", "title_en": "2.3 — Cross-impact analysis", "desc_es": "Prompt para evaluar el impacto del cambio en todos los módulos, procesos, datos, integraciones, ambientes y pipelines del sistema. Detecta impactos directos e indirectos y genera una matriz de severidad.\n\nCuándo usarlo: después del análisis técnico profundo (`02-02`) y antes del diseño de la solución (`04-01`).", "desc_en": "", "formulas_es": ["Usa el prompt de análisis de impacto cruzado y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA ACTUAL]\n- ambiente: [DEV / QA / PROD]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: arquitectura, contratos API, esquema de BD\n- objetivo puntual de salida: matriz de impacto cruzado con severidad por componente\n- nivel de profundidad: alto"], "formulas_en": []}, "03-01-incidentes-github": {"title_es": "3.1 — Revisión de incidentes reportados por tester contra GitHub Issues", "title_en": "3.1 — Review of incidents reported by tester against GitHub Issues", "desc_es": "Prompt para normalizar incidentes de testing, compararlos contra issues existentes en GitHub, detectar duplicados, incompletos o mal documentados, y redactar los que no existen con el estándar del proyecto.\n\nCuándo usarlo: al recibir un reporte de ciclo de QA, antes de gestionar cualquier defecto en GitHub.", "desc_en": "", "formulas_es": ["Usa el prompt de revisión de incidentes y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- reporte de QA: [PEGAR LISTA DE INCIDENTES]\n- rama: [RAMA EN PRUEBAS]\n- ambiente: [QA / STAGING]\n- módulos probados: [MÓDULOS]\n- documentos a revisar: issues abiertos y cerrados en GitHub, estándar de documentación de issues\n- objetivo puntual de salida: matriz QA vs GitHub + issues redactados para crear/actualizar\n- nivel de profundidad: alto"], "formulas_en": []}, "03-02-causa-raiz": {"title_es": "3.2 — Análisis de causa raíz", "title_en": "3.2 — Root cause analysis", "desc_es": "Prompt para investigar un defecto o incidente y determinar la causa raíz real, no solo el síntoma. Incluye formulación de hipótesis, validación con evidencia y recomendación de remediación.\n\nCuándo usarlo: al investigar defectos en QA o producción, cuando el síntoma está claro pero la causa no.", "desc_en": "", "formulas_es": ["Usa el prompt de análisis de causa raíz y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue: [NÚMERO O REFERENCIA]\n- rama: [RAMA AFECTADA]\n- ambiente: [QA / STAGING / PROD]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: logs, código, commits recientes, configuraciones\n- objetivo puntual: confirmar causa raíz y proponer plan de solución\n- nivel de profundidad: alto", "Usa el prompt de análisis de causa raíz y adáptalo a:\n- repositorio: urgemy-api\n- issue: #842\n- rama: urgemy-test\n- ambiente: QA\n- componentes: api, notificaciones push, postgres\n- documentos a revisar: README, docs/notificaciones, workflows, issues relacionados\n- objetivo puntual: confirmar causa raíz y proponer plan de solución\n- nivel de profundidad: alto"], "formulas_en": []}, "04-01-diseno-solucion": {"title_es": "4.1 — Diseño funcional y técnico de solución", "title_en": "4.1 — Functional and technical solution design", "desc_es": "Prompt para diseñar la solución completa antes de implementar: objetivo, alcance, supuestos, restricciones, cambios por componente, riesgos, dependencias, estrategia de validación y rollback.\n\nCuándo usarlo: una vez completado el análisis funcional, técnico y de impacto, antes de planificar o ejecutar cualquier cambio.", "desc_en": "", "formulas_es": ["Usa el prompt de diseño de solución y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA OBJETIVO]\n- ambiente: [DEV / QA / PROD]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: análisis previo, arquitectura, contratos\n- objetivo puntual de salida: diseño completo con riesgos y estrategia de rollback\n- nivel de profundidad: alto"], "formulas_en": []}, "04-02-diagramas-mermaid": {"title_es": "4.2 — Generar diagramas Mermaid", "title_en": "4.2 — Generate Mermaid diagrams", "desc_es": "Prompt para generar diagramas Mermaid que documenten la solución: flujo actual y propuesto, secuencia, componentes y entidad-relación. Los diagramas deben ser consistentes con el código y la arquitectura real.\n\nCuándo usarlo: durante o después del diseño de la solución (`04-01`), para documentar y comunicar visualmente los cambios.", "desc_en": "", "formulas_es": ["Usa el prompt de diagramas Mermaid y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: diseño aprobado, arquitectura, código fuente\n- objetivo puntual de salida: conjunto de diagramas Mermaid para documentación técnica\n- nivel de profundidad: medio"], "formulas_en": []}, "04-03-casos-de-uso": {"title_es": "4.3 — Diseño de casos de uso", "title_en": "4.3 — Use case design", "desc_es": "Prompt para documentar formalmente los casos de uso del requerimiento o módulo analizado: actores, disparadores, flujos principal y alternos, reglas de negocio y criterios de aceptación.\n\nCuándo usarlo: durante la fase de diseño, para formalizar el comportamiento esperado del sistema antes de implementar.", "desc_en": "", "formulas_es": ["Usa el prompt de diseño de casos de uso y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- módulo: [MÓDULO O FUNCIONALIDAD]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: análisis funcional, documentación existente de CU\n- objetivo puntual de salida: casos de uso formales listos para revisión y validación\n- nivel de profundidad: alto"], "formulas_en": []}, "04-04-adr-decisiones-arquitectura": {"title_es": "4.4 — Architecture Decision Records (ADR)", "title_en": "4.4 — Architecture Decision Records (ADR)", "desc_es": "Prompt para documentar decisiones arquitectónicas de forma estructurada: contexto del problema, opciones evaluadas, decisión tomada, consecuencias y estado. Genera ADRs numerados y versionados que quedan como registro permanente del por qué del diseño.\n\nCuándo usarlo: al tomar una decisión arquitectónica significativa (elección de tecnología, patrón de diseño, estrategia de integración, estructura de datos), al documentar decisiones pasadas que no quedaron registradas, o como revisión al inicio de un proyecto.", "desc_en": "", "formulas_es": ["Usa el prompt de Architecture Decision Records y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- número ADR: [ADR-NNN]\n- título: [TÍTULO DE LA DECISIÓN]\n- contexto del proyecto: [STACK, RESTRICCIONES, EQUIPO]\n- opciones evaluadas: [LISTA DE ALTERNATIVAS CONSIDERADAS]\n- documentos a revisar: README, arquitectura existente, issues relacionados\n- objetivo puntual de salida: ADR completo listo para guardar en docs/decisions/\n- nivel de profundidad: alto"], "formulas_en": []}, "05-01-plan-implementacion": {"title_es": "5.1 — Plan de implementación detallado", "title_en": "5.1 — Detailed implementation plan", "desc_es": "Prompt para elaborar un plan de implementación ejecutable y trazable: actividades previas, cambios por componente, migraciones, pruebas, despliegue, rollback y evidencias esperadas por paso.\n\nCuándo usarlo: después del diseño aprobado (`04-01`), antes de ejecutar cualquier cambio en el repositorio.", "desc_en": "", "formulas_es": ["Usa el prompt de plan de implementación y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA OBJETIVO]\n- ambiente: [DEV / QA / PROD]\n- componentes: [COMPONENTES A MODIFICAR]\n- documentos a revisar: diseño aprobado, arquitectura, contratos\n- objetivo puntual de salida: plan de implementación ejecutable paso a paso\n- nivel de profundidad: alto"], "formulas_en": []}, "05-02-riesgos-implementacion": {"title_es": "5.2 — Análisis de riesgos e impacto de implementación", "title_en": "5.2 — Implementation risk and impact analysis", "desc_es": "Prompt para identificar y clasificar los riesgos de implementación: funcionales, técnicos, de datos, seguridad, operación, concurrencia de agentes, integración y despliegue. Genera una matriz de riesgos con probabilidad, impacto y plan de mitigación.\n\nCuándo usarlo: en paralelo al plan de implementación (`05-01`), antes de ejecutar cualquier cambio.", "desc_en": "", "formulas_es": ["Usa el prompt de análisis de riesgos de implementación y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA OBJETIVO]\n- ambiente: [DEV / QA / PROD]\n- componentes: [COMPONENTES A MODIFICAR]\n- documentos a revisar: diseño aprobado, arquitectura, historial de incidentes\n- objetivo puntual de salida: matriz de riesgos completa con plan de mitigación\n- nivel de profundidad: alto"], "formulas_en": []}, "06-01-implementacion-multiagente": {"title_es": "6.1 — Implementación multi-agente segura", "title_en": "6.1 — Secure multi-agent implementation", "desc_es": "Prompt de ejecución controlada para implementar la solución aprobada en un entorno donde múltiples agentes pueden estar modificando el repositorio en paralelo. Prioriza cambios mínimos, commits atómicos y detección de conflictos.\n\nCuándo usarlo: durante la fase de ejecución, después de que el plan (`05-01`) y los riesgos (`05-02`) han sido aprobados.", "desc_en": "", "formulas_es": ["Usa el prompt de implementación multi-agente y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA DE TRABAJO]\n- ambiente: [DEV / QA]\n- componentes: [ARCHIVOS Y MÓDULOS A MODIFICAR]\n- documentos a revisar: plan de implementación aprobado, diseño técnico\n- objetivo puntual de salida: cambios aplicados con commits atómicos y sin conflictos\n- nivel de profundidad: alto"], "formulas_en": []}, "06-02-commits": {"title_es": "6.2 — Generación de mensajes de commit de calidad", "title_en": "6.2 — Quality commit message generation", "desc_es": "Prompt para generar mensajes de commit pequeños, claros y trazables, alineados al estándar del proyecto. Incluye alternativas si el cambio debe dividirse en múltiples commits.\n\nCuándo usarlo: antes de hacer commit de cualquier cambio, para garantizar trazabilidad y consistencia con el historial del repositorio.", "desc_en": "", "formulas_es": ["Usa el prompt de mensajes de commit y adáptalo a:\n- issue: [NÚMERO O REFERENCIA]\n- tipo de cambio: [feat / fix / refactor / docs / test / chore]\n- componente: [MÓDULO O ARCHIVO AFECTADO]\n- descripción breve: [QUÉ SE HIZO EN UNA LÍNEA]\n- objetivo puntual de salida: commit principal + alternativas si aplica dividir", "Usa el prompt de mensajes de commit y adáptalo a:\n- issue: #842\n- tipo de cambio: fix\n- componente: api/notificaciones\n- descripción breve: corrige envío duplicado de notificaciones push al actualizar orden", "fix(api/notificaciones): corrige envío duplicado al actualizar orden #842\n\nfeat(auth): agrega validación de expiración de token en middleware #123\n\nrefactor(db): extrae consulta de usuarios a repositorio separado #456\n\ndocs(readme): actualiza instrucciones de despliegue en Docker #78\n\ntest(pagos): agrega casos borde para monto negativo en procesador #99"], "formulas_en": ["fix(api/notifications): fixes duplicate sending when updating order #842\n\nfeat(auth): adds token expiration validation in middleware #123\n\nrefactor(db): extracts user query to separate repository #456\n\ndocs(readme): updates deployment instructions in Docker #78\n\ntest(payments): adds edge cases for negative amount in processor #99"]}, "07-00-deteccion-stack-pruebas": {"title_es": "7.0 — Detección de stack de pruebas", "title_en": "7.0 — Test Stack Detection", "desc_es": "Prompt para detectar y documentar el stack de pruebas activo en el repositorio. Produce un perfil de stack de pruebas estructurado que se adjunta como contexto a los prompts de implementación (`07-07` al `07-10`), eliminando la necesidad de que cada agente re-descubra las herramientas y convenciones del proyecto.\n\nCuándo usarlo: una sola vez por proyecto, o cuando el stack de pruebas cambie. El perfil generado se reutiliza en todas las ejecuciones de los prompts de implementación de pruebas.", "desc_en": "", "formulas_es": ["Usa el prompt de detección de stack de pruebas y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama: [RAMA PRINCIPAL O DE TRABAJO]\n- documentos a revisar: archivos de configuración raíz, package.json/pyproject.toml,\n  .github/workflows/, directorio de tests existente\n- objetivo puntual de salida: perfil de stack de pruebas completo y verificado\n- nivel de profundidad: medio"], "formulas_en": []}, "07-01-pruebas-unitarias": {"title_es": "7.1 — Diseño de pruebas unitarias", "title_en": "7.1 — Unit test design", "desc_es": "Prompt para diseñar la suite de pruebas unitarias que valide los cambios propuestos o implementados: escenarios positivos, negativos y casos borde por cada función o unidad bajo prueba.\n\nCuándo usarlo: después de implementar cambios, en paralelo a la implementación, o como referencia antes de escribir código.", "desc_en": "", "formulas_es": ["Usa el prompt de pruebas unitarias y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA DE PRUEBAS]\n- ambiente: [DEV / QA]\n- componentes: [FUNCIONES O UNIDADES A PROBAR]\n- documentos a revisar: código implementado, criterios de aceptación\n- objetivo puntual de salida: matriz completa de pruebas unitarias con cobertura\n- nivel de profundidad: alto"], "formulas_en": []}, "07-02-pruebas-integracion": {"title_es": "7.2 — Diseño de pruebas de integración", "title_en": "7.2 — Integration test design", "desc_es": "Prompt para definir las pruebas de integración que validen la interacción entre módulos, servicios, APIs, base de datos e integraciones involucradas en el cambio.\n\nCuándo usarlo: después de las pruebas unitarias (`07-01`), para validar que los módulos funcionan correctamente en conjunto.", "desc_en": "", "formulas_es": ["Usa el prompt de pruebas de integración y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA DE PRUEBAS]\n- ambiente: [QA / STAGING]\n- componentes: [MÓDULOS E INTEGRACIONES A PROBAR]\n- documentos a revisar: contratos API, diseño de integración, datos de prueba disponibles\n- objetivo puntual de salida: plan de pruebas de integración con casos de error\n- nivel de profundidad: alto"], "formulas_en": []}, "07-03-pruebas-e2e": {"title_es": "7.3 — Diseño de pruebas E2E", "title_en": "7.3 — E2E test design", "desc_es": "Prompt para diseñar pruebas end-to-end de los casos de uso impactados por el cambio: desde el actor hasta el resultado final, incluyendo evidencia requerida y regresiones relacionadas.\n\nCuándo usarlo: después de las pruebas de integración (`07-02`), para validar el flujo completo desde la perspectiva del usuario.", "desc_en": "", "formulas_es": ["Usa el prompt de pruebas E2E y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA DE PRUEBAS]\n- ambiente: [QA / STAGING]\n- componentes: [FLUJOS Y MÓDULOS A PROBAR]\n- documentos a revisar: casos de uso, criterios de aceptación, flujos documentados\n- objetivo puntual de salida: plan de pruebas E2E con evidencia requerida por caso\n- nivel de profundidad: alto"], "formulas_en": []}, "07-04-pruebas-humo": {"title_es": "7.4 — Pruebas de humo", "title_en": "7.4 — Smoke tests", "desc_es": "Prompt para definir un plan de pruebas de humo que valide rápidamente que el sistema sigue operativo después de un cambio o despliegue: autenticación, flujos críticos, módulos, integraciones mínimas y errores visibles.\n\nCuándo usarlo: inmediatamente después de un despliegue o merge, para una validación rápida de salud del sistema antes de pruebas completas.", "desc_en": "", "formulas_es": ["Usa el prompt de pruebas de humo y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama o versión desplegada: [REFERENCIA]\n- ambiente: [QA / STAGING / PROD]\n- módulos críticos: [MÓDULOS QUE DEBEN FUNCIONAR]\n- documentos a revisar: flujos críticos documentados, última versión estable\n- objetivo puntual de salida: checklist de humo ejecutable en menos de 15 minutos\n- nivel de profundidad: bajo"], "formulas_en": []}, "07-05-automatizacion-antigravity": {"title_es": "7.5 — Automatización en navegador con Chrome Antigravity", "title_en": "7.5 — Browser automation with Chrome Antigravity", "desc_es": "Prompt para diseñar y documentar una estrategia de pruebas automatizadas en navegador usando Chrome Antigravity: escenarios, navegación, selectors, datos de prueba, validaciones visuales y puntos frágiles del flujo.\n\nCuándo usarlo: para automatizar pruebas E2E o de regresión de flujos críticos impactados por el cambio.", "desc_en": "", "formulas_es": ["Usa el prompt de automatización con Antigravity y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- flujos a automatizar: [FLUJOS CRÍTICOS A CUBRIR]\n- ambiente: [QA / STAGING]\n- URL base: [URL DEL AMBIENTE]\n- documentos a revisar: casos de uso, plan E2E, diseño de UI\n- objetivo puntual de salida: estrategia de automatización con pasos, selectors y validaciones\n- nivel de profundidad: alto"], "formulas_en": []}, "07-06-pruebas-performance-carga": {"title_es": "7.6 — Pruebas de performance y carga", "title_en": "7.6 — Performance and load tests", "desc_es": "Prompt para diseñar una estrategia de pruebas de performance, carga, stress y benchmark para los componentes impactados por un cambio: escenarios, umbrales de aceptación, herramientas, datos de prueba y criterios de fallo.\n\nCuándo usarlo: antes de desplegar a producción cambios que afecten APIs, consultas de base de datos, procesos batch, generación de archivos o cualquier componente con requerimientos de rendimiento. También como revisión periódica de salud del sistema.", "desc_en": "", "formulas_es": ["Usa el prompt de pruebas de performance y carga y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- componentes a probar: [LISTA]\n- ambiente: [QA / STAGING]\n- SLA objetivo: [TIEMPOS DE RESPUESTA ACEPTABLES]\n- usuarios concurrentes esperados: [NÚMERO]\n- herramienta: [k6 / Locust / JMeter / Artillery]\n- documentos a revisar: arquitectura, contratos de API, requerimientos de performance\n- objetivo puntual de salida: estrategia completa + script base + tabla de umbrales\n- nivel de profundidad: alto"], "formulas_en": []}, "07-07-implementacion-pruebas-unitarias": {"title_es": "7.7 — Implementación de pruebas unitarias", "title_en": "7.7 — Unit Test Implementation", "desc_es": "Prompt para generar el código ejecutable de las pruebas unitarias a partir del diseño definido en `07-01`. Produce archivos de prueba listos para ejecutar en el framework de pruebas del proyecto.\n\nCuándo usarlo: después de completar el diseño de pruebas unitarias (`07-01`), cuando el agente tiene acceso al código fuente y al framework de pruebas del proyecto.", "desc_en": "", "formulas_es": ["Usa el prompt de implementación de pruebas unitarias y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA DE TRABAJO]\n- framework de pruebas: [AUTO-DETECTAR / pytest / Jest / Vitest / JUnit / RSpec / etc.]\n- matriz de pruebas: [ADJUNTA O REFERENCIA AL DOCUMENTO DE 07-01]\n- documentos a revisar: código fuente de las unidades bajo prueba, configuración del framework\n- objetivo puntual de salida: archivos de prueba ejecutables con cobertura ≥ 80%\n- nivel de profundidad: alto"], "formulas_en": []}, "07-08-implementacion-pruebas-integracion": {"title_es": "7.8 — Implementación de pruebas de integración", "title_en": "7.8 — Integration Test Implementation", "desc_es": "Prompt para generar el código ejecutable de las pruebas de integración a partir del diseño definido en `07-02`. Valida la interacción real entre módulos, servicios, APIs y base de datos usando el framework de pruebas del proyecto.\n\nCuándo usarlo: después de completar el diseño de pruebas de integración (`07-02`), cuando el entorno de pruebas (base de datos, servicios dependientes) está disponible o puede ser simulado con contenedores o stubs.", "desc_en": "", "formulas_es": ["Usa el prompt de implementación de pruebas de integración y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA DE TRABAJO]\n- framework de pruebas: [AUTO-DETECTAR / pytest / Jest / Spring Test / etc.]\n- herramientas de integración: [AUTO-DETECTAR / Testcontainers / WireMock / MSW / etc.]\n- plan de integración: [ADJUNTA O REFERENCIA AL DOCUMENTO DE 07-02]\n- documentos a revisar: contratos API, esquema de base de datos, configuración de servicios\n- objetivo puntual de salida: pruebas de integración ejecutables con flujos críticos cubiertos\n- nivel de profundidad: alto"], "formulas_en": []}, "07-09-implementacion-pruebas-e2e": {"title_es": "7.9 — Implementación de pruebas E2E", "title_en": "7.9 — E2E Test Implementation", "desc_es": "Prompt para generar el código ejecutable de las pruebas end-to-end a partir del diseño definido en `07-03`. Produce scripts de automatización que validan flujos completos desde la interfaz de usuario hasta el resultado final, usando el framework E2E del proyecto.\n\nCuándo usarlo: después de completar el diseño de pruebas E2E (`07-03`), cuando la aplicación está desplegada en un entorno de pruebas accesible (QA o staging).", "desc_en": "", "formulas_es": ["Usa el prompt de implementación de pruebas E2E y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA DE TRABAJO]\n- framework E2E: [AUTO-DETECTAR / Playwright / Cypress / Selenium / Robot Framework / etc.]\n- URL del entorno de pruebas: [URL DE QA O STAGING]\n- plan E2E: [ADJUNTA O REFERENCIA AL DOCUMENTO DE 07-03]\n- documentos a revisar: casos de uso, flujos de pantalla, credenciales de prueba\n- objetivo puntual de salida: scripts E2E ejecutables que cubran los flujos críticos del plan\n- nivel de profundidad: alto"], "formulas_en": []}, "07-10-implementacion-pruebas-humo": {"title_es": "7.10 — Implementación de pruebas de humo", "title_en": "7.10 — Smoke Test Implementation", "desc_es": "Prompt para generar el script ejecutable de pruebas de humo a partir del checklist definido en `07-04`. Produce un artefacto automatizable que valida en minutos que el sistema está operativo después de un despliegue.\n\nCuándo usarlo: después de completar el diseño de pruebas de humo (`07-04`), como paso inmediato post-despliegue para decidir si el ambiente está listo para pruebas completas o requiere rollback.", "desc_en": "", "formulas_es": ["Usa el prompt de implementación de pruebas de humo y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama o versión desplegada: [REFERENCIA]\n- ambiente: [QA / STAGING / PROD]\n- tipo de script preferido: [AUTO-DETECTAR / API / UI / Shell / Mixto]\n- framework E2E disponible: [Playwright / Cypress / ninguno / etc.]\n- checklist de humo: [ADJUNTA O REFERENCIA AL DOCUMENTO DE 07-04]\n- documentos a revisar: endpoints de salud disponibles, flujos críticos documentados\n- objetivo puntual de salida: script ejecutable en pipeline que corra en < 15 minutos\n- nivel de profundidad: bajo"], "formulas_en": []}, "08-01-revision-estatica": {"title_es": "8.1 — Revisión estática de código", "title_en": "8.1 — Static code review", "desc_es": "Prompt para realizar una revisión estática del código relacionado con el cambio: calidad, mantenibilidad, seguridad, complejidad, manejo de errores y consistencia con los estándares del proyecto.\n\nCuándo usarlo: después de implementar cambios, antes de abrir un PR o hacer merge.", "desc_en": "", "formulas_es": ["Usa el prompt de revisión estática y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama: [RAMA CON LOS CAMBIOS]\n- archivos a revisar: [RUTAS DE ARCHIVOS MODIFICADOS]\n- documentos a revisar: estándares de código del proyecto, arquitectura\n- objetivo puntual de salida: reporte de hallazgos clasificados por criticidad\n- nivel de profundidad: alto"], "formulas_en": []}, "08-02-cumplimiento-requerimiento": {"title_es": "8.2 — Revisión de cumplimiento contra requerimiento", "title_en": "8.2 — Requirement compliance review", "desc_es": "Prompt para validar si la implementación realmente cumple con el issue, requerimiento, caso de uso y criterios de aceptación. Compara lo solicitado, lo diseñado, lo implementado y lo probado.\n\nCuándo usarlo: antes de cerrar un issue o abrir un PR para merge, como paso de cierre de calidad.", "desc_en": "", "formulas_es": ["Usa el prompt de cumplimiento contra requerimiento y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA CON LOS CAMBIOS]\n- documentos a revisar: issue original, diseño aprobado, código implementado, resultados de pruebas\n- objetivo puntual de salida: matriz de cumplimiento con brechas y acciones requeridas\n- nivel de profundidad: alto"], "formulas_en": []}, "08-03-remediacion-maestro": {"title_es": "8.3 — Remediación de revisión estática (prompt maestro)", "title_en": "8.3 — Static review remediation (master prompt)", "desc_es": "Prompt maestro de nivel producción para analizar un reporte de revisión estática con hallazgos críticos, medios y menores, y generar un plan integral de corrección controlado, priorizado y seguro para entornos multi-agente.\n\nCuándo usarlo: cuando se recibe un reporte de revisión estática y se necesita un plan estructurado de corrección, no solo parches superficiales.", "desc_en": "", "formulas_es": ["Usa el prompt maestro de remediación y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- reporte de revisión estática: [PEGAR REPORTE]\n- rama: [RAMA CON LOS CAMBIOS]\n- ambiente: [DEV / QA]\n- componentes: [COMPONENTES REVISADOS]\n- documentos a revisar: código fuente, arquitectura, contratos\n- objetivo puntual de salida: plan de remediación ejecutable y priorizado\n- nivel de profundidad: alto"], "formulas_en": []}, "09-01-integracion-ramas": {"title_es": "9.1 — Integración controlada con ramas", "title_en": "9.1 — Controlled integration with branches", "desc_es": "Prompt para planificar la integración de cambios con otras ramas activas: análisis de conflictos potenciales, estrategia recomendada (merge, rebase, cherry-pick) y riesgos de concurrencia con otros agentes o desarrolladores.\n\nCuándo usarlo: antes de hacer merge a cualquier rama destino, especialmente en entornos con cambios concurrentes.", "desc_en": "", "formulas_es": ["Usa el prompt de integración controlada y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama origen: [RAMA CON LOS CAMBIOS]\n- rama destino: [DEVELOP / MAIN / RELEASE]\n- ambiente: [QA / STAGING / PROD]\n- componentes: [COMPONENTES MODIFICADOS]\n- documentos a revisar: historial de commits, ramas activas, PRs abiertos\n- objetivo puntual de salida: estrategia de integración con plan de resolución de conflictos\n- nivel de profundidad: alto"], "formulas_en": []}, "09-02-monitoreo-ci": {"title_es": "9.2 — Monitoreo de CI local y remoto", "title_en": "9.2 — Local and remote CI monitoring", "desc_es": "Prompt para revisar el estado del pipeline de CI local y en GitHub y determinar si los cambios están listos para integrarse: lint, build, pruebas, quality gates, artefactos y checks del PR.\n\nCuándo usarlo: antes de abrir o aprobar un PR, antes de hacer merge a cualquier rama protegida.", "desc_en": "", "formulas_es": ["Usa el prompt de monitoreo CI y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama: [RAMA DEL PR O INTEGRACIÓN]\n- ambiente: [QA / STAGING / PROD]\n- componentes: [COMPONENTES MODIFICADOS]\n- documentos a revisar: .github/workflows/, logs de CI, checks del PR\n- objetivo puntual de salida: estado del pipeline + criterio de aprobación\n- nivel de profundidad: medio"], "formulas_en": []}, "09-03-workflows-github-actions": {"title_es": "9.3 — Revisión de workflows de GitHub Actions", "title_en": "9.3 — GitHub Actions workflows review", "desc_es": "Prompt para auditar los workflows del repositorio y verificar si cubren adecuadamente validación, pruebas, seguridad, despliegue y calidad. Detecta vacíos, riesgos y propone mejoras.\n\nCuándo usarlo: periódicamente como revisión de salud del pipeline, o al incorporar nuevos módulos o ambientes.", "desc_en": "", "formulas_es": ["Usa el prompt de revisión de workflows y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama: [RAMA PRINCIPAL]\n- documentos a revisar: .github/workflows/, README de CI/CD\n- objetivo puntual de salida: inventario de workflows con brechas y mejoras recomendadas\n- nivel de profundidad: medio"], "formulas_en": []}, "09-04-promotion-checklist": {"title_es": "9.4 — Promotion checklist: integración y despliegue entre ambientes", "title_en": "9.4 — Promotion checklist: integration and deployment between environments", "desc_es": "Prompt para planificar y documentar la promoción de cambios entre ambientes (dev → qa → staging → prod): verificaciones previas, pasos de despliegue, validaciones post-despliegue, criterios de go/no-go y plan de rollback. Incluye consideraciones para entornos con agentes IA operando.\n\nCuándo usarlo: antes de cualquier despliegue a un ambiente superior, especialmente antes de ir a producción. También útil para definir el proceso estándar de promotion del proyecto.", "desc_en": "", "formulas_es": ["Usa el prompt de promotion checklist y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- cambio: [REFERENCIA AL ISSUE O PR]\n- rama fuente: [RAMA]\n- ambiente origen → destino: [ORIGEN → DESTINO]\n- stack de despliegue: [STACK]\n- migraciones de BD: [SÍ / NO]\n- cambios de infraestructura: [SÍ / NO]\n- documentos a revisar: CHANGELOG, PR diff, runbooks/, arquitectura\n- objetivo puntual de salida: checklist completo go/no-go + pasos de despliegue + plan de rollback\n- nivel de profundidad: alto"], "formulas_en": []}, "10-01-documentacion-tecnica": {"title_es": "10.1 — Actualizar documentación técnica", "title_en": "10.1 — Update technical documentation", "desc_es": "Prompt para revisar y proponer actualizaciones a la documentación técnica afectada por un cambio: README, docs, arquitectura, diagramas, contratos, casos de uso, notas de despliegue y troubleshooting.\n\nCuándo usarlo: al cierre de cada cambio, antes de hacer merge a la rama principal.", "desc_en": "", "formulas_es": ["Usa el prompt de actualización de documentación técnica y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA INTEGRADA]\n- componentes: [COMPONENTES MODIFICADOS]\n- documentos a revisar: README, docs/, arquitectura, contratos API\n- objetivo puntual de salida: lista de documentos a actualizar con contenido propuesto\n- nivel de profundidad: medio"], "formulas_en": []}, "10-02-memoria-tecnica": {"title_es": "10.2 — Memoria técnica del cambio", "title_en": "10.2 — Technical memory of the change", "desc_es": "Prompt para generar una memoria técnica clara y ejecutiva del cambio realizado: contexto, problema, análisis, solución implementada, pruebas, riesgos, resultados y puntos pendientes.\n\nCuándo usarlo: al cierre de cada issue o sprint, como registro formal del trabajo realizado para auditoría y referencia futura.", "desc_en": "", "formulas_es": ["Usa el prompt de memoria técnica y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA INTEGRADA]\n- ambiente: [PROD / STAGING]\n- componentes: [COMPONENTES MODIFICADOS]\n- documentos a revisar: commits, PRs, diseño aprobado, resultados de pruebas\n- objetivo puntual de salida: memoria técnica completa para auditoría\n- nivel de profundidad: alto"], "formulas_en": []}, "10-03-release-changelog": {"title_es": "10.3 — Documentación de release o changelog", "title_en": "10.3 — Release or changelog documentation", "desc_es": "Prompt para redactar las notas de release o changelog de un cambio con enfoque técnico y funcional: resumen, módulos impactados, correcciones, mejoras, riesgos y consideraciones de despliegue.\n\nCuándo usarlo: al preparar un release o al cerrar un sprint para documentar cambios entregados.", "desc_en": "", "formulas_es": ["Usa el prompt de release/changelog y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- versión: [TAG O VERSIÓN]\n- rama: [RAMA DE RELEASE]\n- issues incluidos: [LISTA DE ISSUES O PRs]\n- documentos a revisar: commits del período, PRs mergeados, issues cerrados\n- objetivo puntual de salida: changelog listo para publicar en GitHub Releases o CHANGELOG.md\n- nivel de profundidad: medio"], "formulas_en": []}, "11-01-troubleshooting": {"title_es": "11.1 — Troubleshooting de ambiente", "title_en": "11.1 — Environment troubleshooting", "desc_es": "Prompt para analizar un problema de ambiente, despliegue, servicio, contenedor, pipeline o configuración: síntoma, servicios involucrados, hipótesis, comandos a revisar y ruta de resolución.\n\nCuándo usarlo: cuando un servicio falla, un despliegue no funciona como esperado, o hay un problema de configuración en cualquier ambiente.", "desc_en": "", "formulas_es": ["Usa el prompt de troubleshooting de ambiente y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- síntoma: [DESCRIPCIÓN DEL PROBLEMA]\n- ambiente: [DEV / QA / STAGING / PROD]\n- servicios involucrados: [CONTENEDORES, SERVICIOS, PIPELINES]\n- evidencias disponibles: [LOGS, ERRORES, CAPTURAS]\n- documentos a revisar: configuraciones, docker-compose, nginx, variables de entorno\n- objetivo puntual de salida: hipótesis ordenadas + comandos de diagnóstico + ruta de resolución\n- nivel de profundidad: alto"], "formulas_en": []}, "11-02-hardening-seguridad": {"title_es": "11.2 — Hardening y seguridad operativa", "title_en": "11.2 — Security hardening and operations", "desc_es": "Prompt para analizar el repositorio y la configuración operativa en busca de oportunidades de fortalecimiento de seguridad: hardening, manejo de secretos, permisos, exposición de servicios y riesgos de despliegue.\n\nCuándo usarlo: periódicamente como revisión de seguridad, antes de un despliegue a producción, o cuando se detectan hallazgos de seguridad en code review.", "desc_en": "", "formulas_es": ["Usa el prompt de hardening y seguridad y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama: [RAMA PRINCIPAL]\n- ambiente: [PROD / STAGING]\n- componentes: [INFRAESTRUCTURA, SERVICIOS, CONFIGURACIONES]\n- documentos a revisar: docker-compose, nginx, .env, workflows, permisos de GitHub\n- objetivo puntual de salida: reporte de hallazgos de seguridad con plan de mitigación priorizado\n- nivel de profundidad: alto"], "formulas_en": []}, "11-03-deuda-tecnica": {"title_es": "11.3 — Deuda técnica y mejora continua", "title_en": "11.3 — Technical debt and continuous improvement", "desc_es": "Prompt para identificar la deuda técnica del repositorio y generar un backlog priorizado de mejoras clasificado por arquitectura, código, pruebas, documentación, seguridad, CI/CD, observabilidad, datos y performance.\n\nCuándo usarlo: al cierre de un sprint, en revisiones técnicas periódicas, o cuando se quiere planificar mejoras estructurales del proyecto.", "desc_en": "", "formulas_es": ["Usa el prompt de deuda técnica y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama: [RAMA PRINCIPAL]\n- componentes: [MÓDULOS O ÁREAS A ANALIZAR]\n- documentos a revisar: código fuente, tests, CI/CD, arquitectura, docs\n- objetivo puntual de salida: backlog priorizado de deuda técnica con esfuerzo estimado\n- nivel de profundidad: alto"], "formulas_en": []}, "11-04-incident-response": {"title_es": "11.4 — Runbook de incident response en producción", "title_en": "11.4 — Production incident response runbook", "desc_es": "Prompt para ejecutar el proceso completo de respuesta a incidentes en producción: detección, clasificación de severidad, activación del equipo, diagnóstico, contención, resolución, comunicación, post-mortem y lecciones aprendidas. Compatible con entornos multi-agente.\n\nCuándo usarlo: cuando se detecta un incidente activo en producción, para documentar el proceso de respuesta a posteriori, o para diseñar el runbook estándar del proyecto antes de que ocurra el primer incidente.", "desc_en": "", "formulas_es": ["Usa el prompt de incident response y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- síntoma: [DESCRIPCIÓN DEL INCIDENTE]\n- sistema afectado: [SERVICIO]\n- ambiente: PROD\n- hora de detección: [HH:MM]\n- detectado por: [FUENTE]\n- stack: [STACK]\n- documentos a revisar: logs de producción, últimos deploys, runbooks/, métricas\n- objetivo puntual de salida: clasificación de severidad + pasos de diagnóstico + template de comunicación\n- nivel de profundidad: alto"], "formulas_en": []}, "12-orquestador": {"title_es": "12 — Prompt maestro orquestador del ciclo completo", "title_en": "12 — Master orchestrator prompt for complete cycle", "desc_es": "Prompt que coordina la totalidad del ciclo de ingeniería de software para una asignación: desde la comprensión del repositorio hasta la documentación final, pasando por análisis, diseño, implementación, pruebas e integración.\n\nCuándo usarlo: para asignaciones completas que requieren pasar por todas las fases, o cuando se trabaja con un agente que debe operar de forma autónoma sobre un issue de principio a fin.", "desc_en": "", "formulas_es": ["Usa el prompt maestro orquestador y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [PEGAR TEXTO COMPLETO]\n- rama objetivo: [RAMA DESTINO]\n- ambiente: [DEV / QA / STAGING / PROD]\n- componentes: [COMPONENTES INVOLUCRADOS]\n- documentos a revisar: README, docs/, arquitectura, workflows, issues relacionados\n- objetivo puntual de salida: ciclo completo documentado listo para ejecución\n- nivel de profundidad: alto"], "formulas_en": []}, "13-01-sast-analisis-seguridad-codigo": {"title_es": "13.1 — SAST: Análisis estático de seguridad de código", "title_en": "13.1 — SAST: Static Application Security Testing", "desc_es": "Prompt para realizar un análisis estático de seguridad del código fuente (SAST — Static Application Security Testing): detecta vulnerabilidades OWASP Top 10, patrones inseguros, manejo incorrecto de datos sensibles, problemas de autenticación/autorización y deuda de seguridad antes de que lleguen a producción.\n\nCuándo usarlo: antes de abrir un PR, después de implementar un cambio con implicaciones de seguridad, o como revisión periódica del código base. Complementa (no reemplaza) a herramientas automáticas de SAST.", "desc_en": "", "formulas_es": ["Usa el prompt de SAST y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama: [RAMA A ANALIZAR]\n- archivos o módulos a revisar: [RUTAS — o \"todo el repositorio\"]\n- lenguaje y framework: [AUTO-DETECTAR]\n- modelo de autenticación: [JWT / session / OAuth2 / API key / otro]\n- datos sensibles manejados: [PII / financieros / credenciales / ninguno]\n- documentos a revisar: threat model si existe (13-04), arquitectura, contratos API\n- objetivo puntual de salida: reporte SAST completo con plan de remediación por severidad\n- nivel de profundidad: alto"], "formulas_en": []}, "13-02-sca-analisis-dependencias": {"title_es": "13.2 — SCA: Análisis de composición de software y dependencias", "title_en": "13.2 — SCA: Software Composition Analysis and Dependencies", "desc_es": "Prompt para analizar las dependencias de terceros del proyecto e identificar vulnerabilidades conocidas (CVEs), licencias problemáticas, dependencias abandonadas y riesgos de cadena de suministro (supply chain). Aplica a dependencias directas e indirectas (transitivas).\n\nCuándo usarlo: en cada PR que modifique dependencias, como revisión periódica (al menos mensual), antes de un release a producción, y como respuesta a alertas de seguridad publicadas (GitHub Dependabot, OSS-Index, etc.).", "desc_en": "", "formulas_es": ["Usa el prompt de SCA y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama: [RAMA PRINCIPAL O DE TRABAJO]\n- lenguaje(s): [AUTO-DETECTAR]\n- tipo de producto: [COMERCIAL / OPEN SOURCE / INTERNO] — afecta análisis de licencias\n- herramienta preferida: [AUTO-DETECTAR / npm audit / pip-audit / Snyk / Trivy]\n- documentos a revisar: archivos de dependencias, lock files, Dependabot alerts activos\n- objetivo puntual de salida: reporte de CVEs + licencias + plan de actualización\n- nivel de profundidad: alto"], "formulas_en": []}, "13-03-secure-sdlc-revision": {"title_es": "13.3 — Revisión de desarrollo de software seguro (Secure SDLC)", "title_en": "13.3 — Secure SDLC Review", "desc_es": "Prompt para verificar que se han aplicado los controles de seguridad requeridos en cada fase del ciclo de desarrollo: desde el diseño hasta el despliegue. Actúa como checklist estructurado de Secure SDLC basado en OWASP SAMM, NIST SSDF y Microsoft SDL, adaptable a proyectos nuevos y cambios incrementales.\n\nCuándo usarlo: al cierre de cada sprint, antes de un release a producción, como revisión de madurez de seguridad del proyecto, o cuando se incorpora un nuevo equipo o agente al proyecto.", "desc_en": "", "formulas_es": ["Usa el prompt de Secure SDLC review y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- rama: [RAMA PRINCIPAL]\n- fase del ciclo actual: [DISEÑO / IMPLEMENTACIÓN / QA / PRE-RELEASE / OPERACIÓN]\n- resultados disponibles: [SAST 13-01 / SCA 13-02 / Threat Model 13-04 / ninguno]\n- tipo de proyecto: [NUEVO / CAMBIO INCREMENTAL / MANTENIMIENTO]\n- ambiente objetivo: [DEV / QA / STAGING / PROD]\n- documentos a revisar: arquitectura, workflows CI/CD, políticas de seguridad del proyecto\n- objetivo puntual de salida: checklist completo + plan de mejora con niveles de madurez\n- nivel de profundidad: alto"], "formulas_en": []}, "13-04-threat-modeling": {"title_es": "13.4 — Modelado de amenazas (Threat Modeling)", "title_en": "13.4 — Threat Modeling", "desc_es": "Prompt para realizar el modelado de amenazas de un sistema, componente o feature antes o durante su diseño. Identifica superficies de ataque, actores maliciosos, vectores de amenaza y controles de mitigación usando la metodología STRIDE. Genera el insumo de seguridad para los prompts `13-01` (SAST) y `13-03` (Secure SDLC review).\n\nCuándo usarlo: en la fase de diseño de nuevas funcionalidades con impacto en seguridad, al diseñar integraciones con sistemas externos, al cambiar el modelo de autenticación o autorización, o al incorporar manejo de datos sensibles.", "desc_en": "", "formulas_es": ["Usa el prompt de threat modeling y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- sistema o feature a modelar: [DESCRIPCIÓN]\n- actores legítimos: [USUARIOS, SISTEMAS EXTERNOS]\n- datos sensibles involucrados: [PII / financieros / credenciales / ninguno]\n- integraciones externas: [LISTA DE APIS O SERVICIOS EXTERNOS]\n- modelo de autenticación: [JWT / session / OAuth2 / API key]\n- documentos a revisar: diseño de solución (04-01), casos de uso (04-03),\n  diagramas (04-02), arquitectura del repositorio\n- objetivo puntual de salida: modelo de amenazas STRIDE + controles de mitigación\n- nivel de profundidad: alto"], "formulas_en": []}, "13-07-gestion-vulnerabilidades-cves": {"title_es": "13.7 — Análisis de vulnerabilidades y gestión de CVEs", "title_en": "13.7 — Vulnerability Analysis and CVE Management", "desc_es": "Prompt para realizar el triaje, clasificación, priorización y gestión del ciclo de vida completo de las vulnerabilidades detectadas por cualquier herramienta de seguridad (SAST, SCA, DAST, pentesting, escáneres). Convierte hallazgos crudos en un backlog de seguridad accionable con SLAs de remediación.\n\nCuándo usarlo: después de ejecutar cualquier herramienta de análisis de seguridad (`13-01` SAST, `13-02` SCA, `13-05` DAST, `13-06` pentesting), al recibir alertas de nuevos CVEs que afectan las dependencias del proyecto, o como revisión periódica del estado de seguridad.", "desc_en": "", "formulas_es": ["Usa el prompt de gestión de vulnerabilidades y CVEs y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- fuentes de hallazgos: [SAST 13-01 / SCA 13-02 / DAST / pentesting / alerta Dependabot]\n- resultados adjuntos: [ADJUNTA LOS REPORTES DE LAS HERRAMIENTAS]\n- ambiente objetivo: [DEV / QA / STAGING / PROD]\n- criticidad del sistema: [CRÍTICA / ALTA / MEDIA — según impacto al negocio]\n- SLAs definidos: [USAR ESTÁNDAR / PERSONALIZAR: crítico=Xh, alto=Xd, medio=Xd]\n- documentos a revisar: registros de vulnerabilidades previas, CHANGELOG de seguridad\n- objetivo puntual de salida: backlog de seguridad priorizado + métricas de estado\n- nivel de profundidad: alto"], "formulas_en": []}};
 
 /* ════════════════════  PROYECTOS — datos  ══════════════════════ */
 

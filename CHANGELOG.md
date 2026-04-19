@@ -6,6 +6,18 @@ Este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 
 ---
 
+## [1.6.0] — 2026-04-19
+
+### Added
+- **5 nuevos prompts — Sección 13: Seguridad y DevSecOps** (nueva sección AppSec — Priority 1):
+  - `13-01` — SAST / Análisis estático de seguridad de código: revisión OWASP Top 10, herramientas recomendadas por lenguaje, tabla de hallazgos con CVSS
+  - `13-02` — SCA / Análisis de composición de software: inventario de dependencias, CVEs, riesgos de licencia, cadena de suministro
+  - `13-03` — Revisión Secure SDLC: checklist OWASP SAMM / NIST SSDF / MS SDL por fase del ciclo de desarrollo
+  - `13-04` — Modelado de amenazas — STRIDE: DFD, árbol de ataques, tabla de amenazas con vector CVSS y mitigación
+  - `13-07` — Gestión de vulnerabilidades y CVEs: triage, puntuación CVSS v3.1, análisis de explotabilidad (KEV/EPSS), backlog de seguridad, métricas MTTD/MTTR
+- Nueva sección `13` registrada en `build.py` (SECTION_META, SECTION_LABEL, SECTION_COLOR, ICON_PATH)
+- Todos los prompts incluyen versión bilingüe (ES + EN)
+
 ## [1.5.0] — 2026-04-18
 
 ### Added

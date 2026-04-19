@@ -127,6 +127,14 @@ Usa el prompt de análisis de causa raíz y adáptalo a:
 | `11-04-incident-response.md` | 11.4 | Runbook de incident response en producción |
 | `12-orquestador.md` | 12 | Prompt maestro orquestador del ciclo completo |
 
+**── SEGURIDAD Y DEVSECOPS (13)**
+
+| `13-01-sast-analisis-seguridad-codigo.md` | 13.1 | Análisis estático de seguridad (SAST) — OWASP Top 10 |
+| `13-02-sca-analisis-dependencias.md` | 13.2 | Análisis de composición de software (SCA) — CVEs en dependencias |
+| `13-03-secure-sdlc-revision.md` | 13.3 | Revisión Secure SDLC — OWASP SAMM / NIST SSDF |
+| `13-04-threat-modeling.md` | 13.4 | Modelado de amenazas — metodología STRIDE |
+| `13-07-gestion-vulnerabilidades-cves.md` | 13.7 | Gestión del ciclo de vida de vulnerabilidades y CVEs |
+
 ---
 
 ## Principios del framework
