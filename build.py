@@ -292,9 +292,10 @@ header {
   body.menu-open .sidebar-overlay { display: block; }
 }
 @media (min-width: 1025px) {
-  .sidebar-collapsed .sidebar { width: 0; overflow: hidden; border-right: none; }
+  /* BUG-01 fix #29: regla width:0 eliminada — icon-only (46px) lo maneja body.sidebar-collapsed */
   .menu-toggle-btn { display: none; }
 }
+body.sidebar-collapsed .sidebar-collapse-btn svg { transform: rotate(180deg); }
 .sidebar::-webkit-scrollbar { width: 3px; }
 .sidebar::-webkit-scrollbar-thumb { background: var(--bdr2); border-radius: 2px; }
 .sid-section { padding: .5rem 0; }
@@ -1150,7 +1151,7 @@ function duplicateProject(id) {
 function renameProject(id, name) {
   var list = loadProjects() || [];
   var p = list.find(function(x) { return x.id === id; });
-  if (p && name.trim()) { p.name = name.trim(); saveProjects(list); renderProjectSelector(); renderProjQuick(); }
+  if (p && name.trim()) { p.name = name.trim(); saveProjects(list); renderProjectSelector(); renderProjQuick(); renderProjFloat(); }
 }
 
 function setDefaultProject(id) {
@@ -1164,6 +1165,7 @@ function switchProject(id) {
   syncPanelToProject();
   renderProjectSelector();
   renderProjQuick();
+  renderProjFloat();
 }
 
 /* ════════════════════  PROYECTOS — sync DOM  ════════════════════ */
@@ -1216,6 +1218,7 @@ function renderProjectSelector() {
   var nameEl = document.getElementById('vp-proj-name');
   if (nameEl && active) nameEl.textContent = active.name + (active.isDefault ? ' \u2605' : '');
   renderProjQuick();
+  renderProjFloat();
 }
 
 /* ════════════════════  PROYECTOS — modal  ═══════════════════════ */
@@ -1297,6 +1300,45 @@ function toggleProjQuick(e) {
 
 function closeProjQuick() {
   var wrap = document.getElementById('proj-quick');
+  if (wrap) wrap.classList.remove('open');
+}
+
+/* ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  PROYECTO FLOTANTE — issue #30  ▀▀▀▀▀▀▀▀▀▀▀▀ */
+function renderProjFloat() {
+  var list = loadProjects() || [];
+  var active = getActiveProject();
+  var activeId = active ? active.id : null;
+  var nameEl = document.getElementById('proj-float-name');
+  if (nameEl) nameEl.textContent = (active ? active.name : 'Proyecto') + (active && active.isDefault ? ' \u2605' : '');
+  var dd = document.getElementById('proj-float-dropdown');
+  if (!dd) return;
+  var items = list.map(function(p) {
+    var isAct = p.id === activeId;
+    return '<button class="pq-item' + (isAct ? ' pq-active' : '') + '"'
+      + ' onclick="switchProject(\\'' + p.id + '\\');closeProjFloat();">' 
+      + '<span class="pq-dot' + (isAct ? ' on' : '') + '"></span>'
+      + '<span class="pq-item-name">' + p.name.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</span>'
+      + (p.isDefault ? '<span style="font-size:.6rem;color:var(--tx3)">\u2605</span>' : '')
+      + '</button>';
+  }).join('');
+  dd.innerHTML = items
+    + '<div class="pq-sep"></div>'
+    + '<div class="pq-footer">'
+    + '<button class="pq-new-btn" onclick="createProject();renderProjQuick();renderProjFloat();renderProjectSelector();syncPanelToProject();closeProjFloat();">+ Nuevo</button>'
+    + '<button class="pq-mgr-btn" onclick="openProjectsModal();closeProjFloat();">\u2699 Gestionar</button>'
+    + '</div>';
+}
+
+function toggleProjFloat(e) {
+  if (e) e.stopPropagation();
+  var wrap = document.getElementById('proj-float');
+  if (!wrap) return;
+  var isOpen = wrap.classList.toggle('open');
+  if (isOpen) renderProjFloat();
+}
+
+function closeProjFloat() {
+  var wrap = document.getElementById('proj-float');
   if (wrap) wrap.classList.remove('open');
 }
 
@@ -1850,6 +1892,7 @@ document.addEventListener('DOMContentLoaded', function() {
   renderProjectSelector();
   syncPanelToProject();
   renderProjQuick();
+  renderProjFloat();
 
   // Restaurar estado del sidebar
   try { if (localStorage.getItem('AI_SDLC_sidebar') === '1') document.body.classList.add('sidebar-collapsed'); } catch(e) {}
@@ -1865,6 +1908,9 @@ document.addEventListener('DOMContentLoaded', function() {
   document.addEventListener('click', function(e) {
     var wrap = document.getElementById('proj-quick');
     if (wrap && !wrap.contains(e.target)) closeProjQuick();
+    
+    var floatWrap = document.getElementById('proj-float');
+    if (floatWrap && !floatWrap.contains(e.target)) closeProjFloat();
     
     var dd = document.getElementById('lang-dropdown');
     var btn = document.getElementById('lang-btn');
@@ -2079,12 +2125,14 @@ def build():
         'es': {
             '01': 'Comprensión', '02': 'Análisis', '03': 'Incidentes', '04': 'Diseño',
             '05': 'Planificación', '06': 'Ejecución', '07': 'Pruebas', '08': 'Revisión',
-            '09': 'Integración', '10': 'Documentación', '11': 'Operaciones', '12': 'Orquestador'
+            '09': 'Integración', '10': 'Documentación', '11': 'Operaciones', '12': 'Orquestador',
+            '13': 'Seguridad y DevSecOps',  # fix #31
         },
         'en': {
             '01': 'Comprehension', '02': 'Analysis', '03': 'Incidents', '04': 'Design',
             '05': 'Planning', '06': 'Execution', '07': 'Testing', '08': 'Review',
-            '09': 'Integration', '10': 'Documentation', '11': 'Operations', '12': 'Orchestrator'
+            '09': 'Integration', '10': 'Documentation', '11': 'Operations', '12': 'Orchestrator',
+            '13': 'Security & DevSecOps',  # fix #31
         }
     }
 
@@ -2686,6 +2734,15 @@ def build():
         '</div>\n'  # close #app-root
 
         '<script>' + prompt_info_js + '\n' + JS + LANDING_JS + '</script>\n'
+        '<!-- \u2550\u2550 FLOATING PROJECT SELECTOR \u2014 issue #30 \u2550\u2550 -->\n'
+        '<div class="proj-float" id="proj-float">\n'
+        '  <div class="proj-float-dropdown" id="proj-float-dropdown"></div>\n'
+        '  <button class="proj-float-btn" id="proj-float-btn" onclick="toggleProjFloat(event)" title="Cambiar proyecto activo">\n'
+        '    <span class="proj-float-dot"></span>\n'
+        '    <span class="proj-float-name" id="proj-float-name">Proyecto</span>\n'
+        '    <span class="proj-float-chevron"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>\n'
+        '  </button>\n'
+        '</div>\n'
         '</body>\n</html>\n'
     )
 
