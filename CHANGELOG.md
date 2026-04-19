@@ -6,6 +6,29 @@ Este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 
 ---
 
+## [1.5.0] — 2026-04-18
+
+### Added
+- **5 nuevos prompts — Fase 7: Implementación de pruebas** (ciclo SDLC completo):
+  - `07-00` — Detección de stack de pruebas: genera perfil reutilizable del framework de pruebas del proyecto (frameworks, convenciones, CI/CD, estado actual)
+  - `07-07` — Implementación de pruebas unitarias: genera código ejecutable AAA a partir del diseño `07-01`
+  - `07-08` — Implementación de pruebas de integración: genera código ejecutable con fixtures/containers a partir del diseño `07-02`
+  - `07-09` — Implementación de pruebas E2E: genera scripts automatizados (Playwright/Cypress/Selenium) a partir del diseño `07-03`
+  - `07-10` — Implementación de smoke tests: genera script ejecutable en pipeline (< 15 min) a partir del diseño `07-04`
+- Todos los prompts incluyen versión bilingüe (ES + EN)
+- Prompts `07-07` al `07-10` referencian obligatoriamente el perfil de `07-00` como contexto previo
+
+### Changed
+- `00-framework.md`: índice actualizado con entradas 7.0 — 7.10 (5 nuevas filas)
+- `README.md`: conteo actualizado a **49 prompts / 15 grupos** (antes 44/15)
+
+### Notes
+- Los prompts `07-01` al `07-04` (diseño de pruebas) permanecen sin cambios
+- El grupo 07-Pruebas ahora cubre el ciclo completo: Diseño → Detección de stack → Implementación
+- Flujo recomendado: `07-00` (una vez por proyecto) → `07-0x` Diseño → `07-0x+6` Implementación
+
+---
+
 ## [1.4.0] — 2026-04-11
 
 ### Added

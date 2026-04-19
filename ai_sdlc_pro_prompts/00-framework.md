@@ -100,12 +100,17 @@ Usa el prompt de análisis de causa raíz y adáptalo a:
 | `05-02-riesgos-implementacion.md` | 5.2 | Análisis de riesgos e impacto de implementación |
 | `06-01-implementacion-multiagente.md` | 6.1 | Implementación multi-agente segura y controlada |
 | `06-02-commits.md` | 6.2 | Generación de mensajes de commit de calidad |
+| `07-00-deteccion-stack-pruebas.md` | 7.0 | Detección del stack de pruebas del proyecto — genera perfil reutilizable |
 | `07-01-pruebas-unitarias.md` | 7.1 | Diseño de pruebas unitarias |
 | `07-02-pruebas-integracion.md` | 7.2 | Diseño de pruebas de integración |
 | `07-03-pruebas-e2e.md` | 7.3 | Diseño de pruebas E2E |
 | `07-04-pruebas-humo.md` | 7.4 | Plan de pruebas de humo |
 | `07-05-automatizacion-antigravity.md` | 7.5 | Automatización en navegador con Chrome Antigravity |
 | `07-06-pruebas-performance-carga.md` | 7.6 | Pruebas de performance, carga e stress |
+| `07-07-implementacion-pruebas-unitarias.md` | 7.7 | Implementación de código de pruebas unitarias ejecutables |
+| `07-08-implementacion-pruebas-integracion.md` | 7.8 | Implementación de código de pruebas de integración ejecutables |
+| `07-09-implementacion-pruebas-e2e.md` | 7.9 | Implementación de scripts E2E ejecutables |
+| `07-10-implementacion-pruebas-humo.md` | 7.10 | Implementación de script de smoke test ejecutable en pipeline |
 | `08-01-revision-estatica.md` | 8.1 | Revisión estática de código |
 | `08-02-cumplimiento-requerimiento.md` | 8.2 | Revisión de cumplimiento contra requerimiento |
 | `08-03-remediacion-maestro.md` | 8.3 | Prompt maestro de remediación de revisión estática |
