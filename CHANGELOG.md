@@ -6,6 +6,15 @@ Este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 
 ---
 
+## [1.9.0] — 2026-04-19
+
+### Added
+- **4 nuevos prompts — Priority 4: Definición de proyecto (sección 00-D)** (2 temas × ES+EN):
+  - `00-D-01` — Project Charter: documento fundacional del proyecto — objetivos SMART, alcance IN/OUT, stakeholders, entregables con criterios de aceptación, hitos, presupuesto, riesgos iniciales, modelo de gobierno y firmas
+  - `00-D-02` — Stack y Arquitectura Inicial: selección justificada de tecnologías por capa, topología de infraestructura con diagrama Mermaid C4, patrones arquitectónicos, modelo de datos, seguridad por diseño, estrategia de escalabilidad/resiliencia, deuda técnica anticipada y plan de evolución
+- Todos los prompts incluyen versión bilingüe (ES + EN)
+- `00-framework.md` actualizado con sección `── DEFINICIÓN DE PROYECTO (00-D)` y entradas 00-D-01, 00-D-02
+
 ## [1.8.0] — 2026-04-19
 
 ### Added

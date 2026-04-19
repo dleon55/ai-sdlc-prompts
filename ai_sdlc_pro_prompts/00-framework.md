@@ -80,6 +80,9 @@ Usa el prompt de análisis de causa raíz y adáptalo a:
 | `00-B-03-github-configuracion.md` | 0-B.3 | Configuración GitHub: branch protection, issue templates, PR template, Dependabot |
 | `00-B-04-metodologia-framework.md` | 0-B.4 | Selección de metodología, branching strategy, Definition of Ready y Done |
 | `00-B-05-stack-calidad-codigo.md` | 0-B.5 | Stack y calidad: linters, formatters, pre-commit hooks, quality gates CI |
+| **── DEFINICIÓN DE PROYECTO (00-D)** | | |
+| `00-D-01-project-charter.md` | 0-D.1 | Project Charter: objetivos, alcance, stakeholders, hitos, riesgos y aprobación formal |
+| `00-D-02-stack-arquitectura-inicial.md` | 0-D.2 | Stack y arquitectura inicial: selección de tecnologías, topología, patrones y modelo de datos |
 | **── GOBERNANZA DE AGENTES IA (00-C)** | | |
 | `00-C-01-issue-para-agente-ia.md` | 0-C.1 | Issue estructurado listo para ejecución por agente IA con criterios y restricciones |
 | `00-C-02-plan-mode-multiagente.md` | 0-C.2 | Modo plan seguro (sin cambios) y protocolo de coordinación multi-agente |
