@@ -122,10 +122,13 @@ Usa el prompt de análisis de causa raíz y adáptalo a:
 | `10-01-documentacion-tecnica.md` | 10.1 | Actualizar documentación técnica |
 | `10-02-memoria-tecnica.md` | 10.2 | Memoria técnica del cambio |
 | `10-03-release-changelog.md` | 10.3 | Documentación de release o changelog |
+| `10-04-observabilidad-instrumentacion.md` | 10.4 | Observabilidad: diseño de métricas, logs, trazas, SLOs y alertas |
 | `11-01-troubleshooting.md` | 11.1 | Troubleshooting de ambiente |
 | `11-02-hardening-seguridad.md` | 11.2 | Hardening y seguridad operativa |
 | `11-03-deuda-tecnica.md` | 11.3 | Deuda técnica y mejora continua |
 | `11-04-incident-response.md` | 11.4 | Runbook de incident response en producción |
+| `11-05-performance-produccion-diagnostico.md` | 11.5 | Diagnóstico y optimización de performance en producción |
+| `11-06-gestion-parches-actualizaciones.md` | 11.6 | Gestión de parches y actualizaciones de dependencias e infraestructura |
 | `12-orquestador.md` | 12 | Prompt maestro orquestador del ciclo completo |
 
 **── SEGURIDAD Y DEVSECOPS (13)**

@@ -6,6 +6,16 @@ Este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 
 ---
 
+## [1.8.0] — 2026-04-19
+
+### Added
+- **6 nuevos prompts — Priority 3: Observabilidad, Performance en producción, Patch Management** (3 temas × ES+EN):
+  - `10-04` — Observabilidad / Instrumentación: pilares RED+USE métricas, logs estructurados, trazas distribuidas, SLOs con error budget, alertas accionables, diseño de dashboards y stack OpenTelemetry
+  - `11-05` — Performance en producción: diagnóstico por capa (app/BD/caché/red), análisis de trazas y logs, profiling seguro, plan de optimización priorizado (tabla PERF-XXX), mejoras estructurales
+  - `11-06` — Gestión de parches y actualizaciones: inventario por gestor de paquetes/contenedores/SO, matriz de prioridad semver × categoría, plan de aplicación por entorno con rollback, auditoría y automatización preventiva (Dependabot/Renovate)
+- Todos los prompts incluyen versión bilingüe (ES + EN)
+- `00-framework.md` actualizado con 10-04, 11-05, 11-06
+
 ## [1.7.0] — 2026-04-19
 
 ### Added
