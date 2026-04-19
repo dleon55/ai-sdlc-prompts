@@ -1068,6 +1068,36 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   display: flex; align-items: center; justify-content: space-between;
   background: var(--bg2); font-size: .72rem; color: var(--tx3);
 }
+
+/* ══════════════  FLOATING PROJECT SELECTOR (#30)  ══════════════ */
+.proj-float {
+  position: fixed; bottom: 1.25rem; right: 1.25rem; z-index: 500;
+  display: flex; flex-direction: column; align-items: flex-end;
+}
+.proj-float-btn {
+  display: flex; align-items: center; gap: .45rem;
+  background: var(--bg2); border: 1px solid var(--bdr);
+  border-radius: 999px; padding: .35rem .75rem .35rem .55rem;
+  color: var(--tx); font-size: .78rem; cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,.35);
+  max-width: 200px; white-space: nowrap;
+  transition: background .15s, border-color .15s;
+}
+.proj-float-btn:hover { background: var(--bg3); border-color: var(--acc); }
+.proj-float-dot { width: 7px; height: 7px; border-radius: 50%; background: #06b6d4; flex-shrink: 0; }
+.proj-float-name { overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; }
+.proj-float-chevron { transition: transform .15s; flex-shrink: 0; }
+.proj-float.open .proj-float-chevron { transform: rotate(180deg); }
+.proj-float-dropdown {
+  display: none; margin-bottom: .4rem;
+  background: var(--bg2); border: 1px solid var(--bdr);
+  border-radius: 10px; padding: .35rem 0;
+  box-shadow: 0 4px 16px rgba(0,0,0,.4);
+  min-width: 160px; max-width: 240px;
+  max-height: 240px; overflow-y: auto;
+}
+.proj-float.open .proj-float-dropdown { display: block; }
+@media (max-width: 560px) { .proj-float-name { display: none; } }
 """
 
 JS = """
