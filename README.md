@@ -1,6 +1,6 @@
 # AI-SDLC Pro — Biblioteca de Prompts de Ingeniería de Software
 
-Biblioteca interactiva de prompts estructurados bajo el **AI-SDLC Enterprise Framework**: **63 prompts** organizados en **17 grupos** que cubren el ciclo completo de ingeniería de software asistida por IA.
+Biblioteca interactiva de prompts estructurados bajo el **AI-SDLC Enterprise Framework**: **64 prompts** organizados en **17 grupos** que cubren el ciclo completo de ingeniería de software asistida por IA.
 
 ## Entornos activos
 
@@ -27,7 +27,7 @@ Biblioteca interactiva de prompts estructurados bajo el **AI-SDLC Enterprise Fra
 ## Estructura del proyecto
 
 ```
-ai_sdlc_pro_prompts/    # 63 prompts Markdown (17 grupos, ciclo SDLC completo)
+ai_sdlc_pro_prompts/    # 64 prompts Markdown (17 grupos, ciclo SDLC completo)
 build.py                # Generador: produce index.html desde los .md
 extract_vars.py         # Analiza tokens [PLACEHOLDER] en los prompts
 verify_clean.py         # QA gate: valida prompts limpios (integrado en CI)
@@ -93,7 +93,7 @@ El push a `main` también actualiza GitHub Pages automáticamente vía el workfl
 | 00-C | Multi-agente: issues para IA, plan mode, configuración por agente | 3 |
 | 00-D | Definición de proyecto: Project Charter, stack y arquitectura inicial | 2 |
 | 01 | Comprensión del repositorio | 2 |
-| 02 | Análisis (issue, técnico, impacto cruzado) | 3 |
+| 02 | Análisis (issue, técnico, impacto cruzado, triage backlog GitHub) | 4 |
 | 03 | Incidentes (GitHub, causa raíz) | 2 |
 | 04 | Diseño de solución (diseño, Mermaid, casos de uso, ADR) | 4 |
 | 05 | Plan de implementación (plan, riesgos) | 2 |
@@ -105,7 +105,7 @@ El push a `main` también actualiza GitHub Pages automáticamente vía el workfl
 | 11 | Operaciones (troubleshooting, hardening, deuda técnica, incident response, performance, parches) | 6 |
 | 12 | Orquestador maestro (ciclo completo) | 1 |
 | 13 | Seguridad y DevSecOps (SAST, SCA, Secure SDLC, Threat Modeling, DAST, Pentesting, CVE, Secrets) | 8 |
-| **Total** | | **63** |
+| **Total** | | **64** |
 
 ---
 

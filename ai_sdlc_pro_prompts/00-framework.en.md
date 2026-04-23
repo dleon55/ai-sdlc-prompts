@@ -90,6 +90,7 @@ Use the root cause analysis prompt and adapt it to:
 | `02-01-analisis-issue.md` | 2.1 | Functional analysis of requirement or issue |
 | `02-02-analisis-tecnico.md` | 2.2 | Deep technical analysis of existing code |
 | `02-03-impacto-cruzado.md` | 2.3 | Cross-impact analysis on all modules |
+| `02-04-triage-backlog-github.md` | 2.4 | GitHub Issues backlog triage and planning by component, owner and priority |
 | `03-01-incidentes-github.md` | 3.1 | Review of tester incidents against GitHub Issues |
 | `03-02-causa-raiz.md` | 3.2 | Root cause analysis of defects and incidents |
 | `04-01-diseno-solucion.md` | 4.1 | Functional and technical solution design |

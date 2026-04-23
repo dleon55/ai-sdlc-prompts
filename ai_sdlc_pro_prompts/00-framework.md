@@ -93,6 +93,7 @@ Usa el prompt de análisis de causa raíz y adáptalo a:
 | `02-01-analisis-issue.md` | 2.1 | Análisis funcional de requerimiento o issue |
 | `02-02-analisis-tecnico.md` | 2.2 | Análisis técnico profundo de código existente |
 | `02-03-impacto-cruzado.md` | 2.3 | Análisis de impacto cruzado en todos los módulos |
+| `02-04-triage-backlog-github.md` | 2.4 | Triage y planificación de backlog de GitHub Issues por componente, responsable y prioridad |
 | `03-01-incidentes-github.md` | 3.1 | Revisión de incidentes de tester contra GitHub Issues |
 | `03-02-causa-raiz.md` | 3.2 | Análisis de causa raíz de defectos e incidentes |
 | `04-01-diseno-solucion.md` | 4.1 | Diseño funcional y técnico de solución |

@@ -6,6 +6,18 @@ Este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 
 ---
 
+## [1.9.1] — 2026-04-22
+
+### Added
+- **2 nuevos prompts — Triage de backlog GitHub Issues** (1 tema × ES+EN):
+  - `02-04` — Triage y planificación de backlog de GitHub Issues: análisis de issues filtrados por componente, responsable, label o estatus pendiente; normalización, categorización, priorización, dependencias, riesgos y plan de atención con tareas, responsables y entregables
+- Ejemplos de entrada listos para usar con `gh issue list` y con exportaciones JSON/CSV/tabla de issues
+
+### Changed
+- `README.md`: conteo actualizado a **64 prompts / 17 grupos** (antes 63/17)
+- `README.md`: sección `02` actualizada para reflejar el nuevo prompt de triage de backlog
+- `00-framework.md` y `00-framework.en.md`: índice actualizado con la entrada `02-04`
+
 ## [1.9.0] — 2026-04-19
 
 ### Added
