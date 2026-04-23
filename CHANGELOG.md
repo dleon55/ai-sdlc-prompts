@@ -6,6 +6,13 @@ Este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 
 ---
 
+## [1.9.2] — 2026-04-22
+
+### Changed
+- UX/UI: nuevo acceso flotante de **Variables rápidas** para editar las variables más usadas sin regresar al inicio del scroll
+- `build.py`: sincronización bidireccional entre panel completo y acceso rápido, manteniendo el contrato actual basado en `localStorage`
+- `build.py`: el CTA del panel cambia de **“Aplicar al copiar”** a **“Listo”** para reflejar que las variables ya se guardan automáticamente
+
 ## [1.9.1] — 2026-04-22
 
 ### Added

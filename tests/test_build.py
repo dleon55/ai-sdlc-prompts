@@ -119,6 +119,18 @@ def test_js_i18n_functions_present():
     print("✓ Funciones JavaScript i18n presentes")
 
 
+def test_variables_quick_access_present():
+    """Validar que existe acceso flotante de variables rápidas"""
+    index_file = PROJECT_ROOT / "index.html"
+    content = index_file.read_text(encoding='utf-8')
+    assert 'id="var-float"' in content, "Contenedor var-float no encontrado"
+    assert 'id="var-float-count"' in content, "Resumen de variables rápidas no encontrado"
+    assert 'function toggleVarFloat' in content, "Función toggleVarFloat no encontrada"
+    assert 'function syncProjectFromQuickFloat' in content, "Sincronización de quick vars no encontrada"
+    assert '>Más variables<' in content, "CTA de acceso al panel completo no encontrado"
+    print("✓ Acceso flotante de variables presente")
+
+
 def run_all_tests():
     """Ejecutar todas las pruebas de build"""
     print("=" * 60)
@@ -136,6 +148,7 @@ def run_all_tests():
         test_css_i18n_selectors_present,
         test_framework_dual_language,
         test_js_i18n_functions_present,
+        test_variables_quick_access_present,
     ]
     
     passed = 0

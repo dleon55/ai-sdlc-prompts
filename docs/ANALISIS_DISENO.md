@@ -22,8 +22,9 @@ El compilador actúa como un generador de sitios estáticos (SSG) simplificado:
 4. **Bundle Generation:** Consolida CSS, JS y el contenido en un `index.html` final.
 
 ### 3.2 Diseño de Interacción (UX)
-- **Panel de Variables:** Sidebar derecho para la entrada de datos persistente via `localStorage`.
-- **Modo Proyecto:** Selector rápido en la barra de búsqueda para cambiar el contexto global de las variables.
+- **Panel de Variables:** Sidebar derecho para la configuración completa de variables persistentes via `localStorage`.
+- **Variables Rápidas:** Acceso flotante para edición de variables frecuentes sin perder el contexto de scroll ni abandonar la lectura del prompt.
+- **Modo Proyecto:** Selector rápido en la barra de búsqueda y selector flotante para cambiar el contexto global de las variables.
 - **Modal Informativo (ⓘ):** Desglose de "Fórmulas de uso" para que el humano sepa qué comandos enviar a la IA (ej. "Usa el prompt de análisis del issue X").
 
 ## 4. Casos de Uso

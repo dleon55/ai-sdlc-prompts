@@ -1098,6 +1098,80 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
 }
 .proj-float.open .proj-float-dropdown { display: block; }
 @media (max-width: 560px) { .proj-float-name { display: none; } }
+
+/* ══════════════ FLOATING VARIABLES QUICK ACCESS ══════════════ */
+.var-float {
+  position: fixed; bottom: 4.65rem; right: 1.25rem; z-index: 505;
+  display: flex; flex-direction: column; align-items: flex-end;
+}
+.var-float-btn {
+  display: flex; align-items: center; gap: .45rem;
+  background: var(--bg2); border: 1px solid #0e7490;
+  border-radius: 999px; padding: .38rem .75rem .38rem .55rem;
+  color: var(--tx); font-size: .78rem; cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,.35);
+  white-space: nowrap; transition: background .15s, border-color .15s;
+}
+.var-float-btn:hover, .var-float-btn.has-vars { background: #0f172a; border-color: #06b6d4; }
+.var-float-icon {
+  width: 22px; height: 22px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(6,182,212,.12); color: #67e8f9; flex-shrink: 0;
+}
+.var-float-label { font-weight: 700; color: #d7f9ff; }
+.var-float-count {
+  font-size: .66rem; font-weight: 700; border-radius: 999px;
+  background: #0f3a46; color: #7dd3fc; padding: .1rem .42rem;
+  min-width: 42px; text-align: center;
+}
+.var-float-count.empty { background: var(--bg4); color: var(--tx3); }
+.var-float-chevron { transition: transform .15s; flex-shrink: 0; }
+.var-float.open .var-float-chevron { transform: rotate(180deg); }
+.var-float-dropdown {
+  display: none; margin-bottom: .45rem; width: 320px;
+  background: var(--bg2); border: 1px solid var(--bdr);
+  border-radius: 12px; padding: .85rem;
+  box-shadow: 0 12px 32px rgba(0,0,0,.45);
+}
+.var-float.open .var-float-dropdown { display: block; }
+.var-float-hdr {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: .75rem; margin-bottom: .75rem;
+}
+.var-float-title {
+  font-size: .78rem; font-weight: 700; color: #d7f9ff; margin-bottom: .18rem;
+}
+.var-float-sub {
+  font-size: .66rem; color: var(--tx3); line-height: 1.45;
+}
+.var-float-close {
+  background: none; border: none; color: var(--tx3); cursor: pointer;
+  font-size: 1rem; line-height: 1; border-radius: 4px; padding: .1rem;
+}
+.var-float-close:hover { color: var(--tx); }
+.var-float-form { display: flex; flex-direction: column; gap: .65rem; }
+.var-float .var-group label { font-size: .62rem; }
+.var-float .var-group textarea { min-height: 48px; }
+.var-float-actions {
+  margin-top: .75rem; display: flex; align-items: center;
+  justify-content: space-between; gap: .5rem;
+}
+.var-float-link, .var-float-primary {
+  border-radius: 7px; padding: .38rem .8rem; font-size: .72rem;
+  font-weight: 700; cursor: pointer; font-family: inherit;
+}
+.var-float-link {
+  background: transparent; border: 1px solid var(--bdr2); color: var(--tx2);
+}
+.var-float-link:hover { background: var(--bg3); }
+.var-float-primary {
+  background: #0891b2; border: 1px solid #06b6d4; color: #fff;
+}
+.var-float-primary:hover { background: #0e7490; }
+@media (max-width: 640px) {
+  .var-float { right: .85rem; bottom: 4.85rem; }
+  .var-float-dropdown { width: min(320px, calc(100vw - 1.7rem)); }
+}
 """
 
 JS = """
@@ -1209,27 +1283,58 @@ var FIELD_VAR_MAP = {
   'vf-autonomia': 'autonomia'
 };
 
+var QUICK_FIELD_VAR_MAP = {
+  'qv-repositorio': 'repositorio',
+  'qv-referencia': 'referencia',
+  'qv-rama-actual': 'rama_actual',
+  'qv-rama-destino': 'rama_destino',
+  'qv-modulo': 'modulo'
+};
+
+function syncFieldsToValues(fieldMap, values) {
+  Object.keys(fieldMap).forEach(function(eid) {
+    var el = document.getElementById(eid);
+    if (el) el.value = values[fieldMap[eid]] || '';
+  });
+}
+
+function updateActiveProjectVars(fieldMap) {
+  var list = loadProjects();
+  if (!list) return null;
+  var actId = localStorage.getItem(LS_KEY_ACTV);
+  var p = list.find(function(x) { return x.id === actId; });
+  if (!p) return null;
+  Object.keys(fieldMap).forEach(function(eid) {
+    var el = document.getElementById(eid);
+    if (el) p.vars[fieldMap[eid]] = el.value;
+  });
+  saveProjects(list);
+  return p.vars;
+}
+
+function syncQuickVarInputs() {
+  syncFieldsToValues(QUICK_FIELD_VAR_MAP, getVarValues());
+}
+
 function syncPanelToProject() {
   var p = getActiveProject();
   var v = p ? p.vars : EMPTY_VARS;
-  Object.keys(FIELD_VAR_MAP).forEach(function(eid) {
-    var el = document.getElementById(eid);
-    if (el) el.value = v[FIELD_VAR_MAP[eid]] || '';
-  });
+  syncFieldsToValues(FIELD_VAR_MAP, v);
+  syncQuickVarInputs();
   updateVarsBadge();
 }
 
 function syncProjectFromPanel() {
-  var list = loadProjects();
-  if (!list) return;
-  var actId = localStorage.getItem(LS_KEY_ACTV);
-  var p = list.find(function(x) { return x.id === actId; });
-  if (!p) return;
-  Object.keys(FIELD_VAR_MAP).forEach(function(eid) {
-    var el = document.getElementById(eid);
-    if (el) p.vars[FIELD_VAR_MAP[eid]] = el.value;
-  });
-  saveProjects(list);
+  if (!updateActiveProjectVars(FIELD_VAR_MAP)) return;
+  syncQuickVarInputs();
+  updateVarsBadge();
+}
+
+function syncProjectFromQuickFloat() {
+  var vars = updateActiveProjectVars(QUICK_FIELD_VAR_MAP);
+  if (!vars) return;
+  syncFieldsToValues(FIELD_VAR_MAP, vars);
+  updateVarsBadge();
 }
 
 function renderProjectSelector() {
@@ -1443,14 +1548,29 @@ function countFilledVars() {
 
 function updateVarsBadge() {
   var badge = document.getElementById('vars-badge');
-  if (!badge) return;
   var filled = countFilledVars();
   var total = Object.keys(EMPTY_VARS).length;
-  badge.classList.toggle('show', filled > 0);
-  badge.textContent = filled + '/' + total;
+  if (badge) {
+    badge.classList.toggle('show', filled > 0);
+    badge.textContent = filled + '/' + total;
+  }
+  updateVarFloatSummary();
+}
+
+function updateVarFloatSummary() {
+  var filled = countFilledVars();
+  var total = Object.keys(EMPTY_VARS).length;
+  var countEl = document.getElementById('var-float-count');
+  if (countEl) {
+    countEl.textContent = filled + '/' + total;
+    countEl.classList.toggle('empty', filled === 0);
+  }
+  var btn = document.getElementById('var-float-btn');
+  if (btn) btn.classList.toggle('has-vars', filled > 0);
 }
 
 function openVarPanel() {
+  closeVarFloat();
   var p = document.getElementById('var-panel');
   if (p) p.classList.add('open');
   var btn = document.getElementById('var-toggle-btn');
@@ -1468,6 +1588,32 @@ function toggleVarPanel() {
   var p = document.getElementById('var-panel');
   if (p && p.classList.contains('open')) closeVarPanel();
   else openVarPanel();
+}
+
+function openVarFloat() {
+  closeVarPanel();
+  syncQuickVarInputs();
+  updateVarFloatSummary();
+  var wrap = document.getElementById('var-float');
+  if (wrap) wrap.classList.add('open');
+}
+
+function closeVarFloat() {
+  var wrap = document.getElementById('var-float');
+  if (wrap) wrap.classList.remove('open');
+}
+
+function toggleVarFloat(e) {
+  if (e) e.stopPropagation();
+  var wrap = document.getElementById('var-float');
+  if (!wrap) return;
+  if (wrap.classList.contains('open')) closeVarFloat();
+  else openVarFloat();
+}
+
+function openFullVarPanelFromFloat() {
+  closeVarFloat();
+  openVarPanel();
 }
 
 function clearVars() {
@@ -1941,6 +2087,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     var floatWrap = document.getElementById('proj-float');
     if (floatWrap && !floatWrap.contains(e.target)) closeProjFloat();
+
+    var varFloat = document.getElementById('var-float');
+    if (varFloat && !varFloat.contains(e.target)) closeVarFloat();
     
     var dd = document.getElementById('lang-dropdown');
     var btn = document.getElementById('lang-btn');
@@ -1961,7 +2110,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') { 
-      closeInfo(); closeVarPanel(); closeProjectsModal(); 
+      closeInfo(); closeVarPanel(); closeVarFloat(); closeProjectsModal(); 
       closeProjQuick(); skipOnboarding(); closeMenu(); closeLanguageDropdown();
     }
   });
@@ -2639,7 +2788,7 @@ def build():
 
         '  </div>\n'  # end var-panel-body
         '  <div class="var-panel-footer">'
-        '<button class="var-apply-btn" id="var-apply-btn" onclick="updateVarsBadge(); flash(this)">&#10003; Aplicar al copiar</button>'
+        '<button class="var-apply-btn" id="var-apply-btn" onclick="closeVarPanel(); flash(this)">&#10003; Listo</button>'
         '<button class="var-clear-btn" onclick="clearVars()">Limpiar</button>'
         '</div>\n'
         '</div>\n'
@@ -2764,6 +2913,52 @@ def build():
         '</div>\n'  # close #app-root
 
         '<script>' + prompt_info_js + '\n' + JS + LANDING_JS + '</script>\n'
+        '<!-- \u2550\u2550 FLOATING VARIABLES QUICK ACCESS \u2550\u2550 -->\n'
+        '<div class="var-float" id="var-float">\n'
+        '  <div class="var-float-dropdown" id="var-float-dropdown">\n'
+        '    <div class="var-float-hdr">\n'
+        '      <div>\n'
+        '        <div class="var-float-title">Variables rápidas</div>\n'
+        '        <div class="var-float-sub">Edita el contexto más usado sin perder el scroll.</div>\n'
+        '      </div>\n'
+        '      <button class="var-float-close" onclick="closeVarFloat()" title="Cerrar">&#x2715;</button>\n'
+        '    </div>\n'
+        '    <div class="var-float-form">\n'
+        '      <div class="var-group">\n'
+        '        <label for="qv-repositorio">Repositorio</label>\n'
+        '        <input id="qv-repositorio" type="text" placeholder="org/nombre-repo o URL" oninput="syncProjectFromQuickFloat()">\n'
+        '      </div>\n'
+        '      <div class="var-group">\n'
+        '        <label for="qv-referencia">Issue / Referencia</label>\n'
+        '        <textarea id="qv-referencia" placeholder="Número, URL o resumen corto" oninput="syncProjectFromQuickFloat()"></textarea>\n'
+        '      </div>\n'
+        '      <div class="var-group">\n'
+        '        <label for="qv-rama-actual">Rama actual</label>\n'
+        '        <input id="qv-rama-actual" type="text" placeholder="feature/mi-rama" oninput="syncProjectFromQuickFloat()">\n'
+        '      </div>\n'
+        '      <div class="var-group">\n'
+        '        <label for="qv-rama-destino">Rama destino</label>\n'
+        '        <input id="qv-rama-destino" type="text" placeholder="main / develop" oninput="syncProjectFromQuickFloat()">\n'
+        '      </div>\n'
+        '      <div class="var-group">\n'
+        '        <label for="qv-modulo">Módulo / proceso</label>\n'
+        '        <input id="qv-modulo" type="text" placeholder="Nombre del módulo o funcionalidad" oninput="syncProjectFromQuickFloat()">\n'
+        '      </div>\n'
+        '    </div>\n'
+        '    <div class="var-float-actions">\n'
+        '      <button class="var-float-link" onclick="openFullVarPanelFromFloat()">Más variables</button>\n'
+        '      <button class="var-float-primary" onclick="closeVarFloat(); flash(this)">Listo</button>\n'
+        '    </div>\n'
+        '  </div>\n'
+        '  <button class="var-float-btn" id="var-float-btn" onclick="toggleVarFloat(event)" title="Editar variables activas">\n'
+        '    <span class="var-float-icon">\n'
+        '      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>\n'
+        '    </span>\n'
+        '    <span class="var-float-label">Vars</span>\n'
+        '    <span class="var-float-count empty" id="var-float-count">0/12</span>\n'
+        '    <span class="var-float-chevron"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>\n'
+        '  </button>\n'
+        '</div>\n'
         '<!-- \u2550\u2550 FLOATING PROJECT SELECTOR \u2014 issue #30 \u2550\u2550 -->\n'
         '<div class="proj-float" id="proj-float">\n'
         '  <div class="proj-float-dropdown" id="proj-float-dropdown"></div>\n'
