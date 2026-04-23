@@ -120,9 +120,15 @@ def parse_md(filepath):
 
     for b in blocks[1:]:
         # Bloques de fórmula/instrucción para el humano:
-        #   "Usa el prompt de..." (fórmula de uso estándar)
+        #   "Usa el prompt..." / "Use the prompt..."
+        #   ejemplos de invocación o CLI
         #   bloques de formato de commit (fix( / feat( ...)
-        if re.match(r"^Usa el prompt", b) or re.match(r"^(fix|feat|refactor|docs|test|chore)\(", b):
+        if (
+            re.match(r"^(Usa el prompt|Use the prompt)", b)
+            or re.match(r"^(Ejemplo|Example)\b", b)
+            or re.match(r"^gh issue list\b", b)
+            or re.match(r"^(fix|feat|refactor|docs|test|chore)\(", b)
+        ):
             formula_blocks.append(b)
         else:
             # Prompts reales encadenados (ej. 08-03 ejecución: "Con base en el análisis...")
