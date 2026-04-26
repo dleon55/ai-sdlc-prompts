@@ -506,6 +506,11 @@ code {
   color: var(--tx); font-size: .76rem; border-radius: 5px; outline: none;
   transition: border-color .12s; font-family: inherit;
 }
+.var-group input, .var-group select, .var-group textarea {
+  width: 100%; background: #181c2a; border: 1.5px solid #262b45;
+  color: #dde1f5; font-size: .76rem; border-radius: 5px; outline: none;
+  transition: border-color .12s; font-family: inherit;
+}
 .var-group input, .var-group select { padding: .35rem .6rem; }
 .var-group textarea { padding: .35rem .6rem; resize: vertical; min-height: 56px; }
 .var-group input:focus, .var-group select:focus, .var-group textarea:focus {
@@ -811,7 +816,7 @@ body.sidebar-collapsed .sidebar-label-text { display: none; }
 body.sidebar-collapsed .sid-link { padding: .38rem; justify-content: center; gap: 0; }
 body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem .25rem; }
 
-/* ════════════════════  RESPONSIVE  ════════════════════════════════ */
+/* ════════════════════  RESPONSIVE  ══════════════════════════════ */
 @media (max-width: 900px) {
   .hdr-logo p { display: none; }
   .tag-warn { font-size: .58rem; padding: .12rem .35rem; }
@@ -949,7 +954,6 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   transition: border-color .15s;
 }
 .ob-email-input:focus { border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99,102,241,.15); }
-.ob-email-input::placeholder { color: var(--tx3); }
 .ob-email-submit {
   margin-top: .55rem; width: 100%; padding: .42rem 1rem;
   background: linear-gradient(90deg,#6366f1,#8b5cf6); border: none;
@@ -959,7 +963,7 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
 .ob-email-submit:hover { opacity: .88; }
 .ob-email-submit.ok { background: var(--grn); }
 .ob-email-note { font-size: .66rem; color: var(--tx3); margin-top: .35rem; text-align: center; }
-/* ═════════════════ LANDING PAGE ════════════════════════════════ */
+/* ═════════════════ LANDING PAGE ══════════════════════════════ */
 .landing {
   min-height: 100vh; background: var(--bg);
   display: flex; flex-direction: column; overflow-y: auto;
@@ -1456,7 +1460,7 @@ function renderProjFloat() {
   var items = list.map(function(p) {
     var isAct = p.id === activeId;
     return '<button class="pq-item' + (isAct ? ' pq-active' : '') + '"'
-      + ' onclick="switchProject(\\'' + p.id + '\\');closeProjFloat();">' 
+      + ' onclick="switchProject(\\'' + p.id + '\\');closeProjFloat();">'
       + '<span class="pq-dot' + (isAct ? ' on' : '') + '"></span>'
       + '<span class="pq-item-name">' + p.name.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</span>'
       + (p.isDefault ? '<span style="font-size:.6rem;color:var(--tx3)">\u2605</span>' : '')
@@ -2049,6 +2053,8 @@ function submitObEmail() {
       return;
     }
     // Guardar localmente
+          '</div>\n'
+          '<div class="var-panel-overlay" id="var-panel-overlay" onclick="closeVarPanel()"></div>\n'
     localStorage.setItem(LS_EMAIL, email);
     // Enviar a Mailchimp (POST silencioso — sin redirección)
     var MC_URL = 'https://lionsystems.us22.list-manage.com/subscribe/post-json?u=MAILCHIMP_U&id=MAILCHIMP_ID&c=?';
