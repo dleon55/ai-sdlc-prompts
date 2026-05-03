@@ -8,8 +8,27 @@ import json
 from pathlib import Path
 from collections import defaultdict
 
+import i18n_strings
+
 PROMPTS_DIR = Path(__file__).parent / "ai_sdlc_pro_prompts"
 OUTPUT_FILE = Path(__file__).parent / "index.html"
+
+def count_prompts():
+    count = 0
+    for f in PROMPTS_DIR.glob("*.md"):
+        # Ignorar traducciones, el framework base y archivos vacíos/deprecados
+        if f.name.endswith(".en.md") or f.name == "00-framework.md":
+            continue
+        
+        # Validar contenido mínimo y que no esté deprecado
+        content = f.read_text(encoding="utf-8")
+        if len(content.strip()) < 20 or "DEPRECATED" in content:
+            continue
+            
+        count += 1
+    return count
+
+TOTAL_PROMPTS = count_prompts()
 
 # (etiqueta, clave-icono)
 SECTION_META = {
@@ -30,22 +49,7 @@ SECTION_META = {
 }
 
 # Labels con tildes/enye para mostrar en UI
-SECTION_LABEL = {
-    "00": "Framework base",
-    "01": "Comprensión del repositorio",
-    "02": "Análisis",
-    "03": "Incidentes",
-    "04": "Diseño de solución",
-    "05": "Plan de implementación",
-    "06": "Ejecución",
-    "07": "Pruebas",
-    "08": "Revisión y remediación",
-    "09": "Integración y CI/CD",
-    "10": "Documentación",
-    "11": "Operaciones",
-    "12": "Orquestador",
-    "13": "Seguridad y DevSecOps",
-}
+SECTION_LABEL = i18n_strings.SECTION_LABELS_I18N['es']
 
 # Color accent por sección (hue de HSL)
 SECTION_COLOR = {
@@ -2164,75 +2168,74 @@ LANDING_JS = """
 })();
 """
 
-LANDING_HTML = (
-  '<div id="landing-root" class="landing">\n'
-  '  <nav class="landing-nav">\n'
-  '    <div class="landing-nav-logo">\n'
-  '      <img src="https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png"'
-  ' width="28" height="28" alt="Lionsystems" style="border-radius:4px;flex-shrink:0;">\n'
-  '      <h1>AI-SDLC Pro</h1>\n'
-  '    </div>\n'
-  '    <a class="landing-nav-cta" href="/app">Explorar prompts \u2192</a>\n'
-  '  </nav>\n'
-  '  <section class="landing-hero">\n'
-  '    <span class="landing-badge">\u25cf Framework profesional \u00b7 44 prompts</span>\n'
-  '    <h2>Deja de improvisar con IA.<br><em>Dirige cada fase del SDLC.</em></h2>\n'
-  '    <p>44 prompts estructurados para guiar a Copilot, Claude, Cursor y Windsurf\n'
-  'en an\u00e1lisis, dise\u00f1o, implementaci\u00f3n, pruebas, CI/CD y documentaci\u00f3n\n'
-  '\u2014 en espa\u00f1ol, listos para producci\u00f3n.</p>\n'
-  '    <div class="landing-cta-group">\n'
-  '      <a class="landing-cta-primary" href="/app">Explorar prompts gratis \u2192</a>\n'
-  '      <a class="landing-cta-secondary" href="https://github.com/dleon55/ai-sdlc-prompts"'
-  ' target="_blank" rel="noopener">Ver en GitHub \u2197</a>\n'
-  '    </div>\n'
-  '  </section>\n'
-  '  <section class="landing-pain">\n'
-  '    <div class="landing-pain-inner">\n'
-  '      <h3>\u00bfPor qu\u00e9 tus agentes IA producen resultados inconsistentes?</h3>\n'
-  '      <p class="landing-pain-sub">No es el modelo \u2014 es la falta de un prompt de direcci\u00f3n preciso</p>\n'
-  '      <div class="landing-pain-grid">\n'
-  '        <div class="pain-card"><div class="pain-card-icon">\U0001f3b2</div>\n'
-  '          <h4>Respuestas gen\u00e9ricas</h4>\n'
-  '          <p>El agente no sabe tu stack ni las reglas de tu proyecto \u2014 da c\u00f3digo gen\u00e9rico que necesitas reescribir.</p>\n'
-  '        </div>\n'
-  '        <div class="pain-card"><div class="pain-card-icon">\U0001f501</div>\n'
-  '          <h4>Repetir contexto en cada sesi\u00f3n</h4>\n'
-  '          <p>Explicas el proyecto desde cero cada vez. Pierdes tiempo y el agente pierde calidad de respuesta.</p>\n'
-  '        </div>\n'
-  '        <div class="pain-card"><div class="pain-card-icon">\U0001f9e9</div>\n'
-  '          <h4>Sin estructura SDLC</h4>\n'
-  '          <p>El agente salta directo a c\u00f3digo sin an\u00e1lisis ni dise\u00f1o. Resultado: deuda t\u00e9cnica desde el primer commit.</p>\n'
-  '        </div>\n'
-  '        <div class="pain-card"><div class="pain-card-icon">\u26a0\ufe0f</div>\n'
-  '          <h4>Multi-agente sin gobernanza</h4>\n'
-  '          <p>Copilot, Claude y Cursor reciben instrucciones contradictorias y producen artefactos incompatibles.</p>\n'
-  '        </div>\n'
-  '      </div>\n'
-  '    </div>\n'
-  '  </section>\n'
-  '  <section class="landing-proof">\n'
-  '    <h3>El framework en n\u00fameros</h3>\n'
-  '    <div class="proof-grid">\n'
-  '      <div class="proof-stat"><div class="proof-stat-num">44</div><div class="proof-stat-label">Prompts listos para usar</div></div>\n'
-  '      <div class="proof-stat"><div class="proof-stat-num">10</div><div class="proof-stat-label">Fases del ciclo SDLC</div></div>\n'
-  '      <div class="proof-stat"><div class="proof-stat-num">4</div><div class="proof-stat-label">Agentes IA cubiertos</div></div>\n'
-  '      <div class="proof-stat"><div class="proof-stat-num">0</div><div class="proof-stat-label">Costo para empezar</div></div>\n'
-  '    </div>\n'
-  '  </section>\n'
-  '  <section class="landing-final">\n'
-  '    <h3>Empieza a dirigir tus agentes IA hoy</h3>\n'
-  '    <p>Acceso gratuito. Sin registro. Sin tarjeta de cr\u00e9dito.</p>\n'
-  '    <div class="landing-cta-group">\n'
-  '      <a class="landing-cta-primary" href="/app">Abrir biblioteca de prompts \u2192</a>\n'
-  '    </div>\n'
-  '  </section>\n'
-  '  <footer class="landing-footer">\n'
-  '    <span>AI-SDLC Pro &copy; 2025 LionSystems</span>\n'
-  '    <a class="landing-cta-secondary" style="font-size:.72rem;padding:.25rem .75rem;"'
-  ' href="https://lionsystems.com.mx" target="_blank" rel="noopener">lionsystems.com.mx \u2197</a>\n'
-  '  </footer>\n'
-  '</div>\n'
-)
+def get_landing_html(n):
+    ls = i18n_strings.LANDING_STRINGS['es']
+    return (
+        f'<div id="landing-root" class="landing">\n'
+        f'  <nav class="landing-nav">\n'
+        f'    <div class="landing-nav-logo">\n'
+        f'      <img src="https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png" width="28" height="28" alt="Lionsystems" style="border-radius:4px;flex-shrink:0;">\n'
+        f'      <h1>AI-SDLC Pro</h1>\n'
+        f'    </div>\n'
+        f'    <a class="landing-nav-cta" href="/app">{ls["cta_nav"]}</a>\n'
+        f'  </nav>\n'
+        f'  <section class="landing-hero">\n'
+        f'    <span class="landing-badge">\u25cf {ls["hero_badge"].format(n=n)}</span>\n'
+        f'    <h2>{ls["hero_title"]}</h2>\n'
+        f'    <p>{ls["hero_subtitle"].format(n=n)}</p>\n'
+        f'    <div class="landing-cta-group">\n'
+        f'      <a class="landing-cta-primary" href="/app">{ls["cta_primary"]}</a>\n'
+        f'      <a class="landing-cta-secondary" href="https://github.com/dleon55/ai-sdlc-prompts" target="_blank" rel="noopener">{ls["cta_secondary"]}</a>\n'
+        f'    </div>\n'
+        f'  </section>\n'
+        f'  <section class="landing-pain">\n'
+        f'    <div class="landing-pain-inner">\n'
+        f'      <h3>{ls["pain_title"]}</h3>\n'
+        f'      <p class="landing-pain-sub">{ls["pain_subtitle"]}</p>\n'
+        f'      <div class="landing-pain-grid">\n'
+        f'        <div class="pain-card"><div class="pain-card-icon">\U0001f3b2</div>\n'
+        f'          <h4>{ls["pain_1_title"]}</h4>\n'
+        f'          <p>{ls["pain_1_desc"]}</p>\n'
+        f'        </div>\n'
+        f'        <div class="pain-card"><div class="pain-card-icon">\U0001f501</div>\n'
+        f'          <h4>{ls["pain_2_title"]}</h4>\n'
+        f'          <p>{ls["pain_2_desc"]}</p>\n'
+        f'        </div>\n'
+        f'        <div class="pain-card"><div class="pain-card-icon">\U0001f9e9</div>\n'
+        f'          <h4>{ls["pain_3_title"]}</h4>\n'
+        f'          <p>{ls["pain_3_desc"]}</p>\n'
+        f'        </div>\n'
+        f'        <div class="pain-card"><div class="pain-card-icon">\u26a0\ufe0f</div>\n'
+        f'          <h4>{ls["pain_4_title"]}</h4>\n'
+        f'          <p>{ls["pain_4_desc"]}</p>\n'
+        f'        </div>\n'
+        f'      </div>\n'
+        f'    </div>\n'
+        f'  </section>\n'
+        f'  <section class="landing-proof">\n'
+        f'    <h3>{ls["proof_title"]}</h3>\n'
+        f'    <div class="proof-grid">\n'
+        f'      <div class="proof-stat"><div class="proof-stat-num">{n}</div><div class="proof-stat-label">{ls["proof_stat_1_label"]}</div></div>\n'
+        f'      <div class="proof-stat"><div class="proof-stat-num">15</div><div class="proof-stat-label">{ls["proof_stat_2_label"]}</div></div>\n'
+        f'      <div class="proof-stat"><div class="proof-stat-num">6</div><div class="proof-stat-label">{ls["proof_stat_3_label"]}</div></div>\n'
+        f'      <div class="proof-stat"><div class="proof-stat-num">0</div><div class="proof-stat-label">{ls["proof_stat_4_label"]}</div></div>\n'
+        f'    </div>\n'
+        f'  </section>\n'
+        f'  <section class="landing-final">\n'
+        f'    <h3>{ls["final_title"]}</h3>\n'
+        f'    <p>{ls["final_subtitle"]}</p>\n'
+        f'    <div class="landing-cta-group">\n'
+        f'      <a class="landing-cta-primary" href="/app">{ls["cta_nav"]}</a>\n'
+        f'    </div>\n'
+        f'  </section>\n'
+        f'  <footer class="landing-footer">\n'
+        f'    <span>{ls["footer_copyright"]}</span>\n'
+        f'    <a class="landing-cta-secondary" style="font-size:.72rem;padding:.25rem .75rem;" href="https://lionsystems.com.mx" target="_blank" rel="noopener">lionsystems.com.mx \u2197</a>\n'
+        f'  </footer>\n'
+        f'</div>\n'
+    )
+
+LANDING_HTML = get_landing_html(TOTAL_PROMPTS)
 
 
 def build():
@@ -2306,20 +2309,7 @@ def build():
     )
 
     # Mapeo de labels para sidebar (usado en generación estática)
-    SEC_LABELS = {
-        'es': {
-            '01': 'Comprensión', '02': 'Análisis', '03': 'Incidentes', '04': 'Diseño',
-            '05': 'Planificación', '06': 'Ejecución', '07': 'Pruebas', '08': 'Revisión',
-            '09': 'Integración', '10': 'Documentación', '11': 'Operaciones', '12': 'Orquestador',
-            '13': 'Seguridad y DevSecOps',  # fix #31
-        },
-        'en': {
-            '01': 'Comprehension', '02': 'Analysis', '03': 'Incidents', '04': 'Design',
-            '05': 'Planning', '06': 'Execution', '07': 'Testing', '08': 'Review',
-            '09': 'Integration', '10': 'Documentation', '11': 'Operations', '12': 'Orchestrator',
-            '13': 'Security & DevSecOps',  # fix #31
-        }
-    }
+    SEC_LABELS = i18n_strings.SECTION_LABELS_I18N
 
     for sk in sorted(k for k in sections if k != "00"):
         label_es = SEC_LABELS['es'].get(sk, sk)
@@ -2493,18 +2483,18 @@ def build():
         '<!DOCTYPE html>\n<html lang="es">\n<head>\n'
         '<meta charset="UTF-8">\n'
         '<meta name="viewport" content="width=device-width,initial-scale=1.0">\n'
-        '<title>AI-SDLC Pro \u2014 Biblioteca de Prompts</title>\n'
-        '<meta name="description" content="44 prompts estructurados para dirigir agentes IA (Copilot, Claude, Cursor, Windsurf) en cada fase del ciclo de ingenieria de software. Framework SDLC profesional en espanol.">\n'
+        f'<title>{i18n_strings.LANDING_STRINGS["es"]["page_title"]}</title>\n'
+        f'<meta name="description" content="{i18n_strings.LANDING_STRINGS["es"]["meta_description"].format(n=TOTAL_PROMPTS)}">\n'
         '<meta name="keywords" content="prompts ingenieria software IA, prompts GitHub Copilot SDLC, prompts Claude desarrollo software, AI-SDLC framework espanol, prompts multi-agente desarrollo software, biblioteca prompts cursor windsurf">\n'
         '<meta name="author" content="LionSystems">\n'
         '<meta property="og:type" content="website">\n'
         '<meta property="og:url" content="https://prompts.lionsystems.com.mx">\n'
-        '<meta property="og:title" content="AI-SDLC Pro \u2014 Biblioteca de Prompts de Ingeniería de Software">\n'
-        '<meta property="og:description" content="44 prompts estructurados para dirigir Copilot, Claude, Cursor y Windsurf en cada fase del SDLC. Gratis. En español.">\n'
+        f'<meta property="og:title" content="{i18n_strings.LANDING_STRINGS["es"]["page_title"]}">\n'
+        f'<meta property="og:description" content="{i18n_strings.LANDING_STRINGS["es"]["meta_description"].format(n=TOTAL_PROMPTS)}">\n'
         '<meta property="og:image" content="https://prompts.lionsystems.com.mx/og-image.png">\n'
         '<meta name="twitter:card" content="summary_large_image">\n'
-        '<meta name="twitter:title" content="AI-SDLC Pro \u2014 Biblioteca de Prompts">\n'
-        '<meta name="twitter:description" content="44 prompts para dirigir agentes IA en ingenieria de software. Copilot, Claude, Cursor, Windsurf.">\n'
+        f'<meta name="twitter:title" content="{i18n_strings.LANDING_STRINGS["es"]["page_title"]}">\n'
+        f'<meta name="twitter:description" content="{i18n_strings.LANDING_STRINGS["es"]["meta_description"].format(n=TOTAL_PROMPTS)}">\n'
         '<link rel="canonical" href="https://prompts.lionsystems.com.mx">\n'
         '<script async src="https://www.googletagmanager.com/gtag/js?id=G-C5JKYNZ62F"></script>\n'
         '<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-C5JKYNZ62F");</script>\n'
