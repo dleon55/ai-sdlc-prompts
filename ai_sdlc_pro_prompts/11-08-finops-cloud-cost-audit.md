@@ -1,0 +1,61 @@
+# 11.8 — Auditoría de FinOps y Eficiencia de Costos Cloud
+
+## Descripción
+
+Prompt enfocado en operaciones financieras de ingeniería (FinOps). Se le proporciona código de infraestructura (Terraform, AWS CDK, docker-compose) o métricas de arquitectura, y detecta recursos sobre-aprovisionados, arquitecturas costosas y propone alternativas serverless, spot instances o estrategias de caché para reducir la facturación mensual.
+
+**Cuándo usarlo:** Antes de aprovisionar nueva infraestructura, durante revisiones periódicas de costos (billing), o al evaluar arquitecturas para migraciones a la nube.
+
+---
+
+## Contexto obligatorio previo
+
+> Incluye el bloque del archivo `00-framework.md` antes de este prompt.
+
+---
+
+## Prompt completo
+
+```text
+Objetivo:
+Actúa como un Arquitecto de Infraestructura y Especialista en FinOps. Analiza la infraestructura proporcionada y detecta fugas de presupuesto, recursos sobre-aprovisionados y oportunidades de optimización de costos.
+
+Entradas:
+- proveedor_cloud: [AWS / GCP / Azure / On-Premise]
+- codigo_o_arquitectura: [PEGA ARCHIVOS TERRAFORM, KUBERNETES MANIFESTS O DIAGRAMA TEXTUAL]
+
+Actividades de Análisis:
+1. ANÁLISIS DE EFICIENCIA: Identifica instancias EC2/VMs que podrían reemplazarse por Serverless (Lambda/CloudRun) o Contenedores auto-escalables.
+2. OPTIMIZACIÓN DE ALMACENAMIENTO: Revisa las políticas de retención (S3 Lifecycle policies, EBS volumes) y sugiere tiers más económicos (ej. Glacier).
+3. TRAFFIC & NETWORKING: Detecta costos ocultos por transferencia de datos (Data Transfer Out, NAT Gateways, Cross-AZ traffic) y propone mitigaciones (CDNs, VPC Endpoints).
+4. ESTRATEGIA DE COMPRAS: Recomienda el uso de Instancias Spot o Reserved Instances/Savings Plans según el tipo de carga de trabajo.
+
+Salida Obligatoria:
+1. DETECCIÓN DE DESPERDICIO: Lista de recursos actualmente costosos o mal configurados.
+2. ARQUITECTURA OPTIMIZADA FINOPS: Sugerencia de refactorización de infraestructura.
+3. CÓDIGO CORREGIDO: Ajustes al Terraform/Manifests (ej. agregar `lifecycle_rule`, cambiar `instance_type`).
+4. IMPACTO FINANCIERO: Estimación cualitativa (o cuantitativa si es posible) del ahorro mensual.
+```
+
+---
+
+## Uso con fórmula estándar
+
+```text
+Usa el prompt de auditoría FinOps y adáptalo a:
+- proveedor_cloud: [PROVEEDOR]
+- codigo_o_arquitectura: [CÓDIGO IAC O DESCRIPCIÓN]
+- objetivo puntual de salida: identificar desperdicio y generar IaC optimizado.
+- nivel de profundidad: alto
+```
+
+---
+
+## Salida esperada
+
+| Sección | Contenido esperado |
+|---|---|
+| Detección de Desperdicio | Puntos críticos que generan facturación innecesaria |
+| Arquitectura Optimizada | Propuesta de rediseño orientado a la eficiencia de costos |
+| Código IaC Corregido | Bloques de Terraform/Kubernetes refactorizados |
+| Impacto Financiero | Proyección del ahorro derivado de las acciones |
