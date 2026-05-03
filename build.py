@@ -1080,9 +1080,12 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
 }
 
 /* ══════════════  FLOATING PROJECT SELECTOR (#30)  ══════════════ */
+.bottom-right-floats {
+  position: fixed; bottom: 1.25rem; right: 1.25rem; z-index: 505;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 0.6rem;
+}
 .proj-float {
-  position: fixed; bottom: 1.25rem; right: 1.25rem; z-index: 500;
-  display: flex; flex-direction: column; align-items: flex-end;
+  display: flex; flex-direction: column; align-items: flex-end; position: relative;
 }
 .proj-float-btn {
   display: flex; align-items: center; gap: .45rem;
@@ -1111,8 +1114,7 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
 
 /* ══════════════ FLOATING VARIABLES QUICK ACCESS ══════════════ */
 .var-float {
-  position: fixed; bottom: 4.65rem; right: 1.25rem; z-index: 505;
-  display: flex; flex-direction: column; align-items: flex-end;
+  display: flex; flex-direction: column; align-items: flex-end; position: relative;
 }
 .var-float-btn {
   display: flex; align-items: center; gap: .45rem;
@@ -2909,7 +2911,9 @@ def build():
         '</div>\n'  # close #app-root
 
         '<script>' + prompt_info_js + '\n' + JS + LANDING_JS + '</script>\n'
-        '<!-- \u2550\u2550 FLOATING VARIABLES QUICK ACCESS \u2550\u2550 -->\n'
+        '<!-- ═══ BOTTOM RIGHT FLOATING CONTROLS ═══ -->\n'
+        '<div class="bottom-right-floats">\n'
+        '<!-- ═══ FLOATING VARIABLES QUICK ACCESS ═══ -->\n'
         '<div class="var-float" id="var-float">\n'
         '  <div class="var-float-dropdown" id="var-float-dropdown">\n'
         '    <div class="var-float-hdr">\n'
@@ -2964,6 +2968,8 @@ def build():
         '    <span class="proj-float-chevron"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>\n'
         '  </button>\n'
         '</div>\n'
+        '</div>\n'
+        '<!-- ═══ END BOTTOM RIGHT FLOATS ═══ -->\n'
         '</body>\n</html>\n'
     )
 
