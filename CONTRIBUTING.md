@@ -74,6 +74,21 @@ Reglas:
 prompt nuevo → build.py → verify_clean.py → commit → push → CI auto-despliega
 ```
 
+### Política operativa temporal (OP-001)
+
+Mientras exista trabajo multi-agente concurrente, **se congela el push directo a `main`**.
+
+Reglas de operación:
+- Todo cambio debe salir desde una rama de trabajo y llegar a `main` por integración controlada.
+- La integración a `main` se realiza en ventanas acordadas por el responsable de release.
+- Antes de integrar, validar `git fetch`, estado limpio local y que no existan conflictos pendientes.
+
+Ventana sugerida de integración:
+- 12:00 y 18:00 (hora local) con revisión de estado de ramas activas.
+
+Referencia de coordinación:
+- Ver [docs/MULTIAGENT_BRANCHING_POLICY.md](docs/MULTIAGENT_BRANCHING_POLICY.md)
+
 ### Paso a paso
 
 1. **Crear o editar** el archivo `.md` en `ai_sdlc_pro_prompts/`
@@ -101,6 +116,36 @@ prompt nuevo → build.py → verify_clean.py → commit → push → CI auto-de
    - Deploy a GCP production (`prompts.lionsystems.com.mx`)
 
 > **Nunca editar `index.html` directamente.** Siempre usar `build.py` como fuente de verdad.
+
+---
+
+## Convención de ramas multi-agente (OP-003)
+
+Formato obligatorio:
+
+```
+<tipo>/<scope>/<ticket>-<descripcion-corta>
+```
+
+Tipos permitidos:
+- `feat`
+- `fix`
+- `docs`
+- `ops`
+- `sec`
+- `qa`
+- `chore`
+
+Ejemplos:
+- `feat/prompts/iss-142-nuevo-prompt-performance`
+- `fix/build/iss-155-bug-parser-formulas`
+- `ops/ci/iss-160-hardening-workflow`
+
+Reglas:
+- Una rama por unidad lógica de trabajo.
+- Commits atómicos y trazables por issue/ticket.
+- Prohibido reutilizar ramas cerradas para nuevos cambios.
+- Si hay cambios cruzados entre repositorio raíz y subrepositorio, separar en ramas y PRs independientes.
 
 ---
 
