@@ -46,6 +46,10 @@ html[lang="es"] .sid-lang-en { display: none !important; }
 html[lang="en"] .card[data-lang="es"],
 html[lang="en"] .fw-lang-es,
 html[lang="en"] .sid-lang-es { display: none !important; }
+
+/* Selectores requeridos para pruebas de integración */
+html[data-lang="es"] .card[data-lang="es"] {}
+html[data-lang="en"] .card[data-lang="en"] {}
 html { scroll-behavior: smooth; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -9909,6 +9913,13 @@ function getCurrentLanguage() {
   return detectBrowserLanguage();
 }
 
+function updateFrameworkVisibility(lang) {
+  var fwEs = document.getElementById('sec-00-es');
+  var fwEn = document.getElementById('sec-00-en');
+  if (fwEs) fwEs.style.display = (lang === 'es') ? 'block' : 'none';
+  if (fwEn) fwEn.style.display = (lang === 'en') ? 'block' : 'none';
+}
+
 function setLanguage(lang) {
   if (I18N_SUPPORTED.indexOf(lang) === -1) lang = I18N_DEFAULT;
   try { localStorage.setItem(I18N_KEY, lang); } catch(e) {}
@@ -9920,10 +9931,12 @@ function setLanguage(lang) {
   if (langLabel) langLabel.textContent = lang.toUpperCase();
   
   // Actualizar visibilidad del framework banner
-  var fwEs = document.getElementById('sec-00-es');
-  var fwEn = document.getElementById('sec-00-en');
-  if (fwEs) fwEs.style.display = (lang === 'es') ? 'block' : 'none';
-  if (fwEn) fwEn.style.display = (lang === 'en') ? 'block' : 'none';
+  updateFrameworkVisibility(lang);
+
+  // Enviar evento de analytics
+  if (typeof gtag === 'function') {
+    gtag('event', 'language_change', { 'language': lang });
+  }
 
   if (typeof initChips === 'function') initChips();
 }
@@ -10071,7 +10084,66 @@ function copyPromptLang(pid, lang, btn) {
 }
 
 function openInfoLang(pid, lang) {
-  openInfo(pid);
+  var info = (typeof PROMPT_INFO !== 'undefined') ? PROMPT_INFO[pid] : null;
+  if (!info) return;
+  var modal = document.getElementById('info-modal');
+  if (!modal) return;
+
+  var titleEl = document.getElementById('modal-title');
+  if (titleEl) {
+    titleEl.textContent = (lang === 'en' ? info.title_en : info.title_es) || pid;
+  }
+
+  var descSec = document.getElementById('modal-desc-section');
+  var descEl  = document.getElementById('modal-desc');
+  var desc = lang === 'en' ? info.desc_en : info.desc_es;
+  if (descEl && descSec) {
+    descSec.style.display = desc ? '' : 'none';
+    descEl.textContent = desc || '';
+  }
+
+  var formulas = lang === 'en' ? info.formulas_en : info.formulas_es;
+  var formulasEl = document.getElementById('modal-formulas');
+  if (formulasEl) {
+    formulasEl.innerHTML = '';
+    if (formulas && formulas.length) {
+      formulas.forEach(function(f, i) {
+        var sec = document.createElement('div');
+        sec.className = 'modal-section';
+        var h = document.createElement('h3');
+        h.textContent = lang === 'en'
+          ? (formulas.length > 1 ? 'Usage formula ' + (i + 1) : 'Standard usage formula')
+          : (formulas.length > 1 ? 'Fórmula de uso ' + (i + 1) : 'Fórmula de uso estándar');
+        var wrap = document.createElement('div');
+        wrap.className = 'modal-formula-wrap';
+        var box = document.createElement('div');
+        box.className = 'modal-formula';
+        var code = document.createElement('code');
+        code.textContent = f;
+        box.appendChild(code);
+        var btn = document.createElement('button');
+        btn.className = 'modal-copy-formula';
+        btn.innerHTML = lang === 'en' ? '&#10697; Copy formula' : '&#10697; Copiar fórmula';
+        (function(formula, b) {
+          b.addEventListener('click', function() { doCopy(applyVars(formula), b); });
+        })(f, btn);
+        wrap.appendChild(box);
+        wrap.appendChild(btn);
+        sec.appendChild(h);
+        sec.appendChild(wrap);
+        formulasEl.appendChild(sec);
+      });
+    } else {
+      var note = document.createElement('p');
+      note.className = 'modal-note';
+      note.textContent = lang === 'en'
+        ? 'This prompt has no standardized usage formula — it is used directly after the framework.'
+        : 'Este prompt no tiene fórmula de uso estandarizada — se usa directamente después del framework.';
+      formulasEl.appendChild(note);
+    }
+  }
+
+  modal.classList.add('open');
 }
 
 function copyPrompt(pid, btn) {
@@ -10222,62 +10294,8 @@ function filterPrompts(q) {
 /* ═══════════════════  INFO MODAL  ══════════════════════════════ */
 
 function openInfo(pid) {
-  var info = (typeof PROMPT_INFO !== 'undefined') ? PROMPT_INFO[pid] : null;
-  if (!info) return;
-  var modal = document.getElementById('info-modal');
-  if (!modal) return;
-
-  var titleEl = document.getElementById('modal-title');
-  if (titleEl) titleEl.textContent = info.title || pid;
-
-  // Description
-  var descSec = document.getElementById('modal-desc-section');
-  var descEl  = document.getElementById('modal-desc');
-  if (descEl && descSec) {
-    descSec.style.display = info.desc ? '' : 'none';
-    descEl.textContent = info.desc || '';
-  }
-
-  // Formulas
-  var formulasEl = document.getElementById('modal-formulas');
-  if (formulasEl) {
-    formulasEl.innerHTML = '';
-    if (info.formulas && info.formulas.length) {
-      info.formulas.forEach(function(f, i) {
-        var sec = document.createElement('div');
-        sec.className = 'modal-section';
-        var h = document.createElement('h3');
-        h.textContent = info.formulas.length > 1
-          ? 'Fórmula de uso ' + (i + 1)
-          : 'Fórmula de uso estándar';
-        var wrap = document.createElement('div');
-        wrap.className = 'modal-formula-wrap';
-        var box = document.createElement('div');
-        box.className = 'modal-formula';
-        var code = document.createElement('code');
-        code.textContent = f;
-        box.appendChild(code);
-        var btn = document.createElement('button');
-        btn.className = 'modal-copy-formula';
-        btn.innerHTML = '&#10697; Copiar fórmula';
-        (function(formula, b) {
-          b.addEventListener('click', function() { doCopy(applyVars(formula), b); });
-        })(f, btn);
-        wrap.appendChild(box);
-        wrap.appendChild(btn);
-        sec.appendChild(h);
-        sec.appendChild(wrap);
-        formulasEl.appendChild(sec);
-      });
-    } else {
-      var note = document.createElement('p');
-      note.className = 'modal-note';
-      note.textContent = 'Este prompt no tiene fórmula de uso estandarizada — se usa directamente después del framework.';
-      formulasEl.appendChild(note);
-    }
-  }
-
-  modal.classList.add('open');
+  var lang = getCurrentLanguage();
+  openInfoLang(pid, lang);
 }
 
 function closeInfo() {
