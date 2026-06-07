@@ -47,15 +47,15 @@ Usa esta fórmula para obtener mejores resultados al invocar cualquier prompt:
 ```text
 Quiero que uses el prompt de [NOMBRE DEL PROCESO] y lo adaptes a:
 - repositorio: [NOMBRE O URL]
-- workspace/subproyecto: [SI ES ENTORNO MONOREPO]
-- estandar/compliance: [PSP / TSP / ISO 29110 / MOPROSOFT / MAAGTICSI / NINGUNO]
+- workspace/subproyecto: [WORKSPACE/SUBPROYECTO]
+- estandar/compliance: [ESTÁNDAR/COMPLIANCE]
 - issue o requerimiento: [REFERENCIA]
 - rama: [RAMA ACTUAL]
 - ambiente: [DEV / QA / PROD]
 - componentes: [COMPONENTES INVOLUCRADOS]
-- documentos a revisar: [RUTAS DE ARCHIVOS...]
-- objetivo puntual de salida: [INDICAR]
-- nivel de profundidad: [NIVEL]
+- documentos a revisar: [DOCUMENTOS A REVISAR]
+- objetivo puntual de salida: [OBJETIVO ESPECÍFICO]
+- nivel de profundidad: [NIVEL DE PROFUNDIDAD]
 ```
 
 ### Ejemplo real

@@ -21,6 +21,10 @@ CANONICAL_FIELDS = {
     "entrada",
     "objetivo",
     "responsable",
+    "workspace",
+    "compliance",
+    "documentos",
+    "profundidad",
     "adicionales",
 }
 
@@ -36,6 +40,10 @@ def test_new_context_fields_have_frontend_controls():
         "vf-entrada",
         "vf-objetivo",
         "vf-responsable",
+        "vf-workspace",
+        "vf-compliance",
+        "vf-documentos",
+        "vf-profundidad",
         "vf-adicionales",
     ):
         assert f'id="{element_id}"' in BUILD_SOURCE
@@ -91,3 +99,45 @@ def test_requirements_prompt_uses_configurable_canonical_tokens():
         )
         for token in expected:
             assert token in content
+
+
+def test_framework_context_uses_distinct_configurable_tokens():
+    expected_by_file = {
+        "00-framework.md": (
+            "[WORKSPACE/SUBPROYECTO]",
+            "[ESTÁNDAR/COMPLIANCE]",
+            "[DOCUMENTOS A REVISAR]",
+            "[OBJETIVO ESPECÍFICO]",
+            "[NIVEL DE PROFUNDIDAD]",
+        ),
+        "00-framework.en.md": (
+            "[WORKSPACE/SUBPROJECT]",
+            "[STANDARD/COMPLIANCE]",
+            "[DOCUMENTS TO REVIEW]",
+            "[SPECIFIC OBJECTIVE]",
+            "[DEPTH LEVEL]",
+        ),
+    }
+    for filename, expected_tokens in expected_by_file.items():
+        content = (PROMPTS_DIR / filename).read_text(encoding="utf-8")
+        for token in expected_tokens:
+            assert token in content
+
+
+def test_framework_context_controls_expose_expected_options():
+    for option in (
+        "PSP",
+        "TSP",
+        "ISO 29110",
+        "MOPROSOFT",
+        "MAAGTICSI",
+        "NINGUNO",
+    ):
+        assert f'value="{option}"' in BUILD_SOURCE
+
+    for depth in ("bajo", "medio", "alto", "exhaustivo", "forense"):
+        assert f'value="{depth}"' in BUILD_SOURCE
+
+    assert "Objetivo puntual de salida" in BUILD_SOURCE
+    assert "[INDICAR]" in BUILD_SOURCE
+    assert "[NIVEL]" in BUILD_SOURCE
