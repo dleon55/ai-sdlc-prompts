@@ -261,10 +261,10 @@ header {
 
 /* ═══════════════════════════ SEARCH BAR ════════════════════════ */
 .search-bar {
-  height: var(--bar); flex-shrink: 0;
+  min-height: var(--bar); height: auto; flex-shrink: 0;
   background: var(--bg); border-bottom: 1px solid var(--bdr);
   display: flex; align-items: center; flex-wrap: wrap;
-  padding: 0 1.25rem 0 calc(var(--side) + 1.25rem);
+  padding: 0.5rem 1.25rem 0.5rem calc(var(--side) + 1.25rem);
   gap: .65rem; z-index: 299;
 }
 .search-wrap { position: relative; flex: 1; max-width: 560px; }
@@ -1270,6 +1270,25 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   .var-float { right: .85rem; bottom: 4.85rem; }
   .var-float-dropdown { width: min(320px, calc(100vw - 1.7rem)); }
 }
+.ms-float {
+  display: flex; flex-direction: column; align-items: flex-end; position: relative;
+}
+.ms-float-btn {
+  display: flex; align-items: center; gap: .45rem;
+  background: var(--bg2); border: 1px solid #4f46e5;
+  border-radius: 999px; padding: .35rem .75rem .35rem .55rem;
+  color: var(--tx); font-size: .78rem; cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,.35);
+  white-space: nowrap; transition: background .15s, border-color .15s;
+}
+.ms-float-btn:hover, .ms-float-btn.active { background: #0f172a; border-color: #6366f1; }
+.ms-float-icon {
+  width: 22px; height: 22px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(99,102,241,.12); color: #a5b4fc; flex-shrink: 0;
+}
+.ms-float-label { font-weight: 700; color: #e0e7ff; }
+@media (max-width: 560px) { .ms-float-label { display: none; } }
 """
 
 JS = """
@@ -1585,35 +1604,42 @@ function toggleSidebar() {
 
 // Mapa: campo UI → array de tokens del prompt que sustituye
 var VAR_MAP = {
-  repositorio: ['NOMBRE O URL', 'ORG/REPO', 'NOMBRE O URL DEL REPOSITORIO'],
+  repositorio: ['NOMBRE O URL', 'ORG/REPO', 'NOMBRE O URL DEL REPOSITORIO', 'NAME OR URL', 'REPO', 'ORG/USER'],
   referencia:  ['REFERENCIA', 'REFERENCE', 'PEGAR TEXTO O REFERENCIA', 'PEGAR TEXTO COMPLETO',
-                 'PEGAR LISTA DE INCIDENTES', 'PEGAR REPORTE', 'PEGAR'],
+                 'PEGAR LISTA DE INCIDENTES', 'PEGAR REPORTE', 'PEGAR', 'REFERENCE TO ISSUE OR PR',
+                 'REFERENCIA AL ISSUE O PR', 'PASTE', 'PEGAR TEXTO...', 'PASTE TEXT OR REFERENCE', 'NUMBER OR REFERENCE', 'PROBLEM DESCRIPTION', 'INCIDENT DESCRIPTION'],
   rama_actual: ['RAMA ACTUAL', 'CURRENT BRANCH', 'RAMA CON LOS CAMBIOS', 'RAMA EN PRUEBAS',
-                 'RAMA AFECTADA', 'RAMA DE TRABAJO', 'RAMA DE PRUEBAS'],
+                 'RAMA AFECTADA', 'RAMA DE TRABAJO', 'RAMA DE PRUEBAS', 'BRANCH WITH CHANGES',
+                 'BRANCH IN TESTING', 'WORKING BRANCH', 'BRANCH', 'BRANCH TO ANALYZE', 'RAMA A ANALIZAR', 'AFFECTED BRANCH'],
   rama_destino:['RAMA OBJETIVO', 'TARGET BRANCH', 'RAMA PRINCIPAL', 'RAMA INTEGRADA',
-                 'RAMA DESTINO', 'RAMA DE RELEASE', 'DEVELOP / MAIN / RELEASE'],
+                 'RAMA DESTINO', 'RAMA DE RELEASE', 'DEVELOP / MAIN / RELEASE', 'RELEASE BRANCH',
+                 'INTEGRATED BRANCH', 'MAIN BRANCH', 'MAIN/DEVELOP', 'PR OR INTEGRATION BRANCH'],
   ambiente:    ['DEV / QA / PROD', 'ENVIRONMENT', 'QA / STAGING', 'QA / STAGING / PROD',
                  'DEV / QA / STAGING / PROD', 'PROD / STAGING', 'DEV / QA',
-                 'URL DEL AMBIENTE'],
+                 'URL DEL AMBIENTE', 'ENVIRONMENT URL', 'URL DE QA O STAGING', 'DEV / QA / STAGING',
+                 'QA OR STAGING URL', 'DEV / STAGING / PROD', 'AMBIENTE'],
   componentes: ['COMPONENTES INVOLUCRADOS', 'INVOLVED COMPONENTS', 'COMPONENTES MODIFICADOS',
                  'COMPONENTES A MODIFICAR', 'COMPONENTES REVISADOS',
                  'RUTAS DE ARCHIVOS MODIFICADOS', 'FILE PATHS...', 'FUNCIONES O UNIDADES A PROBAR',
-                 'SI YA CONOCES ALGUNO'],
-  modulo:      ['NOMBRE DEL PROCESO', 'PROCESS NAME', 'INDICAR', 'INDICATE'],
+                 'SI YA CONOCES ALGUNO', 'RUTAS DE ARCHIVOS...', 'REVIEWED COMPONENTS', 'COMPONENTS TO MODIFY',
+                 'MODIFIED COMPONENTS', 'FILES AND MODULES TO MODIFY', 'AFFECTED MODULE OR FILE', 'DIRECTORY/PACKAGE', 'DIRECTORIO/PAQUETE'],
+  modulo:      ['NOMBRE DEL PROCESO', 'PROCESS NAME', 'INDICAR', 'INDICATE', 'MODULE OR FUNCTIONALITY', 'NAME', 'NOMBRE'],
   stack:       ['STACK', 'STACK TECNOLÓGICO', 'STACK PRINCIPAL',
                  'ej. Python + FastAPI + PostgreSQL / Node + React + MongoDB / etc.',
                  'ej: Python 3.11 + FastAPI + PostgreSQL + Docker'],
   tipo_proyecto: ['TIPO DE PROYECTO', 'PROJECT TYPE', 'TIPO',
-                   'frontend SPA / API REST / full-stack / microservicio / monorepo / librería / data science / IaC / otro'],
+                   'frontend SPA / API REST / full-stack / microservicio / monorepo / librería / data science / IaC / otro',
+                   'NEW / INCREMENTAL CHANGE / MAINTENANCE', 'NUEVO / CAMBIO INCREMENTAL / MANTENIMIENTO',
+                   'COMMERCIAL / OPEN SOURCE / INTERNAL', 'COMERCIAL / OPEN SOURCE / INTERNO', 'SI ES ENTORNO MONOREPO', 'SI MONOREPO WORKSPACE'],
   metodologia: ['METODOLOGÍA', 'METHODOLOGY', 'METODOLOGÍA DE TRABAJO', 'METODOLOGÍA O "ninguna"',
                  'SCRUM / Kanban / Trunk-Based / GitFlow / GitHub Flow / RUP / otro',
                  'BRANCHING STRATEGY'],
   agentes:     ['LISTA DE AGENTES', 'AI AGENTS', 'AGENTES A CONFIGURAR', 'AGENTES ACTIVOS',
                  'Copilot / Claude / Codex / Windsurf / Cursor / Antigravity',
-                 'GitHub Copilot / Claude / Windsurf / Cursor / Codex / Antigravity / combinación'],
+                 'GitHub Copilot / Claude / Windsurf / Cursor / Codex / Antigravity / combinación', 'LIST OF AGENTS'],
   autonomia:   ['NIVEL DE AUTONOMÍA', 'AUTONOMY LEVEL', 'NIVEL', 'LEVEL',
                  'solo análisis / análisis + propuesta / ejecución controlada / ejecución autónoma',
-                 'BAJO / MEDIO / ALTO'],
+                 'BAJO / MEDIO / ALTO', 'LOW / MEDIUM / HIGH', 'SEVERITY', 'SEVERIDAD'],
 };
 
 function getVarValues() {
@@ -2057,11 +2083,31 @@ function toggleCard(pid) {
   if (t) t.classList.toggle('open', isOpen);
 }
 
+function initMsMode() {
+  try {
+    var saved = localStorage.getItem('AI_SDLC_ms_mode');
+    if (saved === '1') {
+      msMode = true;
+      document.body.classList.add('ms-mode');
+      var btn = document.getElementById('ms-toggle-btn');
+      if (btn) btn.classList.add('active');
+      var floatBtn = document.getElementById('ms-float-btn');
+      if (floatBtn) floatBtn.classList.add('active');
+      updateMsBar();
+    }
+  } catch(e) {}
+}
+
 function toggleMsMode() {
   msMode = !msMode;
   document.body.classList.toggle('ms-mode', msMode);
   var btn = document.getElementById('ms-toggle-btn');
   if (btn) btn.classList.toggle('active', msMode);
+  var floatBtn = document.getElementById('ms-float-btn');
+  if (floatBtn) floatBtn.classList.toggle('active', msMode);
+  try {
+    localStorage.setItem('AI_SDLC_ms_mode', msMode ? '1' : '0');
+  } catch(e) {}
   if (!msMode) {
     clearSelection();
   }
@@ -2283,6 +2329,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Restaurar estado del sidebar
   try { if (localStorage.getItem('AI_SDLC_sidebar') === '1') document.body.classList.add('sidebar-collapsed'); } catch(e) {}
+
+  initMsMode();
 
   // Welcome banner y onboarding — solo primera visita
   initWelcomeBanner();
@@ -3162,6 +3210,17 @@ def build():
         '    <span class="var-float-label">Vars</span>\n'
         '    <span class="var-float-count empty" id="var-float-count">0/12</span>\n'
         '    <span class="var-float-chevron"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>\n'
+        '  </button>\n'
+        '</div>\n'
+        '<!-- ═══ FLOATING MULTI-SELECT TOGGLE ═══ -->\n'
+        '<div class="ms-float" id="ms-float">\n'
+        '  <button class="ms-float-btn" id="ms-float-btn" onclick="toggleMsMode()" title="Activar selección múltiple">\n'
+        '    <span class="ms-float-icon">\n'
+        '      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">\n'
+        '        <rect x="3" y="5" width="13" height="13" rx="2"/><path d="M8 10l3 3 5-5"/>\n'
+        '      </svg>\n'
+        '    </span>\n'
+        '    <span class="ms-float-label">Multi-select</span>\n'
         '  </button>\n'
         '</div>\n'
         '<!-- \u2550\u2550 FLOATING PROJECT SELECTOR \u2014 issue #30 \u2550\u2550 -->\n'
