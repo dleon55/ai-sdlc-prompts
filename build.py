@@ -188,10 +188,12 @@ CSS = """
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html[lang="es"] .card[data-lang="en"],
 html[lang="es"] .fw-lang-en,
+html[lang="es"] .sec-lang-en,
 html[lang="es"] .sid-lang-en { display: none !important; }
 
 html[lang="en"] .card[data-lang="es"],
 html[lang="en"] .fw-lang-es,
+html[lang="en"] .sec-lang-es,
 html[lang="en"] .sid-lang-es { display: none !important; }
 
 /* Selectores requeridos para pruebas de integración */
@@ -1494,11 +1496,11 @@ function renderProjectsModal() {
       + '<input class="proj-item-name" value="'
         + p.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;') + '"'
         + ' onblur="renameProject(\\'' + p.id + '\\',this.value)">'
-      + '<button class="proj-action-btn" title="Activar"'
+      + '<button class="proj-action-btn" title="Activar / Activate"'
         + ' onclick="switchProject(\\'' + p.id + '\\');renderProjectsModal();">\u26a1</button>'
-      + '<button class="proj-action-btn" title="Predeterminar"'
+      + '<button class="proj-action-btn" title="Predeterminar / Make Default"'
         + ' onclick="setDefaultProject(\\'' + p.id + '\\');renderProjectsModal();renderProjectSelector();">\u2605</button>'
-      + '<button class="proj-action-btn" title="Duplicar"'
+      + '<button class="proj-action-btn" title="Duplicar / Duplicate"'
         + ' onclick="duplicateProject(\\'' + p.id + '\\');renderProjectsModal();renderProjectSelector();syncPanelToProject();">\u2398</button>'
       + delBtn
       + '</li>';
@@ -1522,7 +1524,8 @@ function renderProjQuick() {
   var active = getActiveProject();
   var activeId = active ? active.id : null;
   var nameEl = document.getElementById('proj-quick-name');
-  if (nameEl) nameEl.textContent = (active ? active.name : 'Proyecto') + (active && active.isDefault ? ' \u2605' : '');
+  var fallback = getCurrentLanguage() === 'en' ? 'Project' : 'Proyecto';
+  if (nameEl) nameEl.textContent = (active ? active.name : fallback) + (active && active.isDefault ? ' \u2605' : '');
   var dd = document.getElementById('proj-quick-dropdown');
   if (!dd) return;
   var items = list.map(function(p) {
@@ -1534,11 +1537,13 @@ function renderProjQuick() {
       + (p.isDefault ? '<span style="font-size:.6rem;color:var(--tx3)">\u2605</span>' : '')
       + '</button>';
   }).join('');
+  var labelNew = getCurrentLanguage() === 'en' ? '+ New' : '+ Nuevo';
+  var labelMgr = getCurrentLanguage() === 'en' ? '⚙ Manage' : '⚙ Gestionar';
   dd.innerHTML = items
     + '<div class="pq-sep"></div>'
     + '<div class="pq-footer">'
-    + '<button class="pq-new-btn" onclick="createProject();renderProjQuick();renderProjectSelector();syncPanelToProject();closeProjQuick();">+ Nuevo</button>'
-    + '<button class="pq-mgr-btn" onclick="openProjectsModal();closeProjQuick();">\u2699 Gestionar</button>'
+    + '<button class="pq-new-btn" onclick="createProject();renderProjQuick();renderProjectSelector();syncPanelToProject();closeProjQuick();">' + labelNew + '</button>'
+    + '<button class="pq-mgr-btn" onclick="openProjectsModal();closeProjQuick();">' + labelMgr + '</button>'
     + '</div>';
 }
 
@@ -1561,7 +1566,8 @@ function renderProjFloat() {
   var active = getActiveProject();
   var activeId = active ? active.id : null;
   var nameEl = document.getElementById('proj-float-name');
-  if (nameEl) nameEl.textContent = (active ? active.name : 'Proyecto') + (active && active.isDefault ? ' \u2605' : '');
+  var fallback = getCurrentLanguage() === 'en' ? 'Project' : 'Proyecto';
+  if (nameEl) nameEl.textContent = (active ? active.name : fallback) + (active && active.isDefault ? ' \u2605' : '');
   var dd = document.getElementById('proj-float-dropdown');
   if (!dd) return;
   var items = list.map(function(p) {
@@ -1573,11 +1579,13 @@ function renderProjFloat() {
       + (p.isDefault ? '<span style="font-size:.6rem;color:var(--tx3)">\u2605</span>' : '')
       + '</button>';
   }).join('');
+  var labelNew = getCurrentLanguage() === 'en' ? '+ New' : '+ Nuevo';
+  var labelMgr = getCurrentLanguage() === 'en' ? '⚙ Manage' : '⚙ Gestionar';
   dd.innerHTML = items
     + '<div class="pq-sep"></div>'
     + '<div class="pq-footer">'
-    + '<button class="pq-new-btn" onclick="createProject();renderProjQuick();renderProjFloat();renderProjectSelector();syncPanelToProject();closeProjFloat();">+ Nuevo</button>'
-    + '<button class="pq-mgr-btn" onclick="openProjectsModal();closeProjFloat();">\u2699 Gestionar</button>'
+    + '<button class="pq-new-btn" onclick="createProject();renderProjQuick();renderProjFloat();renderProjectSelector();syncPanelToProject();closeProjFloat();">' + labelNew + '</button>'
+    + '<button class="pq-mgr-btn" onclick="openProjectsModal();closeProjFloat();">' + labelMgr + '</button>'
     + '</div>';
 }
 
@@ -1676,7 +1684,8 @@ function updateVarsBadge() {
   var total = Object.keys(EMPTY_VARS).length;
   if (badge) {
     badge.classList.toggle('show', filled > 0);
-    badge.textContent = filled + '/' + total;
+    var label = getCurrentLanguage() === 'en' ? 'Vars active' : 'Vars activas';
+    badge.innerHTML = '■ ' + label + ' (' + filled + '/' + total + ')';
   }
   updateVarFloatSummary();
 }
@@ -1819,6 +1828,63 @@ function updateFrameworkVisibility(lang) {
   if (fwEn) fwEn.style.display = (lang === 'en') ? 'block' : 'none';
 }
 
+function updatePlaceholders(lang) {
+  var pSelect = document.getElementById('vf-ambiente');
+  if (pSelect && pSelect.options.length > 0) {
+    pSelect.options[0].text = lang === 'en' ? '-- select --' : '-- seleccionar --';
+  }
+  var tSelect = document.getElementById('vf-tipo-proyecto');
+  if (tSelect && tSelect.options.length > 9) {
+    tSelect.options[0].text = lang === 'en' ? '-- select --' : '-- seleccionar --';
+    tSelect.options[4].text = lang === 'en' ? 'microservice' : 'microservicio';
+    tSelect.options[4].value = lang === 'en' ? 'microservice' : 'microservicio';
+    tSelect.options[6].text = lang === 'en' ? 'library' : 'librería';
+    tSelect.options[6].value = lang === 'en' ? 'library' : 'librería';
+    tSelect.options[9].text = lang === 'en' ? 'other' : 'otro';
+    tSelect.options[9].value = lang === 'en' ? 'other' : 'otro';
+  }
+  var mSelect = document.getElementById('vf-metodologia');
+  if (mSelect && mSelect.options.length > 7) {
+    mSelect.options[0].text = lang === 'en' ? '-- select --' : '-- seleccionar --';
+    mSelect.options[7].text = lang === 'en' ? 'other' : 'otro';
+    mSelect.options[7].value = lang === 'en' ? 'other' : 'otro';
+  }
+  var aSelect = document.getElementById('vf-autonomia');
+  if (aSelect && aSelect.options.length > 4) {
+    aSelect.options[0].text = lang === 'en' ? '-- select --' : '-- seleccionar --';
+    aSelect.options[1].text = lang === 'en' ? 'analysis only' : 'solo análisis';
+    aSelect.options[1].value = lang === 'en' ? 'analysis only' : 'solo análisis';
+    aSelect.options[2].text = lang === 'en' ? 'analysis + proposal' : 'análisis + propuesta';
+    aSelect.options[2].value = lang === 'en' ? 'analysis + proposal' : 'análisis + propuesta';
+    aSelect.options[3].text = lang === 'en' ? 'controlled execution' : 'ejecución controlada';
+    aSelect.options[3].value = lang === 'en' ? 'controlled execution' : 'ejecución controlada';
+    aSelect.options[4].text = lang === 'en' ? 'autonomous execution' : 'ejecución autónoma';
+    aSelect.options[4].value = lang === 'en' ? 'autonomous execution' : 'ejecución autónoma';
+  }
+  
+  var inputs = {
+    'vf-repositorio': { es: 'org/nombre-repo o URL', en: 'org/repo-name or URL' },
+    'vf-referencia': { es: 'Número, URL o texto completo del issue', en: 'Number, URL or full text of the issue' },
+    'vf-rama-actual': { es: 'feature/mi-rama', en: 'feature/my-branch' },
+    'vf-rama-destino': { es: 'main / develop', en: 'main / develop' },
+    'vf-componentes': { es: 'Lista de componentes o rutas de archivos', en: 'List of components or file paths' },
+    'vf-modulo': { es: 'Nombre del módulo o funcionalidad', en: 'Module or process name' },
+    'vf-stack': { es: 'ej: Python + FastAPI + PostgreSQL + Docker', en: 'e.g., Python + FastAPI + PostgreSQL + Docker' },
+    'vf-agentes': { es: 'ej: Copilot, Claude, Codex', en: 'e.g., Copilot, Claude, Codex' },
+    
+    'qv-repositorio': { es: 'org/nombre-repo o URL', en: 'org/repo-name or URL' },
+    'qv-referencia': { es: 'Número, URL o resumen corto', en: 'Number, URL or short summary' },
+    'qv-rama-actual': { es: 'feature/mi-rama', en: 'feature/my-branch' },
+    'qv-rama-destino': { es: 'main / develop', en: 'main / develop' },
+    'qv-modulo': { es: 'Nombre del módulo o funcionalidad', en: 'Module or process name' }
+  };
+  
+  Object.keys(inputs).forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.placeholder = inputs[id][lang] || '';
+  });
+}
+
 function setLanguage(lang) {
   if (I18N_SUPPORTED.indexOf(lang) === -1) lang = I18N_DEFAULT;
   try { localStorage.setItem(I18N_KEY, lang); } catch(e) {}
@@ -1836,6 +1902,33 @@ function setLanguage(lang) {
   if (typeof gtag === 'function') {
     gtag('event', 'language_change', { 'language': lang });
   }
+
+  // Traducir input placeholder de búsqueda
+  var searchInput = document.querySelector('.search-wrap input');
+  if (searchInput) {
+    searchInput.placeholder = (lang === 'en')
+      ? 'Search by prompt name or content...'
+      : 'Buscar por nombre o contenido del prompt...';
+  }
+
+  // Traducir empty state
+  var emptyEl = document.getElementById('glbl-empty');
+  if (emptyEl) {
+    emptyEl.innerHTML = (lang === 'en')
+      ? '<p>No results.</p><small>Try another search term.</small>'
+      : '<p>Sin resultados.</p><small>Intenta con otro término de búsqueda.</small>';
+  }
+
+  // Actualizar variables badge
+  updateVarsBadge();
+
+  // Actualizar placeholders del panel de variables
+  updatePlaceholders(lang);
+
+  // Sincronizar selectores de proyecto
+  renderProjQuick();
+  renderProjFloat();
+  renderProjectSelector();
 
   if (typeof initChips === 'function') initChips();
 }
@@ -2262,8 +2355,15 @@ function renderObStep() {
   }
   var prevBtn = document.getElementById('ob-prev-btn');
   var nextBtn = document.getElementById('ob-next-btn');
+  var lang = getCurrentLanguage();
   if (prevBtn) prevBtn.style.display = _obStep > 0 ? 'inline-block' : 'none';
-  if (nextBtn) nextBtn.innerHTML = _obStep < _obTotal - 1 ? 'Siguiente &#8250;' : '&#10003; Comenzar';
+  if (nextBtn) {
+    if (_obStep < _obTotal - 1) {
+      nextBtn.innerHTML = lang === 'en' ? 'Next &#8250;' : 'Siguiente &#8250;';
+    } else {
+      nextBtn.innerHTML = lang === 'en' ? '&#10003; Start' : '&#10003; Comenzar';
+    }
+  }
 }
 
 function obNext() {
@@ -2307,7 +2407,12 @@ function submitObEmail() {
     script.src = url;
     document.body.appendChild(script);
     // Feedback visual
-    if (btn) { btn.textContent = '\u2713 Listo'; btn.classList.add('ok'); btn.disabled = true; }
+    if (btn) {
+      var lang = getCurrentLanguage();
+      btn.textContent = lang === 'en' ? '\u2713 Done' : '\u2713 Listo';
+      btn.classList.add('ok');
+      btn.disabled = true;
+    }
     setTimeout(function() { obNext(); }, 900);
   } catch(e) { obNext(); }
 }
@@ -2637,7 +2742,8 @@ def build():
     # ── section groups ──
     groups_html = ""
     for sk in sorted(sections.keys()):
-        label = SECTION_LABEL.get(sk, sk)
+        label_es = SEC_LABELS['es'].get(sk, sk)
+        label_en = SEC_LABELS['en'].get(sk, sk)
         icon_key = SECTION_META.get(sk, ("", "docs"))[1]
         color = SECTION_COLOR.get(sk, "#6366f1")
         cnt = len(sections[sk])
@@ -2651,7 +2757,8 @@ def build():
             '<span class="sec-num" style="color:' + color + ';border-color:' + color + '22;background:' + color + '11">'
             + sk + '</span>'
             + icon_svg(icon_key, color, 16) +
-            '<span class="sec-label">' + label + '</span>'
+            '<span class="sec-label sec-lang-es">' + label_es + '</span>'
+            '<span class="sec-label sec-lang-en">' + label_en + '</span>'
             '<span class="sec-count">' + str(cnt) + '</span>'
             '</div>'
             '<div class="cards-grid">'
@@ -2796,19 +2903,26 @@ def build():
 
         # welcome banner (primer uso — se oculta con localStorage)
         '<div class="welcome-banner" id="welcome-banner">\n'
-        '  <span class="wb-lead">&#128640; Bienvenido a AI-SDLC Pro</span>\n'
-        '  <div class="wb-pills">\n'
+        '  <span class="wb-lead fw-lang-es">&#128640; Bienvenido a AI-SDLC Pro</span>\n'
+        '  <span class="wb-lead fw-lang-en">&#128640; Welcome to AI-SDLC Pro</span>\n'
+        '  <div class="wb-pills fw-lang-es">\n'
         '    <span class="wb-pill">&#9654; Ciclo SDLC completo: del an\u00e1lisis al incident response</span>\n'
         '    <span class="wb-pill">&#9656; Variables de contexto que adaptan cada prompt a tu proyecto</span>\n'
         '    <span class="wb-pill">&#9656; Gobernanza multi-agente: Copilot, Claude, Cursor, Windsurf</span>\n'
         '  </div>\n'
-        '  <button class="wb-dismiss" onclick="dismissWelcomeBanner()">Entendido &#x2715;</button>\n'
+        '  <div class="wb-pills fw-lang-en">\n'
+        '    <span class="wb-pill">&#9654; Complete SDLC cycle: from analysis to incident response</span>\n'
+        '    <span class="wb-pill">&#9656; Context variables that adapt each prompt to your project</span>\n'
+        '    <span class="wb-pill">&#9656; Multi-agent governance: Copilot, Claude, Cursor, Windsurf</span>\n'
+        '  </div>\n'
+        '  <button class="wb-dismiss fw-lang-es" onclick="dismissWelcomeBanner()">Entendido &#x2715;</button>\n'
+        '  <button class="wb-dismiss fw-lang-en" onclick="dismissWelcomeBanner()">Got it &#x2715;</button>\n'
         '</div>\n'
 
         # search bar
         '<div class="search-bar">\n'
         '  <div class="proj-quick" id="proj-quick">'
-        '<button class="proj-quick-btn" id="proj-quick-btn" onclick="toggleProjQuick(event)" title="Cambiar proyecto activo">'
+        '<button class="proj-quick-btn" id="proj-quick-btn" onclick="toggleProjQuick(event)" title="Cambiar proyecto activo / Change active project">'
         '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M3 12h18M3 17h18"/></svg>'
         '<span class="proj-quick-name" id="proj-quick-name">Proyecto</span>'
         '<span class="proj-quick-chevron"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'
@@ -2824,8 +2938,8 @@ def build():
         ' oninput="filterPrompts(this.value)" autocomplete="off">'
         '</div>\n'
         '  <div class="chips-container" id="category-chips"></div>\n'
-        '  <span class="search-count" id="vis-count">' + str(total) + ' prompts</span>\n'
-        '  <span class="vars-active-badge" id="vars-badge">&#9632; Vars activas</span>\n'
+        '  <span class="search-count" id="vis-count">prompts</span>\n'
+        '  <span class="vars-active-badge" id="vars-badge">■ Vars activas</span>\n'
         '  <button class="ms-toggle-btn" id="ms-toggle-btn" onclick="toggleMsMode()" title="Activar selección múltiple">'
         '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
         '<rect x="3" y="5" width="13" height="13" rx="2"/><path d="M8 10l3 3 5-5"/>'
@@ -2862,65 +2976,65 @@ def build():
         '  <div class="var-panel-hdr">'
         '<h2><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2">'
         '<path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>'
-        ' Variables del prompt</h2>'
-        '<button class="var-close-btn" onclick="closeVarPanel()" title="Cerrar">&#x2715;</button>'
+        ' <span class="fw-lang-es">Variables del prompt</span><span class="fw-lang-en">Prompt Variables</span></h2>'
+        '<button class="var-close-btn" onclick="closeVarPanel()" title="Cerrar / Close">&#x2715;</button>'
         '</div>\n'
         '<div class="proj-selector-row">'
         '<select id="proj-selector" class="proj-select" onchange="switchProject(this.value)" style="display:none"></select>'
         '<div style="flex:1;font-size:.74rem;color:var(--tx2);display:flex;align-items:center;gap:5px;overflow:hidden;">'
-        '<span style="color:var(--tx3);flex-shrink:0;">Proyecto\u00a0</span>'
+        '<span style="color:var(--tx3);flex-shrink:0;"><span class="fw-lang-es">Proyecto\u00a0</span><span class="fw-lang-en">Project\u00a0</span></span>'
         '<span id="vp-proj-name" style="color:#7dd3fc;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>'
         '</div>'
-        '<button class="proj-mgr-btn" onclick="openProjectsModal()" title="Gestionar proyectos">&#x2699;</button>'
+        '<button class="proj-mgr-btn" onclick="openProjectsModal()" title="Gestionar proyectos / Manage projects">&#x2699;</button>'
         '</div>\n'
         '  <div class="var-panel-body">\n'
 
         # repositorio
         '    <div class="var-group">'
-        '<label for="vf-repositorio">Repositorio</label>'
-        '<input id="vf-repositorio" type="text" placeholder="org/nombre-repo o URL" oninput="syncProjectFromPanel();updateVarsBadge();">'
+        '<label for="vf-repositorio"><span class="fw-lang-es">Repositorio</span><span class="fw-lang-en">Repository</span></label>'
+        '<input id="vf-repositorio" type="text" placeholder="" oninput="syncProjectFromPanel();updateVarsBadge();">'
         '<div class="var-tags">'
-        '<span class="var-tag">[NOMBRE O URL]</span>'
+        '<span class="var-tag"><span class="fw-lang-es">[NOMBRE O URL]</span><span class="fw-lang-en">[NAME OR URL]</span></span>'
         '</div>'
         '</div>\n'
 
         # referencia / issue
         '    <div class="var-group">'
-        '<label for="vf-referencia">Issue / Referencia</label>'
-        '<textarea id="vf-referencia" placeholder="Número, URL o texto completo del issue" oninput="syncProjectFromPanel();updateVarsBadge();"></textarea>'
+        '<label for="vf-referencia"><span class="fw-lang-es">Issue / Referencia</span><span class="fw-lang-en">Issue / Reference</span></label>'
+        '<textarea id="vf-referencia" placeholder="" oninput="syncProjectFromPanel();updateVarsBadge();"></textarea>'
         '<div class="var-tags">'
-        '<span class="var-tag">[REFERENCIA]</span>'
-        '<span class="var-tag">[PEGAR]</span>'
-        '<span class="var-tag">[PEGAR TEXTO...]</span>'
+        '<span class="var-tag"><span class="fw-lang-es">[REFERENCIA]</span><span class="fw-lang-en">[REFERENCE]</span></span>'
+        '<span class="var-tag"><span class="fw-lang-es">[PEGAR]</span><span class="fw-lang-en">[PASTE]</span></span>'
+        '<span class="var-tag"><span class="fw-lang-es">[PEGAR TEXTO...]</span><span class="fw-lang-en">[PASTE TEXT...]</span></span>'
         '</div>'
         '</div>\n'
 
         # rama actual
         '    <div class="var-group">'
-        '<label for="vf-rama-actual">Rama actual / con cambios</label>'
-        '<input id="vf-rama-actual" type="text" placeholder="feature/mi-rama" oninput="syncProjectFromPanel();updateVarsBadge();">'
+        '<label for="vf-rama-actual"><span class="fw-lang-es">Rama actual / con cambios</span><span class="fw-lang-en">Current / working branch</span></label>'
+        '<input id="vf-rama-actual" type="text" placeholder="" oninput="syncProjectFromPanel();updateVarsBadge();">'
         '<div class="var-tags">'
-        '<span class="var-tag">[RAMA ACTUAL]</span>'
-        '<span class="var-tag">[RAMA CON LOS CAMBIOS]</span>'
-        '<span class="var-tag">[RAMA EN PRUEBAS]</span>'
+        '<span class="var-tag"><span class="fw-lang-es">[RAMA ACTUAL]</span><span class="fw-lang-en">[CURRENT BRANCH]</span></span>'
+        '<span class="var-tag"><span class="fw-lang-es">[RAMA CON LOS CAMBIOS]</span><span class="fw-lang-en">[BRANCH WITH CHANGES]</span></span>'
+        '<span class="var-tag"><span class="fw-lang-es">[RAMA EN PRUEBAS]</span><span class="fw-lang-en">[BRANCH IN TEST]</span></span>'
         '</div>'
         '</div>\n'
 
         # rama destino
         '    <div class="var-group">'
-        '<label for="vf-rama-destino">Rama destino / principal</label>'
-        '<input id="vf-rama-destino" type="text" placeholder="main / develop" oninput="syncProjectFromPanel();updateVarsBadge();">'
+        '<label for="vf-rama-destino"><span class="fw-lang-es">Rama destino / principal</span><span class="fw-lang-en">Target / main branch</span></label>'
+        '<input id="vf-rama-destino" type="text" placeholder="" oninput="syncProjectFromPanel();updateVarsBadge();">'
         '<div class="var-tags">'
-        '<span class="var-tag">[RAMA OBJETIVO]</span>'
-        '<span class="var-tag">[RAMA PRINCIPAL]</span>'
-        '<span class="var-tag">[RAMA INTEGRADA]</span>'
-        '<span class="var-tag">[RAMA DESTINO]</span>'
+        '<span class="var-tag"><span class="fw-lang-es">[RAMA OBJETIVO]</span><span class="fw-lang-en">[TARGET BRANCH]</span></span>'
+        '<span class="var-tag"><span class="fw-lang-es">[RAMA PRINCIPAL]</span><span class="fw-lang-en">[MAIN BRANCH]</span></span>'
+        '<span class="var-tag"><span class="fw-lang-es">[RAMA INTEGRADA]</span><span class="fw-lang-en">[INTEGRATED BRANCH]</span></span>'
+        '<span class="var-tag"><span class="fw-lang-es">[RAMA DESTINO]</span><span class="fw-lang-en">[TARGET BRANCH]</span></span>'
         '</div>'
         '</div>\n'
 
         # ambiente
         '    <div class="var-group">'
-        '<label for="vf-ambiente">Ambiente</label>'
+        '<label for="vf-ambiente"><span class="fw-lang-es">Ambiente</span><span class="fw-lang-en">Environment</span></label>'
         '<select id="vf-ambiente" onchange="syncProjectFromPanel();updateVarsBadge();">'  
         '<option value="">-- seleccionar --</option>'
         '<option>DEV</option>'
@@ -2931,49 +3045,49 @@ def build():
         '<div class="var-tags">'
         '<span class="var-tag">[DEV / QA / PROD]</span>'
         '<span class="var-tag">[QA / STAGING]</span>'
-        '<span class="var-tag">[URL DEL AMBIENTE]</span>'
+        '<span class="var-tag"><span class="fw-lang-es">[URL DEL AMBIENTE]</span><span class="fw-lang-en">[ENVIRONMENT URL]</span></span>'
         '</div>'
         '</div>\n'
 
         # componentes
         '    <div class="var-group">'
-        '<label for="vf-componentes">Componentes / archivos</label>'
-        '<textarea id="vf-componentes" placeholder="Lista de componentes o rutas de archivos" oninput="syncProjectFromPanel();updateVarsBadge();"></textarea>'
+        '<label for="vf-componentes"><span class="fw-lang-es">Componentes / archivos</span><span class="fw-lang-en">Components / file paths</span></label>'
+        '<textarea id="vf-componentes" placeholder="" oninput="syncProjectFromPanel();updateVarsBadge();"></textarea>'
         '<div class="var-tags">'
-        '<span class="var-tag">[COMPONENTES INVOLUCRADOS]</span>'
-        '<span class="var-tag">[COMPONENTES MODIFICADOS]</span>'
-        '<span class="var-tag">[RUTAS DE ARCHIVOS...]</span>'
+        '<span class="var-tag"><span class="fw-lang-es">[COMPONENTES INVOLUCRADOS]</span><span class="fw-lang-en">[INVOLVED COMPONENTS]</span></span>'
+        '<span class="var-tag"><span class="fw-lang-es">[COMPONENTES MODIFICADOS]</span><span class="fw-lang-en">[MODIFIED COMPONENTS]</span></span>'
+        '<span class="var-tag"><span class="fw-lang-es">[RUTAS DE ARCHIVOS...]</span><span class="fw-lang-en">[FILE PATHS...]</span></span>'
         '</div>'
         '</div>\n'
 
         # módulo / proceso
         '    <div class="var-group">'
-        '<label for="vf-modulo">Módulo / proceso / indicación</label>'
-        '<input id="vf-modulo" type="text" placeholder="Nombre del módulo o funcionalidad" oninput="syncProjectFromPanel();updateVarsBadge();">'
+        '<label for="vf-modulo"><span class="fw-lang-es">Módulo / proceso / indicación</span><span class="fw-lang-en">Module / process / indication</span></label>'
+        '<input id="vf-modulo" type="text" placeholder="" oninput="syncProjectFromPanel();updateVarsBadge();">'
         '<div class="var-tags">'
-        '<span class="var-tag">[NOMBRE DEL PROCESO]</span>'
-        '<span class="var-tag">[INDICAR]</span>'
+        '<span class="var-tag"><span class="fw-lang-es">[NOMBRE DEL PROCESO]</span><span class="fw-lang-en">[PROCESS NAME]</span></span>'
+        '<span class="var-tag"><span class="fw-lang-es">[INDICAR]</span><span class="fw-lang-en">[INDICATE]</span></span>'
         '</div>'
         '</div>\n'
 
         # separador visual sección IA / agentes
         '    <div style="margin:.2rem 0 .1rem;font-size:.6rem;font-weight:700;color:var(--tx3);'
         'text-transform:uppercase;letter-spacing:.1em;border-top:1px solid var(--bdr);padding-top:.65rem;">'
-        '⚙ Stack &amp; Agentes IA</div>\n'
+        '⚙ <span class="fw-lang-es">Stack &amp; Agentes IA</span><span class="fw-lang-en">Stack &amp; AI Agents</span></div>\n'
 
         # stack tecnológico
         '    <div class="var-group">'
-        '<label for="vf-stack">Stack tecnológico</label>'
-        '<input id="vf-stack" type="text" placeholder="ej: Python + FastAPI + PostgreSQL + Docker" oninput="syncProjectFromPanel();updateVarsBadge();">'
+        '<label for="vf-stack"><span class="fw-lang-es">Stack tecnológico</span><span class="fw-lang-en">Tech stack</span></label>'
+        '<input id="vf-stack" type="text" placeholder="" oninput="syncProjectFromPanel();updateVarsBadge();">'
         '<div class="var-tags">'
-        '<span class="var-tag">[STACK]</span>'
-        '<span class="var-tag">[STACK TECNOLÓGICO]</span>'
+        '<span class="var-tag"><span class="fw-lang-es">[STACK]</span><span class="fw-lang-en">[STACK]</span></span>'
+        '<span class="var-tag"><span class="fw-lang-es">[STACK TECNOLÓGICO]</span><span class="fw-lang-en">[TECH STACK]</span></span>'
         '</div>'
         '</div>\n'
 
         # tipo de proyecto
         '    <div class="var-group">'
-        '<label for="vf-tipo-proyecto">Tipo de proyecto</label>'
+        '<label for="vf-tipo-proyecto"><span class="fw-lang-es">Tipo de proyecto</span><span class="fw-lang-en">Project type</span></label>'
         '<select id="vf-tipo-proyecto" onchange="syncProjectFromPanel();updateVarsBadge();">'
         '<option value="">-- seleccionar --</option>'
         '<option>frontend SPA</option>'
@@ -2987,14 +3101,14 @@ def build():
         '<option>otro</option>'
         '</select>'
         '<div class="var-tags">'
-        '<span class="var-tag">[TIPO DE PROYECTO]</span>'
-        '<span class="var-tag">[TIPO]</span>'
+        '<span class="var-tag"><span class="fw-lang-es">[TIPO DE PROYECTO]</span><span class="fw-lang-en">[PROJECT TYPE]</span></span>'
+        '<span class="var-tag"><span class="fw-lang-es">[TIPO]</span><span class="fw-lang-en">[TYPE]</span></span>'
         '</div>'
         '</div>\n'
 
         # metodología
         '    <div class="var-group">'
-        '<label for="vf-metodologia">Metodología / branching</label>'
+        '<label for="vf-metodologia"><span class="fw-lang-es">Metodología / branching</span><span class="fw-lang-en">Methodology / branching</span></label>'
         '<select id="vf-metodologia" onchange="syncProjectFromPanel();updateVarsBadge();">'
         '<option value="">-- seleccionar --</option>'
         '<option>SCRUM</option>'
@@ -3006,24 +3120,24 @@ def build():
         '<option>otro</option>'
         '</select>'
         '<div class="var-tags">'
-        '<span class="var-tag">[METODOLOGÍA]</span>'
-        '<span class="var-tag">[BRANCHING STRATEGY]</span>'
+        '<span class="var-tag"><span class="fw-lang-es">[METODOLOGÍA]</span><span class="fw-lang-en">[METHODOLOGY]</span></span>'
+        '<span class="var-tag"><span class="fw-lang-es">[BRANCHING STRATEGY]</span><span class="fw-lang-en">[BRANCHING STRATEGY]</span></span>'
         '</div>'
         '</div>\n'
 
         # agentes IA activos
         '    <div class="var-group">'
-        '<label for="vf-agentes">Agentes IA activos</label>'
-        '<input id="vf-agentes" type="text" placeholder="ej: Copilot, Claude, Codex" oninput="syncProjectFromPanel();updateVarsBadge();">'
+        '<label for="vf-agentes"><span class="fw-lang-es">Agentes IA activos</span><span class="fw-lang-en">Active AI agents</span></label>'
+        '<input id="vf-agentes" type="text" placeholder="" oninput="syncProjectFromPanel();updateVarsBadge();">'
         '<div class="var-tags">'
-        '<span class="var-tag">[LISTA DE AGENTES]</span>'
-        '<span class="var-tag">[AGENTES A CONFIGURAR]</span>'
+        '<span class="var-tag"><span class="fw-lang-es">[LISTA DE AGENTES]</span><span class="fw-lang-en">[AGENT LIST]</span></span>'
+        '<span class="var-tag"><span class="fw-lang-es">[AGENTES A CONFIGURAR]</span><span class="fw-lang-en">[AGENTS TO CONFIGURE]</span></span>'
         '</div>'
         '</div>\n'
 
         # nivel de autonomía
         '    <div class="var-group">'
-        '<label for="vf-autonomia">Nivel de autonomía IA</label>'
+        '<label for="vf-autonomia"><span class="fw-lang-es">Nivel de autonomía IA</span><span class="fw-lang-en">AI autonomy level</span></label>'
         '<select id="vf-autonomia" onchange="syncProjectFromPanel();updateVarsBadge();">'
         '<option value="">-- seleccionar --</option>'
         '<option>solo análisis</option>'
@@ -3032,26 +3146,26 @@ def build():
         '<option>ejecución autónoma</option>'
         '</select>'
         '<div class="var-tags">'
-        '<span class="var-tag">[NIVEL DE AUTONOMÍA]</span>'
-        '<span class="var-tag">[NIVEL]</span>'
+        '<span class="var-tag"><span class="fw-lang-es">[NIVEL DE AUTONOMÍA]</span><span class="fw-lang-en">[AUTONOMY LEVEL]</span></span>'
+        '<span class="var-tag"><span class="fw-lang-es">[NIVEL]</span><span class="fw-lang-en">[LEVEL]</span></span>'
         '</div>'
         '</div>\n'
 
-        '  </div>\n'  # end var-panel-body
+        '  </div>\n'  # end var-panel-body  # end var-panel-body
         '  <div class="var-panel-footer">'
-        '<button class="var-apply-btn" id="var-apply-btn" onclick="closeVarPanel(); flash(this)">&#10003; Listo</button>'
-        '<button class="var-clear-btn" onclick="clearVars()">Limpiar</button>'
+        '<button class="var-apply-btn" id="var-apply-btn" onclick="closeVarPanel(); flash(this)"><span class="fw-lang-es">&#10003; Listo</span><span class="fw-lang-en">&#10003; Done</span></button>'
+        '<button class="var-clear-btn" onclick="clearVars()"><span class="fw-lang-es">Limpiar</span><span class="fw-lang-en">Clear</span></button>'
         '</div>\n'
         '</div>\n'
 
         # ── Barra flotante multi-select ──
         '<div class="ms-bar" id="ms-bar">\n'
-        '  <span class="ms-count"><strong id="ms-sel-count">0</strong> seleccionados</span>\n'
+        '  <span class="ms-count"><strong id="ms-sel-count">0</strong> <span class="fw-lang-es">seleccionados</span><span class="fw-lang-en">selected</span></span>\n'
         '  <button class="ms-copy-btn" onclick="copySelected(this)">'
         '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
         '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>'
-        '</svg> Copiar seleccionados</button>\n'
-        '  <button class="ms-clear-btn" onclick="clearSelection()">Limpiar selecci\u00f3n</button>\n'
+        '</svg> <span class="fw-lang-es">Copiar seleccionados</span><span class="fw-lang-en">Copy selected</span></button>\n'
+        '  <button class="ms-clear-btn" onclick="clearSelection()"><span class="fw-lang-es">Limpiar selecci\u00f3n</span><span class="fw-lang-en">Clear selection</span></button>\n'
         '</div>\n'
 
         # ── Modal de información ⓘ ──
@@ -3080,13 +3194,13 @@ def build():
         '<div id="proj-modal" onclick="if(event.target===this)closeProjectsModal()">\n'
         '  <div class="proj-modal-box">\n'
         '    <div class="modal-hdr">\n'
-        '      <h2>Gesti\u00f3n de Proyectos</h2>\n'
+        '      <h2><span class="fw-lang-es">Gesti\u00f3n de Proyectos</span><span class="fw-lang-en">Project Management</span></h2>\n'
         '      <button class="modal-close-btn" onclick="closeProjectsModal()">&#x2715;</button>\n'
         '    </div>\n'
         '    <ul class="proj-list" id="proj-modal-list"></ul>\n'
         '    <button class="proj-add-btn"'
         ' onclick="createProject();renderProjectsModal();renderProjectSelector();syncPanelToProject();">'
-        '+ Nuevo proyecto</button>\n'
+        '<span class="fw-lang-es">+ Nuevo proyecto</span><span class="fw-lang-en">+ New project</span></button>\n'
         '  </div>\n'
         '</div>\n'
 
@@ -3095,25 +3209,34 @@ def build():
         '  <div class="ob-box">\n'
         '    <div class="ob-header">\n'
         '      <div class="ob-header-text">\n'
-        '        <h2>Bienvenido a AI-SDLC Pro</h2>\n'
-        '        <p>3 cosas clave antes de copiar tu primer prompt.</p>\n'
+        '        <h2 class="fw-lang-es">Bienvenido a AI-SDLC Pro</h2>\n'
+        '        <h2 class="fw-lang-en">Welcome to AI-SDLC Pro</h2>\n'
+        '        <p class="fw-lang-es">3 cosas clave antes de copiar tu primer prompt.</p>\n'
+        '        <p class="fw-lang-en">3 key things before copying your first prompt.</p>\n'
         '      </div>\n'
-        '      <button class="ob-close" onclick="closeOnboarding(false)" title="Cerrar">&#x2715;</button>\n'
+        '      <button class="ob-close" onclick="closeOnboarding(false)" title="Cerrar / Close">&#x2715;</button>\n'
         '    </div>\n'
         '    <div class="ob-steps">\n'
         '      <div class="ob-step active" id="ob-step-0">\n'
-        '        <div class="ob-step-badge"><span class="ob-step-badge-dot">1</span>\u00a0El framework va primero</div>\n'
-        '        <h3>El sistema antepone el framework autom\u00e1ticamente</h3>\n'
-        '        <p>No tienes que copiarlo a mano. Cada vez que presiones'
+        '        <div class="ob-step-badge"><span class="ob-step-badge-dot">1</span>\u00a0<span class="fw-lang-es">El framework va primero</span><span class="fw-lang-en">Framework goes first</span></div>\n'
+        '        <h3 class="fw-lang-es">El sistema antepone el framework autom\u00e1ticamente</h3>\n'
+        '        <h3 class="fw-lang-en">The system prepends the framework automatically</h3>\n'
+        '        <p class="fw-lang-es">No tienes que copiarlo a mano. Cada vez que presiones'
         ' <span class="ob-highlight">Copiar</span> en cualquier prompt,'
         ' el bloque de framework se antepone solo con tu contexto incluido.</p>\n'
-        '        <div class="ob-tip">&#9888; El banner amarillo <strong>\u201c&#9888; Obligatorio\u201d</strong>'
+        '        <p class="fw-lang-en">You don\'t have to copy it manually. Every time you press'
+        ' <span class="ob-highlight">Copy</span> on any prompt,'
+        ' the framework block is prepended automatically with your context included.</p>\n'
+        '        <div class="ob-tip fw-lang-es">&#9888; El banner amarillo <strong>\u201c&#9888; Obligatorio\u201d</strong>'
         ' al inicio contiene ese bloque. Ya est\u00e1 incluido en cada copia \u2014 no tienes que pegarlo manualmente.</div>\n'
+        '        <div class="ob-tip fw-lang-en">&#9888; The yellow <strong>\u201c&#9888; Required\u201d</strong> banner'
+        ' at the beginning contains this block. It is already included in every copy \u2014 you don\'t need to paste it manually.</div>\n'
         '      </div>\n'
         '      <div class="ob-step" id="ob-step-1">\n'
-        '        <div class="ob-step-badge"><span class="ob-step-badge-dot">2</span>\u00a0Configura tus variables</div>\n'
-        '        <h3>Rellena el contexto de tu proyecto antes de copiar</h3>\n'
-        '        <p>El bot\u00f3n <span class="ob-highlight">Variables</span> (barra superior)'
+        '        <div class="ob-step-badge"><span class="ob-step-badge-dot">2</span>\u00a0<span class="fw-lang-es">Configura tus variables</span><span class="fw-lang-en">Configure your variables</span></div>\n'
+        '        <h3 class="fw-lang-es">Rellena el contexto de tu proyecto antes de copiar</h3>\n'
+        '        <h3 class="fw-lang-en">Fill in your project context before copying</h3>\n'
+        '        <p class="fw-lang-es">El bot\u00f3n <span class="ob-highlight">Variables</span> (barra superior)'
         ' abre un panel donde escribes: repositorio, rama, issue, ambiente, stack y agentes IA activos.'
         '<br><br>Esas variables reemplazan los <span class="ob-highlight">[PLACEHOLDER]</span>'
         ' autom\u00e1ticamente en cada prompt copiado \u2014 sin edici\u00f3n manual.</p>\n'
