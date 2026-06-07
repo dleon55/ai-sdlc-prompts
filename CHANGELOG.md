@@ -16,6 +16,7 @@ Este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 - Pruebas de contrato para evitar campos sin UI, alias ambiguos y regresiones en prompts de triage y análisis de requerimientos.
 
 ### Fixed
+- Panel de variables: muestra opciones explícitas de compliance y alinea las etiquetas de objetivo puntual y profundidad con la fórmula del framework.
 - Framework `00`: usa tokens configurables independientes y evita reutilizar `tipo de proyecto` como workspace o `componentes` como documentos.
 - `02-02` Análisis técnico profundo: elimina contenido duplicado y corrige la referencia del diseño de solución de `02-04` a `04-01`.
 - Refuerza el análisis de código existente con preflight Git, alcance explícito, evidencia trazable, flujo por capas, contratos, datos, seguridad, observabilidad, pruebas y riesgos.

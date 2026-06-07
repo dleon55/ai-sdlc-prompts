@@ -3093,12 +3093,12 @@ def build():
         '</div>'
         '</div>\n'
 
-        # objetivo específico
+        # objetivo puntual de salida
         '    <div class="var-group">'
-        '<label for="vf-objetivo"><span class="fw-lang-es">Objetivo específico</span><span class="fw-lang-en">Specific objective</span></label>'
-        '<textarea id="vf-objetivo" placeholder="Resultado concreto esperado del prompt" oninput="syncProjectFromPanel();updateVarsBadge();"></textarea>'
+        '<label for="vf-objetivo"><span class="fw-lang-es">Objetivo puntual de salida</span><span class="fw-lang-en">Specific output objective</span></label>'
+        '<textarea id="vf-objetivo" placeholder="Indica el resultado concreto esperado del prompt" oninput="syncProjectFromPanel();updateVarsBadge();"></textarea>'
         '<div class="var-tags">'
-        '<span class="var-tag"><span class="fw-lang-es">[OBJETIVO ESPECÍFICO]</span><span class="fw-lang-en">[SPECIFIC OBJECTIVE]</span></span>'
+        '<span class="var-tag"><span class="fw-lang-es">[OBJETIVO ESPECÍFICO] reemplaza [INDICAR]</span><span class="fw-lang-en">[SPECIFIC OBJECTIVE] replaces [INDICATE]</span></span>'
         '</div>'
         '</div>\n'
 
@@ -3123,7 +3123,15 @@ def build():
         # estándar / compliance
         '    <div class="var-group">'
         '<label for="vf-compliance"><span class="fw-lang-es">Estándar / compliance</span><span class="fw-lang-en">Standard / compliance</span></label>'
-        '<input id="vf-compliance" type="text" placeholder="ISO 29110, MOPROSOFT o ninguno" oninput="syncProjectFromPanel();updateVarsBadge();">'
+        '<select id="vf-compliance" onchange="syncProjectFromPanel();updateVarsBadge();">'
+        '<option value="">— Seleccionar —</option>'
+        '<option value="PSP">PSP</option>'
+        '<option value="TSP">TSP</option>'
+        '<option value="ISO 29110">ISO 29110</option>'
+        '<option value="MOPROSOFT">MOPROSOFT</option>'
+        '<option value="MAAGTICSI">MAAGTICSI</option>'
+        '<option value="NINGUNO">NINGUNO / NONE</option>'
+        '</select>'
         '<div class="var-tags">'
         '<span class="var-tag"><span class="fw-lang-es">[ESTÁNDAR/COMPLIANCE]</span><span class="fw-lang-en">[STANDARD/COMPLIANCE]</span></span>'
         '</div>'
@@ -3150,7 +3158,7 @@ def build():
         '<option value="forense">Forense / Forensic</option>'
         '</select>'
         '<div class="var-tags">'
-        '<span class="var-tag"><span class="fw-lang-es">[NIVEL DE PROFUNDIDAD]</span><span class="fw-lang-en">[DEPTH LEVEL]</span></span>'
+        '<span class="var-tag"><span class="fw-lang-es">[NIVEL DE PROFUNDIDAD] reemplaza [NIVEL]</span><span class="fw-lang-en">[DEPTH LEVEL] replaces [LEVEL]</span></span>'
         '</div>'
         '</div>\n'
 

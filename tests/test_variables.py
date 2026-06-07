@@ -122,3 +122,22 @@ def test_framework_context_uses_distinct_configurable_tokens():
         content = (PROMPTS_DIR / filename).read_text(encoding="utf-8")
         for token in expected_tokens:
             assert token in content
+
+
+def test_framework_context_controls_expose_expected_options():
+    for option in (
+        "PSP",
+        "TSP",
+        "ISO 29110",
+        "MOPROSOFT",
+        "MAAGTICSI",
+        "NINGUNO",
+    ):
+        assert f'value="{option}"' in BUILD_SOURCE
+
+    for depth in ("bajo", "medio", "alto", "exhaustivo", "forense"):
+        assert f'value="{depth}"' in BUILD_SOURCE
+
+    assert "Objetivo puntual de salida" in BUILD_SOURCE
+    assert "[INDICAR]" in BUILD_SOURCE
+    assert "[NIVEL]" in BUILD_SOURCE
