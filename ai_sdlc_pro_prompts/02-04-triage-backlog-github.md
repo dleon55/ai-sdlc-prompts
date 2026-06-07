@@ -26,13 +26,13 @@ Contexto:
 - Antes de emitir recomendaciones, considera documentación, procesos, ramas activas, CI/CD, riesgos de concurrencia y dependencias entre issues.
 
 Entradas:
-- repositorio: [ORG/REPO o URL]
-- fuente de issues: [SALIDA gh issue list / export JSON / export CSV / tabla / texto pegado]
-- filtro aplicado: [assignee / label / componente / milestone / estado / sin filtro]
+- repositorio: [NOMBRE O URL]
+- fuente de issues: [ENTRADA PRINCIPAL]
+- filtro aplicado: [OBJETIVO ESPECÍFICO]
 - criterio de backlog pendiente: [open / open sin PR / blocked / ready / triage pendiente / otro]
-- componente o área objetivo: [INDICAR o "todos"]
-- usuario responsable o assignee: [INDICAR o "todos"]
-- rama objetivo: [main / develop / release / INDICAR]
+- componente o área objetivo: [COMPONENTES INVOLUCRADOS]
+- usuario responsable o assignee: [RESPONSABLE]
+- rama objetivo: [RAMA OBJETIVO]
 - ambiente objetivo: [DEV / QA / STAGING / PROD]
 - documentos a revisar: [README, docs/, arquitectura, workflows, issues relacionados]
 
@@ -183,13 +183,13 @@ Reglas de decisión:
 
 ```text
 Usa el prompt de triage y planificación de backlog de GitHub Issues y adáptalo a:
-- repositorio: [ORG/REPO]
-- fuente de issues: [PEGAR SALIDA DE gh issue list O EXPORT]
-- filtro aplicado: [assignee / componente / label / estado]
+- repositorio: [NOMBRE O URL]
+- fuente de issues: [ENTRADA PRINCIPAL]
+- filtro aplicado: [OBJETIVO ESPECÍFICO]
 - criterio de pendiente: [open / blocked / sin PR asociado / triage pendiente]
-- componente objetivo: [NOMBRE DEL COMPONENTE O "todos"]
-- responsable objetivo: [USUARIO O "todos"]
-- rama objetivo: [main / develop / release]
+- componente objetivo: [COMPONENTES INVOLUCRADOS]
+- responsable objetivo: [RESPONSABLE]
+- rama objetivo: [RAMA OBJETIVO]
 - ambiente: [DEV / QA / STAGING / PROD]
 - documentos a revisar: README, docs/, arquitectura, workflows, PRs e issues relacionados
 - objetivo puntual de salida: backlog categorizado y plan de atención con prioridades, tareas, responsables y entregables

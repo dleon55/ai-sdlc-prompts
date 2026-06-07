@@ -79,11 +79,13 @@ Cubre todas las funcionalidades accesibles por usuarios finales (visitantes, usu
 
 | ID | Requerimiento | Prioridad | Caso de Uso | Estado |
 |----|---------------|-----------|-------------|--------|
-| **FR-VAR-01** | Almacenar 12 variables por proyecto (ver DataModel.md) | Must | UC-04 | ✅ |
-| **FR-VAR-02** | Clasificar variables: Globales (7) vs Por-prompt (5) | Should | UC-04 | ✅ |
+| **FR-VAR-01** | Almacenar 16 variables por proyecto, con migración defensiva de proyectos existentes | Must | UC-04 | ✅ |
+| **FR-VAR-02** | Clasificar variables de contexto general y entradas específicas reutilizables por prompt | Should | UC-04 | ✅ |
 | **FR-VAR-03** | Panel de edición de variables deslizable desde derecha | Should | UC-04 | ✅ |
 | **FR-VAR-04** | Validar campos requeridos antes de permitir copia | Should | UC-04 | 🟡 |
 | **FR-VAR-05** | Aplicar sustitución de variables en tiempo real al copiar | Must | UC-07 | ✅ |
+| **FR-VAR-06** | Advertir al copiar cuando existan placeholders pendientes de captura manual | Should | UC-07 | ✅ |
+| **FR-VAR-07** | Permitir variables adicionales `TOKEN=valor` para placeholders específicos de cualquier prompt | Must | UC-04 | ✅ |
 
 ### 2.6 Sistema de Internacionalización (i18n)
 

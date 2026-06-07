@@ -21,9 +21,9 @@ Objective:
 Act as a multi-disciplinary engineering unit to analyze a requirement and generate the necessary technical and functional documentation (Issues) for its implementation.
 
 Inputs:
-- repository: [NAME]
-- user_requirement: [PASTE REQUIREMENT]
-- base_branch: [MAIN/DEVELOP]
+- repository: [NAME OR URL]
+- user_requirement: [PRIMARY INPUT]
+- base_branch: [TARGET BRANCH]
 
 Analysis Activities:
 1. DISCOVERY: Identify the core intent and business value.
@@ -57,11 +57,11 @@ Mandatory Output:
 
 ```text
 Use the comprehensive analysis prompt and adapt it to:
-- repository: [NAME]
-- user_requirement: [PASTE REQUIREMENT]
-- base_branch: [BRANCH]
+- repository: [NAME OR URL]
+- user_requirement: [PRIMARY INPUT]
+- base_branch: [TARGET BRANCH]
 - documents to review: README, docs/, current architecture, related code.
-- specific output objective: deep impact analysis + DoR-compliant issue.
+- specific output objective: [SPECIFIC OBJECTIVE]
 - depth level: high
 ```
 

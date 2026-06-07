@@ -21,9 +21,9 @@ Objetivo:
 Actúa como una unidad de ingeniería multi-disciplinaria para analizar un requerimiento y generar la documentación técnica y funcional necesaria (Issues) para su implementación.
 
 Entradas:
-- repositorio: [NOMBRE]
-- requerimiento_usuario: [PEGAR REQUERIMIENTO]
-- rama_base: [MAIN/DEVELOP]
+- repositorio: [NOMBRE O URL]
+- requerimiento_usuario: [ENTRADA PRINCIPAL]
+- rama_base: [RAMA DESTINO]
 
 Actividades de Análisis:
 1. DESCUBRIMIENTO: Identifica la intención central y el valor de negocio.
@@ -57,11 +57,11 @@ Salida Obligatoria:
 
 ```text
 Usa el prompt de análisis integral y adáptalo a:
-- repositorio: [NOMBRE]
-- requerimiento_usuario: [PEGAR REQUERIMIENTO]
-- rama_base: [RAMA]
+- repositorio: [NOMBRE O URL]
+- requerimiento_usuario: [ENTRADA PRINCIPAL]
+- rama_base: [RAMA DESTINO]
 - documentos a revisar: README, docs/, arquitectura actual, código relacionado.
-- objetivo puntual de salida: análisis de impacto profundo + issue DoR-compliant.
+- objetivo puntual de salida: [OBJETIVO ESPECÍFICO]
 - nivel de profundidad: alto
 ```
 

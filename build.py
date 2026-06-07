@@ -1303,7 +1303,8 @@ var LS_KEY_ACTV = 'AI_SDLC_v1_active';
 var EMPTY_VARS  = {
   repositorio: '', referencia: '', rama_actual: '',
   rama_destino: '', ambiente: '', componentes: '', modulo: '',
-  stack: '', tipo_proyecto: '', metodologia: '', agentes: '', autonomia: ''
+  stack: '', tipo_proyecto: '', metodologia: '', agentes: '', autonomia: '',
+  entrada: '', objetivo: '', responsable: '', adicionales: ''
 };
 
 function genId() {
@@ -1401,7 +1402,9 @@ var FIELD_VAR_MAP = {
   'vf-ambiente': 'ambiente', 'vf-componentes': 'componentes', 'vf-modulo': 'modulo',
   'vf-stack': 'stack', 'vf-tipo-proyecto': 'tipo_proyecto',
   'vf-metodologia': 'metodologia', 'vf-agentes': 'agentes',
-  'vf-autonomia': 'autonomia'
+  'vf-autonomia': 'autonomia', 'vf-entrada': 'entrada',
+  'vf-objetivo': 'objetivo', 'vf-responsable': 'responsable',
+  'vf-adicionales': 'adicionales'
 };
 
 var QUICK_FIELD_VAR_MAP = {
@@ -1633,11 +1636,12 @@ var VAR_MAP = {
                  'RUTAS DE ARCHIVOS MODIFICADOS', 'FILE PATHS...', 'FUNCIONES O UNIDADES A PROBAR',
                  'SI YA CONOCES ALGUNO', 'RUTAS DE ARCHIVOS...', 'REVIEWED COMPONENTS', 'COMPONENTS TO MODIFY',
                  'MODIFIED COMPONENTS', 'FILES AND MODULES TO MODIFY', 'AFFECTED MODULE OR FILE', 'DIRECTORY/PACKAGE', 'DIRECTORIO/PAQUETE'],
-  modulo:      ['NOMBRE DEL PROCESO', 'PROCESS NAME', 'INDICAR', 'INDICATE', 'MODULE OR FUNCTIONALITY', 'NAME', 'NOMBRE'],
+  modulo:      ['NOMBRE DEL PROCESO', 'PROCESS NAME', 'MODULE OR FUNCTIONALITY',
+                 'MÓDULO O FUNCIONALIDAD', 'MODULO O FUNCIONALIDAD'],
   stack:       ['STACK', 'STACK TECNOLÓGICO', 'STACK PRINCIPAL',
                  'ej. Python + FastAPI + PostgreSQL / Node + React + MongoDB / etc.',
                  'ej: Python 3.11 + FastAPI + PostgreSQL + Docker'],
-  tipo_proyecto: ['TIPO DE PROYECTO', 'PROJECT TYPE', 'TIPO',
+  tipo_proyecto: ['TIPO DE PROYECTO', 'PROJECT TYPE',
                    'frontend SPA / API REST / full-stack / microservicio / monorepo / librería / data science / IaC / otro',
                    'NEW / INCREMENTAL CHANGE / MAINTENANCE', 'NUEVO / CAMBIO INCREMENTAL / MANTENIMIENTO',
                    'COMMERCIAL / OPEN SOURCE / INTERNAL', 'COMERCIAL / OPEN SOURCE / INTERNO', 'SI ES ENTORNO MONOREPO', 'SI MONOREPO WORKSPACE'],
@@ -1647,10 +1651,36 @@ var VAR_MAP = {
   agentes:     ['LISTA DE AGENTES', 'AI AGENTS', 'AGENTES A CONFIGURAR', 'AGENTES ACTIVOS',
                  'Copilot / Claude / Codex / Windsurf / Cursor / Antigravity',
                  'GitHub Copilot / Claude / Windsurf / Cursor / Codex / Antigravity / combinación', 'LIST OF AGENTS'],
-  autonomia:   ['NIVEL DE AUTONOMÍA', 'AUTONOMY LEVEL', 'NIVEL', 'LEVEL',
-                 'solo análisis / análisis + propuesta / ejecución controlada / ejecución autónoma',
-                 'BAJO / MEDIO / ALTO', 'LOW / MEDIUM / HIGH', 'SEVERITY', 'SEVERIDAD'],
+  autonomia:   ['NIVEL DE AUTONOMÍA', 'AUTONOMY LEVEL',
+                  'solo análisis / análisis + propuesta / ejecución controlada / ejecución autónoma',
+                  'BAJO / MEDIO / ALTO', 'LOW / MEDIUM / HIGH'],
+  entrada:     ['ENTRADA PRINCIPAL', 'PRIMARY INPUT', 'PEGAR REQUERIMIENTO', 'PASTE REQUIREMENT',
+                 'FUENTE DE ISSUES', 'ISSUE SOURCE', 'REQUERIMIENTO_USUARIO', 'USER REQUIREMENT'],
+  objetivo:    ['OBJETIVO ESPECÍFICO', 'SPECIFIC OBJECTIVE', 'OBJETIVO PUNTUAL DE SALIDA',
+                 'SPECIFIC OUTPUT OBJECTIVE'],
+  responsable: ['RESPONSABLE', 'RESPONSIBLE PERSON', 'USUARIO RESPONSABLE', 'RESPONSIBLE USER',
+                 'ASSIGNEE'],
 };
+
+var PLACEHOLDER_IGNORE = ['N', 'X', 'Y', 'Z', 'ADR-NNN', 'NNN', 'YYYYMMDD'];
+
+function replaceToken(text, token, value) {
+  var escaped = token.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&');
+  text = text.replace(new RegExp('\\\\[' + escaped + '\\\\]', 'g'), value);
+  return text.replace(new RegExp('\\\\{\\\\{' + escaped + '\\\\}\\\\}', 'g'), value);
+}
+
+function parseAdditionalVars(raw) {
+  var result = {};
+  (raw || '').split(/\\r?\\n/).forEach(function(line) {
+    var idx = line.indexOf('=');
+    if (idx < 1) return;
+    var token = line.slice(0, idx).trim().replace(/^\\[|\\]$/g, '').replace(/^\\{\\{|\\}\\}$/g, '');
+    var value = line.slice(idx + 1).trim();
+    if (token && value) result[token] = value;
+  });
+  return result;
+}
 
 function getVarValues() {
   var p = getActiveProject();
@@ -1668,11 +1698,24 @@ function applyVars(text, overrides) {
     var val = (v[field] || '').trim();
     if (!val) return;
     VAR_MAP[field].forEach(function(token) {
-      var rx = new RegExp('\\\\[' + token.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&') + '\\\\]', 'g');
-      text = text.replace(rx, val);
+      text = replaceToken(text, token, val);
     });
   });
+  Object.keys(parseAdditionalVars(v.adicionales)).forEach(function(token) {
+    text = replaceToken(text, token, parseAdditionalVars(v.adicionales)[token]);
+  });
   return text;
+}
+
+function findUnresolvedPlaceholders(text) {
+  var found = [];
+  var rx = /\\[([A-ZÁÉÍÓÚÑ][A-ZÁÉÍÓÚÑ0-9_ /.,#()\\-]{1,80})\\]|\\{\\{([A-Z][A-Z0-9_]{1,60})\\}\\}/g;
+  var match;
+  while ((match = rx.exec(text)) !== null) {
+    var token = (match[1] || match[2] || '').trim();
+    if (PLACEHOLDER_IGNORE.indexOf(token) === -1 && found.indexOf(token) === -1) found.push(token);
+  }
+  return found;
 }
 
 function countFilledVars() {
@@ -1979,9 +2022,20 @@ function updateLivePreview() {
       var val = (v[field] || '').trim();
       if (!val) return;
       VAR_MAP[field].forEach(function(token) {
-        var rx = new RegExp('\\\\[' + token.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&') + '\\\\]', 'g');
-        escapedText = escapedText.replace(rx, '<span class="var-highlight">' + val.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</span>');
+        escapedText = replaceToken(
+          escapedText,
+          token,
+          '<span class="var-highlight">' + val.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</span>'
+        );
       });
+    });
+    var additional = parseAdditionalVars(v.adicionales);
+    Object.keys(additional).forEach(function(token) {
+      escapedText = replaceToken(
+        escapedText,
+        token,
+        '<span class="var-highlight">' + additional[token].replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</span>'
+      );
     });
     codeEl.innerHTML = escapedText;
   });
@@ -2059,16 +2113,24 @@ function copyPromptLang(pid, lang, btn) {
   var title = btn.dataset.title || '';
   // Leer plantilla limpia de RAW_PROMPTS para evitar copiar etiquetas de highlight HTML
   var raw = RAW_PROMPTS[codeId] || codeEl.textContent;
-  var text = applyVars(raw, { modulo: title });
+  var currentVars = getVarValues();
+  var text = applyVars(raw, { modulo: currentVars.modulo || title });
   
   if (pid !== 'fw') {
     var fwId = 'code-fw-' + lang;
     var fwEl = document.getElementById(fwId) || document.getElementById('code-fw');
     if (fwEl) {
       var fwRaw = RAW_PROMPTS[fwId] || fwEl.textContent;
-      var fw = applyVars(fwRaw, { modulo: title });
+      var fw = applyVars(fwRaw, { modulo: currentVars.modulo || title });
       if (fw) text = fw + '\\n\\n---\\n\\n' + text;
     }
+  }
+  var unresolved = findUnresolvedPlaceholders(text);
+  if (unresolved.length) {
+    var warning = getCurrentLanguage() === 'en'
+      ? unresolved.length + ' placeholders still need manual input: '
+      : unresolved.length + ' placeholders requieren captura manual: ';
+    showToast(warning + unresolved.slice(0, 3).join(', ') + (unresolved.length > 3 ? '...' : ''), 'warn');
   }
   doCopy(text, btn);
 }
@@ -3006,9 +3068,44 @@ def build():
         '<textarea id="vf-referencia" placeholder="" oninput="syncProjectFromPanel();updateVarsBadge();"></textarea>'
         '<div class="var-tags">'
         '<span class="var-tag"><span class="fw-lang-es">[REFERENCIA]</span><span class="fw-lang-en">[REFERENCE]</span></span>'
-        '<span class="var-tag"><span class="fw-lang-es">[PEGAR]</span><span class="fw-lang-en">[PASTE]</span></span>'
-        '<span class="var-tag"><span class="fw-lang-es">[PEGAR TEXTO...]</span><span class="fw-lang-en">[PASTE TEXT...]</span></span>'
         '</div>'
+        '</div>\n'
+
+        # entrada principal
+        '    <div class="var-group">'
+        '<label for="vf-entrada"><span class="fw-lang-es">Entrada principal</span><span class="fw-lang-en">Primary input</span></label>'
+        '<textarea id="vf-entrada" rows="4" placeholder="Requerimiento, lista de issues, reporte o contexto a analizar" oninput="syncProjectFromPanel();updateVarsBadge();"></textarea>'
+        '<div class="var-tags">'
+        '<span class="var-tag"><span class="fw-lang-es">[ENTRADA PRINCIPAL]</span><span class="fw-lang-en">[PRIMARY INPUT]</span></span>'
+        '</div>'
+        '</div>\n'
+
+        # objetivo específico
+        '    <div class="var-group">'
+        '<label for="vf-objetivo"><span class="fw-lang-es">Objetivo específico</span><span class="fw-lang-en">Specific objective</span></label>'
+        '<textarea id="vf-objetivo" placeholder="Resultado concreto esperado del prompt" oninput="syncProjectFromPanel();updateVarsBadge();"></textarea>'
+        '<div class="var-tags">'
+        '<span class="var-tag"><span class="fw-lang-es">[OBJETIVO ESPECÍFICO]</span><span class="fw-lang-en">[SPECIFIC OBJECTIVE]</span></span>'
+        '</div>'
+        '</div>\n'
+
+        # responsable
+        '    <div class="var-group">'
+        '<label for="vf-responsable"><span class="fw-lang-es">Responsable / assignee</span><span class="fw-lang-en">Responsible person / assignee</span></label>'
+        '<input id="vf-responsable" type="text" placeholder="usuario, equipo o rol" oninput="syncProjectFromPanel();updateVarsBadge();">'
+        '<div class="var-tags">'
+        '<span class="var-tag"><span class="fw-lang-es">[RESPONSABLE]</span><span class="fw-lang-en">[ASSIGNEE]</span></span>'
+        '</div>'
+        '</div>\n'
+
+        # variables adicionales
+        '    <div class="var-group">'
+        '<label for="vf-adicionales"><span class="fw-lang-es">Variables adicionales</span><span class="fw-lang-en">Additional variables</span></label>'
+        '<textarea id="vf-adicionales" rows="5" placeholder="TOKEN=valor&#10;OTRO TOKEN=otro valor" oninput="syncProjectFromPanel();updateVarsBadge();"></textarea>'
+        '<small style="display:block;margin-top:.35rem;color:var(--tx3);font-size:.64rem;line-height:1.4;">'
+        '<span class="fw-lang-es">Una por línea. Permite completar placeholders específicos que no aparecen en los campos anteriores.</span>'
+        '<span class="fw-lang-en">One per line. Completes prompt-specific placeholders not covered by the fields above.</span>'
+        '</small>'
         '</div>\n'
 
         # rama actual

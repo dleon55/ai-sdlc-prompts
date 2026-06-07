@@ -187,6 +187,10 @@ FR-04 (Ciclo Forzado)
 | **V-10** | `metodologia` | Enum | "SCRUM/Kanban/Waterfall" | No |
 | **V-11** | `agentes_ia` | String[] | ["Copilot", "Claude"] | No |
 | **V-12** | `nivel_autonomia` | Enum | "alto/medio/bajo" | No |
+| **V-13** | `entrada` | Text | Requerimiento, issues, reporte o contexto principal | No |
+| **V-14** | `objetivo` | Text | Resultado específico esperado | No |
+| **V-15** | `responsable` | String | Usuario, equipo, assignee o rol | No |
+| **V-16** | `adicionales` | Text | Una asignación `TOKEN=valor` por línea | No |
 
 ---
 

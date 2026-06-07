@@ -26,13 +26,13 @@ Context:
 - Before issuing recommendations, consider documentation, processes, active branches, CI/CD, concurrency risks, and dependencies between issues.
 
 Inputs:
-- repository: [ORG/REPO or URL]
-- issues source: [gh issue list output / JSON export / CSV export / table / pasted text]
-- applied filter: [assignee / label / component / milestone / status / no filter]
+- repository: [NAME OR URL]
+- issues source: [PRIMARY INPUT]
+- applied filter: [SPECIFIC OBJECTIVE]
 - pending backlog criteria: [open / open without PR / blocked / ready / triage pending / other]
-- target component or area: [INDICATE or "all"]
-- target assignee or owner: [INDICATE or "all"]
-- target branch: [main / develop / release / INDICATE]
+- target component or area: [INVOLVED COMPONENTS]
+- target assignee or owner: [ASSIGNEE]
+- target branch: [TARGET BRANCH]
 - target environment: [DEV / QA / STAGING / PROD]
 - documents to review: [README, docs/, architecture, workflows, related issues]
 
@@ -183,13 +183,13 @@ Decision rules:
 
 ```text
 Use the GitHub Issues backlog triage and planning prompt and adapt it to:
-- repository: [ORG/REPO]
-- issues source: [PASTE gh issue list OUTPUT OR EXPORT]
-- applied filter: [assignee / component / label / status]
+- repository: [NAME OR URL]
+- issues source: [PRIMARY INPUT]
+- applied filter: [SPECIFIC OBJECTIVE]
 - pending criteria: [open / blocked / without associated PR / triage pending]
-- target component: [COMPONENT NAME OR "all"]
-- target owner: [USER OR "all"]
-- target branch: [main / develop / release]
+- target component: [INVOLVED COMPONENTS]
+- target owner: [ASSIGNEE]
+- target branch: [TARGET BRANCH]
 - environment: [DEV / QA / STAGING / PROD]
 - documents to review: README, docs/, architecture, workflows, related PRs and issues
 - specific output objective: categorized backlog and attention plan with priorities, tasks, owners and deliverables
