@@ -8,10 +8,19 @@ Este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+### Added
+- Panel de variables: agrega `Entrada principal`, `Objetivo específico` y `Responsable / assignee`, con migración automática de proyectos guardados.
+- Panel de variables: agrega asignaciones adicionales `TOKEN=valor` para configurar placeholders específicos sin soporte canónico.
+- Copiado: detecta placeholders pendientes y muestra una advertencia sin bloquear la copia.
+- Pruebas de contrato para evitar campos sin UI, alias ambiguos y regresiones en prompts de triage y análisis de requerimientos.
+
 ### Fixed
 - `02-02` Análisis técnico profundo: elimina contenido duplicado y corrige la referencia del diseño de solución de `02-04` a `04-01`.
 - Refuerza el análisis de código existente con preflight Git, alcance explícito, evidencia trazable, flujo por capas, contratos, datos, seguridad, observabilidad, pruebas y riesgos.
 - Mantiene paridad funcional entre las versiones en español e inglés y regenera `index.html`.
+- Variables: evita sustituciones semánticamente incorrectas de tokens genéricos como `[NOMBRE]`, `[TIPO]`, `[NIVEL]`, `[SEVERIDAD]` e `[INDICAR]`.
+- Copiado: conserva el módulo configurado por el usuario en lugar de sobrescribirlo siempre con el título del prompt.
+- Prompts `02-04` y `02-05`: normaliza sus entradas a variables configurables desde la interfaz.
 
 ## [1.9.2] — 2026-04-22
 
