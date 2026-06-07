@@ -184,14 +184,14 @@ FR-04 (Ciclo Forzado)
 | **V-07** | `modulo` | String | "notificaciones" | No |
 | **V-08** | `stack` | String | "Node.js, React, PostgreSQL" | No |
 | **V-09** | `tipo_proyecto` | Enum | "Web/API/Mobile" | No |
-| **V-10** | `metodologia` | Enum | "SCRUM/Kanban/Waterfall" | No |
+| **V-10** | `metodologia` | String[] | Scrum, RUP, DevSecOps y GitHub Flow; admite múltiples valores y opción personalizada | No |
 | **V-11** | `agentes_ia` | String[] | ["Copilot", "Claude"] | No |
 | **V-12** | `nivel_autonomia` | Enum | "alto/medio/bajo" | No |
 | **V-13** | `entrada` | Text | Requerimiento, issues, reporte o contexto principal | No |
 | **V-14** | `objetivo` | Text | Resultado específico esperado | No |
 | **V-15** | `responsable` | String | Usuario, equipo, assignee o rol | No |
 | **V-16** | `workspace` | String | Ruta del workspace o subproyecto dentro del repositorio | No |
-| **V-17** | `compliance` | String | Estándar, marco o requisito normativo aplicable | No |
+| **V-17** | `compliance` | String[] | Estándares, modelos y regulaciones aplicables; admite múltiples valores y opción personalizada | No |
 | **V-18** | `documentos` | Text | Documentos y rutas específicas que deben revisarse | No |
 | **V-19** | `profundidad` | Enum | Bajo, medio, alto, exhaustivo o forense | No |
 | **V-20** | `adicionales` | Text | Una asignación `TOKEN=valor` por línea | No |

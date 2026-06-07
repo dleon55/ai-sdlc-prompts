@@ -522,10 +522,18 @@ code {
 }
 .var-group input, .var-group select { padding: .35rem .6rem; }
 .var-group textarea { padding: .35rem .6rem; resize: vertical; min-height: 56px; }
+.var-group select[multiple] { min-height: 132px; padding: .3rem; }
+.var-group select[multiple] option { padding: .28rem .4rem; border-radius: 3px; }
 .var-group input:focus, .var-group select:focus, .var-group textarea:focus {
   border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99,102,241,.15);
 }
 .var-group input::placeholder, .var-group textarea::placeholder { color: var(--tx3); }
+.var-help {
+  display: block; margin-top: .35rem; color: var(--tx3);
+  font-size: .64rem; line-height: 1.4;
+}
+.var-other-input { margin-top: .4rem; }
+.var-other-input[hidden] { display: none; }
 .var-tags { display: flex; flex-wrap: wrap; gap: .25rem; margin-top: .3rem; }
 .var-tag {
   font-size: .58rem; font-family: var(--mono); color: var(--tx3);
@@ -1421,8 +1429,80 @@ var QUICK_FIELD_VAR_MAP = {
 function syncFieldsToValues(fieldMap, values) {
   Object.keys(fieldMap).forEach(function(eid) {
     var el = document.getElementById(eid);
-    if (el) el.value = values[fieldMap[eid]] || '';
+    if (!el) return;
+    var value = values[fieldMap[eid]] || '';
+    if (!el.multiple) {
+      el.value = value;
+      return;
+    }
+    var selectedValues = value.split(',').map(function(item) { return item.trim(); }).filter(Boolean);
+    var knownValues = Array.from(el.options).map(function(option) { return option.value; });
+    var customValues = selectedValues.filter(function(item) { return knownValues.indexOf(item) < 0; });
+    Array.from(el.options).forEach(function(option) {
+      option.selected = selectedValues.indexOf(option.value) >= 0;
+    });
+    var otherOption = Array.from(el.options).find(function(option) { return option.value === '__OTHER__'; });
+    if (otherOption) otherOption.selected = customValues.length > 0;
+    el.dataset.selectedValues = JSON.stringify(
+      Array.from(el.selectedOptions).map(function(option) { return option.value; })
+    );
+    var otherInputId = el.getAttribute('data-other-input');
+    var otherInput = otherInputId ? document.getElementById(otherInputId) : null;
+    if (otherInput) {
+      otherInput.value = customValues.join(', ');
+      otherInput.hidden = customValues.length === 0;
+    }
   });
+}
+
+function readFieldValue(el) {
+  if (!el.multiple) return el.value;
+  var values = Array.from(el.selectedOptions)
+    .map(function(option) { return option.value; })
+    .filter(function(value) { return value !== '__OTHER__'; });
+  var otherInputId = el.getAttribute('data-other-input');
+  var otherInput = otherInputId ? document.getElementById(otherInputId) : null;
+  if (otherInput && !otherInput.hidden) {
+    otherInput.value.split(',').map(function(item) { return item.trim(); }).filter(Boolean)
+      .forEach(function(item) { values.push(item); });
+  }
+  return values.join(', ');
+}
+
+function syncMultiSelectOther(selectId) {
+  var select = document.getElementById(selectId);
+  if (!select) return;
+  if (selectId === 'vf-compliance') {
+    var previousValues = [];
+    try { previousValues = JSON.parse(select.dataset.selectedValues || '[]'); } catch (e) {}
+    var currentValues = Array.from(select.selectedOptions).map(function(option) { return option.value; });
+    var newlySelected = currentValues.filter(function(value) {
+      return previousValues.indexOf(value) < 0;
+    });
+    var noneOption = Array.from(select.options).find(function(option) {
+      return option.value === 'NINGUNO';
+    });
+    if (noneOption && newlySelected.indexOf('NINGUNO') >= 0) {
+      Array.from(select.options).forEach(function(option) {
+        option.selected = option.value === 'NINGUNO';
+      });
+    } else if (noneOption && newlySelected.length > 0) {
+      noneOption.selected = false;
+    }
+  }
+  select.dataset.selectedValues = JSON.stringify(
+    Array.from(select.selectedOptions).map(function(option) { return option.value; })
+  );
+  var otherInputId = select.getAttribute('data-other-input');
+  var otherInput = otherInputId ? document.getElementById(otherInputId) : null;
+  if (!otherInput) return;
+  var hasOther = Array.from(select.selectedOptions).some(function(option) {
+    return option.value === '__OTHER__';
+  });
+  otherInput.hidden = !hasOther;
+  if (!hasOther) otherInput.value = '';
+  syncProjectFromPanel();
+  updateVarsBadge();
 }
 
 function updateActiveProjectVars(fieldMap) {
@@ -1433,7 +1513,7 @@ function updateActiveProjectVars(fieldMap) {
   if (!p) return null;
   Object.keys(fieldMap).forEach(function(eid) {
     var el = document.getElementById(eid);
-    if (el) p.vars[fieldMap[eid]] = el.value;
+    if (el) p.vars[fieldMap[eid]] = readFieldValue(el);
   });
   saveProjects(list);
   return p.vars;
@@ -1901,12 +1981,6 @@ function updatePlaceholders(lang) {
     tSelect.options[9].text = lang === 'en' ? 'other' : 'otro';
     tSelect.options[9].value = lang === 'en' ? 'other' : 'otro';
   }
-  var mSelect = document.getElementById('vf-metodologia');
-  if (mSelect && mSelect.options.length > 7) {
-    mSelect.options[0].text = lang === 'en' ? '-- select --' : '-- seleccionar --';
-    mSelect.options[7].text = lang === 'en' ? 'other' : 'otro';
-    mSelect.options[7].value = lang === 'en' ? 'other' : 'otro';
-  }
   var aSelect = document.getElementById('vf-autonomia');
   if (aSelect && aSelect.options.length > 4) {
     aSelect.options[0].text = lang === 'en' ? '-- select --' : '-- seleccionar --';
@@ -1928,6 +2002,8 @@ function updatePlaceholders(lang) {
     'vf-componentes': { es: 'Lista de componentes o rutas de archivos', en: 'List of components or file paths' },
     'vf-modulo': { es: 'Nombre del módulo o funcionalidad', en: 'Module or process name' },
     'vf-stack': { es: 'ej: Python + FastAPI + PostgreSQL + Docker', en: 'e.g., Python + FastAPI + PostgreSQL + Docker' },
+    'vf-compliance-other': { es: 'Otro estándar o regulación', en: 'Other standard or regulation' },
+    'vf-metodologia-other': { es: 'Otra metodología o proceso', en: 'Other methodology or process' },
     'vf-agentes': { es: 'ej: Copilot, Claude, Codex', en: 'e.g., Copilot, Claude, Codex' },
     
     'qv-repositorio': { es: 'org/nombre-repo o URL', en: 'org/repo-name or URL' },
@@ -3123,15 +3199,31 @@ def build():
         # estándar / compliance
         '    <div class="var-group">'
         '<label for="vf-compliance"><span class="fw-lang-es">Estándar / compliance</span><span class="fw-lang-en">Standard / compliance</span></label>'
-        '<select id="vf-compliance" onchange="syncProjectFromPanel();updateVarsBadge();">'
-        '<option value="">— Seleccionar —</option>'
+        '<select id="vf-compliance" multiple data-other-input="vf-compliance-other" aria-describedby="vf-compliance-help" onchange="syncMultiSelectOther(\'vf-compliance\')">'
         '<option value="PSP">PSP</option>'
         '<option value="TSP">TSP</option>'
-        '<option value="ISO 29110">ISO 29110</option>'
+        '<option value="ISO 29110">ISO/IEC 29110</option>'
+        '<option value="ISO 9001">ISO 9001</option>'
+        '<option value="ISO 12207">ISO/IEC/IEEE 12207</option>'
+        '<option value="ISO 25010">ISO/IEC 25010</option>'
+        '<option value="ISO 27001">ISO/IEC 27001</option>'
+        '<option value="ISO 27002">ISO/IEC 27002</option>'
+        '<option value="ISO 27701">ISO/IEC 27701</option>'
+        '<option value="CMMI-DEV">CMMI-DEV</option>'
         '<option value="MOPROSOFT">MOPROSOFT</option>'
         '<option value="MAAGTICSI">MAAGTICSI</option>'
-        '<option value="NINGUNO">NINGUNO / NONE</option>'
+        '<option value="NIST CSF">NIST CSF</option>'
+        '<option value="NIST SSDF">NIST SSDF</option>'
+        '<option value="OWASP SAMM">OWASP SAMM</option>'
+        '<option value="PCI DSS">PCI DSS</option>'
+        '<option value="SOC 2">SOC 2</option>'
+        '<option value="GDPR">GDPR</option>'
+        '<option value="HIPAA">HIPAA</option>'
+        '<option value="NINGUNO">NINGUNO / NONE (exclusivo)</option>'
+        '<option value="__OTHER__">Otro / Other...</option>'
         '</select>'
+        '<small class="var-help" id="vf-compliance-help"><span class="fw-lang-es">Selecciona uno o varios con Ctrl/Cmd. “NINGUNO” es exclusivo. Usa “Otro” para valores adicionales.</span><span class="fw-lang-en">Select one or more with Ctrl/Cmd. “NONE” is exclusive. Use “Other” for additional values.</span></small>'
+        '<input id="vf-compliance-other" class="var-other-input" type="text" hidden placeholder="Otro estándar o regulación" oninput="syncProjectFromPanel();updateVarsBadge();">'
         '<div class="var-tags">'
         '<span class="var-tag"><span class="fw-lang-es">[ESTÁNDAR/COMPLIANCE]</span><span class="fw-lang-en">[STANDARD/COMPLIANCE]</span></span>'
         '</div>'
@@ -3271,17 +3363,25 @@ def build():
 
         # metodología
         '    <div class="var-group">'
-        '<label for="vf-metodologia"><span class="fw-lang-es">Metodología / branching</span><span class="fw-lang-en">Methodology / branching</span></label>'
-        '<select id="vf-metodologia" onchange="syncProjectFromPanel();updateVarsBadge();">'
-        '<option value="">-- seleccionar --</option>'
-        '<option>SCRUM</option>'
-        '<option>Kanban</option>'
-        '<option>GitHub Flow</option>'
-        '<option>GitFlow</option>'
-        '<option>Trunk-Based</option>'
-        '<option>RUP</option>'
-        '<option>otro</option>'
+        '<label for="vf-metodologia"><span class="fw-lang-es">Metodologías / proceso / branching</span><span class="fw-lang-en">Methodologies / process / branching</span></label>'
+        '<select id="vf-metodologia" multiple data-other-input="vf-metodologia-other" aria-describedby="vf-metodologia-help" onchange="syncMultiSelectOther(\'vf-metodologia\')">'
+        '<option value="Scrum">Scrum</option>'
+        '<option value="Kanban">Kanban</option>'
+        '<option value="RUP">RUP</option>'
+        '<option value="Cascada">Cascada / Waterfall</option>'
+        '<option value="Espiral">Espiral / Spiral</option>'
+        '<option value="XP">XP</option>'
+        '<option value="Lean">Lean</option>'
+        '<option value="SAFe">SAFe</option>'
+        '<option value="DevOps">DevOps</option>'
+        '<option value="DevSecOps">DevSecOps</option>'
+        '<option value="Trunk-Based Development">Trunk-Based Development</option>'
+        '<option value="GitHub Flow">GitHub Flow</option>'
+        '<option value="GitFlow">GitFlow</option>'
+        '<option value="__OTHER__">Otro / Other...</option>'
         '</select>'
+        '<small class="var-help" id="vf-metodologia-help"><span class="fw-lang-es">Permite combinar metodología, proceso y estrategia de ramas.</span><span class="fw-lang-en">Allows combining methodology, process and branching strategy.</span></small>'
+        '<input id="vf-metodologia-other" class="var-other-input" type="text" hidden placeholder="Otra metodología o proceso" oninput="syncProjectFromPanel();updateVarsBadge();">'
         '<div class="var-tags">'
         '<span class="var-tag"><span class="fw-lang-es">[METODOLOGÍA]</span><span class="fw-lang-en">[METHODOLOGY]</span></span>'
         '<span class="var-tag"><span class="fw-lang-es">[BRANCHING STRATEGY]</span><span class="fw-lang-en">[BRANCHING STRATEGY]</span></span>'
