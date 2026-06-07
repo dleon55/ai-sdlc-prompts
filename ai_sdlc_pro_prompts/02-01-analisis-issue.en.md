@@ -18,11 +18,13 @@ Prompt to analyze a requirement, issue or change and determine its functional sc
 
 ```text
 Objective:
-Analyze the requested requirement, issue or change and determine its functional and technical scope within the project.
+Analyze the requested requirement, issue or change and determine its functional and technical scope within the project, considering the monorepo structure and applicable standards.
 
 Inputs:
 - issue or requirement: [PASTE]
 - repository or module: [INDICATE]
+- workspace/subproject: [INDICATE IF APPLICABLE]
+- standard/compliance: [PSP / TSP / ISO / MOPROSOFT / MAAGTICSI / NONE]
 
 Activities:
 1. Understand the problem or need.
@@ -32,10 +34,11 @@ Activities:
    - use case(s),
    - current behavior,
    - expected behavior,
-   - acceptance criteria if they exist.
-3. Review if it is already documented in the project.
-4. Relate the requirement to impacted modules, components and data.
-5. Detect dependencies and risks.
+   - functional and quality acceptance criteria.
+3. Determine the affected monorepo subproject/workspace and if there are dependencies with other local packages.
+4. Review if it is already documented in the project.
+5. Relate the requirement to impacted modules, components and data.
+6. Detect dependencies, risks, and security controls (DevSecOps/ISO 27001).
 
 Output:
 1. Functional summary

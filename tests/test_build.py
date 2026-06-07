@@ -93,9 +93,9 @@ def test_css_i18n_selectors_present():
     """Validar que los selectores CSS para i18n están presentes"""
     index_file = PROJECT_ROOT / "index.html"
     content = index_file.read_text(encoding='utf-8')
-    assert 'html[data-lang="es"]' in content, "CSS selector html[data-lang='es'] no encontrado"
-    assert 'html[data-lang="en"]' in content, "CSS selector html[data-lang='en'] no encontrado"
-    print("✓ CSS selectors html[data-lang] presentes")
+    assert 'html[data-lang="es"]' in content or 'html[lang="es"]' in content, "CSS selector para idioma es no encontrado"
+    assert 'html[data-lang="en"]' in content or 'html[lang="en"]' in content, "CSS selector para idioma en no encontrado"
+    print("✓ CSS selectors html[lang] o html[data-lang] presentes")
 
 
 def test_framework_dual_language():

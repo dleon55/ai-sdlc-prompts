@@ -18,11 +18,13 @@ Prompt para analizar un requerimiento, issue o cambio y determinar su alcance fu
 
 ```text
 Objetivo:
-Analiza el requerimiento, issue o cambio solicitado y determina su alcance funcional y técnico dentro del proyecto.
+Analiza el requerimiento, issue o cambio solicitado y determina su alcance funcional y técnico dentro del proyecto, considerando la estructura del monorepo y los estándares aplicables.
 
 Entradas:
 - issue o requerimiento: [PEGAR]
 - repositorio o módulo: [INDICAR]
+- workspace/subproyecto: [INDICAR SI APLICA]
+- estándar/compliance: [PSP / TSP / ISO / MOPROSOFT / MAAGTICSI / NINGUNO]
 
 Actividades:
 1. Comprende el problema o necesidad.
@@ -32,10 +34,11 @@ Actividades:
    - caso(s) de uso,
    - comportamiento actual,
    - comportamiento esperado,
-   - criterios de aceptación si existen.
-3. Revisa si ya está documentado en el proyecto.
-4. Relaciona el requerimiento con módulos, componentes y datos impactados.
-5. Detecta dependencias y riesgos.
+   - criterios de aceptación funcionales y de calidad.
+3. Determina el subproyecto/workspace del monorepo afectado y si hay dependencias con otros paquetes locales.
+4. Revisa si ya está documentado en el proyecto.
+5. Relaciona el requerimiento con módulos, componentes y datos impactados.
+6. Detecta dependencias, riesgos y controles de seguridad (DevSecOps/ISO 27001).
 
 Salida:
 1. Resumen funcional

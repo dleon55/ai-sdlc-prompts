@@ -46,6 +46,7 @@ SECTION_META = {
     "11": ("Operaciones",                 "ops"),
     "12": ("Orquestador",                 "orchestrator"),
     "13": ("Seguridad y DevSecOps",          "security"),
+    "14": ("Monorepo y Estandares",        "orchestrator"),
 }
 
 # Labels con tildes/enye para mostrar en UI
@@ -67,6 +68,7 @@ SECTION_COLOR = {
     "11": "#94a3b8",  # slate  — ops
     "12": "#c084fc",  # purple — orquestador
     "13": "#dc2626",  # red    — seguridad
+    "14": "#f43f5e",  # rose   — monorepo/estandares
 }
 
 # SVG paths para cada icono (24x24 viewBox, stroke-based)
@@ -2496,8 +2498,10 @@ def build():
         '<meta property="og:image" content="https://prompts.lionsystems.com.mx/og-image.png">\n'
         '<meta name="twitter:card" content="summary_large_image">\n'
         f'<meta name="twitter:title" content="{i18n_strings.LANDING_STRINGS["es"]["page_title"]}">\n'
-        f'<meta name="twitter:description" content="{i18n_strings.LANDING_STRINGS["es"]["meta_description"].format(n=TOTAL_PROMPTS)}">\n'
         '<link rel="canonical" href="https://prompts.lionsystems.com.mx">\n'
+        '<link rel="alternate" hreflang="es" href="https://prompts.lionsystems.com.mx">\n'
+        '<link rel="alternate" hreflang="en" href="https://prompts.lionsystems.com.mx">\n'
+        '<link rel="alternate" hreflang="x-default" href="https://prompts.lionsystems.com.mx">\n'
         '<script async src="https://www.googletagmanager.com/gtag/js?id=G-C5JKYNZ62F"></script>\n'
         '<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-C5JKYNZ62F");</script>\n'
         '<style>' + CSS + '</style>\n'

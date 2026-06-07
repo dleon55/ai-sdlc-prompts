@@ -1,12 +1,14 @@
-﻿# 1.1 Prompt para inventario técnico del repositorio
+# 1.1 Prompt para inventario técnico del repositorio
 
 ```text
 Objetivo:
 Quiero que analices integralmente este repositorio y construyas un inventario técnico inicial del proyecto.
 
 Actividades:
-1. Revisa la estructura completa del repositorio.
+1. Revisa la estructura completa del repositorio (detectando si es un monorrepositorio o proyecto modular).
 2. Identifica:
+   - workspaces / subproyectos / sub-módulos,
+   - dependencias y fronteras entre paquetes internos,
    - componentes,
    - módulos,
    - capas,
@@ -28,7 +30,7 @@ Actividades:
    - mensajería,
    - autenticación,
    - observabilidad.
-4. Ubica los artefactos del ciclo de ingeniería:
+4. Ubica los artefactos del ciclo de ingeniería y alineación con estándares (PSP, ISO, etc.):
    - análisis,
    - diseño,
    - casos de uso,

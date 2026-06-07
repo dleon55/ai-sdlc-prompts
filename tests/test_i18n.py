@@ -52,15 +52,15 @@ def test_get_string_en():
 def test_get_landing_string_es():
     """Validar string de landing page en español"""
     result = get_landing_string('cta_primary', 'es')
-    assert result == 'Probar gratis'
-    print("✓ get_landing_string('cta_primary', 'es'): 'Probar gratis'")
+    assert result == 'Explorar prompts gratis →'
+    print("✓ get_landing_string('cta_primary', 'es'): 'Explorar prompts gratis →'")
 
 
 def test_get_landing_string_en():
     """Validar string de landing page en inglés"""
     result = get_landing_string('cta_primary', 'en')
-    assert result == 'Try for free'
-    print("✓ get_landing_string('cta_primary', 'en'): 'Try for free'")
+    assert result == 'Explore prompts for free →'
+    print("✓ get_landing_string('cta_primary', 'en'): 'Explore prompts for free →'")
 
 
 def test_all_ui_strings_have_both_languages():
@@ -93,12 +93,12 @@ def test_section_labels():
     """Validar que todas las secciones tienen label en ambos idiomas"""
     from i18n_strings import SECTION_LABELS_I18N
     
-    for section_num in range(13):  # 00-12
+    for section_num in range(15):  # 00-14
         section_key = f"{section_num:02d}"
         assert section_key in SECTION_LABELS_I18N['es'], f"Sección {section_key} sin label ES"
         assert section_key in SECTION_LABELS_I18N['en'], f"Sección {section_key} sin label EN"
     
-    print(f"✓ SECTION_LABELS_I18N: 13 secciones con traducción ES/EN")
+    print(f"✓ SECTION_LABELS_I18N: 15 secciones con traducción ES/EN")
 
 
 def run_all_tests() -> bool:

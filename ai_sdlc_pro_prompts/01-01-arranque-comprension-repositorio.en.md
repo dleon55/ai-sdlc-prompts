@@ -5,8 +5,10 @@ Objective:
 I want you to comprehensively analyze this repository and build an initial technical inventory of the project.
 
 Activities:
-1. Review the complete structure of the repository.
+1. Review the complete structure of the repository (detecting if it is a monorepo or modular project).
 2. Identify:
+   - workspaces / subprojects / sub-modules,
+   - dependencies and boundaries between internal packages,
    - components,
    - modules,
    - layers,
@@ -28,7 +30,7 @@ Activities:
    - messaging,
    - authentication,
    - observability.
-4. Locate engineering cycle artifacts:
+4. Locate engineering cycle artifacts and compliance standards (PSP, ISO, etc.):
    - analysis,
    - design,
    - use cases,

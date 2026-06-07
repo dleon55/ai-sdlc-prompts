@@ -193,6 +193,8 @@ SECTION_LABELS_I18N = {
         '10': 'Documentación',
         '11': 'Operaciones',
         '12': 'Orquestador',
+        '13': 'Seguridad',
+        '14': 'Monorepo',
     },
     'en': {
         '00': 'Framework',
@@ -208,6 +210,8 @@ SECTION_LABELS_I18N = {
         '10': 'Documentation',
         '11': 'Operations',
         '12': 'Orchestrator',
+        '13': 'Security',
+        '14': 'Monorepo',
     }
 }
 

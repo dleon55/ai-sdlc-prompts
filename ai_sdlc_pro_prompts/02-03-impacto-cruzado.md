@@ -18,29 +18,31 @@ Prompt para evaluar el impacto del cambio en todos los módulos, procesos, datos
 
 ```text
 Objetivo:
-Analiza el impacto del cambio solicitado en otros módulos, procesos, datos, integraciones, ambientes y pipelines.
+Analiza el impacto del cambio solicitado en otros módulos, procesos, datos, integraciones, ambientes, pipelines, subproyectos del monorepo y políticas de versionado (semver).
 
 Actividades:
 1. Evalúa impacto en:
+   - subproyectos / workspaces del monorepo (por ejemplo, dependencias compartidas, utilerías comunes),
+   - contratos de API y versionado semántico (semver) de paquetes locales,
    - frontend,
    - backend,
    - base de datos,
    - integraciones,
    - infraestructura,
-   - CI/CD,
-   - seguridad,
+   - CI/CD (pipelines de build independientes o compartidos),
+   - seguridad y conformidad normativa (ISO, MAAGTICSI, etc.),
    - monitoreo,
    - documentación.
 2. Detecta impactos directos e indirectos.
 3. Evalúa afectación a otros casos de uso.
 
 Salida:
-- matriz de impacto,
+- matriz de impacto (incluyendo workspaces y paquetes del monorepo),
 - severidad,
-- componente afectado,
-- tipo de impacto,
+- componente/workspace afectado,
+- tipo de impacto (directo/indirecto, ruptura de retrocompatibilidad),
 - riesgo,
-- recomendación.
+- recomendación de mitigación.
 ```
 
 ---

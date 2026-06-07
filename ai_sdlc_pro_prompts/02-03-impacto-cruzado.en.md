@@ -18,29 +18,31 @@ Prompt to evaluate the impact of the change on all modules, processes, data, int
 
 ```text
 Objective:
-Analyze the impact of the requested change on other modules, processes, data, integrations, environments and pipelines.
+Analyze the impact of the requested change on other modules, processes, data, integrations, environments, pipelines, monorepo workspaces/subprojects, and versioning policies (semver).
 
 Activities:
 1. Evaluate impact on:
+   - monorepo workspaces / subprojects (for example, shared dependencies, common utility packages),
+   - API contracts and semantic versioning (semver) of local packages,
    - frontend,
    - backend,
    - database,
    - integrations,
    - infrastructure,
-   - CI/CD,
-   - security,
+   - CI/CD (independent or shared build pipelines),
+   - security and regulatory compliance (ISO, MAAGTICSI, etc.),
    - monitoring,
    - documentation.
 2. Detect direct and indirect impacts.
 3. Evaluate affectation to other use cases.
 
 Output:
-- impact matrix,
+- impact matrix (including monorepo workspaces and packages),
 - severity,
-- affected component,
-- impact type,
+- affected component/workspace,
+- impact type (direct/indirect, breaking changes in local dependencies),
 - risk,
-- recommendation.
+- mitigation recommendation.
 ```
 
 ---
