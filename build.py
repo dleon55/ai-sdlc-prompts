@@ -1304,7 +1304,8 @@ var EMPTY_VARS  = {
   repositorio: '', referencia: '', rama_actual: '',
   rama_destino: '', ambiente: '', componentes: '', modulo: '',
   stack: '', tipo_proyecto: '', metodologia: '', agentes: '', autonomia: '',
-  entrada: '', objetivo: '', responsable: '', adicionales: ''
+  entrada: '', objetivo: '', responsable: '', workspace: '',
+  compliance: '', documentos: '', profundidad: '', adicionales: ''
 };
 
 function genId() {
@@ -1404,6 +1405,8 @@ var FIELD_VAR_MAP = {
   'vf-metodologia': 'metodologia', 'vf-agentes': 'agentes',
   'vf-autonomia': 'autonomia', 'vf-entrada': 'entrada',
   'vf-objetivo': 'objetivo', 'vf-responsable': 'responsable',
+  'vf-workspace': 'workspace', 'vf-compliance': 'compliance',
+  'vf-documentos': 'documentos', 'vf-profundidad': 'profundidad',
   'vf-adicionales': 'adicionales'
 };
 
@@ -1633,8 +1636,8 @@ var VAR_MAP = {
                  'QA OR STAGING URL', 'DEV / STAGING / PROD', 'AMBIENTE'],
   componentes: ['COMPONENTES INVOLUCRADOS', 'INVOLVED COMPONENTS', 'COMPONENTES MODIFICADOS',
                  'COMPONENTES A MODIFICAR', 'COMPONENTES REVISADOS',
-                 'RUTAS DE ARCHIVOS MODIFICADOS', 'FILE PATHS...', 'FUNCIONES O UNIDADES A PROBAR',
-                 'SI YA CONOCES ALGUNO', 'RUTAS DE ARCHIVOS...', 'REVIEWED COMPONENTS', 'COMPONENTS TO MODIFY',
+                 'RUTAS DE ARCHIVOS MODIFICADOS', 'FUNCIONES O UNIDADES A PROBAR',
+                 'SI YA CONOCES ALGUNO', 'REVIEWED COMPONENTS', 'COMPONENTS TO MODIFY',
                  'MODIFIED COMPONENTS', 'FILES AND MODULES TO MODIFY', 'AFFECTED MODULE OR FILE', 'DIRECTORY/PACKAGE', 'DIRECTORIO/PAQUETE'],
   modulo:      ['NOMBRE DEL PROCESO', 'PROCESS NAME', 'MODULE OR FUNCTIONALITY',
                  'MÓDULO O FUNCIONALIDAD', 'MODULO O FUNCIONALIDAD'],
@@ -1644,7 +1647,7 @@ var VAR_MAP = {
   tipo_proyecto: ['TIPO DE PROYECTO', 'PROJECT TYPE',
                    'frontend SPA / API REST / full-stack / microservicio / monorepo / librería / data science / IaC / otro',
                    'NEW / INCREMENTAL CHANGE / MAINTENANCE', 'NUEVO / CAMBIO INCREMENTAL / MANTENIMIENTO',
-                   'COMMERCIAL / OPEN SOURCE / INTERNAL', 'COMERCIAL / OPEN SOURCE / INTERNO', 'SI ES ENTORNO MONOREPO', 'SI MONOREPO WORKSPACE'],
+                   'COMMERCIAL / OPEN SOURCE / INTERNAL', 'COMERCIAL / OPEN SOURCE / INTERNO'],
   metodologia: ['METODOLOGÍA', 'METHODOLOGY', 'METODOLOGÍA DE TRABAJO', 'METODOLOGÍA O "ninguna"',
                  'SCRUM / Kanban / Trunk-Based / GitFlow / GitHub Flow / RUP / otro',
                  'BRANCHING STRATEGY'],
@@ -1660,6 +1663,16 @@ var VAR_MAP = {
                  'SPECIFIC OUTPUT OBJECTIVE'],
   responsable: ['RESPONSABLE', 'RESPONSIBLE PERSON', 'USUARIO RESPONSABLE', 'RESPONSIBLE USER',
                  'ASSIGNEE'],
+  workspace:   ['WORKSPACE/SUBPROYECTO', 'WORKSPACE/SUBPROJECT', 'RUTA O NO APLICA',
+                 'PATH OR NOT APPLICABLE', 'SI ES ENTORNO MONOREPO', 'IF MONOREPO WORKSPACE',
+                 'SI MONOREPO WORKSPACE'],
+  compliance:  ['ESTÁNDAR/COMPLIANCE', 'ESTANDAR/COMPLIANCE', 'STANDARD/COMPLIANCE',
+                 'PSP / TSP / ISO 29110 / MOPROSOFT / MAAGTICSI / NINGUNO',
+                 'PSP / TSP / ISO 29110 / MOPROSOFT / MAAGTICSI / NONE'],
+  documentos:  ['DOCUMENTOS A REVISAR', 'DOCUMENTS TO REVIEW', 'RUTAS DE ARCHIVOS...',
+                 'FILE PATHS...', 'RUTAS O DESCONOCIDO', 'PATHS OR UNKNOWN'],
+  profundidad: ['NIVEL DE PROFUNDIDAD', 'DEPTH LEVEL', 'MEDIO / ALTO / FORENSE',
+                 'MEDIUM / HIGH / FORENSIC'],
 };
 
 var PLACEHOLDER_IGNORE = ['N', 'X', 'Y', 'Z', 'ADR-NNN', 'NNN', 'YYYYMMDD'];
@@ -3095,6 +3108,49 @@ def build():
         '<input id="vf-responsable" type="text" placeholder="usuario, equipo o rol" oninput="syncProjectFromPanel();updateVarsBadge();">'
         '<div class="var-tags">'
         '<span class="var-tag"><span class="fw-lang-es">[RESPONSABLE]</span><span class="fw-lang-en">[ASSIGNEE]</span></span>'
+        '</div>'
+        '</div>\n'
+
+        # workspace / subproyecto
+        '    <div class="var-group">'
+        '<label for="vf-workspace"><span class="fw-lang-es">Workspace / subproyecto</span><span class="fw-lang-en">Workspace / subproject</span></label>'
+        '<input id="vf-workspace" type="text" placeholder="apps/admin, packages/api o no aplica" oninput="syncProjectFromPanel();updateVarsBadge();">'
+        '<div class="var-tags">'
+        '<span class="var-tag"><span class="fw-lang-es">[WORKSPACE/SUBPROYECTO]</span><span class="fw-lang-en">[WORKSPACE/SUBPROJECT]</span></span>'
+        '</div>'
+        '</div>\n'
+
+        # estándar / compliance
+        '    <div class="var-group">'
+        '<label for="vf-compliance"><span class="fw-lang-es">Estándar / compliance</span><span class="fw-lang-en">Standard / compliance</span></label>'
+        '<input id="vf-compliance" type="text" placeholder="ISO 29110, MOPROSOFT o ninguno" oninput="syncProjectFromPanel();updateVarsBadge();">'
+        '<div class="var-tags">'
+        '<span class="var-tag"><span class="fw-lang-es">[ESTÁNDAR/COMPLIANCE]</span><span class="fw-lang-en">[STANDARD/COMPLIANCE]</span></span>'
+        '</div>'
+        '</div>\n'
+
+        # documentos a revisar
+        '    <div class="var-group">'
+        '<label for="vf-documentos"><span class="fw-lang-es">Documentos a revisar</span><span class="fw-lang-en">Documents to review</span></label>'
+        '<textarea id="vf-documentos" rows="3" placeholder="README.md, docs/, ADR o rutas concretas" oninput="syncProjectFromPanel();updateVarsBadge();"></textarea>'
+        '<div class="var-tags">'
+        '<span class="var-tag"><span class="fw-lang-es">[DOCUMENTOS A REVISAR]</span><span class="fw-lang-en">[DOCUMENTS TO REVIEW]</span></span>'
+        '</div>'
+        '</div>\n'
+
+        # nivel de profundidad
+        '    <div class="var-group">'
+        '<label for="vf-profundidad"><span class="fw-lang-es">Nivel de profundidad</span><span class="fw-lang-en">Depth level</span></label>'
+        '<select id="vf-profundidad" onchange="syncProjectFromPanel();updateVarsBadge();">'
+        '<option value="">— Seleccionar —</option>'
+        '<option value="bajo">Bajo / Low</option>'
+        '<option value="medio">Medio / Medium</option>'
+        '<option value="alto">Alto / High</option>'
+        '<option value="exhaustivo">Exhaustivo / Exhaustive</option>'
+        '<option value="forense">Forense / Forensic</option>'
+        '</select>'
+        '<div class="var-tags">'
+        '<span class="var-tag"><span class="fw-lang-es">[NIVEL DE PROFUNDIDAD]</span><span class="fw-lang-en">[DEPTH LEVEL]</span></span>'
         '</div>'
         '</div>\n'
 

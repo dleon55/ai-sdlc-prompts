@@ -47,15 +47,15 @@ Use this formula to get better results when invoking any prompt:
 ```text
 I want you to use the prompt from [PROCESS NAME] and adapt it to:
 - repository: [ORG/REPO]
-- workspace/subproject: [IF MONOREPO WORKSPACE]
-- standard/compliance: [PSP / TSP / ISO 29110 / MOPROSOFT / MAAGTICSI / NONE]
+- workspace/subproject: [WORKSPACE/SUBPROJECT]
+- standard/compliance: [STANDARD/COMPLIANCE]
 - issue or requirement: [REFERENCE]
 - branch: [CURRENT BRANCH]
 - environment: [DEV / QA / PROD]
 - components: [INVOLVED COMPONENTS]
-- documents to review: [FILE PATHS...]
-- specific output objective: [INDICATE]
-- depth level: [LEVEL]
+- documents to review: [DOCUMENTS TO REVIEW]
+- specific output objective: [SPECIFIC OBJECTIVE]
+- depth level: [DEPTH LEVEL]
 ```
 
 ### Real example

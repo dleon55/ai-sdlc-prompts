@@ -79,7 +79,7 @@ Cubre todas las funcionalidades accesibles por usuarios finales (visitantes, usu
 
 | ID | Requerimiento | Prioridad | Caso de Uso | Estado |
 |----|---------------|-----------|-------------|--------|
-| **FR-VAR-01** | Almacenar 16 variables por proyecto, con migración defensiva de proyectos existentes | Must | UC-04 | ✅ |
+| **FR-VAR-01** | Almacenar 20 variables por proyecto, con migración defensiva de proyectos existentes | Must | UC-04 | ✅ |
 | **FR-VAR-02** | Clasificar variables de contexto general y entradas específicas reutilizables por prompt | Should | UC-04 | ✅ |
 | **FR-VAR-03** | Panel de edición de variables deslizable desde derecha | Should | UC-04 | ✅ |
 | **FR-VAR-04** | Validar campos requeridos antes de permitir copia | Should | UC-04 | 🟡 |

@@ -9,12 +9,14 @@ Este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 ## [Unreleased]
 
 ### Added
+- Panel de variables: agrega `Workspace / subproyecto`, `Estándar / compliance`, `Documentos a revisar` y `Nivel de profundidad`.
 - Panel de variables: agrega `Entrada principal`, `Objetivo específico` y `Responsable / assignee`, con migración automática de proyectos guardados.
 - Panel de variables: agrega asignaciones adicionales `TOKEN=valor` para configurar placeholders específicos sin soporte canónico.
 - Copiado: detecta placeholders pendientes y muestra una advertencia sin bloquear la copia.
 - Pruebas de contrato para evitar campos sin UI, alias ambiguos y regresiones en prompts de triage y análisis de requerimientos.
 
 ### Fixed
+- Framework `00`: usa tokens configurables independientes y evita reutilizar `tipo de proyecto` como workspace o `componentes` como documentos.
 - `02-02` Análisis técnico profundo: elimina contenido duplicado y corrige la referencia del diseño de solución de `02-04` a `04-01`.
 - Refuerza el análisis de código existente con preflight Git, alcance explícito, evidencia trazable, flujo por capas, contratos, datos, seguridad, observabilidad, pruebas y riesgos.
 - Mantiene paridad funcional entre las versiones en español e inglés y regenera `index.html`.
