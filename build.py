@@ -1906,7 +1906,7 @@ function initChips() {
     var svg = link.querySelector('svg');
     var color = svg ? svg.getAttribute('stroke') : '#6366f1';
     
-    return '<button class="chip" data-sec="' + secCode + '" style="--active-bg: ' + color + '; --shadow-color: ' + color + '55" onclick="filterByChip(\'' + secCode + '\')">' + label + '</button>';
+    return '<button class="chip" data-sec="' + secCode + '" style="--active-bg: ' + color + '; --shadow-color: ' + color + '55" onclick="filterByChip(\\\'' + secCode + '\\\')">' + label + '</button>';
   }).join('');
   
   container.innerHTML = html;
@@ -1946,7 +1946,7 @@ function copyPromptLang(pid, lang, btn) {
     if (fwEl) {
       var fwRaw = RAW_PROMPTS[fwId] || fwEl.textContent;
       var fw = applyVars(fwRaw, { modulo: title });
-      if (fw) text = fw + '\n\n---\n\n' + text;
+      if (fw) text = fw + '\\n\\n---\\n\\n' + text;
     }
   }
   doCopy(text, btn);
