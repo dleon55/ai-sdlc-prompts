@@ -6,6 +6,13 @@ Este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 
 ---
 
+## [Unreleased]
+
+### Fixed
+- `02-02` Análisis técnico profundo: elimina contenido duplicado y corrige la referencia del diseño de solución de `02-04` a `04-01`.
+- Refuerza el análisis de código existente con preflight Git, alcance explícito, evidencia trazable, flujo por capas, contratos, datos, seguridad, observabilidad, pruebas y riesgos.
+- Mantiene paridad funcional entre las versiones en español e inglés y regenera `index.html`.
+
 ## [1.9.2] — 2026-04-22
 
 ### Changed
