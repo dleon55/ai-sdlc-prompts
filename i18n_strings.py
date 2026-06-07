@@ -195,6 +195,7 @@ SECTION_LABELS_I18N = {
         '12': 'Orquestador',
         '13': 'Seguridad',
         '14': 'Monorepo',
+        '15': 'Negocio & QA Funcional',
     },
     'en': {
         '00': 'Framework',
@@ -212,6 +213,7 @@ SECTION_LABELS_I18N = {
         '12': 'Orchestrator',
         '13': 'Security',
         '14': 'Monorepo',
+        '15': 'Business & Functional QA',
     }
 }
 

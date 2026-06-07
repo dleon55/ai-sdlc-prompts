@@ -1,0 +1,95 @@
+# 15.3 — Reporte y análisis de defectos con impacto en negocio
+
+## Descripción
+
+Prompt para testers manuales y analistas funcionales. Ayuda a estructurar reportes de bugs profesionales, traduciendo errores técnicos (mensajes de consola, respuestas HTTP fallidas) a consecuencias de negocio e impacto en el usuario, facilitando la priorización del equipo de desarrollo.
+
+**Cuándo usarlo:** al reportar un fallo en el backlog de incidentes, asegurando que contenga toda la información necesaria para el desarrollador.
+
+---
+
+## Contexto obligatorio previo
+
+> Incluye el bloque del archivo `00-framework.md` antes de este prompt.
+
+---
+
+## Prompt completo
+
+```text
+Objetivo:
+Actúa como un QA Defect Analyst. Ayuda al tester a documentar y analizar un defecto, traduciendo los síntomas visuales y posibles errores técnicos a impactos de negocio claros e instrucciones de reproducción precisas para desarrollo.
+
+Entradas:
+- descripción del error observado: [INDICAR]
+- pasos que estabas realizando: [INDICAR]
+- comportamiento esperado: [INDICAR]
+- error técnico (pantallazo, log de consola o código HTTP si hay): [PEGAR SI APLICA]
+
+Actividades:
+1. Analiza el comportamiento anómalo reportado e identifica qué regla de negocio o flujo de usuario está fallando.
+2. Traduce cualquier log o código de error técnico provisto a un lenguaje funcional comprensible (ej: "Error 500 al guardar" -> "Fallo crítico en persistencia al guardar datos de cliente").
+3. Estructura el reporte de bug bajo las mejores prácticas de la industria:
+   - título del defecto (claro e informativo),
+   - severidad técnica vs prioridad de negocio,
+   - pasos precisos de reproducción (repro steps),
+   - comportamiento actual vs esperado,
+   - datos de prueba usados,
+   - impacto en el negocio (ej: impide que el usuario pague, degrada la experiencia visual, rompe la accesibilidad).
+
+Salida:
+Genera una ficha de reporte de defecto estructurada con los siguientes apartados:
+1. Título del Defecto
+2. Severidad (Bloqueante / Crítico / Mayor / Menor) e Impacto en Negocio
+3. Pasos de Reproducción
+4. Comportamiento Actual vs Esperado
+5. Datos y Entorno de Prueba
+6. Diagnóstico Técnico para Desarrolladores (traducción funcional de logs)
+```
+
+---
+
+## Uso con fórmula estándar
+
+```text
+Usa el prompt de análisis de defectos y adáptalo a:
+- repositorio: [NOMBRE O URL]
+- issue o requerimiento: [LOG O DESCRIPCIÓN DEL INCIDENTE]
+- rama: main
+- ambiente: QA
+- componentes: pasarela de pagos
+- documentos a revisar: políticas de pago, captura de pantalla de consola
+- objetivo puntual de salida: reporte de bug estructurado con impacto de negocio
+- nivel de profundidad: alto
+```
+
+---
+
+## Salida esperada
+
+Una ficha organizada lista para copiar en Jira o GitHub Issues:
+
+### 1. Título del Defecto
+`[ERROR] El botón de finalizar compra se queda colgado y no envía la orden`
+
+### 2. Severidad e Impacto en Negocio
+*   **Severidad:** Bloqueante (Blocker).
+*   **Impacto:** El cliente no puede completar compras. Afecta directamente la conversión de ventas y detiene el flujo operativo de facturación.
+
+### 3. Pasos de Reproducción
+1. Agregar cualquier producto al carrito de compras.
+2. Ir a la pantalla de checkout.
+3. Rellenar campos de envío válidos.
+4. Presionar el botón "Finalizar compra".
+
+### 4. Comportamiento Actual vs Esperado
+*   **Comportamiento Actual:** El botón muestra un spinner infinito, se observa un error `POST /api/orders 500` en consola y no avanza a la confirmación.
+*   **Comportamiento Esperado:** La orden debe procesarse, redirigir a la pantalla de agradecimiento y limpiar el carrito.
+
+### 5. Datos y Entorno de Prueba
+*   **Entorno:** QA (https://qa.prompts.lionsystems.com.mx/)
+*   **Navegador:** Chrome v120 / Windows 11
+*   **Datos:** Cuenta de usuario de prueba `test_buyer@lionsystems.com`
+
+### 6. Diagnóstico Técnico para Desarrolladores
+*   **Origen:** El servidor retorna `HTTP 500 (Internal Server Error)` al llamar al endpoint de creación de orden, posiblemente debido a una inconsistencia en el mapeo de campos de base de datos de envío.

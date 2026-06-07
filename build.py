@@ -47,6 +47,7 @@ SECTION_META = {
     "12": ("Orquestador",                 "orchestrator"),
     "13": ("Seguridad y DevSecOps",          "security"),
     "14": ("Monorepo y Estandares",        "orchestrator"),
+    "15": ("Negocio y QA Funcional",       "docs"),
 }
 
 # Labels con tildes/enye para mostrar en UI
@@ -69,6 +70,7 @@ SECTION_COLOR = {
     "12": "#c084fc",  # purple — orquestador
     "13": "#dc2626",  # red    — seguridad
     "14": "#f43f5e",  # rose   — monorepo/estandares
+    "15": "#f472b6",  # light pink — negocio/qa-funcional
 }
 
 # SVG paths para cada icono (24x24 viewBox, stroke-based)
