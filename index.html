@@ -1248,7 +1248,7 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
 Estás operando en un entorno multi-agente bajo Open Agent Manager. Otros agentes pueden estar trabajando en paralelo sobre el mismo repositorio y el mismo espacio de trabajo.
 
 Reglas obligatorias:
-1. Antes de cualquier análisis o cambio, revisa la documentación, procesos, procedimientos, políticas, estándares y lineamientos del proyecto.
+1. Antes de cualquier análisis o cambio, revisa la documentación, procesos, procedimientos, políticas, estándares y lineamientos del proyecto. Excluye de forma mandatoria rutas redundantes y dependencias (`**/node_modules/**`, `**/venv/**`, `**/.git/**`, `**/dist/**`, `**/build/**`, `**/*.log`) de búsquedas recursivas para optimizar el contexto.
 2. No asumas que el estado del repositorio es estático.
 3. Antes de trabajar:
    - revisa cambios recientes,
@@ -1266,7 +1266,8 @@ Reglas obligatorias:
 8. Si falta documentación, indícalo y usa buenas prácticas de ingeniería.
 9. No implementes primero y pienses después: primero analiza, luego diseña, luego ejecuta, luego valida y documenta.
 10. Mantén consistencia con la arquitectura, convenciones, políticas y estándares del repositorio y del monorepo (control de fronteras de código y dependencias).
-11. Prioriza la Experiencia de Usuario (UX) e Interfaces de Usuario (UI) en todo diseño e implementación: toda interfaz debe ser responsiva, usar paletas de colores armónicas, tipografía moderna, micro-animaciones para retroalimentación visual, y cumplir estrictamente con accesibilidad (WCAG 2.1 AAA).
+11. Prioriza la Experiencia de Usuario (UX) e Interfaces de Usuario (UI) en todo diseño e implementación: toda interfaz debe ser responsiva, usar paletas de colores armónicas, tipografía moderna, micro-animaciones para retroalimentación visual, y cumplir estrictamente con accesibilidad (WCAG 2.1 AAA). Prohibido usar estilos inline; mapea los colores y espaciados contra los tokens y variables CSS declarados globalmente.
+12. Límite de Auto-Corrección (Halt Condition): Si estás ejecutando pruebas, compilando o remediando errores de forma autónoma, limita los intentos de corrección a un máximo de 3 ciclos. Si el fallo persiste, detén la ejecución, reporta el log detallado de diagnósticos y cede el control al supervisor humano.
 
 ---
 
@@ -1285,7 +1286,7 @@ Quiero que uses el prompt de [NOMBRE DEL PROCESO] y lo adaptes a:
 You are operating in a multi-agent environment under Open Agent Manager. Other agents may be working in parallel on the same repository and workspace.
 
 Mandatory rules:
-1. Before any analysis or change, review the project documentation, processes, procedures, policies, standards and guidelines.
+1. Before any analysis or change, review the project documentation, processes, procedures, policies, standards and guidelines. Redundant paths and dependencies (`**/node_modules/**`, `**/venv/**`, `**/.git/**`, `**/dist/**`, `**/build/**`, `**/*.log`) must be explicitly excluded from recursive file searches to preserve token context.
 2. Do not assume the repository state is static.
 3. Before working:
    - review recent changes,
@@ -1303,7 +1304,8 @@ Mandatory rules:
 8. If documentation is missing, indicate it and use engineering best practices.
 9. Do not implement first and think later: first analyze, then design, then execute, then validate and document.
 10. Maintain consistency with the repository's architecture, conventions, policies, standards, and monorepo constraints (internal dependency boundaries).
-11. Always prioritize User Experience (UX) and User Interfaces (UI) in all design and implementation: ensure interfaces are responsive, use harmonious color palettes, modern typography, micro-animations for visual feedback, and strictly comply with accessibility standards (WCAG 2.1 AAA).
+11. Always prioritize User Experience (UX) and User Interfaces (UI) in all design and implementation: ensure interfaces are responsive, use harmonious color palettes, modern typography, micro-animations for visual feedback, and strictly comply with accessibility standards (WCAG 2.1 AAA). Inline CSS styles are prohibited; map all colors and layouts to globally declared CSS variables and design tokens.
+12. Self-Correction Halting Rule (Halt Condition): If executing tests, compiling, or fixing lint errors autonomously, limit correction iterations to a maximum of 3 cycles. If the error persists, halt execution immediately, dump the detailed diagnostics logs, and yield control to the human developer.
 
 ---
 
@@ -3138,12 +3140,14 @@ Actividades:
 6. Detecta dependencias, riesgos y controles de seguridad (DevSecOps/ISO 27001).
 
 Salida:
+0. Bloque JSON de Metadatos de Tarea al inicio (claves: status, impacted_components, risks_detected, confidence_score [0.0 a 1.0]).
 1. Resumen funcional
 2. Casos de uso impactados
 3. Reglas de negocio detectadas
 4. Componentes técnicos involucrados
 5. Riesgos funcionales y técnicos
-6. Recomendación de atención</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="02-01-analisis-issue" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-02-01-analisis-issue-en" onclick="toggleCard('02-01-analisis-issue-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('02-01-analisis-issue-en')">2.1 — Functional analysis of a requirement, issue or change</span><button class="copy-btn" data-title="Functional analysis of a requirement, issue or change" onclick="copyPromptLang('02-01-analisis-issue', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-02-01-analisis-issue-en"><pre><code id="code-02-01-analisis-issue-en">Objective:
+6. Recomendación de atención
+7. Registro de Métricas PSP/TSP (Tiempo estimado de atención en minutos, tiempo real y densidad de defectos sugerida).</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="02-01-analisis-issue" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-02-01-analisis-issue-en" onclick="toggleCard('02-01-analisis-issue-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('02-01-analisis-issue-en')">2.1 — Functional analysis of a requirement, issue or change</span><button class="copy-btn" data-title="Functional analysis of a requirement, issue or change" onclick="copyPromptLang('02-01-analisis-issue', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-02-01-analisis-issue-en"><pre><code id="code-02-01-analisis-issue-en">Objective:
 Analyze the requested requirement, issue or change and determine its functional and technical scope within the project, considering the monorepo structure and applicable standards.
 
 Inputs:
@@ -3167,12 +3171,14 @@ Activities:
 6. Detect dependencies, risks, and security controls (DevSecOps/ISO 27001).
 
 Output:
+0. Start with a Task Metadata JSON Block (keys: status, impacted_components, risks_detected, confidence_score [0.0 to 1.0]).
 1. Functional summary
 2. Impacted use cases
 3. Detected business rules
 4. Involved technical components
 5. Functional and technical risks
 6. Attention recommendation
+7. PSP/TSP Metrics Log (Estimated task duration in minutes, actual execution time, and initial estimated defects count).
 
 ---
 
@@ -3852,13 +3858,15 @@ Actividades:
 6. Si no se puede confirmar totalmente, indica evidencia faltante y nivel de confianza.
 
 Salida:
+0. Bloque JSON de Metadatos al inicio (claves: status, trigger, root_cause, confidence_score [0.0 a 1.0]).
 1. Síntoma
 2. Evidencia
 3. Hipótesis
 4. Causa raíz confirmada o probable
 5. Factores contribuyentes
 6. Riesgo asociado
-7. Recomendación de remediación</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="03-02-causa-raiz" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-03-02-causa-raiz-en" onclick="toggleCard('03-02-causa-raiz-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('03-02-causa-raiz-en')">3.2 — Root cause analysis</span><button class="copy-btn" data-title="Root cause analysis" onclick="copyPromptLang('03-02-causa-raiz', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-03-02-causa-raiz-en"><pre><code id="code-03-02-causa-raiz-en">Objective:
+7. Recomendación de remediación
+8. Registro de Métricas PSP/TSP (Tiempo real invertido en diagnóstico, estimación de tiempo de reparación en minutos, e incidentes relacionados detectados).</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="03-02-causa-raiz" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-03-02-causa-raiz-en" onclick="toggleCard('03-02-causa-raiz-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('03-02-causa-raiz-en')">3.2 — Root cause analysis</span><button class="copy-btn" data-title="Root cause analysis" onclick="copyPromptLang('03-02-causa-raiz', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-03-02-causa-raiz-en"><pre><code id="code-03-02-causa-raiz-en">Objective:
 Analyze a defect or incident and determine the real root cause, not just the symptom.
 
 Activities:
@@ -3880,6 +3888,7 @@ Activities:
 6. If it cannot be fully confirmed, indicate missing evidence and confidence level.
 
 Output:
+0. Start with a Task Metadata JSON Block (keys: status, trigger, root_cause, confidence_score [0.0 to 1.0]).
 1. Symptom
 2. Evidence
 3. Hypotheses
@@ -3887,6 +3896,7 @@ Output:
 5. Contributing factors
 6. Associated risk
 7. Remediation recommendation
+8. PSP/TSP Metrics Log (Actual time spent diagnosing, estimated fix time in minutes, and related issues detected).
 
 ---
 
@@ -4163,6 +4173,7 @@ Use the Architecture Decision Records prompt and adapt it to:
 Elabora un plan de implementación detallado, ejecutable y trazable para la solución propuesta.
 
 Incluye:
+0. Bloque JSON de Metadatos al inicio (claves: status, task_count, impacted_components, estimated_hours).
 1. actividades previas,
 2. cambios por componente,
 3. ajustes de datos o migraciones,
@@ -4171,13 +4182,15 @@ Incluye:
 6. integración con ramas,
 7. despliegue,
 8. rollback,
-9. evidencias esperadas.
+9. evidencias esperadas,
+10. Registro de Métricas PSP/TSP (Tiempo de diseño estimado en minutos, tiempo de codificación estimado en minutos y conteo estimado de defectos).
 
-Formato:
+Formato para pasos 1 a 9:
 | Paso | Actividad | Componente | Dependencia | Riesgo | Evidencia esperada |</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="05-01-plan-implementacion" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-05-01-plan-implementacion-en" onclick="toggleCard('05-01-plan-implementacion-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('05-01-plan-implementacion-en')">5.1 — Detailed implementation plan</span><button class="copy-btn" data-title="Detailed implementation plan" onclick="copyPromptLang('05-01-plan-implementacion', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-05-01-plan-implementacion-en"><pre><code id="code-05-01-plan-implementacion-en">Objective:
 Elaborate a detailed, executable and traceable implementation plan for the proposed solution.
 
 Include:
+0. Start with a Task Metadata JSON Block (keys: status, task_count, impacted_components, estimated_hours).
 1. previous activities,
 2. changes by component,
 3. data adjustments or migrations,
@@ -4186,9 +4199,10 @@ Include:
 6. branch integration,
 7. deployment,
 8. rollback,
-9. expected evidence.
+9. expected evidence,
+10. PSP/TSP Metrics Log (Estimated design time in minutes, estimated coding time in minutes, and projected defects count).
 
-Format:
+Format for steps 1 to 9:
 | Step | Activity | Component | Dependency | Risk | Expected evidence |
 
 ---
@@ -4780,9 +4794,15 @@ Restricciones:
 - Prioriza los casos marcados como críticos o de cobertura obligatoria.
 
 Entrega:
-- archivos de prueba completos y ejecutables,
-- comando de ejecución verificado para el entorno del proyecto,
-- estimación de cobertura alcanzada por los tests generados.</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="07-07-implementacion-pruebas-unitarias" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-07-07-implementacion-pruebas-unitarias-en" onclick="toggleCard('07-07-implementacion-pruebas-unitarias-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('07-07-implementacion-pruebas-unitarias-en')">7.7 — Unit Test Implementation</span><button class="copy-btn" data-title="Unit Test Implementation" onclick="copyPromptLang('07-07-implementacion-pruebas-unitarias', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-07-07-implementacion-pruebas-unitarias-en"><pre><code id="code-07-07-implementacion-pruebas-unitarias-en">Objective:
+0. Bloque JSON de Metadatos al inicio (claves: status, tests_written_count, estimated_coverage_pct, confidence_score [0.0 a 1.0]).
+1. Archivos de prueba completos y ejecutables.
+2. Comando de ejecución verificado para el entorno del proyecto.
+3. Estimación de cobertura alcanzada por los tests generados.
+4. Resultados de la ejecución local de las pruebas (stdout/stderr de una corrida local).
+5. Registro de Métricas PSP/TSP (Tiempo de codificación real de pruebas en minutos, estimación de cobertura final y conteo de fallos de pruebas corregidos).
+
+Límite de Auto-Corrección (Halt Condition):
+- Si el comando de ejecución arroja fallos de compilación o asserts fallidos, autolímite a un máximo de 3 ciclos de corrección. Si el test sigue fallando, aborta la ejecución y describe el diagnóstico exacto.</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="07-07-implementacion-pruebas-unitarias" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-07-07-implementacion-pruebas-unitarias-en" onclick="toggleCard('07-07-implementacion-pruebas-unitarias-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('07-07-implementacion-pruebas-unitarias-en')">7.7 — Unit Test Implementation</span><button class="copy-btn" data-title="Unit Test Implementation" onclick="copyPromptLang('07-07-implementacion-pruebas-unitarias', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-07-07-implementacion-pruebas-unitarias-en"><pre><code id="code-07-07-implementacion-pruebas-unitarias-en">Objective:
 Implement the unit tests defined in the attached design matrix using the project's test framework.
 
 Steps:
@@ -4804,9 +4824,15 @@ Constraints:
 - Prioritize cases marked as critical or required coverage.
 
 Deliverables:
-- complete and executable test files,
-- verified execution command for the project environment,
-- estimated coverage achieved by the generated tests.
+0. Start with a Task Metadata JSON Block (keys: status, tests_written_count, estimated_coverage_pct, confidence_score [0.0 to 1.0]).
+1. complete and executable test files.
+2. verified execution command for the project environment.
+3. estimated coverage achieved by the generated tests.
+4. execution results of a local test run (stdout/stderr).
+5. PSP/TSP Metrics Log (Actual test coding time in minutes, final estimated coverage, and count of test failures resolved).
+
+Self-Correction Halting Rule (Halt Condition):
+- If the execution command results in compilation or assertion failures, limit self-correction iterations to a maximum of 3 cycles. If tests continue to fail, abort execution and report the exact diagnostics logs.
 
 ---
 

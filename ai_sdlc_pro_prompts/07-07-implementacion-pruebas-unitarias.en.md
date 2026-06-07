@@ -41,9 +41,15 @@ Constraints:
 - Prioritize cases marked as critical or required coverage.
 
 Deliverables:
-- complete and executable test files,
-- verified execution command for the project environment,
-- estimated coverage achieved by the generated tests.
+0. Start with a Task Metadata JSON Block (keys: status, tests_written_count, estimated_coverage_pct, confidence_score [0.0 to 1.0]).
+1. complete and executable test files.
+2. verified execution command for the project environment.
+3. estimated coverage achieved by the generated tests.
+4. execution results of a local test run (stdout/stderr).
+5. PSP/TSP Metrics Log (Actual test coding time in minutes, final estimated coverage, and count of test failures resolved).
+
+Self-Correction Halting Rule (Halt Condition):
+- If the execution command results in compilation or assertion failures, limit self-correction iterations to a maximum of 3 cycles. If tests continue to fail, abort execution and report the exact diagnostics logs.
 ```
 
 ---
@@ -82,3 +88,6 @@ With internal AAA structure (Arrange / Act / Assert):
   ✓ [expected negative scenario]
   ✓ [identified edge case]
 ```
+
+The final output must start with the JSON metadata block (0) and conclude with the PSP/TSP metrics log (5) and local run logs.
+

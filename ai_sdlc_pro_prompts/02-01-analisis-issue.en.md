@@ -41,12 +41,14 @@ Activities:
 6. Detect dependencies, risks, and security controls (DevSecOps/ISO 27001).
 
 Output:
+0. Start with a Task Metadata JSON Block (keys: status, impacted_components, risks_detected, confidence_score [0.0 to 1.0]).
 1. Functional summary
 2. Impacted use cases
 3. Detected business rules
 4. Involved technical components
 5. Functional and technical risks
 6. Attention recommendation
+7. PSP/TSP Metrics Log (Estimated task duration in minutes, actual execution time, and initial estimated defects count).
 ```
 
 ---
@@ -71,9 +73,11 @@ Use the functional analysis prompt and adapt it to:
 
 | Section | Expected content |
 |---|---|
-| Functional summary | Problem or need in business language |
-| Impacted use cases | List of affected or derived UCs |
-| Business rules | Restrictions, validations, detected logic |
-| Technical components | Modules, services, involved tables |
-| Risks | Identified functional and technical |
-| Recommendation | Priority and suggested attention order |
+| JSON Metadata (0) | Structured and parser-friendly JSON block containing primary diagnostic metadata |
+| Functional summary (1) | Problem or need in business language |
+| Impacted use cases (2) | List of affected or derived UCs |
+| Business rules (3) | Restrictions, validations, detected logic |
+| Technical components (4) | Modules, services, involved tables |
+| Risks (5) | Identified functional and technical |
+| Recommendation (6) | Priority and suggested attention order |
+| PSP/TSP Metrics (7) | Logging block for time estimations (minutes) and projected defect rate |

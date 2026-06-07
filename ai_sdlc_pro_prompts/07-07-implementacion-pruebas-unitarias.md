@@ -42,9 +42,15 @@ Restricciones:
 - Prioriza los casos marcados como críticos o de cobertura obligatoria.
 
 Entrega:
-- archivos de prueba completos y ejecutables,
-- comando de ejecución verificado para el entorno del proyecto,
-- estimación de cobertura alcanzada por los tests generados.
+0. Bloque JSON de Metadatos al inicio (claves: status, tests_written_count, estimated_coverage_pct, confidence_score [0.0 a 1.0]).
+1. Archivos de prueba completos y ejecutables.
+2. Comando de ejecución verificado para el entorno del proyecto.
+3. Estimación de cobertura alcanzada por los tests generados.
+4. Resultados de la ejecución local de las pruebas (stdout/stderr de una corrida local).
+5. Registro de Métricas PSP/TSP (Tiempo de codificación real de pruebas en minutos, estimación de cobertura final y conteo de fallos de pruebas corregidos).
+
+Límite de Auto-Corrección (Halt Condition):
+- Si el comando de ejecución arroja fallos de compilación o asserts fallidos, autolímite a un máximo de 3 ciclos de corrección. Si el test sigue fallando, aborta la ejecución y describe el diagnóstico exacto.
 ```
 
 ---
@@ -83,3 +89,6 @@ Con estructura interna tipo AAA (Arrange / Act / Assert):
   ✓ [escenario negativo esperado]
   ✓ [caso borde identificado]
 ```
+
+La salida final debe comenzar obligatoriamente con el bloque JSON de metadatos (0) y concluir con el registro de métricas PSP/TSP (5) y el log de corrida local.
+

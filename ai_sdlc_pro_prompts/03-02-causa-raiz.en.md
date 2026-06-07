@@ -39,6 +39,7 @@ Activities:
 6. If it cannot be fully confirmed, indicate missing evidence and confidence level.
 
 Output:
+0. Start with a Task Metadata JSON Block (keys: status, trigger, root_cause, confidence_score [0.0 to 1.0]).
 1. Symptom
 2. Evidence
 3. Hypotheses
@@ -46,6 +47,7 @@ Output:
 5. Contributing factors
 6. Associated risk
 7. Remediation recommendation
+8. PSP/TSP Metrics Log (Actual time spent diagnosing, estimated fix time in minutes, and related issues detected).
 ```
 
 ---
@@ -84,10 +86,12 @@ Use the root cause analysis prompt and adapt it to:
 
 | Section | Expected content |
 |---|---|
-| Symptom | Observed behavior with evidence |
-| Evidence reviewed | Logs, code, commits, configurations |
-| Hypotheses | Possible causes ordered by probability |
-| Root cause | Confirmed or probable with confidence level |
-| Contributing factors | Conditions that allowed the problem |
-| Risk | Impact if not corrected |
-| Remediation | Recommended correction plan |
+| JSON Metadata (0) | Structured JSON block containing root cause diagnostics metadata |
+| Symptom (1) | Observed behavior with evidence |
+| Evidence reviewed (2) | Logs, code, commits, configurations |
+| Hypotheses (3) | Possible causes ordered by probability |
+| Root cause (4) | Confirmed or probable with confidence level |
+| Contributing factors (5) | Conditions that allowed the problem |
+| Risk (6) | Impact if not corrected |
+| Remediation (7) | Recommended correction plan |
+| PSP/TSP Metrics (8) | Logging block for actual diagnosis time and estimated fix time |

@@ -21,6 +21,7 @@ Objective:
 Elaborate a detailed, executable and traceable implementation plan for the proposed solution.
 
 Include:
+0. Start with a Task Metadata JSON Block (keys: status, task_count, impacted_components, estimated_hours).
 1. previous activities,
 2. changes by component,
 3. data adjustments or migrations,
@@ -29,9 +30,10 @@ Include:
 6. branch integration,
 7. deployment,
 8. rollback,
-9. expected evidence.
+9. expected evidence,
+10. PSP/TSP Metrics Log (Estimated design time in minutes, estimated coding time in minutes, and projected defects count).
 
-Format:
+Format for steps 1 to 9:
 | Step | Activity | Component | Dependency | Risk | Expected evidence |
 ```
 
@@ -55,5 +57,8 @@ Use the implementation plan prompt and adapt it to:
 
 ## Expected output
 
-| Step | Activity | Component | Dependency | Risk | Expected evidence |
+| Section / Step | Activity | Component | Dependency | Risk | Expected evidence |
 |---|---|---|---|---|---|
+| JSON Metadata (0) | Structured and parser-friendly JSON block containing plan metadata | - | - | - | - |
+| Steps 1 to 9 | Structured table listing implementation and rollback activities | - | - | - | - |
+| PSP/TSP Metrics (10) | Logging block for estimated design/coding times and projected defect rate | - | - | - | - |

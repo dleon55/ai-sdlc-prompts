@@ -39,6 +39,7 @@ Actividades:
 6. Si no se puede confirmar totalmente, indica evidencia faltante y nivel de confianza.
 
 Salida:
+0. Bloque JSON de Metadatos al inicio (claves: status, trigger, root_cause, confidence_score [0.0 a 1.0]).
 1. Síntoma
 2. Evidencia
 3. Hipótesis
@@ -46,6 +47,7 @@ Salida:
 5. Factores contribuyentes
 6. Riesgo asociado
 7. Recomendación de remediación
+8. Registro de Métricas PSP/TSP (Tiempo real invertido en diagnóstico, estimación de tiempo de reparación en minutos, e incidentes relacionados detectados).
 ```
 
 ---
@@ -84,10 +86,12 @@ Usa el prompt de análisis de causa raíz y adáptalo a:
 
 | Sección | Contenido esperado |
 |---|---|
-| Síntoma | Comportamiento observado con evidencia |
-| Evidencia revisada | Logs, código, commits, configuraciones |
-| Hipótesis | Posibles causas ordenadas por probabilidad |
-| Causa raíz | Confirmada o probable con nivel de confianza |
-| Factores contribuyentes | Condiciones que permitieron el problema |
-| Riesgo | Impacto si no se corrige |
-| Remediación | Plan de corrección recomendado |
+| Metadatos JSON (0) | Bloque JSON estructurado con metadatos descriptivos de la causa raíz |
+| Síntoma (1) | Comportamiento observado con evidencia |
+| Evidencia revisada (2) | Logs, código, commits, configuraciones |
+| Hipótesis (3) | Posibles causas ordenadas por probabilidad |
+| Causa raíz (4) | Confirmada o probable con nivel de confianza |
+| Factores contribuyentes (5) | Condiciones que permitieron el problema |
+| Riesgo (6) | Impacto si no se corrige |
+| Remediación (7) | Plan de corrección recomendado |
+| Métricas PSP/TSP (8) | Bloque de métricas con tiempo real de investigación y tiempo de reparación estimado |
