@@ -28,6 +28,7 @@ Reglas:
 3. No modifiques archivos fuera del alcance.
 4. Haz commits atómicos por unidad lógica.
 5. Si detectas cambios ajenos en la misma zona, detén y documenta.
+6. Antes de escribir o guardar modificaciones en cualquier archivo, ejecuta una validación de diferencias locales (`git diff [ruta_archivo]`) para verificar que no estás sobreescribiendo cambios locales recientes o que haya drifts imprevistos en tu workspace.
 
 Actividades:
 1. Identificar archivos a modificar

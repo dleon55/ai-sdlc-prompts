@@ -132,6 +132,7 @@ TABLA COMPARATIVA DE MECANISMOS
 | Antigravity | Prompt de tarea | docs/ai-agents/antigravity-config.md | Solo browser/E2E |
 
 Reglas que deben estar presentes en TODOS los agentes:
+- antes de proponer cambios de sintaxis o refactorizaciones, verificar la versión del runtime local (Node.js, Python, JDK) para prevenir incompatibilidades
 - nunca hacer push a ramas protegidas directamente
 - nunca exponer secretos, tokens ni credenciales
 - nunca ejecutar migraciones sin aprobación humana

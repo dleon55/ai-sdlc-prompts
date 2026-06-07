@@ -28,6 +28,7 @@ Rules:
 3. Do not modify files outside the scope.
 4. Make atomic commits per logical unit.
 5. If you detect foreign changes in the same area, stop and document.
+6. Before writing or saving modifications to any file, execute a local difference validation (`git diff [file_path]`) to verify that you are not overwriting recent local changes or encountering unforeseen drifts in your workspace.
 
 Activities:
 1. Identify files to modify

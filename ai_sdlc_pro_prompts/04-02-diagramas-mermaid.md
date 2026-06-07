@@ -30,6 +30,7 @@ Reglas:
 - Los diagramas deben ser consistentes con el código y la arquitectura real.
 - No inventes componentes inexistentes.
 - Etiqueta claramente actores, servicios, módulos y datos.
+- Regla de Sintaxis Estricta: Escapa siempre caracteres especiales (como paréntesis, corchetes o comas) en los nombres de los nodos envolviéndolos en comillas dobles (ej: id["Nombre Nodo (Detalle)"]). NUNCA utilices etiquetas HTML (como <br> o <b>) dentro de los textos de los nodos de Mermaid para evitar errores de renderizado.
 
 Entrega:
 - bloque Mermaid por diagrama,

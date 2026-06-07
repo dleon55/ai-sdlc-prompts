@@ -30,6 +30,7 @@ Rules:
 - Diagrams must be consistent with the code and real architecture.
 - Do not invent non-existent components.
 - Clearly label actors, services, modules and data.
+- Strict Syntax Rule: Always escape special characters (such as parentheses, brackets, or commas) inside node labels by wrapping them in double quotes (e.g., id["Node Name (Detail)"]). NEVER use HTML tags (such as <br> or <b>) inside Mermaid node text to avoid rendering failures.
 
 Deliver:
 - Mermaid block per diagram,

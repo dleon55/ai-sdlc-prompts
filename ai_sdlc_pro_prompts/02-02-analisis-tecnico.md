@@ -33,6 +33,7 @@ Actividades:
 4. Señala exactamente qué archivos y módulos están involucrados.
 
 Formato de salida:
+0. Bloque JSON de metadatos e importaciones (claves: status, file_dependencies, couplings, risks).
 1. Flujo actual
 2. Componentes afectados
 3. Archivos relevantes
@@ -62,11 +63,12 @@ Usa el prompt de análisis técnico profundo y adáptalo a:
 
 | Sección | Contenido esperado |
 |---|---|
-| Flujo actual | Descripción paso a paso del comportamiento real |
-| Componentes afectados | Lista de servicios, módulos y tablas |
-| Archivos relevantes | Rutas exactas en el repositorio |
-| Hallazgos técnicos | Deuda, acoplamientos, riesgos detectados |
-| Riesgos de modificación | Qué puede romperse al cambiar |
+| Metadatos JSON (0) | Bloque JSON estructurado y parseable con mapa de importaciones y acoplamientos |
+| Flujo actual (1) | Descripción paso a paso del comportamiento real |
+| Componentes afectados (2) | Lista de servicios, módulos y tablas |
+| Archivos relevantes (3) | Rutas exactas en el repositorio |
+| Hallazgos técnicos (4) | Deuda, acoplamientos, riesgos detectados |
+| Riesgos de modificación (5) | Qué puede romperse al cambiar |
 
 ---
 
@@ -89,6 +91,7 @@ Actividades:
 4. Señala exactamente qué archivos y módulos están involucrados.
 
 Formato de salida:
+0. Bloque JSON de metadatos e importaciones (claves: status, file_dependencies, couplings, risks).
 1. Flujo actual
 2. Componentes afectados
 3. Archivos relevantes
@@ -151,11 +154,12 @@ Usa el prompt de análisis técnico profundo y adáptalo a:
 
 | Sección | Contenido esperado |
 |---|---|
-| Flujo actual | Descripción paso a paso del comportamiento real |
-| Componentes afectados | Lista de servicios, módulos y tablas |
-| Archivos relevantes | Rutas exactas en el repositorio |
-| Hallazgos técnicos | Deuda, acoplamientos, riesgos detectados |
-| Riesgos de modificación | Qué puede romperse al cambiar |
+| Metadatos JSON (0) | Bloque JSON estructurado y parseable con mapa de importaciones y acoplamientos |
+| Flujo actual (1) | Descripción paso a paso del comportamiento real |
+| Componentes afectados (2) | Lista de servicios, módulos y tablas |
+| Archivos relevantes (3) | Rutas exactas en el repositorio |
+| Hallazgos técnicos (4) | Deuda, acoplamientos, riesgos detectados |
+| Riesgos de modificación (5) | Qué puede romperse al cambiar |
 
 ### Impacto cruzado
 

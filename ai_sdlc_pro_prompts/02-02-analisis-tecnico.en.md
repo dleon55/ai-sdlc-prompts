@@ -33,6 +33,7 @@ Activities:
 4. Indicate exactly which files and modules are involved.
 
 Output format:
+0. Metadata & Imports JSON Block (keys: status, file_dependencies, couplings, risks).
 1. Current flow
 2. Affected components
 3. Relevant files
@@ -62,8 +63,9 @@ Use the deep technical analysis prompt and adapt it to:
 
 | Section | Expected content |
 |---|---|
-| Current flow | Step-by-step description of real behavior |
-| Affected components | List of services, modules and tables |
-| Relevant files | Exact paths in the repository |
-| Technical findings | Debt, couplings, detected risks |
-| Modification risks | What can break when changing |
+| JSON Metadata (0) | Structured and parser-friendly JSON block containing imports and coupling map |
+| Current flow (1) | Step-by-step description of real behavior |
+| Affected components (2) | List of services, modules and tables |
+| Relevant files (3) | Exact paths in the repository |
+| Technical findings (4) | Debt, couplings, detected risks |
+| Modification risks (5) | What can break when changing |

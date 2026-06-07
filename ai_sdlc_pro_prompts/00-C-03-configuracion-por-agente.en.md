@@ -132,6 +132,7 @@ MECHANISMS COMPARATIVE TABLE
 | Antigravity | Task prompt | docs/ai-agents/antigravity-config.md | Only browser/E2E |
 
 Rules that must be present in ALL agents:
+- before proposing syntax changes or refactorings, verify the local runtime version (Node.js, Python, JDK) to prevent incompatibilities
 - never push directly to protected branches
 - never expose secrets, tokens, or credentials
 - never execute migrations without human approval

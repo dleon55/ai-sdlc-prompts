@@ -2483,6 +2483,7 @@ TABLA COMPARATIVA DE MECANISMOS
 | Antigravity | Prompt de tarea | docs/ai-agents/antigravity-config.md | Solo browser/E2E |
 
 Reglas que deben estar presentes en TODOS los agentes:
+- antes de proponer cambios de sintaxis o refactorizaciones, verificar la versión del runtime local (Node.js, Python, JDK) para prevenir incompatibilidades
 - nunca hacer push a ramas protegidas directamente
 - nunca exponer secretos, tokens ni credenciales
 - nunca ejecutar migraciones sin aprobación humana
@@ -2603,6 +2604,7 @@ MECHANISMS COMPARATIVE TABLE
 | Antigravity | Task prompt | docs/ai-agents/antigravity-config.md | Only browser/E2E |
 
 Rules that must be present in ALL agents:
+- before proposing syntax changes or refactorings, verify the local runtime version (Node.js, Python, JDK) to prevent incompatibilities
 - never push directly to protected branches
 - never expose secrets, tokens, or credentials
 - never execute migrations without human approval
@@ -3206,6 +3208,7 @@ Actividades:
 4. Señala exactamente qué archivos y módulos están involucrados.
 
 Formato de salida:
+0. Bloque JSON de metadatos e importaciones (claves: status, file_dependencies, couplings, risks).
 1. Flujo actual
 2. Componentes afectados
 3. Archivos relevantes
@@ -3230,6 +3233,7 @@ Actividades:
 4. Señala exactamente qué archivos y módulos están involucrados.
 
 Formato de salida:
+0. Bloque JSON de metadatos e importaciones (claves: status, file_dependencies, couplings, risks).
 1. Flujo actual
 2. Componentes afectados
 3. Archivos relevantes
@@ -3277,6 +3281,7 @@ Activities:
 4. Indicate exactly which files and modules are involved.
 
 Output format:
+0. Metadata &amp; Imports JSON Block (keys: status, file_dependencies, couplings, risks).
 1. Current flow
 2. Affected components
 3. Relevant files
@@ -3989,6 +3994,7 @@ Reglas:
 - Los diagramas deben ser consistentes con el código y la arquitectura real.
 - No inventes componentes inexistentes.
 - Etiqueta claramente actores, servicios, módulos y datos.
+- Regla de Sintaxis Estricta: Escapa siempre caracteres especiales (como paréntesis, corchetes o comas) en los nombres de los nodos envolviéndolos en comillas dobles (ej: id[&quot;Nombre Nodo (Detalle)&quot;]). NUNCA utilices etiquetas HTML (como &lt;br&gt; o &lt;b&gt;) dentro de los textos de los nodos de Mermaid para evitar errores de renderizado.
 
 Entrega:
 - bloque Mermaid por diagrama,
@@ -4005,6 +4011,7 @@ Rules:
 - Diagrams must be consistent with the code and real architecture.
 - Do not invent non-existent components.
 - Clearly label actors, services, modules and data.
+- Strict Syntax Rule: Always escape special characters (such as parentheses, brackets, or commas) inside node labels by wrapping them in double quotes (e.g., id[&quot;Node Name (Detail)&quot;]). NEVER use HTML tags (such as &lt;br&gt; or &lt;b&gt;) inside Mermaid node text to avoid rendering failures.
 
 Deliver:
 - Mermaid block per diagram,
@@ -4274,6 +4281,7 @@ Reglas:
 3. No modifiques archivos fuera del alcance.
 4. Haz commits atómicos por unidad lógica.
 5. Si detectas cambios ajenos en la misma zona, detén y documenta.
+6. Antes de escribir o guardar modificaciones en cualquier archivo, ejecuta una validación de diferencias locales (`git diff [ruta_archivo]`) para verificar que no estás sobreescribiendo cambios locales recientes o que haya drifts imprevistos en tu workspace.
 
 Actividades:
 1. Identificar archivos a modificar
@@ -4297,6 +4305,7 @@ Rules:
 3. Do not modify files outside the scope.
 4. Make atomic commits per logical unit.
 5. If you detect foreign changes in the same area, stop and document.
+6. Before writing or saving modifications to any file, execute a local difference validation (`git diff [file_path]`) to verify that you are not overwriting recent local changes or encountering unforeseen drifts in your workspace.
 
 Activities:
 1. Identify files to modify
