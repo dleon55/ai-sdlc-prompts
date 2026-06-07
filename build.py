@@ -422,9 +422,9 @@ body.sidebar-collapsed .sidebar-collapse-btn svg { transform: rotate(180deg); }
 /* ────── Card ────── */
 .card {
   background: var(--bg2); border: 1px solid var(--bdr);
-  border-radius: 8px; overflow: hidden; transition: border-color .15s, box-shadow .15s;
+  border-radius: 8px; overflow: hidden; transition: border-color .22s cubic-bezier(0.4, 0, 0.2, 1), box-shadow .22s cubic-bezier(0.4, 0, 0.2, 1), transform .22s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.card:hover { border-color: var(--bdr2); box-shadow: 0 2px 12px rgba(0,0,0,.35); }
+.card:hover { border-color: #6366f199; box-shadow: 0 8px 24px rgba(99,102,241,0.18); transform: translateY(-3px) scale(1.005); }
 
 /* Card header: siempre visible */
 .card-head {
@@ -965,6 +965,86 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
 .ob-email-submit:hover { opacity: .88; }
 .ob-email-submit.ok { background: var(--grn); }
 .ob-email-note { font-size: .66rem; color: var(--tx3); margin-top: .35rem; text-align: center; }
+
+/* ═════════════════ HIGHLIGHT & TOAST & CHIPS ═══════════════════ */
+.var-highlight {
+  background: rgba(6, 182, 212, 0.12);
+  color: #22d3ee;
+  border: 1px solid rgba(6, 182, 212, 0.3);
+  border-radius: 4px;
+  padding: 1px 4px;
+  font-weight: 600;
+}
+#toast-container {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  pointer-events: none;
+}
+.toast {
+  background: #090d16;
+  border: 1px solid #1e2340;
+  border-left: 4px solid #10b981;
+  border-radius: 6px;
+  padding: 0.6rem 1rem;
+  color: #e2e8f0;
+  font-size: 0.76rem;
+  font-weight: 600;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  animation: toast-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  pointer-events: auto;
+}
+.toast.info { border-left-color: #3b82f6; }
+.toast.warn { border-left-color: #f59e0b; }
+@keyframes toast-in {
+  from { transform: translateY(1rem) scale(0.9); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+.toast.fade-out {
+  animation: toast-out 0.2s ease-in forwards;
+}
+@keyframes toast-out {
+  from { transform: scale(1); opacity: 1; }
+  to { transform: scale(0.9); opacity: 0; }
+}
+.chips-container {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  overflow-x: auto;
+  padding: 0.2rem 0;
+  max-width: 480px;
+}
+.chips-container::-webkit-scrollbar { display: none; }
+.chip {
+  background: var(--bg3);
+  border: 1px solid var(--bdr2);
+  color: var(--tx2);
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.22rem 0.65rem;
+  border-radius: 99px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.chip:hover {
+  background: var(--bg4);
+  color: #fff;
+}
+.chip.active {
+  background: var(--active-bg, #6366f1);
+  border-color: var(--active-bg, #6366f1);
+  color: #fff;
+  box-shadow: 0 2px 8px var(--shadow-color, rgba(99, 102, 241, 0.3));
+}
 /* ═════════════════ LANDING PAGE ════════════════════════════════ */
 .landing {
   min-height: 100vh; background: var(--bg);
@@ -1717,6 +1797,8 @@ function setLanguage(lang) {
   var fwEn = document.getElementById('sec-00-en');
   if (fwEs) fwEs.style.display = (lang === 'es') ? 'block' : 'none';
   if (fwEn) fwEn.style.display = (lang === 'en') ? 'block' : 'none';
+
+  if (typeof initChips === 'function') initChips();
 }
 
 function initLanguageDetection() {
@@ -1746,28 +1828,118 @@ function getFwText() {
   return fwEl ? fwEl.textContent : '';
 }
 
+var RAW_PROMPTS = {};
+
+function updateLivePreview() {
+  var v = getVarValues();
+  Object.keys(RAW_PROMPTS).forEach(function(codeId) {
+    var codeEl = document.getElementById(codeId);
+    if (!codeEl) return;
+    var text = RAW_PROMPTS[codeId];
+    
+    // Escapar HTML básico del template original primero para evitar problemas al inyectar spans
+    var escapedText = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    
+    // Aplicar variables con resaltado HTML
+    Object.keys(VAR_MAP).forEach(function(field) {
+      var val = (v[field] || '').trim();
+      if (!val) return;
+      VAR_MAP[field].forEach(function(token) {
+        var rx = new RegExp('\\\\[' + token.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&') + '\\\\]', 'g');
+        escapedText = escapedText.replace(rx, '<span class="var-highlight">' + val.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</span>');
+      });
+    });
+    codeEl.innerHTML = escapedText;
+  });
+}
+
+function showToast(msg, type) {
+  var container = document.getElementById('toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toast-container';
+    document.body.appendChild(container);
+  }
+  var toast = document.createElement('div');
+  toast.className = 'toast' + (type ? ' ' + type : '');
+  
+  var icon = '&#10004;';
+  if (type === 'info') icon = '&#8505;';
+  if (type === 'warn') icon = '&#9888;';
+  
+  toast.innerHTML = '<span>' + icon + '</span> ' + msg;
+  container.appendChild(toast);
+  
+  setTimeout(function() {
+    toast.classList.add('fade-out');
+    setTimeout(function() { if (toast.parentNode) container.removeChild(toast); }, 200);
+  }, 3000);
+}
+
+function initChips() {
+  var container = document.getElementById('category-chips');
+  if (!container) return;
+  var lang = getCurrentLanguage();
+  var sidebarLinks = Array.from(document.querySelectorAll('.sidebar .sid-link'));
+  
+  var html = sidebarLinks.map(function(link) {
+    var href = link.getAttribute('href');
+    if (!href || href === '#sec-00') return ''; // Ignorar el framework en los chips ya que es el banner principal
+    var secCode = href.replace('#sec-', '');
+    var textEl = link.querySelector(lang === 'es' ? '.sid-lang-es' : '.sid-lang-en');
+    var label = textEl ? textEl.textContent : (link.querySelector('.sid-text') ? link.querySelector('.sid-text').textContent : '');
+    label = label.replace(/^[0-9]+ — /, ''); // Remover número
+    
+    var svg = link.querySelector('svg');
+    var color = svg ? svg.getAttribute('stroke') : '#6366f1';
+    
+    return '<button class="chip" data-sec="' + secCode + '" style="--active-bg: ' + color + '; --shadow-color: ' + color + '55" onclick="filterByChip(\'' + secCode + '\')">' + label + '</button>';
+  }).join('');
+  
+  container.innerHTML = html;
+}
+
+function filterByChip(secCode) {
+  document.querySelectorAll('.chip').forEach(function(c) {
+    var active = c.getAttribute('data-sec') === secCode;
+    c.classList.toggle('active', active);
+  });
+  
+  var target = document.getElementById('sec-' + secCode);
+  if (target) {
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    var header = target.querySelector('.section-header-row');
+    if (header) {
+       header.style.transition = 'background 0.5s';
+       header.style.background = 'rgba(99,102,241,0.12)';
+       setTimeout(function() { header.style.background = 'none'; }, 1000);
+    }
+  }
+}
+
 function copyPromptLang(pid, lang, btn) {
   var codeId = 'code-' + pid + '-' + lang;
   var codeEl = document.getElementById(codeId);
   if (!codeEl) return;
   
   var title = btn.dataset.title || '';
-  var raw = codeEl.textContent;
+  // Leer plantilla limpia de RAW_PROMPTS para evitar copiar etiquetas de highlight HTML
+  var raw = RAW_PROMPTS[codeId] || codeEl.textContent;
   var text = applyVars(raw, { modulo: title });
   
   if (pid !== 'fw') {
     var fwId = 'code-fw-' + lang;
     var fwEl = document.getElementById(fwId) || document.getElementById('code-fw');
     if (fwEl) {
-      var fw = applyVars(fwEl.textContent, { modulo: title });
-      if (fw) text = fw + '\\n\\n---\\n\\n' + text;
+      var fwRaw = RAW_PROMPTS[fwId] || fwEl.textContent;
+      var fw = applyVars(fwRaw, { modulo: title });
+      if (fw) text = fw + '\n\n---\n\n' + text;
     }
   }
   doCopy(text, btn);
 }
 
 function openInfoLang(pid, lang) {
-  // Por ahora el modal de info es genérico, pero podemos adaptarlo
   openInfo(pid);
 }
 
@@ -1777,19 +1949,21 @@ function copyPrompt(pid, btn) {
 }
 
 function doCopy(text, btn) {
+  var isFw = btn.classList.contains('fw-copy-btn');
+  var label = isFw ? 'Framework completo copiado' : 'Prompt copiado con éxito';
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(text)
-      .then(function() { flash(btn); })
-      .catch(function() { fbCopy(text, btn); });
-  } else { fbCopy(text, btn); }
+      .then(function() { flash(btn); showToast(label, 'success'); })
+      .catch(function() { fbCopy(text, btn, label); });
+  } else { fbCopy(text, btn, label); }
 }
 
-function fbCopy(text, btn) {
+function fbCopy(text, btn, label) {
   var t = document.createElement('textarea');
   t.value = text; t.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
   document.body.appendChild(t); t.focus(); t.select();
   try { document.execCommand('copy'); } catch(e) {}
-  document.body.removeChild(t); flash(btn);
+  document.body.removeChild(t); flash(btn); showToast(label, 'success');
 }
 
 function flash(btn) {
@@ -2077,6 +2251,11 @@ function submitObEmail() {
 /* ═══════════════════  INIT  ════════════════════════════════════ */
 
 document.addEventListener('DOMContentLoaded', function() {
+  // Capturar plantillas limpias para Live Preview antes de inyectar variables
+  document.querySelectorAll('code[id^="code-"]').forEach(function(codeEl) {
+    RAW_PROMPTS[codeEl.id] = codeEl.textContent;
+  });
+
   // ── Inicializar proyectos ──
   if (!loadProjects()) createProject('Default');
   renderProjectSelector();
@@ -2093,6 +2272,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
   initLanguageDetection();
   initFrameworkState();
+
+  updateLivePreview();
+  if (typeof initChips === 'function') initChips();
 
   // Cerrar menús al hacer clic fuera
   document.addEventListener('click', function(e) {
@@ -2575,6 +2757,7 @@ def build():
         '<input type="text" placeholder="Buscar por nombre o contenido del prompt..."'
         ' oninput="filterPrompts(this.value)" autocomplete="off">'
         '</div>\n'
+        '  <div class="chips-container" id="category-chips"></div>\n'
         '  <span class="search-count" id="vis-count">' + str(total) + ' prompts</span>\n'
         '  <span class="vars-active-badge" id="vars-badge">&#9632; Vars activas</span>\n'
         '  <button class="ms-toggle-btn" id="ms-toggle-btn" onclick="toggleMsMode()" title="Activar selección múltiple">'
@@ -2974,6 +3157,7 @@ def build():
         '</div>\n'
         '</div>\n'
         '<!-- ═══ END BOTTOM RIGHT FLOATS ═══ -->\n'
+        '<div id="toast-container"></div>\n'
         '</body>\n</html>\n'
     )
 
