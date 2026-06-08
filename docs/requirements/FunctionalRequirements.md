@@ -86,6 +86,7 @@ Cubre todas las funcionalidades accesibles por usuarios finales (visitantes, usu
 | **FR-VAR-05** | Aplicar sustitución de variables en tiempo real al copiar | Must | UC-07 | ✅ |
 | **FR-VAR-06** | Advertir al copiar cuando existan placeholders pendientes de captura manual | Should | UC-07 | ✅ |
 | **FR-VAR-07** | Permitir variables adicionales `TOKEN=valor` para placeholders específicos de cualquier prompt | Must | UC-04 | ✅ |
+| **FR-VAR-08** | Permitir selección múltiple y valores personalizados para compliance y metodología | Should | UC-04 | ✅ |
 
 ### 2.6 Sistema de Internacionalización (i18n)
 

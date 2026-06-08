@@ -129,8 +129,22 @@ def test_framework_context_controls_expose_expected_options():
         "PSP",
         "TSP",
         "ISO 29110",
+        "ISO 9001",
+        "ISO 12207",
+        "ISO 25010",
+        "ISO 27001",
+        "ISO 27002",
+        "ISO 27701",
+        "CMMI-DEV",
         "MOPROSOFT",
         "MAAGTICSI",
+        "NIST CSF",
+        "NIST SSDF",
+        "OWASP SAMM",
+        "PCI DSS",
+        "SOC 2",
+        "GDPR",
+        "HIPAA",
         "NINGUNO",
     ):
         assert f'value="{option}"' in BUILD_SOURCE
@@ -141,3 +155,31 @@ def test_framework_context_controls_expose_expected_options():
     assert "Objetivo puntual de salida" in BUILD_SOURCE
     assert "[INDICAR]" in BUILD_SOURCE
     assert "[NIVEL]" in BUILD_SOURCE
+
+
+def test_compliance_and_methodology_support_multiple_and_custom_values():
+    assert 'id="vf-compliance" multiple' in BUILD_SOURCE
+    assert 'id="vf-metodologia" multiple' in BUILD_SOURCE
+    assert 'id="vf-compliance-other"' in BUILD_SOURCE
+    assert 'id="vf-metodologia-other"' in BUILD_SOURCE
+    assert "function readFieldValue" in BUILD_SOURCE
+    assert "function syncMultiSelectOther" in BUILD_SOURCE
+    assert "newlySelected.indexOf('NINGUNO')" in BUILD_SOURCE
+    assert "noneOption.selected = false" in BUILD_SOURCE
+
+    for methodology in (
+        "Scrum",
+        "Kanban",
+        "RUP",
+        "Cascada",
+        "Espiral",
+        "XP",
+        "Lean",
+        "SAFe",
+        "DevOps",
+        "DevSecOps",
+        "Trunk-Based Development",
+        "GitHub Flow",
+        "GitFlow",
+    ):
+        assert f'value="{methodology}"' in BUILD_SOURCE
