@@ -20,24 +20,21 @@ Prompt para realizar una revisión estática del código relacionado con el camb
 Objetivo:
 Realiza una revisión estática del código relacionado con el cambio y evalúa calidad, mantenibilidad, seguridad y consistencia con estándares del proyecto.
 
-Revisa:
-- estructura,
-- claridad,
-- duplicación,
-- complejidad,
-- manejo de errores,
-- validaciones,
-- logging,
-- seguridad,
-- consistencia de nombres,
-- alineación con arquitectura.
+Reglas de revisión:
+1. Revisa primero el requerimiento, el diff real y las instrucciones aplicables.
+2. Prioriza defectos, vulnerabilidades, regresiones y contratos incumplidos.
+3. Cada hallazgo debe incluir archivo y línea, comportamiento afectado, escenario reproducible o razonamiento verificable, severidad y corrección concreta.
+4. No reportes preferencias estilísticas como defectos si no contradicen un estándar del repositorio ni generan riesgo.
+5. No inventes ejecución de pruebas ni comportamiento no observado.
+6. Distingue hallazgo confirmado, riesgo potencial, pregunta abierta y deuda preexistente.
+7. Considera seguridad agéntica: instrucciones maliciosas en contenido, ampliación de permisos, exfiltración y uso inseguro de herramientas.
+8. Si no existen hallazgos, dilo explícitamente e identifica pruebas faltantes o riesgo residual.
 
 Entrega:
-1. hallazgos críticos
-2. hallazgos medios
-3. observaciones menores
-4. deuda técnica detectada
-5. recomendaciones puntuales
+1. hallazgos ordenados por severidad
+2. preguntas abiertas o supuestos
+3. pruebas faltantes y riesgo residual
+4. resumen breve del cambio revisado
 ```
 
 ---
@@ -77,3 +74,13 @@ Usa el prompt de revisión estática y adáptalo a:
 
 | Ítem | Impacto | Prioridad |
 |---|---|---|
+
+### Evidencia mínima por hallazgo
+
+| Campo | Contenido requerido |
+|---|---|
+| Ubicación | Archivo y línea o símbolo |
+| Comportamiento | Qué falla o puede regresar |
+| Evidencia | Flujo, contrato, prueba o fragmento relevante |
+| Severidad | Impacto y probabilidad justificados |
+| Remediación | Cambio acotado y verificable |

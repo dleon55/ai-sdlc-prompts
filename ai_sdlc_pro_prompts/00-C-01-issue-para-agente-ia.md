@@ -30,6 +30,16 @@ Inputs requeridos:
 - criterios de aceptación: [LISTA DE CONDICIONES VERIFICABLES]
 - restricciones: [LO QUE EL AGENTE NO PUEDE HACER EN ESTE ISSUE]
 - agente asignado: [Copilot / Claude / Codex / Windsurf / Cursor / Antigravity]
+- resultado observable esperado: [EVIDENCIA QUE DEMUESTRA EL ÉXITO]
+- permisos y herramientas autorizadas: [LECTURA / EDICIÓN / SHELL / GITHUB / BROWSER / OTROS]
+- presupuesto: [TIEMPO / ARCHIVOS / INTENTOS / COSTE, SI APLICA]
+
+Antes de redactar el issue:
+1. Evalúa si el problema está suficientemente definido.
+2. Identifica información faltante, contradicciones y dependencias.
+3. Clasifica el riesgo: bajo, medio o alto.
+4. Determina si la tarea es apta para ejecución autónoma.
+5. No inventes rutas, comandos, criterios ni comportamiento actual.
 
 Genera el issue con las siguientes secciones:
 
@@ -58,11 +68,30 @@ Lo que el agente NO debe hacer en el contexto de este issue:
 - no alterar configuraciones de [ÁREA CRÍTICA]
 - parar y escalar si encuentra: [CONDICIÓN DE ESCALACIÓN]
 
+## Contrato de ejecución
+- modo autorizado: [A0 análisis / A1 propuesta / A2 ejecución controlada / A3 publicación]
+- herramientas autorizadas: [LISTA]
+- herramientas prohibidas: [LISTA]
+- archivos o módulos dentro del alcance: [LISTA]
+- archivos o módulos fuera del alcance: [LISTA]
+- acciones que requieren aprobación: [LISTA]
+- presupuesto de ejecución: [LÍMITES]
+- condiciones de detención: [LISTA]
+
 ## Pruebas requeridas
 Qué pruebas debe escribir o actualizar el agente:
 - tipo de prueba (unitaria / integración / e2e / humo)
 - cobertura mínima esperada
 - archivo(s) de prueba a crear o modificar
+
+## Evidencia de cumplimiento
+Para cada criterio de aceptación indica la evidencia esperada:
+- prueba y resultado;
+- ruta y línea relevante;
+- captura, traza o log cuando aplique;
+- estado de CI o validación remota cuando sea obligatorio.
+
+No se permite marcar el issue como completado sólo por haber modificado código.
 
 ## Checklist de validación humana (post-ejecución)
 Revisión que debe hacer el humano antes de hacer merge:
@@ -79,6 +108,15 @@ Revisión que debe hacer el humano antes de hacer merge:
 [ ] Propuesta con draft PR (el agente crea PR en borrador)
 [ ] Ejecución controlada (el agente puede hacer commits en rama de feature)
 [ ] Ejecución autónoma (el agente puede completar y pedir merge)
+
+## Evaluación de readiness
+- claridad del objetivo: [ALTA / MEDIA / BAJA]
+- criterios verificables: [SÍ / PARCIAL / NO]
+- dependencias disponibles: [SÍ / PARCIAL / NO]
+- permisos definidos: [SÍ / NO]
+- riesgo: [BAJO / MEDIO / ALTO]
+- apto para agente: [SÍ / SÍ CON APROBACIONES / NO]
+- información faltante: [LISTA]
 
 ## Labels sugeridos
 [tipo], [agente-ia], [ambiente], [prioridad]

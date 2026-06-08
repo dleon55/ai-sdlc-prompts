@@ -2,9 +2,9 @@
 
 ## Descripción
 
-Prompt que coordina la totalidad del ciclo de ingeniería de software para una asignación: desde la comprensión del repositorio hasta la documentación final, pasando por análisis, diseño, implementación, pruebas e integración.
+Prompt que clasifica una asignación y selecciona el flujo mínimo suficiente para completarla con seguridad y evidencia. Puede operar con un solo agente, un workflow determinista o un supervisor con subagentes.
 
-**Cuándo usarlo:** para asignaciones completas que requieren pasar por todas las fases, o cuando se trabaja con un agente que debe operar de forma autónoma sobre un issue de principio a fin.
+**Cuándo usarlo:** cuando una asignación requiere coordinación entre varias capacidades, fases o agentes. Para tareas simples, utiliza directamente el prompt especializado correspondiente.
 
 ---
 
@@ -18,67 +18,73 @@ Prompt que coordina la totalidad del ciclo de ingeniería de software para una a
 
 ```text
 Objetivo:
-Coordina el ciclo completo de ingeniería de software para esta asignación dentro del repositorio.
+Enruta y coordina esta asignación mediante el flujo mínimo que permita cumplirla con evidencia verificable.
 
 Entrada:
 - issue/requerimiento/incidente: [PEGAR]
 - rama objetivo: [INDICAR]
 - ambiente: [INDICAR]
 - componentes: [INDICAR]
+- nivel de autonomía permitido: [A0 / A1 / A2 / A3]
+- herramientas disponibles: [INDICAR]
+- presupuesto: [TIEMPO / CAMBIOS / INTENTOS / COSTE]
 
-Quiero que trabajes por fases:
+Paso 1. CLASIFICAR
+- intención: [analizar / diseñar / implementar / revisar / investigar / operar]
+- complejidad: [simple / compuesta / abierta]
+- riesgo: [bajo / medio / alto]
+- reversibilidad: [alta / media / baja]
+- evidencia necesaria para finalizar
 
-Fase 1. Comprensión e inventario
-- revisar documentación, procesos, políticas y estructura del repo.
+Paso 2. SELECCIONAR PATRÓN
+- agente único: tarea acotada y claramente verificable
+- workflow secuencial: pasos conocidos con dependencias
+- workflow paralelo: subtareas independientes
+- supervisor + subagentes: especialidades distintas y reconciliación necesaria
+- human-in-the-loop: decisiones ambiguas o acciones de alto riesgo
 
-Fase 2. Análisis
-- funcional,
-- técnico,
-- impacto,
-- riesgos,
-- concurrencia con otros agentes.
+No ejecutes todas las fases por defecto.
 
-Fase 3. Diseño
-- solución funcional,
-- solución técnica,
-- casos de uso,
-- diagramas mermaid,
-- plan de implementación.
+Paso 3. CREAR CONTRATO
+- alcance y exclusiones
+- herramientas y permisos
+- acciones que requieren aprobación
+- estados y checkpoints
+- presupuesto y condición de detención
+- criterios de éxito y evidencia
 
-Fase 4. Ejecución controlada
-- propuesta de cambios por archivo,
-- estrategia de commits,
-- validaciones.
+Estados permitidos:
+`discovered`, `planned`, `approved`, `executing`, `verifying`, `blocked`, `completed`, `rolled_back`.
 
-Fase 5. Calidad
-- pruebas unitarias,
-- integración,
-- E2E,
-- humo,
-- automatización navegador,
-- revisión estática.
+Paso 4. EJECUTAR
+- carga sólo las capacidades necesarias
+- delega subtareas con entrada, alcance y salida explícitos
+- preserva aislamiento y ownership
+- registra decisiones, tool calls relevantes y evidencia
+- reconcilia resultados antes de integrar
 
-Fase 6. Integración
-- ramas,
-- CI local,
-- GitHub Actions,
-- riesgos de integración.
+Paso 5. VERIFICAR
+- criterios de aceptación
+- pruebas proporcionales al impacto
+- seguridad y regresiones
+- diff y alcance real
+- riesgos residuales
 
-Fase 7. Documentación
-- memoria técnica,
-- actualización documental,
-- release notes.
+Paso 6. CERRAR O ESCALAR
+- marca `completed` sólo con evidencia suficiente
+- marca `blocked` cuando exista un impedimento real y documentado
+- usa `rolled_back` si la ejecución fue revertida
+- solicita decisión humana cuando el riesgo o permiso exceda el contrato
 
 Formato de salida obligatorio:
-1. Resumen ejecutivo
-2. Hallazgos
-3. Riesgos
-4. Diseño propuesto
-5. Plan de implementación
-6. Estrategia de pruebas
-7. Estrategia de integración
-8. Documentación requerida
-9. Recomendación final
+1. Clasificación y patrón seleccionado
+2. Estado actual
+3. Contrato de ejecución
+4. Plan o grafo de tareas
+5. Acciones ejecutadas
+6. Evidencia y validaciones
+7. Riesgos residuales
+8. Decisiones humanas pendientes
 ```
 
 ---
@@ -101,12 +107,10 @@ Usa el prompt maestro orquestador y adáptalo a:
 
 ## Fases y entregables esperados
 
-| Fase | Nombre | Entregable |
+| Patrón | Cuándo usarlo | Entregable |
 |---|---|---|
-| 1 | Comprensión e inventario | Inventario técnico + mapa de gobierno |
-| 2 | Análisis | Análisis funcional + técnico + impacto cruzado |
-| 3 | Diseño | Diseño completo + diagramas + casos de uso |
-| 4 | Ejecución controlada | Propuesta de cambios + commits atómicos |
-| 5 | Calidad | Suite de pruebas + revisión estática |
-| 6 | Integración | Estrategia de ramas + estado CI |
-| 7 | Documentación | Memoria técnica + release notes |
+| Agente único | Tarea pequeña y acotada | Cambio o análisis verificado |
+| Secuencial | Dependencias estrictas | Checkpoints por etapa |
+| Paralelo | Subtareas independientes | Entregables reconciliados |
+| Supervisor | Varias especialidades | Resultado integrado y revisado |
+| Humano en el ciclo | Riesgo alto o decisión ambigua | Aprobación y evidencia |

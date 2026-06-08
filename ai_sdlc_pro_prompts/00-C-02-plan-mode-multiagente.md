@@ -27,6 +27,8 @@ Tu trabajo en este modo es:
 4. Proponer el plan de implementación detallado.
 5. Estimar el alcance del cambio (líneas, archivos, módulos).
 6. Señalar qué requiere aprobación humana antes de ejecutar.
+7. Definir criterios de éxito, evidencia y presupuesto de ejecución.
+8. Identificar subtareas independientes y dependencias entre ellas.
 
 Entrada:
 - issue/tarea: [REFERENCIA O DESCRIPCIÓN]
@@ -56,6 +58,10 @@ Entrega en MODO PLAN:
 ### 5. Pasos de implementación propuestos
 Numerados, atómicos, con qué archivo cambia en cada paso.
 
+Representa las dependencias como un grafo simple:
+| ID | Tarea | Depende de | Owner sugerido | Entregable verificable |
+|---|---|---|---|---|
+
 ### 6. Estrategia de commits
 - número de commits estimados
 - mensaje de cada commit (convención del proyecto)
@@ -70,7 +76,15 @@ Lista de condiciones donde el agente debe pausar y escalar al humano:
 - encontrar [condición A]
 - encontrar [condición B]
 
-¿Apruebas este plan? Confirma para proceder a ejecución controlada.
+### 9. Contrato de ejecución
+- nivel de riesgo:
+- modo de autonomía:
+- herramientas permitidas:
+- acciones que requieren aprobación:
+- presupuesto de archivos/tiempo/intentos:
+- evidencia de finalización:
+
+Solicita aprobación únicamente para acciones que la política o el nivel de riesgo no hayan preautorizado.
 ```
 
 ---
@@ -82,9 +96,8 @@ Objetivo:
 Antes de iniciar cualquier trabajo, ejecuta el protocolo de coordinación multi-agente para este repositorio.
 
 Paso 1. VERIFICACIÓN DE ESTADO
-- git fetch origin && git log --oneline -10 origin/[BRANCH]
-- git branch -r | grep -v HEAD
-- gh pr list --repo [ORG/REPO] --state open
+- inspecciona estado local, rama, worktrees, cambios recientes y PRs relacionados usando comandos compatibles con el entorno
+- no ejecutes `pull`, `fetch`, mutaciones remotas ni comandos con red sin autorización o necesidad confirmada
 
 Paso 2. DETECCIÓN DE CONFLICTOS POTENCIALES
 - lista los archivos que modificarías en esta tarea
@@ -92,23 +105,18 @@ Paso 2. DETECCIÓN DE CONFLICTOS POTENCIALES
 - verifica si hay PRs abiertos que toquen los mismos archivos
 - si hay conflicto: DETENER y reportar antes de continuar
 
-Paso 3. RESERVA DE ÁREA DE TRABAJO
-- crea tu rama con prefijo de agente: [tipo-agente]/[issue-id]/[descripcion-corta]
-  Ejemplos:
-  - copilot/42/fix-login-validation
-  - claude/43/refactor-auth-service
-  - codex/44/add-unit-tests
-  - windsurf/45/update-nginx-config
-  - antigravity/46/e2e-checkout-flow
-- realiza un commit vacío inicial para marcar el área:
-  git commit --allow-empty -m "wip([agente]): reserva rama para issue #[N]"
+Paso 3. AISLAMIENTO Y OWNERSHIP
+- usa un worktree, workspace o rama aislada cuando exista ejecución concurrente
+- registra task ID, owner, alcance de archivos y dependencias en el mecanismo de coordinación disponible
+- no uses commits vacíos como bloqueo: una rama no garantiza exclusividad
+- si no existe mecanismo de coordinación, reporta el riesgo y reduce el alcance
 
 Paso 4. REGLAS DE CONVIVENCIA ENTRE AGENTES
-- un agente = una rama = un issue a la vez
-- si dos agentes necesitan el mismo archivo, el segundo espera o trabaja en una copia separada
+- cada subtarea tiene un owner y contrato de entrega
+- dos agentes pueden trabajar en paralelo sólo si sus entregables son independientes o existe una estrategia explícita de reconciliación
 - ningún agente hace merge a main/develop sin aprobación humana
 - commits atómicos — un cambio lógico por commit
-- si detectas trabajo de otro agente en la misma área: pausar, reportar, esperar instrucción
+- ante solapamiento, determina si el conflicto es textual, contractual o semántico; pausa únicamente el área afectada
 
 Paso 5. REPORTE DE ESTADO
 Al finalizar el plan o la ejecución, reporta:
