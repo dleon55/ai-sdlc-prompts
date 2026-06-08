@@ -27,6 +27,8 @@ Your work in this mode is:
 4. Propose the detailed implementation plan.
 5. Estimate the scope of the change (lines, files, modules).
 6. Signal what requires human approval before executing.
+7. Define success criteria, evidence, and execution budget.
+8. Identify independent subtasks and dependencies.
 
 Input:
 - issue/task: [REFERENCE OR DESCRIPTION]
@@ -56,6 +58,9 @@ Deliver in PLAN MODE:
 ### 5. Proposed implementation steps
 Numbered, atomic, with what file changes at each step.
 
+| ID | Task | Depends on | Suggested owner | Verifiable deliverable |
+|---|---|---|---|---|
+
 ### 6. Commit strategy
 - estimated number of commits
 - message for each commit (project convention)
@@ -70,7 +75,13 @@ List of conditions where the agent must pause and escalate to the human:
 - finding [condition A]
 - finding [condition B]
 
-Do you approve this plan? Confirm to proceed to controlled execution.
+### 9. Execution contract
+- risk level and autonomy mode
+- permitted tools and actions requiring approval
+- file/time/attempt budget
+- completion evidence
+
+Request approval only for actions not pre-authorized by policy or risk level.
 ```
 
 ---
@@ -82,9 +93,8 @@ Objective:
 Before starting any work, execute the multi-agent coordination protocol for this repository.
 
 Step 1. STATE VERIFICATION
-- git fetch origin && git log --oneline -10 origin/[BRANCH]
-- git branch -r | grep -v HEAD
-- gh pr list --repo [ORG/REPO] --state open
+- inspect local status, branch, worktrees, recent changes, and related PRs with environment-compatible commands
+- do not run pull, fetch, remote mutations, or network commands without authorization or confirmed need
 
 Step 2. POTENTIAL CONFLICT DETECTION
 - list the files you would modify in this task
@@ -92,23 +102,18 @@ Step 2. POTENTIAL CONFLICT DETECTION
 - verify if there are open PRs that touch the same files
 - if there is conflict: STOP and report before continuing
 
-Step 3. WORK AREA RESERVATION
-- create your branch with agent prefix: [agent-type]/[issue-id]/[short-description]
-  Examples:
-  - copilot/42/fix-login-validation
-  - claude/43/refactor-auth-service
-  - codex/44/add-unit-tests
-  - windsurf/45/update-nginx-config
-  - antigravity/46/e2e-checkout-flow
-- make an initial empty commit to mark the area:
-  git commit --allow-empty -m "wip([agent]): reserve branch for issue #[N]"
+Step 3. ISOLATION AND OWNERSHIP
+- use an isolated worktree, workspace, or branch when actual concurrency exists
+- register task ID, owner, file scope, and dependencies in the available coordination mechanism
+- do not use empty commits as locks: a branch does not guarantee exclusivity
+- if no coordination mechanism exists, report the risk and reduce scope
 
 Step 4. AGENT COEXISTENCE RULES
-- one agent = one branch = one issue at a time
-- if two agents need the same file, the second waits or works in a separate copy
+- each subtask has an owner and delivery contract
+- parallel work requires independent deliverables or an explicit reconciliation strategy
 - no agent merges to main/develop without human approval
 - atomic commits — one logical change per commit
-- if you detect work from another agent in the same area: pause, report, wait for instruction
+- classify overlap as textual, contractual, or semantic and pause only the affected area
 
 Step 5. STATUS REPORT
 At the end of the plan or execution, report:

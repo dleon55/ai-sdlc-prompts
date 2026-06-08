@@ -2,9 +2,9 @@
 
 ## Description
 
-Prompt that coordinates the entirety of the software engineering cycle for an assignment: from repository comprehension to final documentation, passing through analysis, design, implementation, tests and integration.
+Prompt that classifies an assignment and selects the minimum sufficient flow to complete it safely and with evidence. It can use one agent, a deterministic workflow, or a supervisor with subagents.
 
-**When to use it:** for complete assignments that require going through all phases, or when working with an agent that must operate autonomously on an issue from start to finish.
+**When to use it:** when an assignment requires coordination across capabilities, phases, or agents. For simple tasks, use the specialized prompt directly.
 
 ---
 
@@ -18,67 +18,58 @@ Prompt that coordinates the entirety of the software engineering cycle for an as
 
 ```text
 Objective:
-Coordinate the complete software engineering cycle for this assignment within the repository.
+Route and coordinate this assignment through the minimum flow that can satisfy it with verifiable evidence.
 
 Input:
 - issue/requirement/incident: [PASTE]
 - target branch: [INDICATE]
 - environment: [INDICATE]
 - components: [INDICATE]
+- permitted autonomy: [A0 / A1 / A2 / A3]
+- available tools: [INDICATE]
+- budget: [TIME / CHANGES / ATTEMPTS / COST]
 
-I want you to work by phases:
+Step 1. CLASSIFY intent, complexity, risk, reversibility, and required evidence.
 
-Phase 1. Comprehension and inventory
-- review documentation, processes, policies and repo structure.
+Step 2. SELECT A PATTERN
+- single agent for a scoped, verifiable task
+- sequential workflow for known dependencies
+- parallel workflow for independent subtasks
+- supervisor plus subagents for different specialties requiring reconciliation
+- human-in-the-loop for ambiguity or high-risk actions
 
-Phase 2. Analysis
-- functional,
-- technical,
-- impact,
-- risks,
-- concurrency with other agents.
+Do not execute every phase by default.
 
-Phase 3. Design
-- functional solution,
-- technical solution,
-- use cases,
-- mermaid diagrams,
-- implementation plan.
+Step 3. CREATE THE CONTRACT
+- scope, exclusions, tools, permissions, approvals, checkpoints, budget, stop conditions, success criteria, and evidence
 
-Phase 4. Controlled execution
-- change proposal per file,
-- commit strategy,
-- validations.
+Allowed states:
+`discovered`, `planned`, `approved`, `executing`, `verifying`, `blocked`, `completed`, `rolled_back`.
 
-Phase 5. Quality
-- unit tests,
-- integration,
-- E2E,
-- smoke,
-- browser automation,
-- static review.
+Step 4. EXECUTE
+- load only required capabilities
+- delegate with explicit input, scope, and output
+- preserve isolation and ownership
+- record relevant decisions, tool calls, and evidence
+- reconcile before integration
 
-Phase 6. Integration
-- branches,
-- local CI,
-- GitHub Actions,
-- integration risks.
+Step 5. VERIFY acceptance criteria, proportional tests, security, regressions, actual diff, and residual risks.
 
-Phase 7. Documentation
-- technical memory,
-- documentation update,
-- release notes.
+Step 6. CLOSE OR ESCALATE
+- complete only with sufficient evidence
+- block only for a real documented impediment
+- use rolled_back when execution was reverted
+- request human decisions when risk or permissions exceed the contract
 
 Mandatory output format:
-1. Executive summary
-2. Findings
-3. Risks
-4. Proposed design
-5. Implementation plan
-6. Test strategy
-7. Integration strategy
-8. Required documentation
-9. Final recommendation
+1. Classification and selected pattern
+2. Current state
+3. Execution contract
+4. Plan or task graph
+5. Executed actions
+6. Evidence and validations
+7. Residual risks
+8. Pending human decisions
 ```
 
 ---
@@ -99,14 +90,12 @@ Use the master orchestrator prompt and adapt it to:
 
 ---
 
-## Phases and expected deliverables
+## Patterns and expected deliverables
 
-| Phase | Name | Deliverable |
+| Pattern | When to use | Deliverable |
 |---|---|---|
-| 1 | Comprehension and inventory | Technical inventory + governance map |
-| 2 | Analysis | Functional + technical + cross-impact analysis |
-| 3 | Design | Complete design + diagrams + use cases |
-| 4 | Controlled execution | Changes proposal + atomic commits |
-| 5 | Quality | Test suite + static review |
-| 6 | Integration | Branch strategy + CI status |
-| 7 | Documentation | Technical memory + release notes |
+| Single agent | Small scoped task | Verified change or analysis |
+| Sequential | Strict dependencies | Checkpoints per stage |
+| Parallel | Independent subtasks | Reconciled deliverables |
+| Supervisor | Multiple specialties | Integrated and reviewed result |
+| Human-in-the-loop | High risk or ambiguity | Approval and evidence |

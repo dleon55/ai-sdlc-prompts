@@ -30,7 +30,11 @@ Required inputs:
 - acceptance criteria: [LIST OF VERIFIABLE CONDITIONS]
 - restrictions: [WHAT THE AGENT CANNOT DO IN THIS ISSUE]
 - assigned agent: [Copilot / Claude / Codex / Windsurf / Cursor / Antigravity]
-- autonomy level: [LEVEL]
+- expected observable result: [EVIDENCE THAT PROVES SUCCESS]
+- authorized permissions and tools: [READ / EDIT / SHELL / GITHUB / BROWSER / OTHERS]
+- budget: [TIME / FILES / ATTEMPTS / COST, IF APPLICABLE]
+
+Before drafting, assess definition quality, missing information, dependencies, risk, and suitability for autonomous execution. Do not invent paths, commands, criteria, or current behavior.
 
 Generate the issue with the following sections:
 
@@ -59,11 +63,21 @@ What the agent should NOT do in the context of this issue:
 - do not alter configurations of [CRITICAL AREA]
 - stop and escalate if you find: [ESCALATION CONDITION]
 
+## Execution contract
+- authorized mode: [A0 analysis / A1 proposal / A2 controlled execution / A3 publication]
+- authorized and prohibited tools: [LIST]
+- in-scope and out-of-scope files/modules: [LIST]
+- actions requiring approval: [LIST]
+- execution budget and stop conditions: [LIMITS]
+
 ## Required tests
 What tests should the agent write or update:
 - test type (unit / integration / e2e / smoke)
 - minimum expected coverage
 - test file(s) to create or modify
+
+## Compliance evidence
+For every acceptance criterion define the expected test result, relevant path and line, screenshot/trace/log when applicable, and mandatory CI or remote validation. Code modification alone is not completion evidence.
 
 ## Human validation checklist (post-execution)
 Review that the human must do before merging:
@@ -80,6 +94,15 @@ Review that the human must do before merging:
 [ ] Proposal with draft PR (agent creates PR in draft)
 [ ] Controlled execution (agent can make commits in feature branch)
 [ ] Autonomous execution (agent can complete and request merge)
+
+## Readiness assessment
+- objective clarity: [HIGH / MEDIUM / LOW]
+- verifiable criteria: [YES / PARTIAL / NO]
+- dependencies available: [YES / PARTIAL / NO]
+- permissions defined: [YES / NO]
+- risk: [LOW / MEDIUM / HIGH]
+- suitable for an agent: [YES / YES WITH APPROVALS / NO]
+- missing information: [LIST]
 
 ## Suggested labels
 [type], [ai-agent], [environment], [priority]
