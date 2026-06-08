@@ -22,7 +22,7 @@ Execute or design the complete incident response process for this system in prod
 
 Required inputs:
 - detected symptom or alert: [DESCRIPTION]
-- affected system/service: [NAME]
+- affected system/service: [SERVICE]
 - environment: PROD
 - detection time: [HH:MM timezone]
 - detected by: [automatic monitoring / user / team / AI agent]
@@ -117,7 +117,7 @@ Generate communication templates for each moment:
 Detection time: [HH:MM]
 Symptom: [DESCRIPTION]
 Impact: [AFFECTED USERS/PROCESSES]
-Responding team: [NAME]
+Responding team: [RESPONSIBLE PERSON]
 Next update: [HH:MM]
 ```
 

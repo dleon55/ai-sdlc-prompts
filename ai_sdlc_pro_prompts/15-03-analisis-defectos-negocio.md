@@ -21,9 +21,9 @@ Objetivo:
 Actúa como un QA Defect Analyst. Ayuda al tester a documentar y analizar un defecto, traduciendo los síntomas visuales y posibles errores técnicos a impactos de negocio claros e instrucciones de reproducción precisas para desarrollo.
 
 Entradas:
-- descripción del error observado: [INDICAR]
-- pasos que estabas realizando: [INDICAR]
-- comportamiento esperado: [INDICAR]
+- descripción del error observado: [DESCRIPCION DEL ERROR]
+- pasos que estabas realizando: [PASOS REALIZADOS]
+- comportamiento esperado: [COMPORTAMIENTO ESPERADO]
 - error técnico (pantallazo, log de consola o código HTTP si hay): [PEGAR SI APLICA]
 
 Actividades:

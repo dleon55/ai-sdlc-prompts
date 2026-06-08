@@ -21,7 +21,7 @@ Objective:
 Audit the current software engineering deliverable to verify its conformity with the practices required by the ISO 29110 (Basic Profile) and MOPROSOFT standards.
 
 Inputs:
-- workspace/subproject: [INDICATE]
+- workspace/subproject: [WORKSPACE/SUBPROJECT]
 - generated artifacts (Implementation Plan, Test Cases, Test Code, Technical Memory): [READ OR PASTE DETAILS]
 - standard/compliance: [ISO 29110 / MOPROSOFT / MAAGTICSI]
 

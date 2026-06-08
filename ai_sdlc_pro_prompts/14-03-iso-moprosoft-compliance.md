@@ -21,7 +21,7 @@ Objetivo:
 Audita el entregable actual de ingeniería de software para verificar su conformidad con las prácticas exigidas por los estándares ISO 29110 (Perfil Básico) y MOPROSOFT.
 
 Entradas:
-- workspace/subproyecto: [INDICAR]
+- workspace/subproyecto: [WORKSPACE/SUBPROYECTO]
 - artefactos generados (Plan de Implementación, Casos de Prueba, Código de Pruebas, Memoria Técnica): [LEER O PEGAR DETALLES]
 - estándar/compliance: [ISO 29110 / MOPROSOFT / MAAGTICSI]
 

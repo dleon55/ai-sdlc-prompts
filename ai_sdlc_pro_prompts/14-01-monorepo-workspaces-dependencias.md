@@ -21,8 +21,8 @@ Objetivo:
 Mapea la red de dependencias del monorepo e identifica posibles violaciones de arquitectura (ciclos, importaciones no permitidas, dependencias fantasmas) tras el cambio sugerido.
 
 Entradas:
-- repositorio: [INDICAR]
-- workspace/subproyecto origen: [INDICAR]
+- repositorio: [NOMBRE O URL]
+- workspace/subproyecto origen: [WORKSPACE/SUBPROYECTO]
 - archivos de configuración (package.json, go.work, lerna.json, turbo.json, tsconfig.json): [LEER O PEGAR DETALLES]
 
 Actividades:

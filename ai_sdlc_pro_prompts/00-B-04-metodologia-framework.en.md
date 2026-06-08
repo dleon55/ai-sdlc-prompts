@@ -88,7 +88,7 @@ Output format:
 
 ```text
 Use the methodology and framework prompt and adapt it to:
-- project type: [TYPE]
+- project type: [PROJECT TYPE]
 - team size: [NUMBER + AI AGENTS]
 - delivery frequency: [CADENCE]
 - candidate methodology: [METHODOLOGY OR "none"]

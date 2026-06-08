@@ -22,11 +22,11 @@ Enruta y coordina esta asignación mediante el flujo mínimo que permita cumplir
 
 Entrada:
 - issue/requerimiento/incidente: [PEGAR]
-- rama objetivo: [INDICAR]
-- ambiente: [INDICAR]
-- componentes: [INDICAR]
+- rama objetivo: [RAMA OBJETIVO]
+- ambiente: [AMBIENTE]
+- componentes: [COMPONENTES INVOLUCRADOS]
 - nivel de autonomía permitido: [A0 / A1 / A2 / A3]
-- herramientas disponibles: [INDICAR]
+- herramientas disponibles: [HERRAMIENTAS DISPONIBLES]
 - presupuesto: [TIEMPO / CAMBIOS / INTENTOS / COSTE]
 
 Paso 1. CLASIFICAR

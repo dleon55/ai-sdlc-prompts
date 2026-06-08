@@ -528,6 +528,26 @@ code {
   border-color: #6366f1; box-shadow: 0 0 0 2px rgba(99,102,241,.15);
 }
 .var-group input::placeholder, .var-group textarea::placeholder { color: var(--tx3); }
+.var-group.context-hidden { display: none; }
+.var-context-status {
+  display: none; margin: 0 0 .7rem; padding: .55rem .65rem;
+  border: 1px solid var(--bdr); border-radius: 8px;
+  background: var(--bg3); color: var(--tx2); font-size: .68rem; line-height: 1.45;
+}
+.var-context-status.show { display: block; }
+.var-group.var-required label::after, .var-group.var-optional label::after {
+  margin-left: .35rem; padding: .08rem .28rem; border-radius: 999px;
+  font-size: .52rem; letter-spacing: .04em; vertical-align: middle;
+}
+html[data-lang="es"] .var-group.var-required label::after { content: "REQUERIDA"; }
+html[data-lang="en"] .var-group.var-required label::after { content: "REQUIRED"; }
+html[data-lang="es"] .var-group.var-optional label::after { content: "OPCIONAL"; }
+html[data-lang="en"] .var-group.var-optional label::after { content: "OPTIONAL"; }
+.var-group.var-required label::after { color: #fecaca; background: rgba(239,68,68,.14); }
+.var-group.var-optional label::after { color: #bae6fd; background: rgba(14,165,233,.14); }
+.var-group.var-pending input, .var-group.var-pending select, .var-group.var-pending textarea {
+  border-color: #f59e0b;
+}
 .var-help {
   display: block; margin-top: .35rem; color: var(--tx3);
   font-size: .64rem; line-height: 1.4;
@@ -1529,12 +1549,14 @@ function syncPanelToProject() {
   syncFieldsToValues(FIELD_VAR_MAP, v);
   syncQuickVarInputs();
   updateVarsBadge();
+  updateContextualVariablePanel();
 }
 
 function syncProjectFromPanel() {
   if (!updateActiveProjectVars(FIELD_VAR_MAP)) return;
   syncQuickVarInputs();
   updateVarsBadge();
+  updateLivePreview();
 }
 
 function syncProjectFromQuickFloat() {
@@ -1542,6 +1564,7 @@ function syncProjectFromQuickFloat() {
   if (!vars) return;
   syncFieldsToValues(FIELD_VAR_MAP, vars);
   updateVarsBadge();
+  updateLivePreview();
 }
 
 function renderProjectSelector() {
@@ -1698,69 +1721,73 @@ function toggleSidebar() {
 
 /* ═══════════════════  VARIABLES  ═══════════════════════════════ */
 
-// Mapa: campo UI → array de tokens del prompt que sustituye
-var VAR_MAP = {
-  repositorio: ['NOMBRE O URL', 'ORG/REPO', 'NOMBRE O URL DEL REPOSITORIO', 'NAME OR URL', 'REPO', 'ORG/USER'],
-  referencia:  ['REFERENCIA', 'REFERENCE', 'PEGAR TEXTO O REFERENCIA', 'PEGAR TEXTO COMPLETO',
+// Registro único de variables: campo persistente, aliases y obligatoriedad.
+var TOKEN_REGISTRY = {
+  repositorio: { required: true, aliases: ['NOMBRE O URL', 'ORG/REPO', 'NOMBRE O URL DEL REPOSITORIO', 'NAME OR URL', 'REPO', 'ORG/USER'] },
+  referencia:  { required: true, aliases: ['REFERENCIA', 'REFERENCE', 'PEGAR TEXTO O REFERENCIA', 'PEGAR TEXTO COMPLETO',
                  'PEGAR LISTA DE INCIDENTES', 'PEGAR REPORTE', 'PEGAR', 'REFERENCE TO ISSUE OR PR',
-                 'REFERENCIA AL ISSUE O PR', 'PASTE', 'PEGAR TEXTO...', 'PASTE TEXT OR REFERENCE', 'NUMBER OR REFERENCE', 'PROBLEM DESCRIPTION', 'INCIDENT DESCRIPTION'],
-  rama_actual: ['RAMA ACTUAL', 'CURRENT BRANCH', 'RAMA CON LOS CAMBIOS', 'RAMA EN PRUEBAS',
+                 'REFERENCIA AL ISSUE O PR', 'PASTE', 'PEGAR TEXTO...', 'PASTE TEXT OR REFERENCE', 'NUMBER OR REFERENCE', 'PROBLEM DESCRIPTION', 'INCIDENT DESCRIPTION'] },
+  rama_actual: { required: false, aliases: ['RAMA ACTUAL', 'CURRENT BRANCH', 'RAMA CON LOS CAMBIOS', 'RAMA EN PRUEBAS',
                  'RAMA AFECTADA', 'RAMA DE TRABAJO', 'RAMA DE PRUEBAS', 'BRANCH WITH CHANGES',
-                 'BRANCH IN TESTING', 'WORKING BRANCH', 'BRANCH', 'BRANCH TO ANALYZE', 'RAMA A ANALIZAR', 'AFFECTED BRANCH'],
-  rama_destino:['RAMA OBJETIVO', 'TARGET BRANCH', 'RAMA PRINCIPAL', 'RAMA INTEGRADA',
+                 'BRANCH IN TESTING', 'WORKING BRANCH', 'BRANCH', 'BRANCH TO ANALYZE', 'RAMA A ANALIZAR', 'AFFECTED BRANCH'] },
+  rama_destino:{ required: false, aliases: ['RAMA OBJETIVO', 'TARGET BRANCH', 'RAMA PRINCIPAL', 'RAMA INTEGRADA',
                  'RAMA DESTINO', 'RAMA DE RELEASE', 'DEVELOP / MAIN / RELEASE', 'RELEASE BRANCH',
-                 'INTEGRATED BRANCH', 'MAIN BRANCH', 'MAIN/DEVELOP', 'PR OR INTEGRATION BRANCH'],
-  ambiente:    ['DEV / QA / PROD', 'ENVIRONMENT', 'QA / STAGING', 'QA / STAGING / PROD',
+                 'INTEGRATED BRANCH', 'MAIN BRANCH', 'MAIN/DEVELOP', 'PR OR INTEGRATION BRANCH'] },
+  ambiente:    { required: false, aliases: ['DEV / QA / PROD', 'ENVIRONMENT', 'QA / STAGING', 'QA / STAGING / PROD',
                  'DEV / QA / STAGING / PROD', 'PROD / STAGING', 'DEV / QA',
                  'URL DEL AMBIENTE', 'ENVIRONMENT URL', 'URL DE QA O STAGING', 'DEV / QA / STAGING',
-                 'QA OR STAGING URL', 'DEV / STAGING / PROD', 'AMBIENTE'],
-  componentes: ['COMPONENTES INVOLUCRADOS', 'INVOLVED COMPONENTS', 'COMPONENTES MODIFICADOS',
+                 'QA OR STAGING URL', 'DEV / STAGING / PROD', 'AMBIENTE'] },
+  componentes: { required: false, aliases: ['COMPONENTES INVOLUCRADOS', 'INVOLVED COMPONENTS', 'COMPONENTES MODIFICADOS',
                  'COMPONENTES A MODIFICAR', 'COMPONENTES REVISADOS',
                  'RUTAS DE ARCHIVOS MODIFICADOS', 'FUNCIONES O UNIDADES A PROBAR',
                  'SI YA CONOCES ALGUNO', 'REVIEWED COMPONENTS', 'COMPONENTS TO MODIFY',
-                 'MODIFIED COMPONENTS', 'FILES AND MODULES TO MODIFY', 'AFFECTED MODULE OR FILE', 'DIRECTORY/PACKAGE', 'DIRECTORIO/PAQUETE'],
-  modulo:      ['NOMBRE DEL PROCESO', 'PROCESS NAME', 'MODULE OR FUNCTIONALITY',
-                 'MÓDULO O FUNCIONALIDAD', 'MODULO O FUNCIONALIDAD'],
-  stack:       ['STACK', 'STACK TECNOLÓGICO', 'STACK PRINCIPAL',
+                 'MODIFIED COMPONENTS', 'FILES AND MODULES TO MODIFY', 'AFFECTED MODULE OR FILE', 'DIRECTORY/PACKAGE', 'DIRECTORIO/PAQUETE'] },
+  modulo:      { required: false, aliases: ['NOMBRE DEL PROCESO', 'PROCESS NAME', 'MODULE OR FUNCTIONALITY',
+                 'MÓDULO O FUNCIONALIDAD', 'MODULO O FUNCIONALIDAD', 'MODULO', 'MODULE'] },
+  stack:       { required: false, aliases: ['STACK', 'STACK TECNOLÓGICO', 'STACK PRINCIPAL',
                  'ej. Python + FastAPI + PostgreSQL / Node + React + MongoDB / etc.',
-                 'ej: Python 3.11 + FastAPI + PostgreSQL + Docker'],
-  tipo_proyecto: ['TIPO DE PROYECTO', 'PROJECT TYPE',
+                 'ej: Python 3.11 + FastAPI + PostgreSQL + Docker'] },
+  tipo_proyecto: { required: false, aliases: ['TIPO DE PROYECTO', 'PROJECT TYPE',
                    'frontend SPA / API REST / full-stack / microservicio / monorepo / librería / data science / IaC / otro',
                    'NEW / INCREMENTAL CHANGE / MAINTENANCE', 'NUEVO / CAMBIO INCREMENTAL / MANTENIMIENTO',
-                   'COMMERCIAL / OPEN SOURCE / INTERNAL', 'COMERCIAL / OPEN SOURCE / INTERNO'],
-  metodologia: ['METODOLOGÍA', 'METHODOLOGY', 'METODOLOGÍA DE TRABAJO', 'METODOLOGÍA O "ninguna"',
+                   'COMMERCIAL / OPEN SOURCE / INTERNAL', 'COMERCIAL / OPEN SOURCE / INTERNO'] },
+  metodologia: { required: false, aliases: ['METODOLOGÍA', 'METHODOLOGY', 'METODOLOGÍA DE TRABAJO', 'METODOLOGÍA O "ninguna"',
                  'SCRUM / Kanban / Trunk-Based / GitFlow / GitHub Flow / RUP / otro',
-                 'BRANCHING STRATEGY'],
-  agentes:     ['LISTA DE AGENTES', 'AI AGENTS', 'AGENTES A CONFIGURAR', 'AGENTES ACTIVOS',
+                 'BRANCHING STRATEGY'] },
+  agentes:     { required: false, aliases: ['LISTA DE AGENTES', 'AI AGENTS', 'AGENTES A CONFIGURAR', 'AGENTES ACTIVOS',
                  'Copilot / Claude / Codex / Windsurf / Cursor / Antigravity',
-                 'GitHub Copilot / Claude / Windsurf / Cursor / Codex / Antigravity / combinación', 'LIST OF AGENTS'],
-  autonomia:   ['NIVEL DE AUTONOMÍA', 'AUTONOMY LEVEL',
+                 'GitHub Copilot / Claude / Windsurf / Cursor / Codex / Antigravity / combinación', 'LIST OF AGENTS'] },
+  autonomia:   { required: false, aliases: ['NIVEL DE AUTONOMÍA', 'AUTONOMY LEVEL',
                   'solo análisis / análisis + propuesta / ejecución controlada / ejecución autónoma',
-                  'BAJO / MEDIO / ALTO', 'LOW / MEDIUM / HIGH'],
-  entrada:     ['ENTRADA PRINCIPAL', 'PRIMARY INPUT', 'PEGAR REQUERIMIENTO', 'PASTE REQUIREMENT',
-                 'FUENTE DE ISSUES', 'ISSUE SOURCE', 'REQUERIMIENTO_USUARIO', 'USER REQUIREMENT'],
-  objetivo:    ['OBJETIVO ESPECÍFICO', 'SPECIFIC OBJECTIVE', 'OBJETIVO PUNTUAL DE SALIDA',
-                 'SPECIFIC OUTPUT OBJECTIVE'],
-  responsable: ['RESPONSABLE', 'RESPONSIBLE PERSON', 'USUARIO RESPONSABLE', 'RESPONSIBLE USER',
-                 'ASSIGNEE'],
-  workspace:   ['WORKSPACE/SUBPROYECTO', 'WORKSPACE/SUBPROJECT', 'RUTA O NO APLICA',
+                  'BAJO / MEDIO / ALTO', 'LOW / MEDIUM / HIGH', 'A0 / A1 / A2 / A3'] },
+  entrada:     { required: true, aliases: ['ENTRADA PRINCIPAL', 'PRIMARY INPUT', 'PEGAR REQUERIMIENTO', 'PASTE REQUIREMENT',
+                 'FUENTE DE ISSUES', 'ISSUE SOURCE', 'REQUERIMIENTO_USUARIO', 'USER REQUIREMENT'] },
+  objetivo:    { required: false, aliases: ['OBJETIVO ESPECÍFICO', 'SPECIFIC OBJECTIVE', 'OBJETIVO PUNTUAL DE SALIDA',
+                 'SPECIFIC OUTPUT OBJECTIVE'] },
+  responsable: { required: false, aliases: ['RESPONSABLE', 'RESPONSIBLE PERSON', 'USUARIO RESPONSABLE', 'RESPONSIBLE USER',
+                 'ASSIGNEE'] },
+  workspace:   { required: false, aliases: ['WORKSPACE/SUBPROYECTO', 'WORKSPACE/SUBPROJECT', 'RUTA O NO APLICA',
                  'PATH OR NOT APPLICABLE', 'SI ES ENTORNO MONOREPO', 'IF MONOREPO WORKSPACE',
-                 'SI MONOREPO WORKSPACE'],
-  compliance:  ['ESTÁNDAR/COMPLIANCE', 'ESTANDAR/COMPLIANCE', 'STANDARD/COMPLIANCE',
+                 'SI MONOREPO WORKSPACE'] },
+  compliance:  { required: false, aliases: ['ESTÁNDAR/COMPLIANCE', 'ESTANDAR/COMPLIANCE', 'STANDARD/COMPLIANCE',
                  'PSP / TSP / ISO 29110 / MOPROSOFT / MAAGTICSI / NINGUNO',
-                 'PSP / TSP / ISO 29110 / MOPROSOFT / MAAGTICSI / NONE'],
-  documentos:  ['DOCUMENTOS A REVISAR', 'DOCUMENTS TO REVIEW', 'RUTAS DE ARCHIVOS...',
-                 'FILE PATHS...', 'RUTAS O DESCONOCIDO', 'PATHS OR UNKNOWN'],
-  profundidad: ['NIVEL DE PROFUNDIDAD', 'DEPTH LEVEL', 'MEDIO / ALTO / FORENSE',
-                 'MEDIUM / HIGH / FORENSIC'],
+                 'PSP / TSP / ISO 29110 / MOPROSOFT / MAAGTICSI / NONE'] },
+  documentos:  { required: false, aliases: ['DOCUMENTOS A REVISAR', 'DOCUMENTS TO REVIEW', 'RUTAS DE ARCHIVOS...',
+                 'FILE PATHS...', 'RUTAS O DESCONOCIDO', 'PATHS OR UNKNOWN'] },
+  profundidad: { required: false, aliases: ['NIVEL DE PROFUNDIDAD', 'DEPTH LEVEL', 'MEDIO / ALTO / FORENSE',
+                 'MEDIUM / HIGH / FORENSIC'] },
 };
 
 var PLACEHOLDER_IGNORE = ['N', 'X', 'Y', 'Z', 'ADR-NNN', 'NNN', 'YYYYMMDD'];
+var VAR_MAP = {};
+Object.keys(TOKEN_REGISTRY).forEach(function(field) {
+  VAR_MAP[field] = TOKEN_REGISTRY[field].aliases.slice();
+});
 
 function replaceToken(text, token, value) {
   var escaped = token.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&');
-  text = text.replace(new RegExp('\\\\[' + escaped + '\\\\]', 'g'), value);
-  return text.replace(new RegExp('\\\\{\\\\{' + escaped + '\\\\}\\\\}', 'g'), value);
+  text = text.replace(new RegExp('\\\\[' + escaped + '\\\\]', 'g'), function() { return value; });
+  return text.replace(new RegExp('\\\\{\\\\{' + escaped + '\\\\}\\\\}', 'g'), function() { return value; });
 }
 
 function parseAdditionalVars(raw) {
@@ -1785,19 +1812,53 @@ function hasActiveVars() {
   return Object.values(v).some(function(x){ return x.trim() !== ''; });
 }
 
-function applyVars(text, overrides) {
-  var v = Object.assign({}, getVarValues(), overrides || {});
+function resolvePrompt(template, options) {
+  options = options || {};
+  var text = template || '';
+  var v = Object.assign({}, getVarValues(), options.values || {});
+  var replaced = [];
   Object.keys(VAR_MAP).forEach(function(field) {
     var val = (v[field] || '').trim();
     if (!val) return;
     VAR_MAP[field].forEach(function(token) {
+      var before = text;
       text = replaceToken(text, token, val);
+      if (text !== before && replaced.indexOf(token) === -1) replaced.push(token);
     });
   });
-  Object.keys(parseAdditionalVars(v.adicionales)).forEach(function(token) {
-    text = replaceToken(text, token, parseAdditionalVars(v.adicionales)[token]);
+  var additional = parseAdditionalVars(v.adicionales);
+  Object.keys(additional).forEach(function(token) {
+    var before = text;
+    text = replaceToken(text, token, additional[token]);
+    if (text !== before && replaced.indexOf(token) === -1) replaced.push(token);
   });
-  return text;
+  var unresolved = findUnresolvedPlaceholders(text);
+  return {
+    text: text,
+    replacedTokens: replaced,
+    unresolvedRequired: unresolved.filter(function(token) {
+      return getTokenField(token) && TOKEN_REGISTRY[getTokenField(token)].required;
+    }),
+    unresolvedOptional: unresolved.filter(function(token) {
+      return !getTokenField(token) || !TOKEN_REGISTRY[getTokenField(token)].required;
+    })
+  };
+}
+
+function getTokenField(token) {
+  var found = null;
+  Object.keys(TOKEN_REGISTRY).some(function(field) {
+    if (TOKEN_REGISTRY[field].aliases.indexOf(token) >= 0) {
+      found = field;
+      return true;
+    }
+    return false;
+  });
+  return found;
+}
+
+function applyVars(text, overrides) {
+  return resolvePrompt(text, { values: overrides || {} }).text;
 }
 
 function findUnresolvedPlaceholders(text) {
@@ -1846,6 +1907,7 @@ function openVarPanel() {
   if (p) p.classList.add('open');
   var btn = document.getElementById('var-toggle-btn');
   if (btn) btn.classList.add('active');
+  updateContextualVariablePanel();
 }
 
 function closeVarPanel() {
@@ -2058,6 +2120,8 @@ function setLanguage(lang) {
 
   // Actualizar placeholders del panel de variables
   updatePlaceholders(lang);
+  ACTIVE_PROMPT_LANG = lang;
+  updateContextualVariablePanel();
 
   // Sincronizar selectores de proyecto
   renderProjQuick();
@@ -2095,39 +2159,76 @@ function getFwText() {
 }
 
 var RAW_PROMPTS = {};
+var ACTIVE_PROMPT_ID = '';
+var ACTIVE_PROMPT_LANG = '';
+
+function getPromptContextFields(template) {
+  var fields = [];
+  Object.keys(TOKEN_REGISTRY).forEach(function(field) {
+    if (TOKEN_REGISTRY[field].aliases.some(function(token) {
+      return template.indexOf('[' + token + ']') >= 0 || template.indexOf('{{' + token + '}}') >= 0;
+    })) fields.push(field);
+  });
+  return fields;
+}
+
+function updateContextualVariablePanel() {
+  var status = document.getElementById('var-context-status');
+  var groups = Array.from(document.querySelectorAll('.var-panel-body .var-group[data-field]'));
+  if (!ACTIVE_PROMPT_ID) {
+    groups.forEach(function(group) {
+      group.classList.remove('context-hidden', 'var-required', 'var-optional', 'var-pending');
+    });
+    if (status) status.classList.remove('show');
+    return;
+  }
+  var lang = ACTIVE_PROMPT_LANG || getCurrentLanguage();
+  var codeId = 'code-' + ACTIVE_PROMPT_ID + '-' + lang;
+  var template = RAW_PROMPTS[codeId] || '';
+  var fields = getPromptContextFields(template);
+  var values = getVarValues();
+  var unknown = findUnresolvedPlaceholders(template).filter(function(token) {
+    return !getTokenField(token);
+  });
+  groups.forEach(function(group) {
+    var field = group.dataset.field;
+    var applies = fields.indexOf(field) >= 0 || (field === 'adicionales' && unknown.length > 0);
+    group.classList.toggle('context-hidden', !applies);
+    group.classList.remove('var-required', 'var-optional', 'var-pending');
+    if (!applies) return;
+    var required = field !== 'adicionales' && TOKEN_REGISTRY[field] && TOKEN_REGISTRY[field].required;
+    group.classList.add(required ? 'var-required' : 'var-optional');
+    group.classList.toggle('var-pending', required && !(values[field] || '').trim());
+  });
+  if (status) {
+    var pending = fields.filter(function(field) {
+      return TOKEN_REGISTRY[field].required && !(values[field] || '').trim();
+    });
+    status.textContent = getCurrentLanguage() === 'en'
+      ? fields.length + ' applicable fields · ' + pending.length + ' required pending'
+      : fields.length + ' campos aplicables · ' + pending.length + ' requeridos pendientes';
+    if (unknown.length) status.textContent += ' · ' + unknown.length + (getCurrentLanguage() === 'en' ? ' additional tokens' : ' tokens adicionales');
+    status.classList.add('show');
+  }
+}
 
 function updateLivePreview() {
-  var v = getVarValues();
   Object.keys(RAW_PROMPTS).forEach(function(codeId) {
     var codeEl = document.getElementById(codeId);
     if (!codeEl) return;
-    var text = RAW_PROMPTS[codeId];
-    
-    // Escapar HTML básico del template original primero para evitar problemas al inyectar spans
-    var escapedText = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    
-    // Aplicar variables con resaltado HTML
-    Object.keys(VAR_MAP).forEach(function(field) {
-      var val = (v[field] || '').trim();
-      if (!val) return;
-      VAR_MAP[field].forEach(function(token) {
-        escapedText = replaceToken(
-          escapedText,
-          token,
-          '<span class="var-highlight">' + val.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</span>'
-        );
-      });
-    });
-    var additional = parseAdditionalVars(v.adicionales);
-    Object.keys(additional).forEach(function(token) {
-      escapedText = replaceToken(
-        escapedText,
-        token,
-        '<span class="var-highlight">' + additional[token].replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</span>'
-      );
-    });
-    codeEl.innerHTML = escapedText;
+    var resolved = resolvePrompt(RAW_PROMPTS[codeId]);
+    codeEl.textContent = resolved.text;
   });
+  updateContextualVariablePanel();
+}
+
+function showUnresolvedWarning(result) {
+  var unresolved = result.unresolvedRequired.concat(result.unresolvedOptional);
+  if (!unresolved.length) return;
+  var warning = getCurrentLanguage() === 'en'
+    ? unresolved.length + ' placeholders still need manual input: '
+    : unresolved.length + ' placeholders requieren captura manual: ';
+  showToast(warning + unresolved.slice(0, 3).join(', ') + (unresolved.length > 3 ? '...' : ''), 'warn');
 }
 
 function showToast(msg, type) {
@@ -2199,28 +2300,23 @@ function copyPromptLang(pid, lang, btn) {
   var codeEl = document.getElementById(codeId);
   if (!codeEl) return;
   
-  var title = btn.dataset.title || '';
   // Leer plantilla limpia de RAW_PROMPTS para evitar copiar etiquetas de highlight HTML
   var raw = RAW_PROMPTS[codeId] || codeEl.textContent;
-  var currentVars = getVarValues();
-  var text = applyVars(raw, { modulo: currentVars.modulo || title });
+  var resolved = resolvePrompt(raw);
+  var text = resolved.text;
   
   if (pid !== 'fw') {
     var fwId = 'code-fw-' + lang;
     var fwEl = document.getElementById(fwId) || document.getElementById('code-fw');
     if (fwEl) {
       var fwRaw = RAW_PROMPTS[fwId] || fwEl.textContent;
-      var fw = applyVars(fwRaw, { modulo: currentVars.modulo || title });
-      if (fw) text = fw + '\\n\\n---\\n\\n' + text;
+      var fwResolved = resolvePrompt(fwRaw);
+      if (fwResolved.text) text = fwResolved.text + '\\n\\n---\\n\\n' + text;
+      resolved.unresolvedRequired = fwResolved.unresolvedRequired.concat(resolved.unresolvedRequired);
+      resolved.unresolvedOptional = fwResolved.unresolvedOptional.concat(resolved.unresolvedOptional);
     }
   }
-  var unresolved = findUnresolvedPlaceholders(text);
-  if (unresolved.length) {
-    var warning = getCurrentLanguage() === 'en'
-      ? unresolved.length + ' placeholders still need manual input: '
-      : unresolved.length + ' placeholders requieren captura manual: ';
-    showToast(warning + unresolved.slice(0, 3).join(', ') + (unresolved.length > 3 ? '...' : ''), 'warn');
-  }
+  showUnresolvedWarning(resolved);
   doCopy(text, btn);
 }
 
@@ -2266,7 +2362,11 @@ function openInfoLang(pid, lang) {
         btn.className = 'modal-copy-formula';
         btn.innerHTML = lang === 'en' ? '&#10697; Copy formula' : '&#10697; Copiar fórmula';
         (function(formula, b) {
-          b.addEventListener('click', function() { doCopy(applyVars(formula), b); });
+          b.addEventListener('click', function() {
+            var result = resolvePrompt(formula);
+            showUnresolvedWarning(result);
+            doCopy(result.text, b);
+          });
         })(f, btn);
         wrap.appendChild(box);
         wrap.appendChild(btn);
@@ -2306,8 +2406,15 @@ function fbCopy(text, btn, label) {
   var t = document.createElement('textarea');
   t.value = text; t.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
   document.body.appendChild(t); t.focus(); t.select();
-  try { document.execCommand('copy'); } catch(e) {}
-  document.body.removeChild(t); flash(btn); showToast(label, 'success');
+  var copied = false;
+  try { copied = document.execCommand('copy'); } catch(e) {}
+  document.body.removeChild(t);
+  if (copied) {
+    flash(btn);
+    showToast(label, 'success');
+  } else {
+    showToast(getCurrentLanguage() === 'en' ? 'Clipboard copy failed' : 'No fue posible copiar al portapapeles', 'warn');
+  }
 }
 
 function flash(btn) {
@@ -2325,6 +2432,9 @@ function toggleCard(pid) {
   var b = document.getElementById('cb-' + pid);
   var t = document.getElementById('ce-' + pid);
   if (!b) return;
+  ACTIVE_PROMPT_ID = pid;
+  ACTIVE_PROMPT_LANG = getCurrentLanguage();
+  updateContextualVariablePanel();
   var isOpen = b.classList.toggle('open');
   if (t) t.classList.toggle('open', isOpen);
 }
@@ -2414,13 +2524,23 @@ function copySelected(btn) {
   if (!checks.length) return;
   var lang = getCurrentLanguage();
   // obtener prompts en orden DOM (orden de proceso)
+  var aggregate = { unresolvedRequired: [], unresolvedOptional: [] };
   var parts = checks.map(function(cb) {
     var pid = cb.dataset.pid;
-    var el = document.getElementById('code-' + pid + '-' + lang);
-    return el ? applyVars(el.textContent) : '';
+    var codeId = 'code-' + pid + '-' + lang;
+    var el = document.getElementById(codeId);
+    if (!el) return '';
+    var result = resolvePrompt(RAW_PROMPTS[codeId] || el.textContent);
+    aggregate.unresolvedRequired = aggregate.unresolvedRequired.concat(result.unresolvedRequired);
+    aggregate.unresolvedOptional = aggregate.unresolvedOptional.concat(result.unresolvedOptional);
+    return result.text;
   }).filter(Boolean);
-  var fw = applyVars(getFwText());
-  var text = (fw ? fw + '\\n\\n---\\n\\n' : '') + parts.join('\\n\\n---\\n\\n');
+  var fwId = 'code-fw-' + lang;
+  var fwResult = resolvePrompt(RAW_PROMPTS[fwId] || getFwText());
+  aggregate.unresolvedRequired = aggregate.unresolvedRequired.concat(fwResult.unresolvedRequired);
+  aggregate.unresolvedOptional = aggregate.unresolvedOptional.concat(fwResult.unresolvedOptional);
+  var text = (fwResult.text ? fwResult.text + '\\n\\n---\\n\\n' : '') + parts.join('\\n\\n---\\n\\n');
+  showUnresolvedWarning(aggregate);
   doCopy(text, btn);
 }
 
@@ -3141,9 +3261,10 @@ def build():
         '<button class="proj-mgr-btn" onclick="openProjectsModal()" title="Gestionar proyectos / Manage projects">&#x2699;</button>'
         '</div>\n'
         '  <div class="var-panel-body">\n'
+        '    <div class="var-context-status" id="var-context-status"></div>\n'
 
         # repositorio
-        '    <div class="var-group">'
+        '    <div class="var-group" data-field="repositorio">'
         '<label for="vf-repositorio"><span class="fw-lang-es">Repositorio</span><span class="fw-lang-en">Repository</span></label>'
         '<input id="vf-repositorio" type="text" placeholder="" oninput="syncProjectFromPanel();updateVarsBadge();">'
         '<div class="var-tags">'
@@ -3152,7 +3273,7 @@ def build():
         '</div>\n'
 
         # referencia / issue
-        '    <div class="var-group">'
+        '    <div class="var-group" data-field="referencia">'
         '<label for="vf-referencia"><span class="fw-lang-es">Issue / Referencia</span><span class="fw-lang-en">Issue / Reference</span></label>'
         '<textarea id="vf-referencia" placeholder="" oninput="syncProjectFromPanel();updateVarsBadge();"></textarea>'
         '<div class="var-tags">'
@@ -3161,7 +3282,7 @@ def build():
         '</div>\n'
 
         # entrada principal
-        '    <div class="var-group">'
+        '    <div class="var-group" data-field="entrada">'
         '<label for="vf-entrada"><span class="fw-lang-es">Entrada principal</span><span class="fw-lang-en">Primary input</span></label>'
         '<textarea id="vf-entrada" rows="4" placeholder="Requerimiento, lista de issues, reporte o contexto a analizar" oninput="syncProjectFromPanel();updateVarsBadge();"></textarea>'
         '<div class="var-tags">'
@@ -3170,7 +3291,7 @@ def build():
         '</div>\n'
 
         # objetivo puntual de salida
-        '    <div class="var-group">'
+        '    <div class="var-group" data-field="objetivo">'
         '<label for="vf-objetivo"><span class="fw-lang-es">Objetivo puntual de salida</span><span class="fw-lang-en">Specific output objective</span></label>'
         '<textarea id="vf-objetivo" placeholder="Indica el resultado concreto esperado del prompt" oninput="syncProjectFromPanel();updateVarsBadge();"></textarea>'
         '<div class="var-tags">'
@@ -3179,7 +3300,7 @@ def build():
         '</div>\n'
 
         # responsable
-        '    <div class="var-group">'
+        '    <div class="var-group" data-field="responsable">'
         '<label for="vf-responsable"><span class="fw-lang-es">Responsable / assignee</span><span class="fw-lang-en">Responsible person / assignee</span></label>'
         '<input id="vf-responsable" type="text" placeholder="usuario, equipo o rol" oninput="syncProjectFromPanel();updateVarsBadge();">'
         '<div class="var-tags">'
@@ -3188,7 +3309,7 @@ def build():
         '</div>\n'
 
         # workspace / subproyecto
-        '    <div class="var-group">'
+        '    <div class="var-group" data-field="workspace">'
         '<label for="vf-workspace"><span class="fw-lang-es">Workspace / subproyecto</span><span class="fw-lang-en">Workspace / subproject</span></label>'
         '<input id="vf-workspace" type="text" placeholder="apps/admin, packages/api o no aplica" oninput="syncProjectFromPanel();updateVarsBadge();">'
         '<div class="var-tags">'
@@ -3197,7 +3318,7 @@ def build():
         '</div>\n'
 
         # estándar / compliance
-        '    <div class="var-group">'
+        '    <div class="var-group" data-field="compliance">'
         '<label for="vf-compliance"><span class="fw-lang-es">Estándar / compliance</span><span class="fw-lang-en">Standard / compliance</span></label>'
         '<select id="vf-compliance" multiple data-other-input="vf-compliance-other" aria-describedby="vf-compliance-help" onchange="syncMultiSelectOther(\'vf-compliance\')">'
         '<option value="PSP">PSP</option>'
@@ -3230,7 +3351,7 @@ def build():
         '</div>\n'
 
         # documentos a revisar
-        '    <div class="var-group">'
+        '    <div class="var-group" data-field="documentos">'
         '<label for="vf-documentos"><span class="fw-lang-es">Documentos a revisar</span><span class="fw-lang-en">Documents to review</span></label>'
         '<textarea id="vf-documentos" rows="3" placeholder="README.md, docs/, ADR o rutas concretas" oninput="syncProjectFromPanel();updateVarsBadge();"></textarea>'
         '<div class="var-tags">'
@@ -3239,7 +3360,7 @@ def build():
         '</div>\n'
 
         # nivel de profundidad
-        '    <div class="var-group">'
+        '    <div class="var-group" data-field="profundidad">'
         '<label for="vf-profundidad"><span class="fw-lang-es">Nivel de profundidad</span><span class="fw-lang-en">Depth level</span></label>'
         '<select id="vf-profundidad" onchange="syncProjectFromPanel();updateVarsBadge();">'
         '<option value="">— Seleccionar —</option>'
@@ -3255,7 +3376,7 @@ def build():
         '</div>\n'
 
         # variables adicionales
-        '    <div class="var-group">'
+        '    <div class="var-group" data-field="adicionales">'
         '<label for="vf-adicionales"><span class="fw-lang-es">Variables adicionales</span><span class="fw-lang-en">Additional variables</span></label>'
         '<textarea id="vf-adicionales" rows="5" placeholder="TOKEN=valor&#10;OTRO TOKEN=otro valor" oninput="syncProjectFromPanel();updateVarsBadge();"></textarea>'
         '<small style="display:block;margin-top:.35rem;color:var(--tx3);font-size:.64rem;line-height:1.4;">'
@@ -3265,7 +3386,7 @@ def build():
         '</div>\n'
 
         # rama actual
-        '    <div class="var-group">'
+        '    <div class="var-group" data-field="rama_actual">'
         '<label for="vf-rama-actual"><span class="fw-lang-es">Rama actual / con cambios</span><span class="fw-lang-en">Current / working branch</span></label>'
         '<input id="vf-rama-actual" type="text" placeholder="" oninput="syncProjectFromPanel();updateVarsBadge();">'
         '<div class="var-tags">'
@@ -3276,7 +3397,7 @@ def build():
         '</div>\n'
 
         # rama destino
-        '    <div class="var-group">'
+        '    <div class="var-group" data-field="rama_destino">'
         '<label for="vf-rama-destino"><span class="fw-lang-es">Rama destino / principal</span><span class="fw-lang-en">Target / main branch</span></label>'
         '<input id="vf-rama-destino" type="text" placeholder="" oninput="syncProjectFromPanel();updateVarsBadge();">'
         '<div class="var-tags">'
@@ -3288,7 +3409,7 @@ def build():
         '</div>\n'
 
         # ambiente
-        '    <div class="var-group">'
+        '    <div class="var-group" data-field="ambiente">'
         '<label for="vf-ambiente"><span class="fw-lang-es">Ambiente</span><span class="fw-lang-en">Environment</span></label>'
         '<select id="vf-ambiente" onchange="syncProjectFromPanel();updateVarsBadge();">'  
         '<option value="">-- seleccionar --</option>'
@@ -3305,7 +3426,7 @@ def build():
         '</div>\n'
 
         # componentes
-        '    <div class="var-group">'
+        '    <div class="var-group" data-field="componentes">'
         '<label for="vf-componentes"><span class="fw-lang-es">Componentes / archivos</span><span class="fw-lang-en">Components / file paths</span></label>'
         '<textarea id="vf-componentes" placeholder="" oninput="syncProjectFromPanel();updateVarsBadge();"></textarea>'
         '<div class="var-tags">'
@@ -3316,12 +3437,12 @@ def build():
         '</div>\n'
 
         # módulo / proceso
-        '    <div class="var-group">'
+        '    <div class="var-group" data-field="modulo">'
         '<label for="vf-modulo"><span class="fw-lang-es">Módulo / proceso / indicación</span><span class="fw-lang-en">Module / process / indication</span></label>'
         '<input id="vf-modulo" type="text" placeholder="" oninput="syncProjectFromPanel();updateVarsBadge();">'
         '<div class="var-tags">'
         '<span class="var-tag"><span class="fw-lang-es">[NOMBRE DEL PROCESO]</span><span class="fw-lang-en">[PROCESS NAME]</span></span>'
-        '<span class="var-tag"><span class="fw-lang-es">[INDICAR]</span><span class="fw-lang-en">[INDICATE]</span></span>'
+        '<span class="var-tag"><span class="fw-lang-es">[MODULO]</span><span class="fw-lang-en">[MODULE]</span></span>'
         '</div>'
         '</div>\n'
 
@@ -3331,7 +3452,7 @@ def build():
         '⚙ <span class="fw-lang-es">Stack &amp; Agentes IA</span><span class="fw-lang-en">Stack &amp; AI Agents</span></div>\n'
 
         # stack tecnológico
-        '    <div class="var-group">'
+        '    <div class="var-group" data-field="stack">'
         '<label for="vf-stack"><span class="fw-lang-es">Stack tecnológico</span><span class="fw-lang-en">Tech stack</span></label>'
         '<input id="vf-stack" type="text" placeholder="" oninput="syncProjectFromPanel();updateVarsBadge();">'
         '<div class="var-tags">'
@@ -3341,7 +3462,7 @@ def build():
         '</div>\n'
 
         # tipo de proyecto
-        '    <div class="var-group">'
+        '    <div class="var-group" data-field="tipo_proyecto">'
         '<label for="vf-tipo-proyecto"><span class="fw-lang-es">Tipo de proyecto</span><span class="fw-lang-en">Project type</span></label>'
         '<select id="vf-tipo-proyecto" onchange="syncProjectFromPanel();updateVarsBadge();">'
         '<option value="">-- seleccionar --</option>'
@@ -3362,7 +3483,7 @@ def build():
         '</div>\n'
 
         # metodología
-        '    <div class="var-group">'
+        '    <div class="var-group" data-field="metodologia">'
         '<label for="vf-metodologia"><span class="fw-lang-es">Metodologías / proceso / branching</span><span class="fw-lang-en">Methodologies / process / branching</span></label>'
         '<select id="vf-metodologia" multiple data-other-input="vf-metodologia-other" aria-describedby="vf-metodologia-help" onchange="syncMultiSelectOther(\'vf-metodologia\')">'
         '<option value="Scrum">Scrum</option>'
@@ -3389,7 +3510,7 @@ def build():
         '</div>\n'
 
         # agentes IA activos
-        '    <div class="var-group">'
+        '    <div class="var-group" data-field="agentes">'
         '<label for="vf-agentes"><span class="fw-lang-es">Agentes IA activos</span><span class="fw-lang-en">Active AI agents</span></label>'
         '<input id="vf-agentes" type="text" placeholder="" oninput="syncProjectFromPanel();updateVarsBadge();">'
         '<div class="var-tags">'
@@ -3399,7 +3520,7 @@ def build():
         '</div>\n'
 
         # nivel de autonomía
-        '    <div class="var-group">'
+        '    <div class="var-group" data-field="autonomia">'
         '<label for="vf-autonomia"><span class="fw-lang-es">Nivel de autonomía IA</span><span class="fw-lang-en">AI autonomy level</span></label>'
         '<select id="vf-autonomia" onchange="syncProjectFromPanel();updateVarsBadge();">'
         '<option value="">-- seleccionar --</option>'

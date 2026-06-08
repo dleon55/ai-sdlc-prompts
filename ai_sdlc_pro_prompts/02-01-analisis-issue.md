@@ -22,9 +22,10 @@ Analiza el requerimiento, issue o cambio solicitado y determina su alcance funci
 
 Entradas:
 - issue o requerimiento: [PEGAR]
-- repositorio o módulo: [INDICAR]
-- workspace/subproyecto: [INDICAR SI APLICA]
-- estándar/compliance: [PSP / TSP / ISO / MOPROSOFT / MAAGTICSI / NINGUNO]
+- repositorio: [NOMBRE O URL]
+- módulo o funcionalidad: [MODULO]
+- workspace/subproyecto: [WORKSPACE/SUBPROYECTO]
+- estándar/compliance: [ESTÁNDAR/COMPLIANCE]
 
 Actividades:
 1. Comprende el problema o necesidad.

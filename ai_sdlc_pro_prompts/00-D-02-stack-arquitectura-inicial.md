@@ -21,7 +21,7 @@ Objetivo:
 Define y documenta el stack tecnológico inicial y las decisiones arquitectónicas fundacionales del proyecto, con justificación para cada elección y evaluación de alternativas descartadas.
 
 Inputs requeridos:
-- nombre del proyecto: [NOMBRE]
+- nombre del proyecto: [NOMBRE DEL PROYECTO]
 - descripción del dominio: [qué hace el sistema, quiénes son los usuarios, volumen aproximado]
 - tipo de sistema: [API REST / GraphQL / web app SPA / mobile / data pipeline / microservicios / monolito modular / serverless / embebido / otro]
 - restricciones conocidas: [presupuesto cloud, skills del equipo, tecnologías corporativas obligatorias, plazos, licencias, compliance: GDPR/HIPAA/PCI/SOC2/otro]

@@ -101,7 +101,7 @@ Steps:
 
 6. SECURITY BACKLOG
    Generate the security issues backlog ready to create in GitHub Issues / Jira:
-   - title: [SEVERITY] [CVE-ID or SAST-ID] — Brief problem description
+   - title: [CVE SEVERITY] [CVE-ID or SAST-ID] — Brief problem description
    - labels: security, [severity], [OWASP category if applicable]
    - description: vector, impact, affected component, remediation steps
    - acceptance criteria: what must be met to close the issue

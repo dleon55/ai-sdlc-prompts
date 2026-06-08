@@ -22,7 +22,7 @@ Genera o actualiza el registro de planeación y métricas reales (tiempos, defec
 
 Entradas:
 - issue o requerimiento: [PEGAR]
-- fase actual (Planeación, Diseño, Codificación, Revisión de Código, Pruebas, Post-mortem): [INDICAR]
+- fase actual (Planeación, Diseño, Codificación, Revisión de Código, Pruebas, Post-mortem): [FASE ACTUAL]
 - métricas anteriores (si existen): [PEGAR HISTORIAL]
 
 Actividades:

@@ -21,7 +21,7 @@ Objetivo:
 Diseña la estructura completa del repositorio para este proyecto nuevo (o a estandarizar).
 
 Inputs requeridos:
-- nombre del repositorio: [NOMBRE]
+- nombre del repositorio: [NOMBRE O URL]
 - tipo de proyecto: [frontend SPA / API REST / full-stack / microservicio / monorepo / librería / data science / IaC / otro]
 - metodología de trabajo: [SCRUM / Kanban / Trunk-Based / GitFlow / GitHub Flow / RUP / otro]
 - stack tecnológico principal: [ej: Python + FastAPI + PostgreSQL / Node + React + MongoDB / etc.]
@@ -80,8 +80,8 @@ Formato de salida:
 
 ```text
 Usa el prompt de scaffolding de repositorio y adáptalo a:
-- nombre del repo: [NOMBRE]
-- tipo de proyecto: [TIPO]
+- nombre del repo: [NOMBRE O URL]
+- tipo de proyecto: [TIPO DE PROYECTO]
 - metodología: [METODOLOGÍA]
 - stack: [STACK]
 - plataforma CI/hosting: [PLATAFORMA]

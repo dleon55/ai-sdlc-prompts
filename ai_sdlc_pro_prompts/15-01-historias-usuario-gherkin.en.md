@@ -22,7 +22,7 @@ Act as a Senior Business Analyst & Product Owner. Convert the attached functiona
 
 Inputs:
 - requirement or business request: [PASTE]
-- affected module or process: [INDICATE]
+- affected module or process: [MODULE]
 - standard/compliance: [NONE / ISO 29110 / MOPROSOFT]
 
 Activities:

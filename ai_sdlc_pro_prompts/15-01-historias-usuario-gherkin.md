@@ -22,7 +22,7 @@ Actúa como un Business Analyst & Product Owner Senior. Convierte la descripció
 
 Entradas:
 - requerimiento o solicitud de negocio: [PEGAR]
-- módulo o proceso afectado: [INDICAR]
+- módulo o proceso afectado: [MODULO]
 - estándar/compliance: [NINGUNO / ISO 29110 / MOPROSOFT]
 
 Actividades:

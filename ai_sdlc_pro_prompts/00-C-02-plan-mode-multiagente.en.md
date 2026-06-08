@@ -117,7 +117,7 @@ Step 4. AGENT COEXISTENCE RULES
 
 Step 5. STATUS REPORT
 At the end of the plan or execution, report:
-- branch created: [NAME]
+- branch created: [CREATED BRANCH]
 - modified files: [LIST]
 - tests updated: [YES/NO]
 - PR opened: [URL or "pending approval to create"]

@@ -21,8 +21,8 @@ Objective:
 Map the monorepo dependency network and identify potential architecture violations (cycles, forbidden imports, phantom dependencies) after the suggested change.
 
 Inputs:
-- repository: [INDICATE]
-- source workspace/subproject: [INDICATE]
+- repository: [NAME OR URL]
+- source workspace/subproject: [WORKSPACE/SUBPROJECT]
 - configuration files (package.json, go.work, lerna.json, turbo.json, tsconfig.json): [READ OR PASTE DETAILS]
 
 Activities:

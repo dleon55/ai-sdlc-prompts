@@ -21,7 +21,7 @@ Objetivo:
 Genera el Project Charter completo para formalizar el inicio de este proyecto.
 
 Inputs requeridos:
-- nombre del proyecto: [NOMBRE]
+- nombre del proyecto: [NOMBRE DEL PROYECTO]
 - tipo de proyecto: [producto nuevo / mejora de sistema existente / migración / integración / plataforma interna / otro]
 - patrocinador / sponsor: [ROL O NOMBRE]
 - cliente o usuario final: [INTERNO / EXTERNO — descripción breve]

@@ -21,9 +21,9 @@ Objective:
 Act as a QA Defect Analyst. Help the tester document and analyze a defect, translating visual symptoms and potential technical errors into clear business impacts and precise reproduction steps for development.
 
 Inputs:
-- description of the observed error: [INDICATE]
-- steps you were performing: [INDICATE]
-- expected behavior: [INDICATE]
+- description of the observed error: [ERROR DESCRIPTION]
+- steps you were performing: [STEPS PERFORMED]
+- expected behavior: [EXPECTED BEHAVIOR]
 - technical error (screenshot, console log, or HTTP code if available): [PASTE IF APPLICABLE]
 
 Activities:

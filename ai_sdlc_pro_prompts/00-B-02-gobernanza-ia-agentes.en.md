@@ -21,7 +21,7 @@ Objective:
 Generate the configuration and governance files that control the behavior of AI agents assigned to this repository.
 
 Required inputs:
-- project name: [NAME]
+- project name: [PROJECT NAME]
 - technology stack: [e.g., Python 3.11 + FastAPI + PostgreSQL + Docker]
 - working methodology: [SCRUM / Kanban / GitFlow / GitHub Flow / Trunk-Based]
 - AI agent platform to use: [GitHub Copilot / Claude / Windsurf / Cursor / Codex / Antigravity / combination]
@@ -91,11 +91,11 @@ Rules that must appear in ALL files:
 
 ```text
 Use the AI agent governance prompt and adapt it to:
-- project name: [NAME]
+- project name: [PROJECT NAME]
 - stack: [STACK]
 - methodology: [METHODOLOGY]
 - agents to configure: [LIST OF AGENTS]
-- autonomy level: [LEVEL]
+- autonomy level: [AUTONOMY LEVEL]
 - project critical rules: [SPECIFIC RULES]
 - documents to review: README, CONTRIBUTING, repository structure, existing workflows
 - specific output goal: complete .github/copilot-instructions.md, .windsurfrules, AGENTS.md, docs/ai-governance.md files

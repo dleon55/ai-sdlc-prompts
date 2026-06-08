@@ -21,7 +21,7 @@ Objective:
 Define and document the initial technology stack and foundational architectural decisions for the project, with justification for each choice and evaluation of discarded alternatives.
 
 Required inputs:
-- project name: [NAME]
+- project name: [PROJECT NAME]
 - domain description: [what the system does, who the users are, approximate volume]
 - system type: [REST API / GraphQL / SPA web app / mobile / data pipeline / microservices / modular monolith / serverless / embedded / other]
 - known constraints: [cloud budget, team skills, mandatory corporate technologies, deadlines, licenses, compliance: GDPR/HIPAA/PCI/SOC2/other]

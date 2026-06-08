@@ -130,13 +130,13 @@ Revisión que debe hacer el humano antes de hacer merge:
 Usa el prompt de issue para agente IA y adáptalo a:
 - repositorio: [NOMBRE O URL]
 - título del issue: [TÍTULO]
-- tipo: [TIPO]
+- tipo: [TIPO DE ISSUE]
 - descripción del requerimiento: [DESCRIPCIÓN]
 - archivos involucrados: [LISTA]
 - criterios de aceptación: [CRITERIOS]
 - restricciones: [RESTRICCIONES]
 - agente asignado: [AGENTE]
-- nivel de autonomía: [NIVEL]
+- nivel de autonomía: [NIVEL DE AUTONOMÍA]
 - objetivo puntual de salida: issue completo listo para crear en GitHub con gh issue create
 - nivel de profundidad: alto
 ```
@@ -150,7 +150,7 @@ Issue redactado con todas las secciones completas, más el comando para crearlo 
 ```bash
 gh issue create \
   --repo [ORG/REPO] \
-  --title "[TIPO]: [TÍTULO]" \
+  --title "[TIPO DE ISSUE]: [TÍTULO]" \
   --body-file issue-draft.md \
   --label "[tipo],[agente-ia],[prioridad]" \
   --assignee "@me"

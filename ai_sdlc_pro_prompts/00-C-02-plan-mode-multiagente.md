@@ -120,7 +120,7 @@ Paso 4. REGLAS DE CONVIVENCIA ENTRE AGENTES
 
 Paso 5. REPORTE DE ESTADO
 Al finalizar el plan o la ejecución, reporta:
-- rama creada: [NOMBRE]
+- rama creada: [RAMA CREADA]
 - archivos modificados: [LISTA]
 - tests actualizados: [SÍ/NO]
 - PR abierto: [URL o "pendiente de aprobación para crear"]

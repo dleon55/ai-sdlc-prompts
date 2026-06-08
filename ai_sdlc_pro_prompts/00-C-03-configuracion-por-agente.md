@@ -25,7 +25,7 @@ Inputs requeridos:
 - stack del proyecto: [STACK]
 - metodología: [METODOLOGÍA]
 - reglas críticas del proyecto: [REGLAS QUE TODOS DEBEN CUMPLIR]
-- nivel de autonomía general: [NIVEL]
+- nivel de autonomía general: [NIVEL DE AUTONOMÍA]
 
 Para cada agente activo, entrega:
 
@@ -152,7 +152,7 @@ Usa el prompt de configuración por tipo de agente y adáptalo a:
 - stack: [STACK]
 - metodología: [METODOLOGÍA]
 - reglas críticas: [REGLAS ESPECÍFICAS DEL PROYECTO]
-- nivel de autonomía: [NIVEL]
+- nivel de autonomía: [NIVEL DE AUTONOMÍA]
 - documentos a revisar: README, CONTRIBUTING, AGENTS.md existente (si hay), estructura del repo
 - objetivo puntual de salida: archivos de instrucciones completos para cada agente activo + tabla comparativa
 - nivel de profundidad: alto

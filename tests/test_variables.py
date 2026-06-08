@@ -67,7 +67,8 @@ def test_ambiguous_generic_aliases_are_not_auto_replaced():
 
 
 def test_copy_preserves_user_module_and_warns_about_unresolved_tokens():
-    assert "currentVars.modulo || title" in BUILD_SOURCE
+    assert "currentVars.modulo || title" not in BUILD_SOURCE
+    assert "var resolved = resolvePrompt(raw);" in BUILD_SOURCE
     assert "function findUnresolvedPlaceholders" in BUILD_SOURCE
     assert "placeholders requieren captura manual" in BUILD_SOURCE
     assert "function parseAdditionalVars" in BUILD_SOURCE
@@ -122,6 +123,66 @@ def test_framework_context_uses_distinct_configurable_tokens():
         content = (PROMPTS_DIR / filename).read_text(encoding="utf-8")
         for token in expected_tokens:
             assert token in content
+
+
+def test_issue_analysis_prompt_uses_distinct_configurable_tokens():
+    expected_by_file = {
+        "02-01-analisis-issue.md": (
+            "[PEGAR]",
+            "[NOMBRE O URL]",
+            "[MODULO]",
+            "[WORKSPACE/SUBPROYECTO]",
+            "[ESTÁNDAR/COMPLIANCE]",
+        ),
+        "02-01-analisis-issue.en.md": (
+            "[PASTE]",
+            "[NAME OR URL]",
+            "[MODULE]",
+            "[WORKSPACE/SUBPROJECT]",
+            "[STANDARD/COMPLIANCE]",
+        ),
+    }
+    for filename, expected_tokens in expected_by_file.items():
+        content = (PROMPTS_DIR / filename).read_text(encoding="utf-8")
+        for token in expected_tokens:
+            assert token in content
+
+        assert "[INDICAR]" not in content
+        assert "[INDICATE]" not in content
+        assert "[INDICAR SI APLICA]" not in content
+        assert "[INDICATE IF APPLICABLE]" not in content
+
+
+def test_module_field_uses_canonical_tokens():
+    registry = BUILD_SOURCE.split("var TOKEN_REGISTRY = {", 1)[1].split("};", 1)[0]
+    assert "'MODULO'" in registry
+    assert "'MODULE'" in registry
+    assert '<span class="fw-lang-es">[MODULO]</span>' in BUILD_SOURCE
+    assert '<span class="fw-lang-en">[MODULE]</span>' in BUILD_SOURCE
+
+
+def test_variable_engine_has_single_registry_and_resolver():
+    assert "var TOKEN_REGISTRY = {" in BUILD_SOURCE
+    assert "function resolvePrompt(template, options)" in BUILD_SOURCE
+    assert "var VAR_MAP = {};" in BUILD_SOURCE
+    assert "TOKEN_REGISTRY[field].aliases.slice()" in BUILD_SOURCE
+    assert "RAW_PROMPTS[codeId] || el.textContent" in BUILD_SOURCE
+    assert "showUnresolvedWarning(aggregate)" in BUILD_SOURCE
+
+
+def test_no_ambiguous_indicate_tokens_remain():
+    for path in PROMPTS_DIR.glob("*.md"):
+        content = path.read_text(encoding="utf-8")
+        assert "[INDICAR]" not in content, path.name
+        assert "[INDICATE]" not in content, path.name
+
+
+def test_contextual_variable_panel_contract_exists():
+    assert "function getPromptContextFields" in BUILD_SOURCE
+    assert "function updateContextualVariablePanel" in BUILD_SOURCE
+    assert 'id="var-context-status"' in BUILD_SOURCE
+    for field in CANONICAL_FIELDS - {"adicionales"}:
+        assert f'data-field="{field}"' in BUILD_SOURCE
 
 
 def test_framework_context_controls_expose_expected_options():

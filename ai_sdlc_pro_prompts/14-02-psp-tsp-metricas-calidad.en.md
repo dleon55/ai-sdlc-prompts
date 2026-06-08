@@ -22,7 +22,7 @@ Generate or update the planning and actual metrics log (times, defects, and size
 
 Inputs:
 - issue or requirement: [PASTE]
-- current phase (Planning, Design, Coding, Code Review, Testing, Post-mortem): [INDICATE]
+- current phase (Planning, Design, Coding, Code Review, Testing, Post-mortem): [CURRENT PHASE]
 - previous metrics (if any): [PASTE HISTORY]
 
 Activities:

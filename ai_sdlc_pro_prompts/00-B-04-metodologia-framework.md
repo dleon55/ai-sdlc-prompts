@@ -88,7 +88,7 @@ Formato de salida:
 
 ```text
 Usa el prompt de metodología y marco de trabajo y adáptalo a:
-- tipo de proyecto: [TIPO]
+- tipo de proyecto: [TIPO DE PROYECTO]
 - tamaño del equipo: [NÚMERO + AGENTES IA]
 - frecuencia de entregas: [CADENCIA]
 - metodología candidata: [METODOLOGÍA O "ninguna"]

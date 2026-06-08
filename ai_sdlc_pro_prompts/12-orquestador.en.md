@@ -22,11 +22,11 @@ Route and coordinate this assignment through the minimum flow that can satisfy i
 
 Input:
 - issue/requirement/incident: [PASTE]
-- target branch: [INDICATE]
-- environment: [INDICATE]
-- components: [INDICATE]
+- target branch: [TARGET BRANCH]
+- environment: [ENVIRONMENT]
+- components: [INVOLVED COMPONENTS]
 - permitted autonomy: [A0 / A1 / A2 / A3]
-- available tools: [INDICATE]
+- available tools: [AVAILABLE TOOLS]
 - budget: [TIME / CHANGES / ATTEMPTS / COST]
 
 Step 1. CLASSIFY intent, complexity, risk, reversibility, and required evidence.

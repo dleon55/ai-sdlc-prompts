@@ -22,9 +22,10 @@ Analyze the requested requirement, issue or change and determine its functional 
 
 Inputs:
 - issue or requirement: [PASTE]
-- repository or module: [INDICATE]
-- workspace/subproject: [INDICATE IF APPLICABLE]
-- standard/compliance: [PSP / TSP / ISO / MOPROSOFT / MAAGTICSI / NONE]
+- repository: [NAME OR URL]
+- module or functionality: [MODULE]
+- workspace/subproject: [WORKSPACE/SUBPROJECT]
+- standard/compliance: [STANDARD/COMPLIANCE]
 
 Activities:
 1. Understand the problem or need.

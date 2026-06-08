@@ -21,7 +21,7 @@ Objetivo:
 Genera los archivos de configuración y gobernanza que controlen el comportamiento de los agentes IA asignados a este repositorio.
 
 Inputs requeridos:
-- nombre del proyecto: [NOMBRE]
+- nombre del proyecto: [NOMBRE DEL PROYECTO]
 - stack tecnológico: [ej. Python 3.11 + FastAPI + PostgreSQL + Docker]
 - metodología de trabajo: [SCRUM / Kanban / GitFlow / GitHub Flow / Trunk-Based]
 - plataforma de agentes IA a usar: [GitHub Copilot / Claude / Windsurf / Cursor / Codex / Antigravity / combinación]
@@ -106,11 +106,11 @@ Reglas que deben aparecer en TODOS los archivos:
 
 ```text
 Usa el prompt de gobernanza de agentes IA y adáptalo a:
-- nombre del proyecto: [NOMBRE]
+- nombre del proyecto: [NOMBRE DEL PROYECTO]
 - stack: [STACK]
 - metodología: [METODOLOGÍA]
 - agentes a configurar: [LISTA DE AGENTES]
-- nivel de autonomía: [NIVEL]
+- nivel de autonomía: [NIVEL DE AUTONOMÍA]
 - reglas críticas del proyecto: [REGLAS ESPECÍFICAS]
 - documentos a revisar: README, CONTRIBUTING, estructura del repo, workflows existentes
 - objetivo puntual de salida: archivos .github/copilot-instructions.md, .windsurfrules, AGENTS.md, docs/ai-governance.md con contenido completo

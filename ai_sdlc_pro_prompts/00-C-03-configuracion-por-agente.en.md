@@ -25,7 +25,7 @@ Required inputs:
 - project stack: [STACK]
 - methodology: [METHODOLOGY]
 - project critical rules: [RULES THAT ALL MUST FOLLOW]
-- general autonomy level: [LEVEL]
+- general autonomy level: [AUTONOMY LEVEL]
 
 For each active agent, deliver:
 
@@ -152,7 +152,7 @@ Use the configuration by agent type prompt and adapt it to:
 - stack: [STACK]
 - methodology: [METHODOLOGY]
 - critical rules: [SPECIFIC PROJECT RULES]
-- autonomy level: [LEVEL]
+- autonomy level: [AUTONOMY LEVEL]
 - documents to review: README, CONTRIBUTING, existing AGENTS.md (if any), repository structure
 - specific output goal: complete instruction files for each active agent + comparative table
 - depth level: high

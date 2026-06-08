@@ -22,7 +22,7 @@ Ejecuta o diseña el proceso completo de incident response para este sistema en 
 
 Inputs requeridos:
 - síntoma o alerta detectada: [DESCRIPCIÓN]
-- sistema/servicio afectado: [NOMBRE]
+- sistema/servicio afectado: [SERVICIO]
 - ambiente: PROD
 - hora de detección: [HH:MM zona horaria]
 - detectado por: [monitoreo automático / usuario / equipo / agente IA]
@@ -117,7 +117,7 @@ Genera los templates de comunicación para cada momento:
 Hora detección: [HH:MM]
 Síntoma: [DESCRIPCIÓN]
 Impacto: [USUARIOS/PROCESOS AFECTADOS]
-Equipo respondiendo: [NOMBRE]
+Equipo respondiendo: [RESPONSABLE]
 Próximo update: [HH:MM]
 ```
 

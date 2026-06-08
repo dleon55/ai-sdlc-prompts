@@ -116,13 +116,13 @@ Review that the human must do before merging:
 Use the AI agent issue prompt and adapt it to:
 - repository: [NAME OR URL]
 - issue title: [TITLE]
-- type: [TYPE]
+- type: [ISSUE TYPE]
 - requirement description: [DESCRIPTION]
 - involved files: [LIST]
 - acceptance criteria: [CRITERIA]
 - restrictions: [RESTRICTIONS]
 - assigned agent: [AGENT]
-- autonomy level: [LEVEL]
+- autonomy level: [AUTONOMY LEVEL]
 - specific output goal: complete issue ready to create in GitHub with gh issue create
 - depth level: high
 ```
@@ -136,7 +136,7 @@ Issue drafted with all sections complete, plus the command to create it directly
 ```bash
 gh issue create \
   --repo [ORG/REPO] \
-  --title "[TYPE]: [TITLE]" \
+  --title "[ISSUE TYPE]: [TITLE]" \
   --body-file issue-draft.md \
   --label "[type],[ai-agent],[priority]" \
   --assignee "@me"

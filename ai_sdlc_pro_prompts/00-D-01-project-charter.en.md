@@ -21,7 +21,7 @@ Objective:
 Generate the complete Project Charter to formalize the start of this project.
 
 Required inputs:
-- project name: [NAME]
+- project name: [PROJECT NAME]
 - project type: [new product / improvement of existing system / migration / integration / internal platform / other]
 - sponsor: [ROLE OR NAME]
 - client or end user: [INTERNAL / EXTERNAL — brief description]
