@@ -25,6 +25,10 @@ Este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 - Variables: evita sustituciones semánticamente incorrectas de tokens genéricos como `[NOMBRE]`, `[TIPO]`, `[NIVEL]`, `[SEVERIDAD]` e `[INDICAR]`.
 - Copiado: conserva el módulo configurado por el usuario en lugar de sobrescribirlo siempre con el título del prompt.
 - Prompts `02-04` y `02-05`: normaliza sus entradas a variables configurables desde la interfaz.
+- Multi-select: la selección por sección y el contador ya no duplican los prompts. Cada prompt renderiza una card ES y otra EN (ocultas por CSS) con el mismo `data-pid`; ahora la selección se acota al idioma visible y el copiado deduplica por `pid`, evitando que "seleccionar toda la sección" copie cada prompt dos veces y deje el checkbox de sección atascado en estado indeterminado.
+- Copiado: la advertencia de placeholders pendientes ahora también detecta alias que empiezan en minúscula (p. ej. `[ej. Python + FastAPI + PostgreSQL / ...]`, `[frontend SPA / API REST / ...]`), que el regex previo (exigía mayúscula inicial) dejaba pasar sin aviso.
+- Índice del framework `00-framework.md` / `00-framework.en.md`: se completa con los 10 prompts faltantes en ES (`07-12`, `08-04`, `11-07`, `11-08`, secciones 14 y 15, `02-05`) y se reconstruye el índice EN, que omitía 30 prompts (secciones 13, 14, 15, `00-D` y varios de 07/10/11). Ambos catálogos listan ahora los 75 prompts.
+- `README.md`: corrige el conteo (64 → 75 prompts, 17 → 19 grupos), agrega las secciones 14 y 15 a la tabla, actualiza los conteos de las secciones 02/07/08/11 y el tamaño del artefacto `index.html`.
 
 ## [1.9.2] — 2026-04-22
 

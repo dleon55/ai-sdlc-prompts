@@ -10474,6 +10474,18 @@ function findUnresolvedPlaceholders(text) {
     var token = (match[1] || match[2] || '').trim();
     if (PLACEHOLDER_IGNORE.indexOf(token) === -1 && found.indexOf(token) === -1) found.push(token);
   }
+  // Alias registrados que empiezan en minúscula (p.ej. "[ej. Python + ...]",
+  // "[frontend SPA / API REST / ...]") no los captura el regex, que exige
+  // mayúscula inicial. Buscarlos explícitamente para no dejar placeholders sin aviso.
+  Object.keys(TOKEN_REGISTRY).forEach(function(field) {
+    TOKEN_REGISTRY[field].aliases.forEach(function(alias) {
+      if (/^[A-ZÁÉÍÓÚÑ]/.test(alias)) return; // ya cubiertos por el regex
+      if (found.indexOf(alias) !== -1) return;
+      if (text.indexOf('[' + alias + ']') !== -1 || text.indexOf('{{' + alias + '}}') !== -1) {
+        found.push(alias);
+      }
+    });
+  });
   return found;
 }
 
@@ -11075,8 +11087,16 @@ function toggleMsMode() {
   updateMsBar();
 }
 
+// Solo los checkboxes del idioma visible: cada prompt renderiza una card ES y
+// una EN (ocultas por CSS), ambas con el mismo data-pid. Filtrar por idioma
+// evita seleccionar/contar/copiar el prompt dos veces.
+function langCardChecks(scope) {
+  var lang = getCurrentLanguage();
+  return (scope || document).querySelectorAll('.card[data-lang="' + lang + '"] .card-check');
+}
+
 function getSelected() {
-  return Array.from(document.querySelectorAll('.card-check:checked'));
+  return Array.from(langCardChecks(document)).filter(function(cb) { return cb.checked; });
 }
 
 function updateMsBar() {
@@ -11102,11 +11122,11 @@ function onCardCheck(cb) {
   var group = cb.closest('.section-group');
   if (group) {
     var secCb = group.querySelector('.sec-check');
-    var all = group.querySelectorAll('.card-check');
-    var checked = group.querySelectorAll('.card-check:checked');
+    var all = langCardChecks(group);
+    var checked = Array.from(all).filter(function(cc) { return cc.checked; });
     if (secCb) {
       secCb.indeterminate = checked.length > 0 && checked.length < all.length;
-      secCb.checked = checked.length === all.length;
+      secCb.checked = all.length > 0 && checked.length === all.length;
     }
   }
   updateMsBar();
@@ -11115,7 +11135,7 @@ function onCardCheck(cb) {
 function onSecCheck(cb) {
   var group = cb.closest('.section-group');
   if (!group) return;
-  group.querySelectorAll('.card-check').forEach(function(cc) {
+  langCardChecks(group).forEach(function(cc) {
     cc.checked = cb.checked;
     var card = cc.closest('.card');
     if (card) card.classList.toggle('ms-selected', cb.checked);
@@ -11130,8 +11150,11 @@ function copySelected(btn) {
   var lang = getCurrentLanguage();
   // obtener prompts en orden DOM (orden de proceso)
   var aggregate = { unresolvedRequired: [], unresolvedOptional: [] };
+  var seenPids = {};
   var parts = checks.map(function(cb) {
     var pid = cb.dataset.pid;
+    if (seenPids[pid]) return '';
+    seenPids[pid] = true;
     var codeId = 'code-' + pid + '-' + lang;
     var el = document.getElementById(codeId);
     if (!el) return '';
