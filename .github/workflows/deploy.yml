@@ -3,20 +3,25 @@ name: Build & Deploy AI-SDLC Prompts
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
 
+# Serializa por rama: los deploys de main no se cancelan entre sí, pero los
+# runs de validacion de un mismo PR se cancelan al llegar un push mas reciente.
 concurrency:
-  group: deploy-main
-  cancel-in-progress: false
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
 
 # ============================================================
-#  JOB 1 - BUILD
-#  Si verify_clean.py falla -> ambos deploys se cancelan.
+#  JOB 1 - BUILD + VALIDACION
+#  Corre en push a main y en cada PR. Si verify_clean.py o las
+#  pruebas fallan -> el PR queda en rojo y los deploys no avanzan.
 # ============================================================
   build:
     runs-on: ubuntu-latest
@@ -35,12 +40,20 @@ jobs:
       - name: QA gate - validate prompts
         run: python verify_clean.py
 
+      - name: Run tests
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+          python -m pytest tests/ -q
+
       - name: Prepare dist/
+        if: github.event_name != 'pull_request'
         run: |
           mkdir -p dist
           cp index.html dist/index.html
 
       - name: Upload artifact (shared by Pages and GCP)
+        if: github.event_name != 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: site
@@ -48,15 +61,18 @@ jobs:
           retention-days: 1
 
       - name: Upload Pages artifact
+        if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
 
 # ============================================================
 #  JOB 2 - GITHUB PAGES  (staging / ambiente de pruebas)
+#  Solo en push a main; los PR no despliegan.
 # ============================================================
   deploy-pages:
     needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       pages: write
@@ -71,7 +87,7 @@ jobs:
 
 # ============================================================
 #  JOB 3 - GCP  (produccion)
-#  Avanza solo si build + deploy-pages pasaron.
+#  Avanza solo si build + deploy-pages pasaron (push a main).
 #  Secrets del environment 'production':
 #    GCP_SSH_KEY   -> clave privada RSA
 #    GCP_KNOWN_HOST -> fingerprint ECDSA del servidor
@@ -79,6 +95,7 @@ jobs:
 # ============================================================
   deploy-gcp:
     needs: [build, deploy-pages]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment:
       name: production

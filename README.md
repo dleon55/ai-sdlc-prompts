@@ -1,6 +1,6 @@
 # AI-SDLC Pro — Biblioteca de Prompts de Ingeniería de Software
 
-Biblioteca interactiva de prompts estructurados bajo el **AI-SDLC Enterprise Framework**: **64 prompts** organizados en **17 grupos** que cubren el ciclo completo de ingeniería de software asistida por IA.
+Biblioteca interactiva de prompts estructurados bajo el **AI-SDLC Enterprise Framework**: **75 prompts** organizados en **19 grupos** que cubren el ciclo completo de ingeniería de software asistida por IA.
 
 ## Entornos activos
 
@@ -27,13 +27,13 @@ Biblioteca interactiva de prompts estructurados bajo el **AI-SDLC Enterprise Fra
 ## Estructura del proyecto
 
 ```
-ai_sdlc_pro_prompts/    # 64 prompts Markdown (17 grupos, ciclo SDLC completo)
+ai_sdlc_pro_prompts/    # 75 prompts Markdown (19 grupos, ciclo SDLC completo)
 build.py                # Generador: produce index.html desde los .md
 extract_vars.py         # Analiza tokens [PLACEHOLDER] en los prompts
 verify_clean.py         # QA gate: valida prompts limpios (integrado en CI)
 nginx_prompts.conf      # Config Nginx para producción GCP
 deploy-to-gcp.sh        # Script de re-deploy manual a GCP
-index.html              # Artefacto generado (~255 KB, no editar manualmente)
+index.html              # Artefacto generado (~815 KB, no editar manualmente)
 docs/                   # Memorias técnicas (MT-001, MT-002)
 .github/workflows/      # CI/CD — build + QA gate + deploy GitHub Pages + GCP
 CONTRIBUTING.md         # Guía de contribución y convenciones
@@ -88,24 +88,26 @@ El push a `main` también actualiza GitHub Pages automáticamente vía el workfl
 
 | Grupo | Sección | Prompts |
 |---|---|---|
-| 00 | Framework base (obligatorio — se antepone en cada copia) | 1 |
+| 00 | Framework base (obligatorio — se antepone en cada copia; no cuenta en el total) | 1 |
 | 00-B | Scaffolding: repositorio, gobernanza, GitHub, metodología, stack | 5 |
 | 00-C | Multi-agente: issues para IA, plan mode, configuración por agente | 3 |
 | 00-D | Definición de proyecto: Project Charter, stack y arquitectura inicial | 2 |
 | 01 | Comprensión del repositorio | 2 |
-| 02 | Análisis (issue, técnico, impacto cruzado, triage backlog GitHub) | 4 |
+| 02 | Análisis (issue, técnico, impacto cruzado, triage backlog, requerimientos) | 5 |
 | 03 | Incidentes (GitHub, causa raíz) | 2 |
 | 04 | Diseño de solución (diseño, Mermaid, casos de uso, ADR) | 4 |
 | 05 | Plan de implementación (plan, riesgos) | 2 |
 | 06 | Ejecución (multi-agente, commits) | 2 |
-| 07 | Pruebas (diseño + implementación: unitarias, integración, E2E, humo, automatización, performance) | 7 |
-| 08 | Revisión y remediación (estática, cumplimiento, maestro) | 3 |
+| 07 | Pruebas (diseño + implementación: stack, unitarias, integración, E2E, humo, automatización, performance, accesibilidad) | 13 |
+| 08 | Revisión y remediación (estática, cumplimiento, maestro, SQL profiling) | 4 |
 | 09 | Integración y CI/CD (ramas, monitoreo, workflows, promotion) | 4 |
 | 10 | Documentación (técnica, memoria, changelog, observabilidad) | 4 |
-| 11 | Operaciones (troubleshooting, hardening, deuda técnica, incident response, performance, parches) | 6 |
+| 11 | Operaciones (troubleshooting, hardening, deuda técnica, incident response, performance, parches, postmortem, FinOps) | 8 |
 | 12 | Orquestador maestro (ciclo completo) | 1 |
 | 13 | Seguridad y DevSecOps (SAST, SCA, Secure SDLC, Threat Modeling, DAST, Pentesting, CVE, Secrets) | 8 |
-| **Total** | | **64** |
+| 14 | Monorepo y estándares (workspaces/dependencias, PSP/TSP, ISO/MoProSoft) | 3 |
+| 15 | Negocio y QA funcional (historias Gherkin, casos de prueba manuales, defectos de negocio) | 3 |
+| **Total** | | **75** |
 
 ---
 

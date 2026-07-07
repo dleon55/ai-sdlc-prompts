@@ -73,53 +73,93 @@ Use the root cause analysis prompt and adapt it to:
 | File | Section | Purpose |
 |---|---|---|
 | **── REPOSITORY CONFIGURATION (00-B)** | | |
-| `00-B-01-scaffolding-repositorio.md` | 0-B.1 | Base repository structure: directories, root files, .github/, docs/ |
-| `00-B-02-gobernanza-ia-agentes.md` | 0-B.2 | AI agent governance files: copilot-instructions, .windsurfrules, AGENTS.md |
-| `00-B-03-github-configuracion.md` | 0-B.3 | GitHub configuration: branch protection, issue templates, PR template, Dependabot |
-| `00-B-04-metodologia-framework.md` | 0-B.4 | Methodology selection, branching strategy, Definition of Ready and Done |
-| `00-B-05-stack-calidad-codigo.md` | 0-B.5 | Stack and quality: linters, formatters, pre-commit hooks, quality gates CI |
+| `00-B-01-scaffolding-repositorio.md` | 0-B.1 | Repository Scaffolding for New Project |
+| `00-B-02-gobernanza-ia-agentes.md` | 0-B.2 | AI Agent Governance Configuration Files |
+| `00-B-03-github-configuracion.md` | 0-B.3 | GitHub Repository Configuration (Protections, Templates, and Settings) |
+| `00-B-04-metodologia-framework.md` | 0-B.4 | Methodology and Framework Selection and Configuration |
+| `00-B-05-stack-calidad-codigo.md` | 0-B.5 | Stack and Code Quality Tools Configuration |
+| **── PROJECT DEFINITION (00-D)** | | |
+| `00-D-01-project-charter.md` | 0-D.1 | Project Charter: Formal Definition of New Project |
+| `00-D-02-stack-arquitectura-inicial.md` | 0-D.2 | Initial Stack & Architecture: Selection and Documentation of Technical Foundation |
 | **── AI AGENT GOVERNANCE (00-C)** | | |
-| `00-C-01-issue-para-agente-ia.md` | 0-C.1 | Structured issue ready for execution by AI agent with criteria and constraints |
-| `00-C-02-plan-mode-multiagente.md` | 0-C.2 | Safe plan mode (no changes) and multi-agent coordination protocol |
-| `00-C-03-configuracion-por-agente.md` | 0-C.3 | Agent-specific configuration: Copilot, Claude, Codex, Windsurf, Cursor, Antigravity |
+| `00-C-01-issue-para-agente-ia.md` | 0-C.1 | Document an Issue Ready for AI Agent Execution |
+| `00-C-02-plan-mode-multiagente.md` | 0-C.2 | Safe Plan Mode and Multi-Agent Coordination |
+| `00-C-03-configuracion-por-agente.md` | 0-C.3 | Configuration Specific to Each AI Agent Type |
 | **── SOFTWARE ENGINEERING CYCLE (01–12)** | | |
-| `01-01-arranque-comprension-repositorio.md` | 1.1 | Repository technical inventory |
-| `01-02-analisis-procesos.md` | 1.2 | Locate processes, policies and standards |
-| `02-01-analisis-issue.md` | 2.1 | Functional analysis of requirement or issue |
+| `01-01-arranque-comprension-repositorio.md` | 1.1 | Prompt for repository technical inventory |
+| `01-02-analisis-procesos.md` | 1.2 | Locate processes, procedures and project policies |
+| `02-01-analisis-issue.md` | 2.1 | Functional analysis of a requirement, issue or change |
 | `02-02-analisis-tecnico.md` | 2.2 | Deep technical analysis of existing code |
-| `02-03-impacto-cruzado.md` | 2.3 | Cross-impact analysis on all modules |
-| `02-04-triage-backlog-github.md` | 2.4 | GitHub Issues backlog triage and planning by component, owner and priority |
-| `03-01-incidentes-github.md` | 3.1 | Review of tester incidents against GitHub Issues |
-| `03-02-causa-raiz.md` | 3.2 | Root cause analysis of defects and incidents |
+| `02-03-impacto-cruzado.md` | 2.3 | Cross-impact analysis |
+| `02-04-triage-backlog-github.md` | 2.4 | GitHub Issues backlog triage and planning |
+| `02-05-analisis-integral-requerimientos.md` | 2.5 | Comprehensive Requirement Analysis and Issue Generation (PRO) |
+| `03-01-incidentes-github.md` | 3.1 | Review of incidents reported by tester against GitHub Issues |
+| `03-02-causa-raiz.md` | 3.2 | Root cause analysis |
 | `04-01-diseno-solucion.md` | 4.1 | Functional and technical solution design |
-| `04-02-diagramas-mermaid.md` | 4.2 | Mermaid diagram generation |
-| `04-03-casos-de-uso.md` | 4.3 | Formal use case design and documentation |
+| `04-02-diagramas-mermaid.md` | 4.2 | Generate Mermaid diagrams |
+| `04-03-casos-de-uso.md` | 4.3 | Use case design |
 | `04-04-adr-decisiones-arquitectura.md` | 4.4 | Architecture Decision Records (ADR) |
-| `05-01-plan-implementacion.md` | 5.1 | Detailed and traceable implementation plan |
+| `05-01-plan-implementacion.md` | 5.1 | Detailed implementation plan |
 | `05-02-riesgos-implementacion.md` | 5.2 | Implementation risk and impact analysis |
-| `06-01-implementacion-multiagente.md` | 6.1 | Safe multi-agent implementation |
+| `06-01-implementacion-multiagente.md` | 6.1 | Secure multi-agent implementation |
 | `06-02-commits.md` | 6.2 | Quality commit message generation |
+| `07-00-deteccion-stack-pruebas.md` | 7.0 | Test Stack Detection |
 | `07-01-pruebas-unitarias.md` | 7.1 | Unit test design |
 | `07-02-pruebas-integracion.md` | 7.2 | Integration test design |
 | `07-03-pruebas-e2e.md` | 7.3 | E2E test design |
-| `07-04-pruebas-humo.md` | 7.4 | Smoke test plan |
+| `07-04-pruebas-humo.md` | 7.4 | Smoke tests |
 | `07-05-automatizacion-antigravity.md` | 7.5 | Browser automation with Chrome Antigravity |
-| `07-06-pruebas-performance-carga.md` | 7.6 | Performance, load and stress tests |
+| `07-06-pruebas-performance-carga.md` | 7.6 | Performance and load tests |
+| `07-07-implementacion-pruebas-unitarias.md` | 7.7 | Unit Test Implementation |
+| `07-08-implementacion-pruebas-integracion.md` | 7.8 | Integration Test Implementation |
+| `07-09-implementacion-pruebas-e2e.md` | 7.9 | E2E Test Implementation |
+| `07-10-implementacion-pruebas-humo.md` | 7.10 | Smoke Test Implementation |
+| `07-11-implementacion-pruebas-performance.md` | 7.11 | Performance and Load Test Implementation |
+| `07-12-accessibility-a11y-audit.md` | 7.12 | Accessibility (a11y) Audit and UX Compliance |
 | `08-01-revision-estatica.md` | 8.1 | Static code review |
 | `08-02-cumplimiento-requerimiento.md` | 8.2 | Requirement compliance review |
-| `08-03-remediacion-maestro.md` | 8.3 | Static review remediation master prompt |
-| `09-01-integracion-ramas.md` | 9.1 | Controlled branch integration |
+| `08-03-remediacion-maestro.md` | 8.3 | Static review remediation (master prompt) |
+| `08-04-sql-query-profiling.md` | 8.4 | SQL Execution Plan Audit and Profiling (DBA) |
+| `09-01-integracion-ramas.md` | 9.1 | Controlled integration with branches |
 | `09-02-monitoreo-ci.md` | 9.2 | Local and remote CI monitoring |
 | `09-03-workflows-github-actions.md` | 9.3 | GitHub Actions workflows review |
-| `09-04-promotion-checklist.md` | 9.4 | Environment promotion checklist (dev→staging→prod) |
+| `09-04-promotion-checklist.md` | 9.4 | Promotion checklist: integration and deployment between environments |
 | `10-01-documentacion-tecnica.md` | 10.1 | Update technical documentation |
 | `10-02-memoria-tecnica.md` | 10.2 | Technical memory of the change |
 | `10-03-release-changelog.md` | 10.3 | Release or changelog documentation |
+| `10-04-observabilidad-instrumentacion.md` | 10.4 | Observability: Instrumentation and Monitoring |
 | `11-01-troubleshooting.md` | 11.1 | Environment troubleshooting |
-| `11-02-hardening-seguridad.md` | 11.2 | Hardening and operational security |
+| `11-02-hardening-seguridad.md` | 11.2 | Security hardening and operations |
 | `11-03-deuda-tecnica.md` | 11.3 | Technical debt and continuous improvement |
 | `11-04-incident-response.md` | 11.4 | Production incident response runbook |
-| `12-orquestador.md` | 12 | Full cycle orchestrator master prompt |
+| `11-05-performance-produccion-diagnostico.md` | 11.5 | Production Performance: Diagnosis and Optimization |
+| `11-06-gestion-parches-actualizaciones.md` | 11.6 | Patch and Update Management |
+| `11-07-sre-postmortem-runbook.md` | 11.7 | Blameless Post-Mortem and Runbook Generation (SRE) |
+| `11-08-finops-cloud-cost-audit.md` | 11.8 | FinOps Audit and Cloud Cost Efficiency |
+| `12-orquestador.md` | 12 | Master orchestrator prompt for complete cycle |
+
+**── SECURITY AND DEVSECOPS (13)**
+
+| `13-01-sast-analisis-seguridad-codigo.md` | 13.1 | SAST: Static Application Security Testing |
+| `13-02-sca-analisis-dependencias.md` | 13.2 | SCA: Software Composition Analysis and Dependencies |
+| `13-03-secure-sdlc-revision.md` | 13.3 | Secure SDLC Review |
+| `13-04-threat-modeling.md` | 13.4 | Threat Modeling |
+| `13-05-dast-analisis-dinamico-seguridad.md` | 13.5 | DAST: Dynamic Application Security Analysis |
+| `13-06-ethical-hacking-pentesting.md` | 13.6 | Ethical Hacking and Penetration Testing |
+| `13-07-gestion-vulnerabilidades-cves.md` | 13.7 | Vulnerability Analysis and CVE Management |
+| `13-08-gestion-secretos-credenciales.md` | 13.8 | Secrets and Credentials Management |
+
+**── MONOREPO AND STANDARDS (14)**
+
+| `14-01-monorepo-workspaces-dependencias.md` | 14.1 | Dependency and workspace auditing in monorepos |
+| `14-02-psp-tsp-metricas-calidad.md` | 14.2 | Quality metrics logging and PSP/TSP estimations |
+| `14-03-iso-moprosoft-compliance.md` | 14.3 | ISO 29110 / MOPROSOFT process compliance audit |
+
+**── BUSINESS AND FUNCTIONAL QA (15)**
+
+| `15-01-historias-usuario-gherkin.md` | 15.1 | User stories and Gherkin acceptance criteria |
+| `15-02-casos-prueba-manuales.md` | 15.2 | Design of manual and functional test cases |
+| `15-03-analisis-defectos-negocio.md` | 15.3 | Defect reporting and business impact analysis |
 
 ---
 

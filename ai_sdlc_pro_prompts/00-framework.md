@@ -95,6 +95,7 @@ Usa el prompt de análisis de causa raíz y adáptalo a:
 | `02-02-analisis-tecnico.md` | 2.2 | Análisis técnico profundo de código existente |
 | `02-03-impacto-cruzado.md` | 2.3 | Análisis de impacto cruzado en todos los módulos |
 | `02-04-triage-backlog-github.md` | 2.4 | Triage y planificación de backlog de GitHub Issues por componente, responsable y prioridad |
+| `02-05-analisis-integral-requerimientos.md` | 2.5 | Análisis integral de requerimientos: funcional, técnico e impacto cruzado |
 | `03-01-incidentes-github.md` | 3.1 | Revisión de incidentes de tester contra GitHub Issues |
 | `03-02-causa-raiz.md` | 3.2 | Análisis de causa raíz de defectos e incidentes |
 | `04-01-diseno-solucion.md` | 4.1 | Diseño funcional y técnico de solución |
@@ -117,9 +118,11 @@ Usa el prompt de análisis de causa raíz y adáptalo a:
 | `07-09-implementacion-pruebas-e2e.md` | 7.9 | Implementación de scripts E2E ejecutables |
 | `07-10-implementacion-pruebas-humo.md` | 7.10 | Implementación de script de smoke test ejecutable en pipeline |
 | `07-11-implementacion-pruebas-performance.md` | 7.11 | Implementación de scripts de performance y carga ejecutables |
+| `07-12-accessibility-a11y-audit.md` | 7.12 | Auditoría de accesibilidad (a11y) y UX compliance |
 | `08-01-revision-estatica.md` | 8.1 | Revisión estática de código |
 | `08-02-cumplimiento-requerimiento.md` | 8.2 | Revisión de cumplimiento contra requerimiento |
 | `08-03-remediacion-maestro.md` | 8.3 | Prompt maestro de remediación de revisión estática |
+| `08-04-sql-query-profiling.md` | 8.4 | Auditoría de planes de ejecución y profiling SQL (DBA) |
 | `09-01-integracion-ramas.md` | 9.1 | Integración controlada con ramas |
 | `09-02-monitoreo-ci.md` | 9.2 | Monitoreo de CI local y remoto |
 | `09-03-workflows-github-actions.md` | 9.3 | Revisión de workflows de GitHub Actions |
@@ -134,6 +137,8 @@ Usa el prompt de análisis de causa raíz y adáptalo a:
 | `11-04-incident-response.md` | 11.4 | Runbook de incident response en producción |
 | `11-05-performance-produccion-diagnostico.md` | 11.5 | Diagnóstico y optimización de performance en producción |
 | `11-06-gestion-parches-actualizaciones.md` | 11.6 | Gestión de parches y actualizaciones de dependencias e infraestructura |
+| `11-07-sre-postmortem-runbook.md` | 11.7 | Post-mortem blameless y generación de runbook (SRE) |
+| `11-08-finops-cloud-cost-audit.md` | 11.8 | Auditoría de FinOps y eficiencia de costos cloud |
 | `12-orquestador.md` | 12 | Prompt maestro orquestador del ciclo completo |
 
 **── SEGURIDAD Y DEVSECOPS (13)**
@@ -146,6 +151,18 @@ Usa el prompt de análisis de causa raíz y adáptalo a:
 | `13-06-ethical-hacking-pentesting.md` | 13.6 | Ethical hacking y pruebas de penetración estructuradas |
 | `13-07-gestion-vulnerabilidades-cves.md` | 13.7 | Gestión del ciclo de vida de vulnerabilidades y CVEs |
 | `13-08-gestion-secretos-credenciales.md` | 13.8 | Gestión y auditoría de secretos y credenciales |
+
+**── MONOREPO Y ESTÁNDARES (14)**
+
+| `14-01-monorepo-workspaces-dependencias.md` | 14.1 | Auditoría de dependencias y workspaces en monorepos |
+| `14-02-psp-tsp-metricas-calidad.md` | 14.2 | Registro de métricas de calidad y estimaciones PSP/TSP |
+| `14-03-iso-moprosoft-compliance.md` | 14.3 | Auditoría de cumplimiento de procesos ISO 29110 / MOPROSOFT |
+
+**── NEGOCIO Y QA FUNCIONAL (15)**
+
+| `15-01-historias-usuario-gherkin.md` | 15.1 | Historias de usuario y criterios de aceptación Gherkin |
+| `15-02-casos-prueba-manuales.md` | 15.2 | Diseño de casos de prueba manuales y funcionales |
+| `15-03-analisis-defectos-negocio.md` | 15.3 | Reporte y análisis de defectos con impacto en negocio |
 
 ---
 
