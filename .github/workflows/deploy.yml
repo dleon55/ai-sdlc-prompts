@@ -16,15 +16,36 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+# ============================================================
+#  DEPENDENCIA build -> deploy-pages -> deploy-gcp
+#
+#  Los 3 jobs corren en el MISMO workflow run y deploy-pages/deploy-gcp
+#  declaran `needs: build` / `needs: [build, deploy-pages]`. GitHub
+#  Actions NO ejecuta un job cuyo `needs` no haya terminado en success:
+#  si CUALQUIER paso de `build` falla (build.py, verify_clean.py,
+#  extract_vars.py o pytest), el job `build` termina en failure y
+#  deploy-pages/deploy-gcp se saltan automaticamente (no corren, no hay
+#  "green" parcial). No hace falta un `if` adicional para esto: es el
+#  comportamiento por defecto de `needs`. El `if` que sí llevan
+#  deploy-pages/deploy-gcp filtra ademas por evento (push a main, no PR),
+#  para que un PR se valide sin desplegar.
+# ============================================================
 jobs:
 
 # ============================================================
-#  JOB 1 - BUILD + VALIDACION
-#  Corre en push a main y en cada PR. Si verify_clean.py o las
-#  pruebas fallan -> el PR queda en rojo y los deploys no avanzan.
+#  JOB 1 - BUILD + VALIDACION (los 4 gates obligatorios)
+#  Corre en push a main y en cada PR. Si cualquiera de los 4 falla,
+#  el job termina en failure y ningun deploy avanza (ver dependencia
+#  arriba). Los 4 gates, en orden:
+#    1. build.py         -> regenera index.html desde los .md fuente
+#    2. verify_clean.py  -> ninguna formula ES/EN queda en el prompt copiable
+#    3. extract_vars.py  -> ningun placeholder generico invalido ([NOMBRE], [TIPO]...)
+#    4. pytest -q        -> suite de contrato (build, i18n, variables, etc.)
 # ============================================================
   build:
     runs-on: ubuntu-latest
+    outputs:
+      card_count: ${{ steps.card_count.outputs.count }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -40,11 +61,24 @@ jobs:
       - name: QA gate - validate prompts
         run: python verify_clean.py
 
+      - name: QA gate - audit placeholders
+        run: python extract_vars.py
+
       - name: Run tests
         run: |
           python -m pip install --upgrade pip
           pip install pytest
           python -m pytest tests/ -q
+
+      # Umbral del smoke test de produccion (job deploy-gcp) derivado del
+      # build real, no un numero fijo: evita que vuelva a quedar obsoleto
+      # (paso de >=44 a 75 prompts sin que nadie actualizara el smoke test).
+      - name: Compute expected card count
+        id: card_count
+        run: |
+          COUNT=$(grep -c 'class="card"' index.html)
+          echo "Cards esperadas (ES+EN): $COUNT"
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
 
       - name: Prepare dist/
         if: github.event_name != 'pull_request'
@@ -143,6 +177,8 @@ jobs:
           ssh -p "$P" -i ~/.ssh/gcp_key -o BatchMode=yes "${U}@${H}" "$CMD"
 
       - name: Smoke test GCP production
+        env:
+          EXPECTED: ${{ needs.build.outputs.card_count }}
         run: |
           sleep 5
           STATUS=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 \
@@ -151,8 +187,8 @@ jobs:
           [ "$STATUS" = "200" ] || { echo "ERROR: HTTP $STATUS"; exit 1; }
           COUNT=$(curl -s --max-time 20 https://prompts.lionsystems.com.mx \
               | grep -c 'class="card"' || true)
-          echo "Cards en produccion: $COUNT"
-          [ "$COUNT" -ge 44 ] || { echo "ERROR: esperadas >=44, encontradas $COUNT"; exit 1; }
+          echo "Cards en produccion: $COUNT (esperadas del build: $EXPECTED)"
+          [ "$COUNT" -ge "$EXPECTED" ] || { echo "ERROR: esperadas >=$EXPECTED, encontradas $COUNT"; exit 1; }
           echo "SMOKE_OK: $COUNT cards verificadas"
 
       - name: Cleanup SSH key
