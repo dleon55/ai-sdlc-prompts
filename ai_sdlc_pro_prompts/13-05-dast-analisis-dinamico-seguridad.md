@@ -19,6 +19,15 @@ Prompt para diseñar y ejecutar un análisis dinámico de seguridad (DAST — Dy
 ## Prompt completo
 
 ```text
+Precondiciones obligatorias — verifica cada una antes de continuar. Si falta alguna, DETENTE y solicítala; no ejecutes ninguna prueba activa (pasos 3 en adelante) sin todas confirmadas:
+- autorización: [AUTORIZACIÓN ESCRITA DEL PROPIETARIO DEL SISTEMA]
+- alcance: [SISTEMAS, DOMINIOS, IPS O URLS AUTORIZADOS — explícito, con exclusiones]
+- entorno: [AMBIENTE DE PRUEBA AISLADO — nunca producción sin autorización expresa y documentada]
+- ventana: [FECHA/HORA DE INICIO Y FIN AUTORIZADAS PARA LA PRUEBA]
+- responsable: [PERSONA O EQUIPO ACCOUNTABLE DE ESTA PRUEBA]
+- límites: [ACCIONES O SISTEMAS EXPRESAMENTE EXCLUIDOS — qué no se debe tocar]
+- stop condition: [CONDICIÓN QUE OBLIGA A DETENER LA PRUEBA DE INMEDIATO — p. ej. impacto no previsto, dato real expuesto, sistema fuera de alcance afectado]
+
 Objetivo:
 Realizar análisis dinámico de seguridad (DAST) sobre la aplicación en ejecución,
 identificando vulnerabilidades explotables en tiempo real, validando la superficie de

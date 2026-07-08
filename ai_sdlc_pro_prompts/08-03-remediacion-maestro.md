@@ -17,6 +17,8 @@ Prompt maestro de nivel producción para analizar un reporte de revisión estát
 ## Prompt maestro completo
 
 ```text
+FASE 1 DE 2 — SOLO ANÁLISIS. No implementes cambios en esta fase; el resultado es un plan que requiere aprobación humana antes de pasar a la Fase 2 (ejecución, bloque siguiente).
+
 Actúa como un Ingeniero de Software Senior, Arquitecto de Soluciones, QA Lead y DevOps Engineer con experiencia en PSP, RUP, DevSecOps, CI/CD y revisión de código en sistemas productivos.
 
 Contexto:
@@ -141,6 +143,8 @@ REGLAS DE CALIDAD:
 Una vez aprobado el análisis anterior, usa este prompt para la ejecución:
 
 ```text
+FASE 2 DE 2 — EJECUCIÓN. Usa este bloque ÚNICAMENTE después de que la Fase 1 (análisis) haya sido revisada y aprobada por un humano. Si estás leyendo este bloque sin una aprobación explícita de la Fase 1, DETENTE y solicítala antes de continuar.
+
 Con base en el análisis y plan generado previamente:
 
 Objetivo:

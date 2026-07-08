@@ -17,6 +17,8 @@ Production-level master prompt to analyze a static review report with critical, 
 ## Complete master prompt
 
 ```text
+PHASE 1 OF 2 — ANALYSIS ONLY. Do not implement changes in this phase; the output is a plan that requires human approval before moving to Phase 2 (execution, next block).
+
 Act as a Senior Software Engineer, Solutions Architect, QA Lead and DevOps Engineer with experience in PSP, RUP, DevSecOps, CI/CD and code review in productive systems.
 
 Context:
@@ -141,6 +143,8 @@ QUALITY RULES:
 Once the above analysis is approved, use this prompt for execution:
 
 ```text
+PHASE 2 OF 2 — EXECUTION. Use this block ONLY after Phase 1 (analysis) has been reviewed and approved by a human. If you are reading this block without explicit approval of Phase 1, STOP and request it before continuing.
+
 Based on the previously generated analysis and plan:
 
 Objective:
