@@ -109,6 +109,13 @@ Fases y controles a evaluar:
    - Verificación (pruebas de seguridad, revisión de código)
    - Operaciones (gestión de incidentes, gestión de entornos)
 
+Restricciones:
+- marca un control como "⚠️ parcial" o "❌ no cumple" en vez de "✅ cumple" si no encuentras evidencia verificable citada (archivo, pipeline o política concreta) — no le des al proyecto el beneficio de la duda,
+- detén la revisión y escala de inmediato si detectas un secreto expuesto en código o un control crítico ausente en producción; no lo dejes como un ítem más del checklist,
+- esta es una revisión de solo lectura: no modifiques pipelines, políticas ni configuración como parte de esta evaluación, solo documenta el estado y propone el plan de mejora,
+- no marques una brecha como resuelta sin evidencia citada de que el control ya está implementado y verificado,
+- si un hallazgo revela una brecha de gobernanza o de proceso (no de código), documéntalo para el responsable de seguridad o el líder técnico en vez de asumir que se resolverá solo con un cambio de código.
+
 Entrega:
 - checklist completo con estado de cada control (✅ cumple / ⚠️ parcial / ❌ no cumple / N/A),
 - nivel de madurez por fase (0-3),
@@ -142,9 +149,9 @@ Usa el prompt de Secure SDLC review y adáptalo a:
 
 | Fase | Control | Estado | Evidencia / Nota |
 |---|---|---|---|
-| Diseño | Threat modeling realizado | ✅ / ⚠️ / ❌ | |
-| Implementación | Secrets en vault, no en código | ✅ / ⚠️ / ❌ | |
-| CI/CD | SAST en pipeline | ✅ / ⚠️ / ❌ | |
+| Diseño | Threat modeling realizado | ⚠️ parcial | Existe modelo STRIDE de 2023 para el módulo de pagos, pero no se actualizó tras agregar la integración con el proveedor de KYC |
+| Implementación | Secrets en vault, no en código | ❌ no cumple | `STRIPE_KEY` hardcodeada como valor por defecto en `docker-compose.override.yml:14` |
+| CI/CD | SAST en pipeline | ✅ cumple | `semgrep` se ejecuta en `.github/workflows/ci.yml` y bloquea el merge ante hallazgos altos o críticos |
 
 ### Nivel de madurez por dominio (SAMM)
 

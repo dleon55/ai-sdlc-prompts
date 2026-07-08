@@ -106,6 +106,13 @@ Steps:
    - LOW: CVE with CVSS < 4.0 or ambiguous license
    - INFORMATIONAL: dependency with minor updates available
 
+Constraints:
+- never invent a CVE, a CVSS score, or a fix status — report only vulnerabilities verifiable in public databases (NVD, GitHub Advisory Database, OSV) and mark as "requires confirmation with audit tool" any finding you can't verify directly,
+- this is read-only analysis: don't run `npm audit fix`, `pip install --upgrade`, or any command that modifies installed versions or lock files — deliver the commands for a human to run,
+- if you find a token or credential embedded in a dependency file, lock file, or private registry configuration, treat it as a secret: never reveal its value, only its location and type,
+- for a problematic or unlicensed dependency, escalate to legal/compliance instead of assuming it's acceptable for the product type,
+- if you don't have access to the lock files, state the analysis as incomplete and indicate exactly what is missing instead of simulating nonexistent CVEs.
+
 Deliverables:
 - dependency inventory with versions and security status,
 - CVE findings table with severity and available fix,
@@ -148,10 +155,12 @@ Use the SCA prompt and adapt it to:
 
 | Package | Installed version | CVE | CVSS | Description | Fixed in version | Action |
 |---|---|---|---|---|---|---|
-| package-name | x.y.z | CVE-YYYY-NNNNN | 9.8 | Impact description | x.y.z+1 | Update immediately |
+| `lodash` | 4.17.15 | CVE-2020-8203 | 7.4 | Prototype pollution: allows adding or modifying arbitrary global object properties via `_.merge`/`_.zipObjectDeep` with untrusted input | 4.17.19 | Update immediately |
+| `axios` | 0.21.1 | CVE-2021-3749 | 5.3 | ReDoS via a vulnerable regular expression in URL trailing-slash handling | 0.21.2 | Update in the next sprint |
 
 ### Update plan
 
 | Package | From version | To version | Change type | Breaking change risk | Priority |
 |---|---|---|---|---|---|
-| package-name | x.y.z | a.b.c | Major | High — review migration guide | 1 |
+| `lodash` | 4.17.15 | 4.17.21 | Minor | Low — no public API changes | 1 |
+| `axios` | 0.21.1 | 0.21.4 | Patch | Low — compatible, only fixes URL parsing | 2 |

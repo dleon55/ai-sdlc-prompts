@@ -144,6 +144,12 @@ Activities:
 
 10. If the source is `gh issue list`, assume the output may come raw or summarized. If the information is not enough to classify precisely, state it as an assumption and lower the confidence level.
 
+Constraints:
+- do not propose closing, merging, or relabeling any issue without explicitly stating the evidence and reasoning behind that recommendation — the final decision belongs to a human,
+- do not assign high or critical priority without concrete evidence (usage data, reported incidents, business impact stated by the requester); if that evidence does not exist, say so explicitly and lower the confidence level instead of inventing it,
+- if you detect issues that look like duplicates or overlapping, do not silently merge or discard them: flag them explicitly as "possible duplicate of #N" in the matrix and findings, and leave the consolidation decision to a human,
+- do not invent dependencies between issues that are not documented or reasonably inferable from the content actually reviewed.
+
 Mandatory output format:
 1. Executive summary
 2. Confirmed facts
@@ -253,3 +259,10 @@ Use the GitHub Issues backlog triage and planning prompt and adapt it to:
 | Dependencies | Blocking, sequencing and recommended consolidations |
 | Attention plan | Order, priorities, tasks, owners and deliverables |
 | Final recommendations | Suggested decisions for execution and backlog governance |
+
+### Example — normalized issues matrix (excerpt)
+
+| Issue | Title | GH Status | Component | Assignee | Type | Priority | Attention state | Dependencies | Observations |
+|---|---|---|---|---|---|---|---|---|---|
+| #142 | Add example rows to "Expected output" tables across the prompt library | open | `ai_sdlc_pro_prompts/*.md` | dleon | improvement | high (evidence: blocks the quality review of batch 33) | ready to implement | none | Affects the same 10 ES/EN files already identified in this triage |
+| #138 | "Mandatory previous context" section out of sync between ES and EN in 07-00 | open | `ai_sdlc_pro_prompts/07-00-*.en.md` | unassigned | documentation | medium (no impact data; priority not supported) | requires functional clarification | possible duplicate of #131 | Check with the reporter whether #131 already covers this before working both in parallel |

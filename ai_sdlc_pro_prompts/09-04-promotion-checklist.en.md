@@ -47,6 +47,12 @@ Required inputs:
 - infrastructure changes: [YES / NO]
 - environment variable changes: [YES / NO]
 
+Constraints:
+- no checklist item can be marked as complete or skipped without explicit sign-off from the person responsible for that area (code, database, infrastructure) — "not applicable" also requires an explicit justification, it cannot be left blank.
+- the promotion decision is all-or-nothing: do not propose or execute a partial promotion (e.g., deploying the code but postponing the database migration) without explicitly flagging the risk of leaving environments in inconsistent states.
+- do not recommend GO if there is no verified rollback plan with an assigned owner — merely intending to roll back does not count as a plan.
+- if the target environment is PROD, every deployment and rollback command is left proposed and pending explicit approval from the release owner; this prompt does not execute the deployment itself.
+
 Deliver:
 
 ## 1. PRE-DEPLOYMENT CHECKS (pre-flight)
@@ -180,3 +186,26 @@ Use the promotion checklist prompt and adapt it to:
 | Target environment stable | 🟢 / 🔴 | |
 | Rollback responsible present | 🟢 / 🔴 | |
 | **Decision** | **GO / NO-GO** | |
+
+### Example applied
+
+| Field | Value |
+|---|---|
+| Issue / PR | #482 |
+| Branch | release/2026-03-12 |
+| Target environment | PROD |
+| Change type | fix |
+| Database migrations | Yes — adds index to `orders.customer_id` |
+| Infra changes | No |
+| Estimated window | 5 minutes expected downtime (rolling deploy) |
+| Responsible | María Ibáñez (release owner) |
+| Rollback available | Yes — revert of previous deploy in < 3 min |
+
+| Area | Status | Observation |
+|---|---|---|
+| CI/CD green | 🟢 | pipeline #1203 passed lint, tests, and 87% coverage |
+| Database backup | 🟢 | snapshot `orders-prod-20260312-1400` confirmed |
+| Reviewers approved | 🟢 | 2/2 approvals (required: 2) |
+| Target environment stable | 🟢 | no active incidents, 0.05% error rate |
+| Rollback responsible present | 🟢 | María Ibáñez available in #deploys channel until 17:00 |
+| **Decision** | **GO** | all checks green, maintenance window active |

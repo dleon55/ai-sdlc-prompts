@@ -109,6 +109,13 @@ Phases and controls to evaluate:
    - Verification (security testing, code review)
    - Operations (incident management, environment management)
 
+Constraints:
+- mark a control as "⚠️ partial" or "❌ non-compliant" instead of "✅ compliant" if you don't find citable, verifiable evidence (a concrete file, pipeline, or policy) — don't give the project the benefit of the doubt,
+- stop the review and escalate immediately if you detect a secret exposed in code or a missing critical control in production; don't leave it as just another checklist item,
+- this is a read-only review: don't modify pipelines, policies, or configuration as part of this assessment, only document the status and propose the improvement plan,
+- don't mark a gap as resolved without cited evidence that the control is actually implemented and verified,
+- if a finding reveals a governance or process gap (not a code gap), document it for the security owner or tech lead instead of assuming it will be resolved by a code change alone.
+
 Deliverables:
 - complete checklist with status for each control (✅ compliant / ⚠️ partial / ❌ non-compliant / N/A),
 - maturity level per phase (0-3),
@@ -142,9 +149,9 @@ Use the Secure SDLC review prompt and adapt it to:
 
 | Phase | Control | Status | Evidence / Note |
 |---|---|---|---|
-| Design | Threat modeling performed | ✅ / ⚠️ / ❌ | |
-| Implementation | Secrets in vault, not in code | ✅ / ⚠️ / ❌ | |
-| CI/CD | SAST in pipeline | ✅ / ⚠️ / ❌ | |
+| Design | Threat modeling performed | ⚠️ partial | A 2023 STRIDE model exists for the payments module, but it wasn't updated after adding the KYC provider integration |
+| Implementation | Secrets in vault, not in code | ❌ non-compliant | `STRIPE_KEY` hardcoded as a default value in `docker-compose.override.yml:14` |
+| CI/CD | SAST in pipeline | ✅ compliant | `semgrep` runs in `.github/workflows/ci.yml` and blocks the merge on high or critical findings |
 
 ### Maturity level by domain (SAMM)
 

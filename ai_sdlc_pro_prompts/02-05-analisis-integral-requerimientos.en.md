@@ -48,6 +48,12 @@ Analysis Activities:
 4. TRACEABILITY: Relate the requirement to use cases and business rules.
 5. DoR VALIDATION: Ensure the final result is "Ready" for a developer or AI agent.
 
+Constraints:
+- always distinguish explicit requirements (stated verbatim by the requester) from inferred requirements (deduced through technical analysis) — never mix them in the same statement without labeling them,
+- if you detect contradictions between the user_requirement, existing documentation, and the current code, state them explicitly under FINDINGS instead of silently resolving them by picking one version,
+- do not fill information gaps with undeclared assumptions: any inference used to fill a gap must be recorded under ASSUMPTIONS, never presented as a FACT,
+- do not mark the issue as ready for Definition of Ready if any acceptance criterion, scope, or impact cannot be verified against the actual repository.
+
 Mandatory Output:
 
 1. ANALYSIS REPORT (Traceability):
@@ -95,3 +101,10 @@ Use the comprehensive analysis prompt and adapt it to:
 | GitHub Issue | Complete Markdown with User Story and Acceptance Criteria |
 | DoR Validation | Checklist confirming that the issue is ready for execution |
 | QA Strategy | Suggested unit and integration testing plan |
+
+### Example — impact matrix (excerpt)
+
+| Module / table / service | Change type | Impact severity |
+|---|---|---|
+| `build.py` (generates `index.html` and `prompts-index.json`) | Modifies the prompt counting and parsing logic | high — an error here breaks the `build` gate in the `deploy.yml` workflow and blocks every deployment |
+| `ai_sdlc_pro_prompts/*.en.md` (content only, Editorial Contract table untouched) | Adds `Constraints:` blocks and example rows | medium — documentation-only change, no build or runtime impact, but requires an ES/EN parity review |

@@ -84,6 +84,12 @@ Entrega:
    - qué archivos no pueden generarse automáticamente y requieren decisión del equipo
    - riesgos de omitir cada sección
 
+Restricciones:
+- si el repositorio ya tiene archivos de configuración existentes (package.json, pyproject.toml, .gitignore, workflows, etc.), no propongas sobrescribirlos sin señalar explícitamente el conflicto y pedir confirmación humana antes de reemplazar su contenido,
+- no asumas versiones de lenguajes, frameworks o herramientas que no fueron declaradas como input — si el stack no especifica versión, decláralo como un vacío a confirmar en vez de inventar una versión "razonable",
+- si la estructura actual del repositorio (carpetas, convenciones de nombres, archivos raíz ya presentes) entra en conflicto con la propuesta, señala el conflicto explícitamente en la sección de VACÍOS Y RIESGOS en vez de proponer una reestructuración silenciosa,
+- este prompt entrega texto para que un humano lo aplique: no generes comandos de shell que creen o sobrescriban archivos directamente.
+
 Formato de salida:
 - árbol de directorios con comentarios en línea
 - tabla de archivos: nombre | propósito | prioridad (obligatorio / recomendado / opcional)
@@ -151,3 +157,10 @@ mi-proyecto/
 | docs/architecture.md | Decisiones de arquitectura de alto nivel | Recomendado |
 | docs/decisions/ | ADRs numerados (Architecture Decision Records) | Recomendado |
 | docs/runbooks/ | Procedimientos operativos | Opcional |
+
+### Ejemplo aplicado: estandarización de `ai-sdlc-prompts`
+
+| Archivo | Contenido base propuesto (extracto) | Conflicto detectado |
+|---|---|---|
+| `.gitignore` | Agregar `__pycache__/`, `dist/`, `.pytest_cache/` — el repo es Python (`build.py`) + contenido Markdown | Ninguno — el archivo no existe todavía en la raíz |
+| `CODEOWNERS` | `ai_sdlc_pro_prompts/*.md @equipo-contenido` y `build.py tests/ @equipo-plataforma` | El README ya asigna revisores informalmente en texto — declarar como vacío a confirmar antes de reemplazarlo por el archivo formal |

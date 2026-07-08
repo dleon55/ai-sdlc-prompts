@@ -56,6 +56,12 @@ Actividades:
    - datos de prueba sugeridos (entradas específicas),
    - resultado esperado (comportamiento correcto observable).
 
+Restricciones:
+- distingue explícitamente los casos "debe probarse" (camino crítico, reglas de negocio, seguridad) de los "conviene probar" (variaciones cosméticas o de baja probabilidad), y prioriza los primeros si el tiempo de QA es limitado,
+- no diseñes casos de prueba que dependan de datos reales de producción (cuentas de clientes, información financiera real, PII) — usa siempre datos sintéticos o de un ambiente de prueba controlado,
+- cada caso de prueba debe poder trazarse al requerimiento o criterio de aceptación específico que valida; no incluyas casos sin esa referencia,
+- no inventes reglas de negocio o comportamientos del sistema que no estén descritos en el requerimiento o los criterios de aceptación provistos; si faltan, decláralo y limita la cobertura a lo verificable con la información disponible.
+
 Salida:
 Presenta una tabla estructurada con los siguientes campos por cada caso de prueba:
 | ID | Título | Precondición | Pasos de Ejecución | Datos de Entrada | Resultado Esperado |
@@ -87,3 +93,4 @@ Una tabla clara con casos de prueba numerados cubriendo flujos exitosos y de err
 |---|---|---|---|---|---|
 | TC-01 | Login Exitoso | Usuario registrado existe | 1. Ir a login<br>2. Ingresar credenciales<br>3. Click en entrar | User: admin<br>Pass: admin123 | Redirección a Home y banner de bienvenida visible |
 | TC-02 | Login con contraseña inválida | Usuario registrado existe | 1. Ir a login<br>2. Ingresar contraseña incorrecta<br>3. Click en entrar | User: admin<br>Pass: wrongpass | Mensaje de error "Contraseña incorrecta" y permanece en login |
+| TC-03 | Validación de campo de correo obligatorio en registro | Formulario de registro cargado y vacío | 1. Ir a formulario de registro<br>2. Dejar el campo "Correo" vacío<br>3. Completar el resto de campos válidos<br>4. Click en "Registrarse" | Correo: (vacío)<br>Resto de campos: válidos | El sistema no envía el formulario, muestra "El correo es obligatorio" junto al campo y lo resalta en rojo — valida el criterio de aceptación de campos obligatorios de la historia de registro |

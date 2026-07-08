@@ -57,6 +57,12 @@ Actividades:
 5. Relaciona el requerimiento con módulos, componentes y datos impactados.
 6. Detecta dependencias, riesgos y controles de seguridad (DevSecOps/ISO 27001).
 
+Restricciones:
+- no propongas ni insinúes una solución técnica o de diseño en este análisis — el objetivo es fijar el alcance funcional, no resolverlo; eso corresponde a `02-02-analisis-tecnico` y a `04-01-diseno-solucion`,
+- si el issue no define criterios de aceptación explícitos, no los inventes: decláralos como faltantes y baja el `confidence_score` en proporción a lo que falta,
+- distingue en cada sección qué es un hecho confirmado por el texto del issue o por el código/documentación citada, y qué es una suposición tuya — nunca los mezcles sin marcarlos,
+- no cierres el análisis como completo si el comportamiento esperado sigue siendo ambiguo; repórtalo como bloqueante en el resumen funcional.
+
 Salida:
 0. Bloque JSON de Metadatos de Tarea al inicio (claves: status, impacted_components, risks_detected, confidence_score [0.0 a 1.0]).
 1. Resumen funcional
@@ -98,3 +104,19 @@ Usa el prompt de análisis funcional y adáptalo a:
 | Riesgos (5) | Funcionales y técnicos identificados |
 | Recomendación (6) | Prioridad y orden de atención sugerido |
 | Métricas PSP/TSP (7) | Bloque de control con tiempos estimados en minutos y tasa esperada de defectos |
+
+### Ejemplo (fragmento)
+
+```json
+{
+  "status": "analizado_con_vacios",
+  "impacted_components": ["build.py", "ai_sdlc_pro_prompts/*.en.md"],
+  "risks_detected": ["ruptura de paridad ES/EN si el chequeo se aplica solo a archivos .md"],
+  "confidence_score": 0.7
+}
+```
+
+| Sección | Ejemplo de contenido |
+|---|---|
+| Resumen funcional (1) | El equipo reporta que `build.py` publica el índice aunque falte el archivo `.en.md` de un prompt nuevo, dejando el sitio con un enlace roto en inglés |
+| Riesgos (5) | Alto: si no se detiene el build, el issue puede pasar CI y llegar a producción con contenido bilingüe incompleto; el issue no especifica si debe fallar el build o solo advertir — queda como criterio de aceptación pendiente de confirmar |

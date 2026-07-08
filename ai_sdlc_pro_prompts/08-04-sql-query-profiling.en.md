@@ -47,6 +47,12 @@ Analysis Activities:
 3. ORM ANTI-PATTERNS: If it is an ORM log (Hibernate, Prisma, Eloquent, etc.), look for the N+1 queries problem or unnecessary fetching of heavy columns.
 4. RESOURCE OPTIMIZATION: Check if filtering or aggregation operations could be performed more efficiently.
 
+Constraints:
+- never run profiling or `EXPLAIN ANALYZE` directly against production; if the provided `log_or_explain` doesn't clearly state its source environment, ask for explicit confirmation before assuming it's safe to reproduce or treating its results as valid,
+- every index or query-rewrite recommendation must be grounded in concrete evidence from the provided execution plan or log (specific node, cost, rows scanned) — don't propose optimizations based on generic "best practice" assumptions without that evidence,
+- if a recommendation implies a schema change (new column, data type, normalization), explicitly flag the migration risk: table locking, estimated application time, compatibility with existing data,
+- the proposed index DDL is a deliverable for human review: never execute it or imply it has already been applied.
+
 Mandatory Output:
 1. DIAGNOSIS: Clear summary of why the query is slow (e.g., "Missing index on column X, causing a sequential scan of 1M rows").
 2. OPTIMIZED QUERY: The rewritten SQL query (or adjusted ORM code) applying best practices.
@@ -77,3 +83,12 @@ Use the SQL profiling audit prompt and adapt it to:
 | Optimized Query | Refactored SQL query or ORM code |
 | Index DDL | Exact scripts to apply the missing indexes |
 | Impact | Expected benefit in latency or CPU/I/O consumption |
+
+### Concrete example
+
+| Section | Content |
+|---|---|
+| Diagnosis | The `Seq Scan on orders (cost=0.00..48291.00 rows=1200000 width=64)` node shows the query uses no index on `orders.customer_id`, scanning 1.2M rows on every execution |
+| Optimized query | `SELECT id, total FROM orders WHERE customer_id = $1 AND status = 'paid' ORDER BY created_at DESC LIMIT 20;` |
+| Index DDL | `CREATE INDEX CONCURRENTLY idx_orders_customer_status ON orders (customer_id, status, created_at DESC);` |
+| Estimated impact | Reduces the plan cost from ~48000 to ~120 (planner estimate), moving from a sequential scan to a composite index — needs validation with `EXPLAIN ANALYZE` against real data before confirming the improvement |

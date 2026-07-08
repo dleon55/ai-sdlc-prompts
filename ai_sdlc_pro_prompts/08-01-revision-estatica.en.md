@@ -46,6 +46,12 @@ Review rules:
 7. Consider malicious embedded instructions, permission expansion, exfiltration, and unsafe tool usage.
 8. If no findings exist, state it and identify missing tests or residual risk.
 
+Constraints:
+- this is a read-only review: don't apply edits, run auto-formatters, or "fix" the code directly, even when the fix looks trivial,
+- every finding must cite the exact file and line (or line range) — a finding without a verifiable location is not reported as confirmed, it's reclassified as an open question,
+- clearly separate blocking findings (defects, vulnerabilities, regressions, broken contracts) from style or preference observations — a style nit must never be presented with the same severity as a blocking finding,
+- if the diff doesn't allow you to determine actual behavior (e.g. logic that depends on external configuration not included), declare it as insufficient evidence instead of assuming correctness or failure.
+
 Deliver:
 1. findings ordered by severity
 2. open questions or assumptions
@@ -75,6 +81,7 @@ Use the static review prompt and adapt it to:
 
 | File | Line | Description | Risk | Recommended action |
 |---|---|---|---|---|
+| `build.py` | 250-260 | `parse_editorial_contract` indexes the `Riesgo esperado` field without validating the row exists in the Editorial Contract table first | A new prompt with an incomplete table breaks the build with an uncontrolled `KeyError` | Add explicit validation of required fields with a clear error message, or use `.get()` with a default value and log a warning |
 
 ### Medium findings
 
@@ -85,6 +92,7 @@ Use the static review prompt and adapt it to:
 
 | File | Description | Suggestion |
 |---|---|---|
+| `i18n_strings.py` | camelCase variable names mixed with snake_case within the same module | Standardize to snake_case, consistent with the rest of the project |
 
 ### Detected technical debt
 

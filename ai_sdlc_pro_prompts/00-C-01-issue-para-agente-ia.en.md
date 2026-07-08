@@ -57,6 +57,12 @@ Before drafting the issue:
 4. Determine whether the task is suitable for autonomous execution.
 5. Do not invent paths, commands, criteria, or current behavior.
 
+Constraints:
+- don't invent acceptance criteria the requester hasn't explicitly given; if any are missing, mark them as pending in the readiness assessment instead of filling them in with your own assumptions,
+- if the scope is ambiguous (affected files, expected behavior, target environment), flag the ambiguity and request clarification before drafting the final issue — don't proceed on an unconfirmed interpretation,
+- don't assign an autonomy mode (A0-A3) in the `## Execution contract` higher than the task's real risk warrants; when in doubt, assign the more conservative level and explain why,
+- don't create the issue on GitHub — this prompt only drafts the content and the suggested command; publishing it is an A3 action that requires explicit human approval outside this prompt.
+
 Generate the issue with the following sections:
 
 ## Description
@@ -159,6 +165,19 @@ gh issue create \
   --label "[type],[ai-agent],[priority]" \
   --assignee "@me"
 ```
+
+**Example applied to this project:**
+
+```bash
+gh issue create \
+  --repo dleon/ai-sdlc-prompts \
+  --title "fix: build.py does not validate that the ES/EN pair exists before generating the index" \
+  --body-file issue-draft.md \
+  --label "fix,ai-agent,high" \
+  --assignee "@me"
+```
+
+With `## Execution contract` → authorized mode: A2 (controlled execution, scope limited to `build.py` and `tests/test_build.py`); and `## Readiness assessment` → clarity HIGH, verifiable criteria YES, risk MEDIUM, suitable for an agent YES WITH APPROVALS (requires human review of the CHANGELOG before merge).
 
 ---
 

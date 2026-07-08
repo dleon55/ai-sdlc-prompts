@@ -55,6 +55,12 @@ Actividades:
    - Entonces [Resultado esperado o comportamiento del sistema].
 5. Especifica las reglas de negocio críticas, flujos alternos e indicaciones especiales de experiencia de usuario (UX).
 
+Restricciones:
+- no inventes criterios de aceptación, reglas de negocio ni roles que el requerimiento original no mencione explícita o implícitamente; si falta información para completar un escenario, decláralo como supuesto en vez de rellenarlo por tu cuenta,
+- señala explícitamente cualquier enunciado ambiguo tipo "debería" o "el sistema debe permitir" que no especifique un comportamiento verificable, y propone la aclaración concreta necesaria en vez de interpretarlo a tu criterio,
+- cada escenario Gherkin debe ser independiente y autocontenido: no asumas estado compartido implícito entre escenarios (por ejemplo, que el escenario 2 dependa de datos dejados por el escenario 1) — cada "Dado" debe establecer su propio contexto completo,
+- si una historia requiere validar más de una regla de negocio, sepáralas en escenarios Gherkin distintos en vez de mezclarlas en un solo "Cuando/Entonces".
+
 Salida:
 1. Historias de usuario (formato estándar)
 2. Criterios de aceptación (formato Gherkin para flujos feliz, alternos e inválidos)
@@ -88,3 +94,14 @@ Usa el prompt de historias de usuario y adáptalo a:
 | Criterios Gherkin | Dado / Cuando / Entonces de escenarios exitosos y fallidos |
 | Reglas de negocio | Restricciones de validación, límites de negocio y políticas |
 | Consideraciones UI/UX | Requisitos visuales, accesibilidad y comportamiento de componentes |
+
+### Ejemplo aplicado: inicio de sesión de un cliente registrado
+
+**Historia de usuario:** "Como cliente registrado, quiero iniciar sesión con mi correo y contraseña, para acceder a mi cuenta y continuar mi compra."
+
+| Escenario | Dado | Cuando | Entonces |
+|---|---|---|---|
+| Inicio de sesión exitoso | el usuario está registrado y cuenta con credenciales válidas | ingresa su correo y contraseña correctos y presiona "Iniciar sesión" | el sistema lo redirige a su panel de cuenta y muestra un mensaje de bienvenida |
+| Contraseña incorrecta | el usuario está registrado | ingresa su correo correcto pero una contraseña incorrecta y presiona "Iniciar sesión" | el sistema muestra "Correo o contraseña incorrectos" y permanece en la pantalla de login sin cerrar la sesión de nadie más |
+
+**Supuesto declarado:** el requerimiento original no especifica un límite de intentos fallidos antes de bloquear la cuenta; se señala como pendiente de confirmación con el stakeholder en vez de asumir un valor.

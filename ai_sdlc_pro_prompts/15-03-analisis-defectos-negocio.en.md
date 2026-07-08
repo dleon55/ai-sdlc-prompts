@@ -53,6 +53,12 @@ Activities:
    - test data used,
    - business impact (e.g.: prevents the user from paying, degrades visual experience, breaks accessibility).
 
+Constraints:
+- do not assign a technical severity or business priority if the provided evidence does not support it; in that case, state it as "impact not determined" instead of estimating it from intuition,
+- explicitly distinguish confirmed impact (observed and reproducible with the given steps) from suspected impact (inferred from the symptom but not verified) — do not present them with the same level of certainty,
+- the technical diagnosis is a functional translation of the available evidence (logs, HTTP code, screenshots); if that evidence does not point to a root cause, say so explicitly instead of inventing a plausible technical explanation,
+- this prompt only documents and analyzes the defect — do not propose or apply a code fix, and do not execute the reproduction steps against any real environment.
+
 Output:
 Generate a structured defect report form with the following sections:
 1. Defect Title

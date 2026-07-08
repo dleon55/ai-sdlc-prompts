@@ -48,6 +48,12 @@ Actividades de Análisis:
 4. TRAZABILIDAD: Relaciona el requerimiento con casos de uso y reglas de negocio.
 5. VALIDACIÓN DoR: Asegura que el resultado final sea "Ready" para un desarrollador o agente IA.
 
+Restricciones:
+- distingue siempre requerimientos explícitos (dichos textualmente por quien solicita) de requerimientos inferidos (deducidos por el análisis técnico) — nunca los mezcles en la misma afirmación sin etiquetarlos,
+- si detectas contradicciones entre el requerimiento_usuario, la documentación existente y el código actual, decláralas explícitamente en HALLAZGOS en vez de resolverlas silenciosamente eligiendo una versión,
+- no llenes vacíos de información con supuestos no declarados: toda inferencia usada para completar un vacío debe quedar registrada en SUPUESTOS, nunca presentada como HECHO,
+- no marques el issue como listo para Definition of Ready si algún criterio de aceptación, alcance o impacto no puede verificarse contra el repositorio real.
+
 Salida Obligatoria:
 
 1. REPORTE DE ANÁLISIS (Trazabilidad):
@@ -95,3 +101,10 @@ Usa el prompt de análisis integral y adáptalo a:
 | GitHub Issue | Markdown completo con User Story y Criterios de Aceptación |
 | Validación DoR | Checklist confirmando que el issue está listo para ejecución |
 | QA Strategy | Plan de pruebas unitarias y de integración sugerido |
+
+### Ejemplo — matriz de impacto (extracto)
+
+| Módulo / tabla / servicio | Tipo de cambio | Severidad de impacto |
+|---|---|---|
+| `build.py` (generador de `index.html` e `prompts-index.json`) | Modificación de la lógica de conteo y parseo de prompts | alta — un error aquí rompe el gate `build` del workflow `deploy.yml` y bloquea todo despliegue |
+| `ai_sdlc_pro_prompts/*.en.md` (contenido, sin tocar tabla de Contrato editorial) | Adición de bloques `Restricciones:` y filas de ejemplo | media — cambio de contenido documental, sin impacto en build ni en runtime, pero requiere revisión de paridad ES/EN |

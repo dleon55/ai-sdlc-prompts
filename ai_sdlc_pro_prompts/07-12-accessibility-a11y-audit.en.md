@@ -46,6 +46,12 @@ Analysis Activities:
 3. SCREEN READERS: Check the presence and correct use of `aria-*` tags, `alt` attributes on informative images, and ignoring (`aria-hidden="true"`) decorative images.
 4. FORMS: Validate that `<input>` elements are correctly linked to their `<label>` (id/for) and that error messages are announced by screen readers (`aria-describedby`, `aria-live`).
 
+Constraints:
+- cite the specific WCAG 2.2 success criterion (e.g. 2.1.1, 4.1.2) backing each reported violation, never a generic reference to the standard,
+- do not declare a criterion "compliant" or "non-compliant" when the code fragment lacks sufficient evidence (e.g. contrast defined in an external, unprovided stylesheet) — document the limitation instead of assuming,
+- explicitly distinguish findings that are automatically checkable (calculable contrast, missing attributes, semantic structure) from those that require manual verification with real assistive technology (screen reader, keyboard-only navigation) — do not substitute that manual verification with your own static analysis,
+- do not execute the component or simulate its dynamic behavior; if behavior depends on JavaScript not visible in the snippet, flag it as an evidence limitation in the report.
+
 Mandatory Output:
 1. WCAG REPORT: List of detected violations categorized by Severity (Critical, High, Medium).
 2. CORRECTED CODE: The same component refactored with the applied semantic tags and ARIA attributes.
@@ -73,3 +79,10 @@ Use the accessibility audit prompt and adapt it to:
 | WCAG Report | Violations grouped by severity and their impact on users |
 | Corrected Code | Refactored frontend ready for copy-paste |
 | QA Checklist | Manual accessibility testing steps |
+
+### Example finding
+
+| Element | WCAG 2.2 criterion | Severity | Description | Fix |
+|---|---|---|---|---|
+| `<div onClick={handleSubmit}>Submit</div>` (line 42) | 2.1.1 Keyboard | Critical | The control is neither reachable nor operable via keyboard and does not expose a semantic button role to screen readers | Replace with `<button type="button" onClick={handleSubmit}>Submit</button>` |
+| `<img src="promo-banner.png">` with no `alt` attribute (line 10) | 1.1.1 Non-text Content | High | The screen reader cannot describe an informative image, leaving the user without context | Add `alt="Description of the banner content"`, or `alt=""` if the image is purely decorative |

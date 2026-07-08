@@ -51,6 +51,12 @@ Mandatory Output:
 2. FINOPS OPTIMIZED ARCHITECTURE: Suggestion for infrastructure refactoring.
 3. CORRECTED CODE: Adjustments to Terraform/Manifests (e.g., adding `lifecycle_rule`, changing `instance_type`).
 4. FINANCIAL IMPACT: Qualitative (or quantitative if possible) estimation of monthly savings.
+
+Constraints:
+- this is a read-only analysis: do not generate or execute commands that terminate, resize, or modify live resources (`terraform apply`, `aws ec2 terminate-instances`, `kubectl delete`, etc.) — the corrected code is delivered as a text proposal for human review, never for direct application.
+- if a savings recommendation reduces availability, redundancy, or disaster-recovery capacity (fewer replicas, removing a DR environment, shortening backup retention, dropping multi-AZ), flag it explicitly as an availability-vs-cost trade-off — don't present it as an optimization with no downside.
+- base each finding on real billing or utilization data when available (cost explorer, billing export, usage metrics) instead of generic estimates; if no billing data is available and you must estimate, state that explicitly as an estimate and clarify the assumption used.
+- do not recommend Spot Instances or storage-tier changes for interruption-intolerant workloads without explicitly flagging that risk.
 ```
 
 ---
@@ -75,3 +81,10 @@ Use the FinOps audit prompt and adapt it to:
 | Optimized Architecture | Redesign proposal aimed at cost efficiency |
 | Corrected IaC Code | Refactored Terraform/Kubernetes blocks |
 | Financial Impact | Projection of savings derived from the actions |
+
+### Example applied
+
+| Section | Example content |
+|---|---|
+| Waste Detection | `aws_instance.worker_pool` (`infra/workers.tf:22`) keeps 6 fixed `m5.2xlarge` instances running 24/7, with average CPU utilization of 8% per CloudWatch (last 30 days) — a candidate for autoscaling or replacement with Lambda for sporadic batch processing |
+| Financial Impact | replacing `worker_pool` with an autoscaling group (2-4 `m5.large` instances) projects an estimated ~$1,850/month savings, calculated from the actual last-30-days spend for that resource in Cost Explorer |

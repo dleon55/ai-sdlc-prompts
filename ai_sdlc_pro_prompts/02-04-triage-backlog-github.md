@@ -144,6 +144,12 @@ Actividades:
 
 10. Si la fuente es `gh issue list`, asume que la salida puede venir cruda o resumida. Si la información no basta para clasificar con precisión, indícalo como supuesto y reduce el nivel de confianza.
 
+Restricciones:
+- no propongas cerrar, fusionar o re-etiquetar ningún issue sin indicar explícitamente la evidencia y el razonamiento que sustenta esa recomendación — la decisión final la toma un humano,
+- no asignes prioridad alta o crítica sin evidencia concreta (datos de uso, incidentes reportados, impacto de negocio declarado por quien solicita el cambio); si esa evidencia no existe, dilo explícitamente y baja el nivel de confianza en vez de inventarla,
+- si detectas issues que parecen duplicados o solapados, no los fusiones ni los descartes silenciosamente: márcalos de forma explícita como "posible duplicado de #N" en la matriz y en los hallazgos, y deja la decisión de consolidación a un humano,
+- no inventes dependencias entre issues que no estén documentadas o razonablemente inferibles del contenido real revisado.
+
 Formato de salida obligatorio:
 1. Resumen ejecutivo
 2. Hechos confirmados
@@ -253,3 +259,10 @@ Usa el prompt de triage y planificación de backlog de GitHub Issues y adáptalo
 | Dependencias | Bloqueos, secuencia y consolidaciones recomendadas |
 | Plan de atención | Orden, prioridades, tareas, responsables y entregables |
 | Recomendaciones finales | Decisiones sugeridas para ejecución y gobierno del backlog |
+
+### Ejemplo — matriz de issues normalizados (extracto)
+
+| Issue | Título | Estado GH | Componente | Assignee | Tipo | Prioridad | Estado de atención | Dependencias | Observaciones |
+|---|---|---|---|---|---|---|---|---|---|
+| #142 | Agregar filas de ejemplo en tablas de "Salida esperada" del prompt library | open | `ai_sdlc_pro_prompts/*.md` | dleon | mejora | alta (evidencia: bloquea la revisión de calidad del batch 33) | listo para implementar | ninguna | Afecta 10 archivos ES/EN ya identificados en este mismo triage |
+| #138 | Sección "Contexto obligatorio" desalineada entre ES y EN en 07-00 | open | `ai_sdlc_pro_prompts/07-00-*.en.md` | sin asignar | documentación | media (sin datos de impacto; prioridad no sustentada) | requiere aclaración funcional | posible duplicado de #131 | Verificar con el reportante si #131 ya cubre este caso antes de trabajar ambos en paralelo |

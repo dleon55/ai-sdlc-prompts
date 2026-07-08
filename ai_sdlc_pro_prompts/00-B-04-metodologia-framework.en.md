@@ -92,6 +92,12 @@ Deliver:
    - docs/definition-of-done.md
    - docs/team-conventions.md: code conventions, commits, PRs
 
+Constraints:
+- do not impose a complete formal methodology (e.g., full SCRUM with all its ceremonies) on a team that already has a different working process, even an informal one — if the current process works, propose targeted adjustments rather than a full replacement,
+- if the declared team size, delivery cadence, or maturity level does not support the candidate methodology (e.g., full Scrum with a one-person team, or daily ceremonies with monthly releases), flag the alert explicitly in the recommendation instead of endorsing it without reservations,
+- do not define ceremonies, roles, or artifacts the team has no real way to sustain over time — prioritize a minimal, sustainable process over a complete but unworkable one,
+- the delivered branch strategy and DoR/DoD must be consistent with the recommended methodology, not with a generic template — if they contradict each other, fix it before delivering instead of leaving it for the team to resolve.
+
 Output format:
 - branch flow diagram (Mermaid or ASCII)
 - DoR and DoD table with category and criterion
@@ -145,3 +151,11 @@ gitGraph
 | Security | Risks identified | Basic review completed |
 | Documentation | Impact identified | Updated if there was change |
 | For AI agents | Repo context attached | Human validation completed |
+
+### Applied example: `ai-sdlc-prompts` workflow
+
+| Criterion | Applied to this repository |
+|---|---|
+| Branch in progress | `fix/prompts/reinforce-backlog-33` — `type/area/issue-description` convention, Trunk-Based with short-lived branches |
+| DoR for an AI agent task | The `.md` file to modify and its `.en.md` counterpart are identified; each one's Editorial Contract is out of scope (preserved byte-identical) |
+| DoD for an AI agent task | `python -m pytest tests/ -q --ignore=tests/e2e` passes green before the task is considered done |

@@ -51,6 +51,12 @@ Actividades:
    - operación.
 3. Indica qué sí existe, qué está incompleto y qué no existe.
 
+Restricciones:
+- basa cada hallazgo en evidencia observable (el archivo, la sección o el commit donde está documentado); no lo bases en supuestos sobre cómo "debería" trabajar un equipo,
+- distingue explícitamente entre "no está documentado" y "no existe el proceso" — la ausencia de un documento no prueba que la práctica no se siga informalmente, así que decláralo como falta de documentación, no como ausencia del proceso,
+- no ejecutes cambios ni crees documentación nueva; este prompt solo localiza y clasifica lo que ya existe,
+- si una categoría de gobierno no tiene evidencia documental encontrada, márcala como "no existe" en la matriz en vez de asumir una política implícita.
+
 Formato de salida:
 - matriz por categoría,
 - archivo/ruta encontrada,
@@ -80,13 +86,13 @@ Matriz con las siguientes columnas:
 
 | Categoría | Archivo/Ruta | Descripción | Completitud | Observaciones |
 |---|---|---|---|---|
-| procesos | | | | |
+| procesos | `CONTRIBUTING.md` | Define el flujo de contribución: estructura ES/EN obligatoria, cómo correr `build.py` y validaciones previas al PR | Completo | Referencia el Contrato editorial pero no detalla el proceso de revisión humana post-agente |
+| QA | `tests/test_build.py`, `tests/test_i18n.py` | Suite pytest que valida generación del índice, paridad ES/EN y estructura de cada prompt | Completo | No hay documento de estrategia QA aparte de los propios tests; falta explicitarla en texto |
+| despliegue | `.github/workflows/deploy.yml` | Pipeline de GitHub Actions que construye y publica `index.html` | Incompleto | No documenta condiciones de rollback ni ambiente de staging previo a producción |
 | procedimientos | | | | |
 | políticas | | | | |
 | estándares | | | | |
 | arquitectura | | | | |
-| QA | | | | |
 | seguridad | | | | |
 | branching | | | | |
-| despliegue | | | | |
 | operación | | | | |

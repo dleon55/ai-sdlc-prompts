@@ -44,6 +44,12 @@ Inputs requeridos:
 - detectado por: [monitoreo automático / usuario / equipo / agente IA]
 - stack del sistema: [STACK]
 
+Restricciones:
+- durante un incidente activo, prioriza la contención del impacto sobre la búsqueda de la causa raíz: estabilizar el sistema para los usuarios viene primero que entender por completo qué falló — la causa raíz profunda se investiga en el post-mortem (Fase 7), no a mitad de un SEV-1.
+- ninguna acción de remediación destructiva (rollback, reinicio forzado, failover, modo mantenimiento, cambio de configuración en producción) se ejecuta sin aprobación explícita del responsable de turno, incluso en SEV-1 — la urgencia de contener no reemplaza la autorización, que puede darse en segundos por el canal de coordinación pero debe quedar registrada.
+- define y respeta triggers claros de escalamiento y handoff: si el incidente supera el SLA de resolución de su severidad, si quien responde inicialmente no puede continuar, o si el diagnóstico revela que el sistema afectado no es el que se pensó originalmente, escala explícitamente a un responsable superior u otro equipo y documenta el traspaso (hora, de quién a quién, estado conocido hasta ese momento).
+- respeta la pausa de agentes IA y de despliegues indicada en la Fase 2 durante toda la duración del incidente activo, no solo al momento de la detección.
+
 ## FASE 1 — DETECCIÓN Y CLASIFICACIÓN (0–5 min)
 
 ### Clasificación de severidad
@@ -218,3 +224,26 @@ Usa el prompt de incident response y adáptalo a:
 | HH:MM | Diagnóstico | | |
 | HH:MM | Contención | | |
 | HH:MM | Resolución | | |
+
+### Ejemplo aplicado
+
+| Campo | Valor |
+|---|---|
+| ID incidente | INC-20260312-014 |
+| Severidad | SEV-2 |
+| Sistema afectado | API de checkout |
+| Hora detección | 14:32 UTC |
+| Hora resolución | 15:10 UTC |
+| Duración | 38 min |
+| Afectados | ~2.400 usuarios (tasa de error 6.8%) |
+| Causa raíz | pool de conexiones a la BD agotado tras un deploy que removió el límite de conexiones concurrentes |
+| Fix | rollback del deploy `a1b2c3d` (PR #482) |
+| Post-mortem | 2026-03-14 |
+| Estado | resuelto |
+
+| Hora | Fase | Evento | Actor |
+|---|---|---|---|
+| 14:32 | Detección | Alerta de tasa de error > 5% en API de checkout | Datadog (automático) |
+| 14:36 | Activación | Equipo on-call notificado por PagerDuty, canal #inc-014 abierto | on-call SRE |
+| 14:50 | Contención | Rollback del deploy `a1b2c3d` ejecutado | on-call SRE (con aprobación del tech lead) |
+| 15:10 | Resolución | Tasa de error vuelve a < 0.1%, incidente cerrado | on-call SRE |

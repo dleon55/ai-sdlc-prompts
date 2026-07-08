@@ -91,6 +91,12 @@ Pasos de detección:
    - ¿Hay configuración de cobertura activa? ¿Cuál es el umbral actual?
    - ¿Hay tests fallando actualmente?
 
+Restricciones:
+- esta es una detección de solo lectura: no instales dependencias, no ejecutes la suite completa de pruebas ni ningún otro comando que modifique el estado del repositorio o del entorno,
+- si un campo del perfil no puede respaldarse con un archivo o comando real citado, márcalo explícitamente como "sin detectar" — nunca asumas ni inventes un framework, versión o convención,
+- distingue siempre "sin detectar" (no se encontró evidencia suficiente, puede que exista y no se haya localizado) de "sin configurar" o "no presente" (se confirmó activamente que el elemento no existe en el repositorio); no uses estos términos como sinónimos,
+- si el mismo tipo de prueba parece usar dos herramientas distintas (por ejemplo, dos frameworks de test unitario en el mismo repo), repórtalo como hallazgo ambiguo en vez de elegir uno arbitrariamente.
+
 Entrega:
 Produce el perfil de stack de pruebas en el formato estándar definido abajo.
 ```
@@ -179,3 +185,28 @@ Cobertura actual : [X% o sin medir]
 
 > Este bloque debe pegarse al inicio (después del bloque de `00-framework.md`) de cualquier
 > prompt de implementación de pruebas: `07-07`, `07-08`, `07-09`, `07-10`, `07-11`.
+
+### Ejemplo de perfil completado (extracto, repositorio de esta librería de prompts)
+
+```
+── PERFIL DE STACK DE PRUEBAS ──────────────────────────────────────────
+Repositorio : ai-sdlc-prompts
+Rama        : main
+
+LENGUAJE PRINCIPAL : Python
+RUNTIME / VERSIÓN  : no fijado en un archivo de versión — sin detectar (verificar con el runner de CI)
+
+── PRUEBAS UNITARIAS ───────────────────────────────────────────────────
+Framework         : pytest — versión sin detectar (no hay pyproject.toml/requirements.txt que la fije; se instala vía `pip install pytest` en el workflow)
+Librería de mocks : sin detectar (no se encontró uso de unittest.mock ni pytest-mock en tests/)
+Cobertura         : sin configurar (no se detectó pytest-cov ni configuración de coverage)
+Directorio        : tests/
+Comando de ejecución:
+  python -m pytest tests/ -q  (verificado en .github/workflows/deploy.yml, job build)
+
+── PIPELINE CI/CD ──────────────────────────────────────────────────────
+Plataforma       : GitHub Actions
+Archivo          : .github/workflows/deploy.yml
+Steps de prueba  : `pip install pytest` seguido de `python -m pytest tests/ -q` en el job build
+Coverage gate    : sin configurar
+```

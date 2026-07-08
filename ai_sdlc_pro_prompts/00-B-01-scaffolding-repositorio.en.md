@@ -84,6 +84,12 @@ Deliver:
    - what files cannot be generated automatically and require team decision
    - risks of omitting each section
 
+Constraints:
+- if the repository already has existing configuration files (package.json, pyproject.toml, .gitignore, workflows, etc.), do not propose overwriting them without explicitly flagging the conflict and requesting human confirmation before replacing their content,
+- do not assume language, framework, or tool versions that were not declared as input — if the stack does not specify a version, flag it as a gap to confirm instead of inventing a "reasonable" one,
+- if the current repository structure (folders, naming conventions, root files already present) conflicts with the proposal, flag the conflict explicitly in the GAPS AND RISKS section instead of proposing a silent restructuring,
+- this prompt delivers text for a human to apply: do not generate shell commands that create or overwrite files directly.
+
 Output format:
 - directory tree with inline comments
 - file table: name | purpose | priority (mandatory / recommended / optional)
@@ -151,3 +157,10 @@ my-project/
 | docs/architecture.md | High-level architecture decisions | Recommended |
 | docs/decisions/ | Numbered ADRs (Architecture Decision Records) | Recommended |
 | docs/runbooks/ | Operational procedures | Optional |
+
+### Applied example: standardizing `ai-sdlc-prompts`
+
+| File | Proposed base content (excerpt) | Conflict detected |
+|---|---|---|
+| `.gitignore` | Add `__pycache__/`, `dist/`, `.pytest_cache/` — the repo is Python (`build.py`) + Markdown content | None — the file does not yet exist at the root |
+| `CODEOWNERS` | `ai_sdlc_pro_prompts/*.md @content-team` and `build.py tests/ @platform-team` | The README already assigns reviewers informally in prose — flag as a gap to confirm before replacing it with the formal file |

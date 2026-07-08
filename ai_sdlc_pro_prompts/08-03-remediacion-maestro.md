@@ -150,6 +150,12 @@ REGLAS DE CALIDAD:
 - No ignorar impacto en otros módulos
 - No asumir comportamiento sin evidencia
 - Si algo no está claro → declararlo
+
+RESTRICCIONES:
+- esta fase es de solo análisis: no edites archivos, no ejecutes comandos de build/test más allá de lectura, y no generes commits ni ramas en este bloque,
+- todo hallazgo del reporte original que decidas descartar debe justificarse explícitamente; no lo omitas en silencio del plan,
+- el plan de la Fase 4 debe delimitar con precisión el alcance de cada cambio (archivo y componente) — cualquier trabajo que quede fuera de ese alcance requiere un nuevo ciclo de análisis y aprobación, no se ejecuta como parte del mismo plan,
+- no marques ningún hallazgo como resuelto ni sugieras que la implementación ya ocurrió; el resultado de esta fase es una propuesta pendiente de aprobación humana.
 ```
 
 ---
@@ -171,6 +177,12 @@ Reglas:
 - un hallazgo por commit
 - no modificar fuera del alcance
 - validar antes de cada commit
+
+Restricciones:
+- aplica únicamente los cambios que fueron descritos y aprobados explícitamente en el plan de la Fase 1 — si durante la ejecución identificas trabajo adicional necesario, no lo implementes: detente, documéntalo y solicita un nuevo ciclo de análisis,
+- no reinterpretes ni "mejores" el plan aprobado sobre la marcha; cualquier desviación del plan original requiere aprobación humana antes de aplicarse,
+- no ejecutes push ni despliegue sin aprobación explícita adicional, incluso si los commits locales pasan la validación,
+- si un cambio aprobado ya no aplica (por ejemplo, el código cambió desde el análisis), detente y repórtalo en vez de adaptarlo silenciosamente.
 
 Para cada cambio:
 1. archivo afectado
@@ -206,13 +218,16 @@ Usa el prompt maestro de remediación y adáptalo a:
 
 | Hallazgo | Aplica | Clasificación | Componente | Causa raíz |
 |---|---|---|---|---|
+| `parse_editorial_contract` no valida campos obligatorios antes de indexarlos | Sí | Crítico | `build.py` | Falta de validación explícita de esquema al parsear la tabla del Contrato editorial |
 
 ### Plan de remediación
 
 | Paso | Cambio | Archivo | Riesgo | Validación | Commit sugerido |
 |---|---|---|---|---|---|
+| 1 | Agregar validación de campos obligatorios con mensaje de error claro antes de indexar el diccionario del contrato | `build.py` | Bajo — cambio acotado a una función pura, sin efectos colaterales | `python -m pytest tests/test_parse_md_contract.py` | `fix(build): validate required contract fields before indexing` |
 
 ### Matriz de riesgos
 
 | Riesgo | Probabilidad | Impacto | Mitigación |
 |---|---|---|---|
+| El build falla silenciosamente para un prompt nuevo con la tabla de contrato incompleta | Media | Alto — bloquea la generación del sitio estático | Agregar prueba de regresión que cubra un contrato incompleto y falle con mensaje claro en CI |

@@ -131,6 +131,13 @@ Pasos:
    - Tendencia: ¿el número de vulnerabilidades sube, baja o se mantiene?
    - Cumplimiento de SLAs: % de vulnerabilidades cerradas dentro del SLA definido
 
+Restricciones:
+- no clasifiques un hallazgo como falso positivo o aceptado con riesgo sin documentar el razonamiento; para "aceptado con riesgo" exige además aprobación explícita y fecha de revisión, nunca lo dejes implícito,
+- si existe un exploit público activo o el CVE está en el catálogo KEV de CISA, escala el SLA a inmediato sin excepción, independientemente del CVSS calculado,
+- esta es una tarea de consolidación y priorización, no de ejecución: genera el backlog como texto listo para crear en GitHub Issues/Jira, pero no crees ni publiques los issues, y no apliques ningún fix directamente,
+- al consolidar reportes de otras herramientas (SAST, SCA, DAST, pentesting), nunca reproduzcas el valor real de un secreto, credencial o payload de explotación funcional que venga en el reporte original — referencia solo ubicación y tipo,
+- si un hallazgo proviene de un CVE o advisory aún no divulgado públicamente, no incluyas detalles de explotación más allá de lo necesario para la remediación interna, y sigue el proceso de disclosure responsable del equipo antes de compartirlo fuera del backlog interno.
+
 Entrega:
 - tabla consolidada de vulnerabilidades con triaje y severidad CVSS,
 - backlog de seguridad en formato de issues listo para crear,

@@ -53,6 +53,12 @@ Actividades:
    - datos de prueba usados,
    - impacto en el negocio (ej: impide que el usuario pague, degrada la experiencia visual, rompe la accesibilidad).
 
+Restricciones:
+- no asignes una severidad técnica ni una prioridad de negocio si la evidencia proporcionada no la sustenta; en ese caso decláralo como "impacto no determinado" en vez de estimarlo a partir de la intuición,
+- distingue explícitamente entre impacto confirmado (observado y reproducible con los pasos dados) e impacto sospechado (inferido del síntoma pero no verificado) — no los presentes con el mismo nivel de certeza,
+- el diagnóstico técnico es una traducción funcional de la evidencia disponible (logs, código HTTP, capturas); si esa evidencia no indica la causa raíz, dilo explícitamente en vez de inventar una explicación técnica plausible,
+- este prompt solo documenta y analiza el defecto — no propongas ni apliques una corrección de código, y no ejecutes los pasos de reproducción sobre ningún ambiente real.
+
 Salida:
 Genera una ficha de reporte de defecto estructurada con los siguientes apartados:
 1. Título del Defecto

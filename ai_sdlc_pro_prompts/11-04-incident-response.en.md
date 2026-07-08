@@ -44,6 +44,12 @@ Required inputs:
 - detected by: [automatic monitoring / user / team / AI agent]
 - system stack: [STACK]
 
+Constraints:
+- during an active incident, prioritize containing the impact over pursuing the root cause: stabilizing the system for users comes before fully understanding what failed — deep root cause analysis belongs in the post-mortem (Phase 7), not in the middle of a SEV-1.
+- no destructive remediation action (rollback, forced restart, failover, maintenance mode, production configuration change) is executed without explicit approval from the on-call lead, even in SEV-1 — the urgency to contain doesn't replace authorization, which can be granted in seconds over the coordination channel but must be logged.
+- define and respect clear escalation and handoff triggers: if the incident exceeds its severity's resolution SLA, if the initial responder can't continue, or if diagnosis reveals the affected system isn't the one originally assumed, escalate explicitly to a higher-level responsible party or another team and document the handoff (time, from whom to whom, known state at that point).
+- honor the AI-agent and deployment freeze from Phase 2 for the entire duration of the active incident, not just at the moment of detection.
+
 ## PHASE 1 — DETECTION AND CLASSIFICATION (0–5 min)
 
 ### Severity classification
@@ -218,3 +224,26 @@ Use the incident response prompt and adapt it to:
 | HH:MM | Diagnosis | | |
 | HH:MM | Containment | | |
 | HH:MM | Resolution | | |
+
+### Example applied
+
+| Field | Value |
+|---|---|
+| Incident ID | INC-20260312-014 |
+| Severity | SEV-2 |
+| Affected system | Checkout API |
+| Detection time | 14:32 UTC |
+| Resolution time | 15:10 UTC |
+| Duration | 38 min |
+| Affected | ~2,400 users (6.8% error rate) |
+| Root cause | DB connection pool exhausted after a deploy that removed the concurrent connection limit |
+| Fix | rollback of deploy `a1b2c3d` (PR #482) |
+| Post-mortem | 2026-03-14 |
+| Status | resolved |
+
+| Time | Phase | Event | Actor |
+|---|---|---|---|
+| 14:32 | Detection | Error rate alert > 5% on checkout API | Datadog (automatic) |
+| 14:36 | Activation | On-call team notified via PagerDuty, channel #inc-014 opened | on-call SRE |
+| 14:50 | Containment | Rollback of deploy `a1b2c3d` executed | on-call SRE (with tech lead approval) |
+| 15:10 | Resolution | Error rate back to < 0.1%, incident closed | on-call SRE |

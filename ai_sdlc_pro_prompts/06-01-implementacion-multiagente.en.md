@@ -51,6 +51,12 @@ Rules:
 10. Maintain an explicit budget for files, time, and attempts.
 11. If the file, time, or attempt budget is exhausted before completing the scope, stop immediately, do not continue editing, and deliver partial status with what remains.
 
+Constraints:
+- strictly respect the file, time, and attempt budget defined for the task; exhausting it is a stop condition, not a suggestion — deliver partial status and do not keep editing on your own,
+- before picking up a subtask, check whether another agent already has it in progress or resolved; do not duplicate work already started or completed by another agent, and do not rewrite someone else's change without coordination,
+- keep the ownership of each subtask within the files and components explicitly assigned to you; do not edit areas that belong to another agent without authorization, even if it looks like an obvious improvement,
+- never execute a commit, push, PR, or deployment on your own unless the enabled autonomy mode explicitly authorizes it.
+
 Activities:
 1. Confirm scope, risk, permissions, success criteria, and baseline.
 2. Divide work into independent subtasks with an owner and deliverable.
@@ -93,3 +99,5 @@ Use the multi-agent implementation prompt and adapt it to:
 
 | File | Applied change | Residual risk | Suggested commit |
 |---|---|---|---|
+| `src/auth/session.py` | Added token expiration validation before refreshing the session | low — change isolated to the session middleware, covered by existing unit tests | `fix(auth): validate token expiration before refreshing session #205` |
+| `src/api/routes/orders.py` | Fixed a race condition when updating order status concurrently | medium — another agent was editing the same file in parallel; the conflict was caught via drift detection, classified as textual, and resolved while preserving both changes | `fix(api/orders): avoid race condition when updating status #211` |

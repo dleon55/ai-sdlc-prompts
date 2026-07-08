@@ -131,6 +131,13 @@ Steps:
    - Trend: is the number of vulnerabilities rising, falling, or stable?
    - SLA compliance: % of vulnerabilities closed within defined SLA
 
+Constraints:
+- don't classify a finding as a false positive or accepted risk without documenting the reasoning; for "accepted with risk" also require explicit approval and a review date — never leave it implicit,
+- if an actively exploited public exploit exists or the CVE is on CISA's KEV catalog, escalate the SLA to immediate with no exception, regardless of the calculated CVSS,
+- this is a consolidation and prioritization task, not an execution one: generate the backlog as text ready to create in GitHub Issues/Jira, but don't create or publish the issues, and don't apply any fix directly,
+- when consolidating reports from other tools (SAST, SCA, DAST, pentesting), never reproduce the real value of a secret, credential, or working exploit payload that appears in the original report — reference only its location and type,
+- if a finding comes from a CVE or advisory not yet publicly disclosed, don't include exploitation details beyond what's needed for internal remediation, and follow the team's responsible disclosure process before sharing it outside the internal backlog.
+
 Deliverables:
 - consolidated vulnerability table with triage and CVSS severity,
 - security backlog in issues format ready to create,

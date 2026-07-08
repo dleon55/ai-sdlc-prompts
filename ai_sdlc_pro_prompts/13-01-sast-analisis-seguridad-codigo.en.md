@@ -127,6 +127,13 @@ Steps:
    - LOW (CVSS 0.1-3.9): limited impact or difficult exploitation
    - INFORMATIONAL: best practice, not a vulnerability
 
+Constraints:
+- never include the real value of a secret, credential, or API key found in the code, even if it's hardcoded and exposed — reference only the file, approximate line, and type,
+- this is read-only static analysis: don't modify the code, don't execute the identified injection payloads, and don't attempt to exploit the vulnerabilities against a real or staging system,
+- don't generate or apply automated patches — every proposed remediation requires human review and approval before it's merged,
+- if you can't determine the language, framework, or data entry points, state this explicitly in the report instead of inventing findings,
+- don't reclassify a finding's severity without cited code evidence that justifies it.
+
 Deliverables:
 - findings table with severity, OWASP category, component, description, and remediation,
 - recommended SAST tools list with execution commands,

@@ -46,6 +46,12 @@ Actividades de Análisis:
 3. LECTORES DE PANTALLA (Screen Readers): Revisa la presencia y correcto uso de etiquetas `aria-*`, `alt` en imágenes informativas, e ignorar (`aria-hidden="true"`) imágenes decorativas.
 4. FORMULARIOS: Valida que los `<input>` estén correctamente enlazados a sus `<label>` (id/for) y que los mensajes de error sean anunciados por lectores de pantalla (`aria-describedby`, `aria-live`).
 
+Restricciones:
+- cita el criterio de éxito WCAG 2.2 específico (p. ej. 2.1.1, 4.1.2) que respalda cada violación reportada, nunca una referencia genérica al estándar,
+- no declares que un criterio "cumple" o "no cumple" si el fragmento de código no incluye evidencia suficiente (p. ej. contraste definido en una hoja de estilos externa no provista) — documenta la limitación en vez de asumir,
+- distingue explícitamente los hallazgos verificables de forma automática (contraste calculable, atributos ausentes, estructura semántica) de aquellos que requieren verificación manual con tecnología de asistencia real (lector de pantalla, navegación solo con teclado) — no sustituyas esa verificación manual con tu propio análisis estático,
+- no ejecutes el componente ni simules su comportamiento dinámico; si el comportamiento depende de JavaScript no visible en el snippet, señálalo como limitación de evidencia en el informe.
+
 Salida Obligatoria:
 1. INFORME WCAG: Listado de violaciones detectadas categorizadas por Severidad (Crítica, Alta, Media).
 2. CÓDIGO CORREGIDO: El mismo componente refactorizado con las etiquetas semánticas y atributos ARIA aplicados.
@@ -73,3 +79,10 @@ Usa el prompt de auditoría de accesibilidad y adáptalo a:
 | Informe WCAG | Violaciones agrupadas por severidad y su impacto en usuarios |
 | Código Corregido | Frontend refactorizado listo para copy-paste |
 | QA Checklist | Pasos de pruebas manuales de accesibilidad |
+
+### Ejemplo de hallazgo
+
+| Elemento | Criterio WCAG 2.2 | Severidad | Descripción | Corrección |
+|---|---|---|---|---|
+| `<div onClick={handleSubmit}>Enviar</div>` (línea 42) | 2.1.1 Keyboard | Crítica | El control no es alcanzable ni operable por teclado y no expone el rol semántico de botón a lectores de pantalla | Reemplazar por `<button type="button" onClick={handleSubmit}>Enviar</button>` |
+| `<img src="banner-promo.png">` sin atributo `alt` (línea 10) | 1.1.1 Non-text Content | Alta | El lector de pantalla no puede describir una imagen informativa, dejando al usuario sin contexto | Agregar `alt="Descripción del contenido del banner"`, o `alt=""` si la imagen es puramente decorativa |
