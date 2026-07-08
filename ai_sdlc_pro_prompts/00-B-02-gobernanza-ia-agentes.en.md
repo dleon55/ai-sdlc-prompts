@@ -8,6 +8,22 @@ Prompt to generate the configuration and governance files that control the behav
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | documentation |
+| Expected risk | medium — poorly defined governance rules can de facto grant AI agents more autonomy than intended (or block them unnecessarily), even though the prompt itself only drafts files without applying them |
+| Required inputs | project name and stack, methodology, active AI agent platforms, permitted autonomy level, project critical rules and prohibited patterns, available tools/integrations, data and environment classification |
+| Allowed tools | read of existing instructions and configuration in the repository (to reuse and avoid duplication) — no write or execution; the human decides whether to create the delivered files |
+| Permitted autonomy | A1 — Propose |
+| Stop criteria | if it cannot be confirmed which agents are actually active in the repository, do not generate configuration for hypothetical agents; if declared critical rules contradict each other, flag the conflict instead of resolving it arbitrarily |
+| Expected output | see `## Expected Output` |
+| Minimum evidence | each delivered file corresponds to a platform declared as active; the mandatory rules (no exposing secrets, no migrations or CI/CD changes without approval, no direct push to protected branches, escalate on ambiguity) appear in every generated file |
+| Recommended next prompt | `00-C-03-configuracion-por-agente` to deepen the specific mechanisms of each already-active agent |
+
+---
+
 ## Mandatory Previous Context
 
 > Include the block from file `00-framework.en.md` before this prompt.

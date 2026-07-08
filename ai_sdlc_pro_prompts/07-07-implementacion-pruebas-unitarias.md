@@ -8,6 +8,22 @@ Prompt para generar el código ejecutable de las pruebas unitarias a partir del 
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | ejecución — genera y ejecuta código de prueba real a partir de una matriz de diseño |
+| Riesgo esperado | medio — escribe y ejecuta archivos de prueba localmente; no modifica código fuente ni publica cambios, pero mocks incorrectos o cobertura mal estimada pueden dar falsa confianza |
+| Entradas requeridas | Perfil de stack de pruebas (`07-00`) y matriz de diseño de pruebas unitarias (`07-01`) adjuntos o referenciados; acceso al código fuente de las unidades bajo prueba |
+| Herramientas permitidas | lectura del código fuente y configuración del framework; escritura únicamente de archivos de prueba (nunca del código fuente); ejecución local de los tests generados; sin push, commit ni despliegue |
+| Autonomía permitida | A2 — Ejecutar controlado (escribe y ejecuta archivos de prueba en el workspace, sin publicar cambios) |
+| Criterios de detención | no modificar código fuente bajo ningún concepto; detener tras un máximo de 3 ciclos de auto-corrección si persisten fallos de compilación o asserts, y reportar el diagnóstico exacto en vez de seguir intentando |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | bloque JSON de metadatos inicial (status, tests_written_count, estimated_coverage_pct, confidence_score), comando de ejecución verificado, resultados stdout/stderr de una corrida local y registro de métricas PSP/TSP al final |
+| Siguiente prompt recomendado | `07-08-implementacion-pruebas-integracion` para continuar con la siguiente capa de pruebas |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

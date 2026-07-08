@@ -8,6 +8,22 @@ Prompt to perform triage, classification, prioritization, and full lifecycle man
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | security |
+| Expected risk | medium — an incorrect triage (marking a true positive as a false positive, or assigning a lax SLA to a critical finding) can leave an exploitable vulnerability unremediated |
+| Required inputs | reports from the security tools already run (`13-01`, `13-02`, `13-05`, `13-06`, or automated scanners), criticality of the affected system, project-defined remediation SLAs (or use the standard ones) |
+| Allowed tools | reading and consolidation of existing reports; generates the issues backlog as text ready to create in GitHub Issues/Jira, but does not create or publish them |
+| Permitted autonomy | A1 — Propose the prioritized security backlog, without creating issues or applying changes directly |
+| Stop criteria | do not classify a finding as a false positive or accepted risk without documenting the reasoning and, for "accepted with risk," without explicit approval and a review date; if an actively exploited public exploit exists, escalate the SLA to immediate with no exception |
+| Expected output | see `## Expected output` |
+| Minimum evidence | each vulnerability in the backlog references its original source, CVSS severity, triage result, and assigned SLA with justification |
+| Recommended next prompt | `08-03-remediacion-maestro` to execute the remediation plan for the prioritized findings |
+
+---
+
 ## Required prior context
 
 > Include the block from `00-framework.md` before this prompt.

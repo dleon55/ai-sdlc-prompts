@@ -8,6 +8,22 @@ Prompt para elaborar un plan de implementación ejecutable y trazable: actividad
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | diseño |
+| Riesgo esperado | medio — no ejecuta cambios, pero es la base sobre la que se autorizará la implementación real; un plan incompleto u optimista puede derivar en ejecución sin rollback o evidencia definidos |
+| Entradas requeridas | diseño aprobado (`04-01`), arquitectura, contratos, rama objetivo, ambiente de destino, componentes a modificar |
+| Herramientas permitidas | solo lectura de diseño/arquitectura/contratos; no ejecuta comandos ni modifica el repositorio, produce el plan como documento |
+| Autonomía permitida | A1 — Proponer (plan o artefacto sin aplicar); no autoriza por sí sola ejecutar, commitear ni desplegar |
+| Criterios de detención | detener si no existe diseño aprobado del cual partir; no dejar pasos sin evidencia esperada, dependencia o riesgo declarado; señalar explícitamente si algún paso requiere ambiente de producción |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | bloque JSON de metadatos parseable al inicio, cada paso (1–9) con evidencia esperada definida, registro de métricas PSP/TSP completo |
+| Siguiente prompt recomendado | `05-02-riesgos-implementacion`, en paralelo, antes de pasar a `06-01-implementacion-multiagente` |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

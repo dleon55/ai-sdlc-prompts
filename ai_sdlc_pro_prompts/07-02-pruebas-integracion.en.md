@@ -8,6 +8,22 @@ Prompt to define integration tests that validate the interaction between modules
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | design |
+| Expected risk | low — produces an integration test plan as a design artifact, does not run tests or modify the repository |
+| Required inputs | API contracts, integration design, available test data, unit test matrix (`07-01`) if it exists |
+| Allowed tools | read-only access to contracts, integration design, and code; does not run tests or write files, only produces the plan |
+| Permitted autonomy | A1 — Propose (integration test plan without implementing it) |
+| Stop criteria | stop if there are no reference API contracts or integration design; never use real production data as test data, only synthetic or anonymized data |
+| Expected output | see `## Expected output` |
+| Minimum evidence | each flow with explicit integrated components, test data, and error validation |
+| Recommended next prompt | `07-08-implementacion-pruebas-integracion` to turn the plan into executable tests |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

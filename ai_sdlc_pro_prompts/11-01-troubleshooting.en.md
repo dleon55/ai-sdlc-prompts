@@ -8,6 +8,22 @@ Prompt to analyze an environment, deployment, service, container, pipeline or co
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | analysis |
+| Expected risk | medium — analyzes an environment with possible service impact; if the environment is PROD with significant impact, the prompt itself requires escalating to `11-04-incident-response` |
+| Required inputs | symptom, environment (DEV/QA/STAGING/PROD), involved services, available evidence (logs, errors, captures) |
+| Allowed tools | read-only access for diagnosis (logs, service status, metrics); explicitly forbidden to run restarts, rollbacks, configuration changes, or destructive commands |
+| Permitted autonomy | A0 — Analyze: diagnosis and hypotheses; the resolution path is left proposed and pending approval before moving to A2 |
+| Stop criteria | if the environment is PROD and there is significant user impact, it must stop and escalate to `11-04-incident-response` instead of continuing standard troubleshooting |
+| Expected output | see `## Expected output` |
+| Minimum evidence | hypotheses ordered by probability with associated evidence, and diagnostic commands limited to read-only |
+| Recommended next prompt | `11-04-incident-response` if it escalates to a PROD incident with significant impact; `03-02-causa-raiz` if a formal root cause analysis is needed after resolution |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

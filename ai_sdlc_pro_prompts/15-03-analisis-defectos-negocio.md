@@ -8,6 +8,22 @@ Prompt para testers manuales y analistas funcionales. Ayuda a estructurar report
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | documentación |
+| Riesgo esperado | bajo — redacta un reporte de bug, no ejecuta cambios ni acciones sobre el sistema |
+| Entradas requeridas | descripción del error observado, pasos realizados, comportamiento esperado, evidencia técnica si existe (log, código HTTP, captura) |
+| Herramientas permitidas | ninguna de ejecución — redacción de texto a partir de la evidencia proporcionada |
+| Autonomía permitida | A1 — Proponer |
+| Criterios de detención | si la severidad técnica y la prioridad de negocio no pueden justificarse con la evidencia dada, declararlo en vez de asumir un nivel de impacto |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | pasos de reproducción concretos y comportamiento actual vs. esperado, ambos verificables por el desarrollador que reciba el reporte |
+| Siguiente prompt recomendado | `03-01-incidentes-github` para comparar el defecto contra issues ya existentes antes de crearlo |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

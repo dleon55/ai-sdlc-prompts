@@ -8,6 +8,22 @@ Prompt para generar una memoria técnica clara y ejecutiva del cambio realizado:
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | documentación |
+| Riesgo esperado | bajo — genera un documento de registro/auditoría; no ejecuta acciones sobre el sistema, pero al ser insumo de auditoría formal, imprecisiones afectan la trazabilidad del cambio |
+| Entradas requeridas | issue o requerimiento, rama integrada, ambiente, componentes modificados, commits/PRs, diseño aprobado, resultados de pruebas ejecutadas |
+| Herramientas permitidas | solo lectura (commits, PRs, diseño aprobado, resultados de pruebas); no ejecuta comandos ni modifica el repositorio |
+| Autonomía permitida | A1 — Proponer: redacta el documento de memoria técnica; no lo publica ni archiva por sí mismo |
+| Criterios de detención | si faltan resultados de pruebas o el diseño aprobado no está disponible, debe señalarlo explícitamente en la sección correspondiente en vez de inventar resultados |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada sección (causa raíz, pruebas ejecutadas, riesgos) debe estar respaldada por una referencia verificable (commit, PR o resultado de test), no ser genérica |
+| Siguiente prompt recomendado | `10-03-release-changelog` si el cambio se agrupa en un release; `11-03-deuda-tecnica` para registrar los puntos pendientes como deuda técnica formal |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

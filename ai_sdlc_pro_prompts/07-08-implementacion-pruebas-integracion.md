@@ -8,6 +8,22 @@ Prompt para generar el código ejecutable de las pruebas de integración a parti
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | ejecución — genera y ejecuta pruebas de integración reales entre módulos, servicios, APIs y base de datos |
+| Riesgo esperado | medio — orquesta estado (base de datos, contenedores, stubs) y ejecuta flujos completos; el prompt prohíbe explícitamente llamar a servicios de producción reales |
+| Entradas requeridas | Perfil de stack de pruebas (`07-00`) y plan de pruebas de integración (`07-02`) adjuntos o referenciados; entorno de pruebas disponible o simulable (contenedores, stubs) |
+| Herramientas permitidas | lectura del código, contratos de API y esquema de base de datos; escritura de archivos de prueba de integración, fixtures y helpers reutilizables; ejecución local o en entorno de pruebas (contenedores, servicios simulados); sin llamadas a servicios de producción y sin push/deploy |
+| Autonomía permitida | A2 — Ejecutar controlado (escribe, ejecuta y limpia estado en workspace o entorno de pruebas aislado) |
+| Criterios de detención | detener si una dependencia externa requerida no puede simularse con stub o contenedor y la prueba dependería de un servicio real de producción; detener si el teardown no puede garantizar el aislamiento del estado entre ejecuciones |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | archivos de prueba de integración ejecutables, instrucciones de setup del entorno, comando de ejecución verificado y notas sobre dependencias externas pendientes de configuración |
+| Siguiente prompt recomendado | `07-09-implementacion-pruebas-e2e` para continuar con las pruebas end-to-end |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

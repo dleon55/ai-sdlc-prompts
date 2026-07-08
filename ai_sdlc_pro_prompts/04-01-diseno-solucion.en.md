@@ -8,6 +8,22 @@ Prompt to design the complete solution before implementing: objective, scope, as
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | design |
+| Expected risk | medium — the resulting design directly guides implementation; an incomplete design regarding risks or rollback strategy can lead to an unsafe implementation or one without a reversal plan, although this prompt does not execute changes |
+| Required inputs | completed functional, technical, and cross-impact analysis (`02-01`, `02-02`, `02-03`), existing architecture and contracts |
+| Allowed tools | reading of code, architecture, and documentation — no execution or changes; the output is a design document, not code |
+| Permitted autonomy | A1 — Propose |
+| Stop criteria | if there is no viable rollback strategy for a critical component, state it as an open risk in the design instead of omitting it |
+| Expected output | see `## Expected output` |
+| Minimum evidence | every proposed change by component must be linked to a risk and its mitigation, and to cited findings from the prior analysis |
+| Recommended next prompt | `05-01-plan-implementacion` |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

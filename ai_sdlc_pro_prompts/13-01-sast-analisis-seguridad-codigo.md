@@ -8,6 +8,22 @@ Prompt para realizar un análisis estático de seguridad del código fuente (SAS
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | seguridad |
+| Riesgo esperado | medio — es análisis de solo lectura, pero un falso negativo (vulnerabilidad no detectada) puede llegar a producción sin control adicional |
+| Entradas requeridas | código fuente y rama a analizar, lenguaje/framework, modelo de autenticación en uso, tipo de datos sensibles manejados; resultado de `13-04` (Threat Modeling) si existe |
+| Herramientas permitidas | lectura de código y configuración únicamente; recomienda comandos de bandit/semgrep/eslint-plugin-security/gosec/etc. como complemento, pero no los ejecuta ni modifica el repositorio |
+| Autonomía permitida | A0 — Analizar |
+| Criterios de detención | si no se puede determinar el lenguaje, framework o los puntos de entrada de datos, declararlo explícitamente en vez de inventar hallazgos; no reclasificar severidad sin evidencia de código citada |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada hallazgo referencia archivo/línea (o componente), categoría OWASP Top 10 y severidad CVSS v3.1 justificada |
+| Siguiente prompt recomendado | `13-07-gestion-vulnerabilidades-cves` para triaje y backlog de los hallazgos; `08-03-remediacion-maestro` para planificar la remediación de los críticos |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

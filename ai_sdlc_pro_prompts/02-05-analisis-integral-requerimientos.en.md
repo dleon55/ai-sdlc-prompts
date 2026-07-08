@@ -8,6 +8,22 @@ Senior software engineering prompt designed to perform a comprehensive analysis 
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | analysis |
+| Expected risk | medium — it combines architecture, DBA, DevOps, security, and QA into a single Definition-of-Ready candidate issue; if DoR validation or the ISO/IEEE impact analysis is incomplete, the issue can move to implementation with unverified assumptions |
+| Required inputs | user_requirement (an idea or CR not yet formalized), repository, base_branch, existing related documentation and code |
+| Allowed tools | reading of code, documentation, and configuration — the "GitHub Issue Markdown" block is a text artifact meant to be copied manually; the prompt does not create or publish issues on GitHub |
+| Permitted autonomy | A1 — Propose |
+| Stop criteria | if Definition of Ready compliance cannot be confirmed (acceptance criteria, scope, or impact not verifiable), mark the resulting issue as "not ready" instead of presenting it as Ready |
+| Expected output | see `## Expected output` |
+| Minimum evidence | every statement under FACTS must correspond to verified repository state; ASSUMPTIONS and RISKS must be declared separately, not mixed with facts |
+| Recommended next prompt | `02-04-triage-backlog-github` if several generated issues need prioritization; `04-01-diseno-solucion` if the issue was already created and design work continues |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

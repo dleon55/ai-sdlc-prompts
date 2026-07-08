@@ -8,6 +8,22 @@ Prompt to diagnose, analyze, and remediate performance problems in production: i
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | analysis |
+| Expected risk | high — diagnoses an actively running production system and includes optional profiling that can add overhead to an already degraded system |
+| Required inputs | metrics/traces/logs from the degradation period (from `10-04` or Grafana/Datadog/CloudWatch export), technology stack, infrastructure, impacted SLO; optionally thresholds from `07-06`/`07-11` |
+| Allowed tools | steps 1-3 and 5-7: read-only access to metrics, traces, and logs; step 4 (profiling) may run profiling tools, preferably on staging with mirrored traffic — in production only with explicit caution due to the overhead it introduces |
+| Permitted autonomy | A0 — Analyze in characterization, trace/log analysis, and layer-by-layer diagnosis; A1 — Propose in the optimization plan; A2 — Execute controlled only for profiling on staging or to apply already-approved optimizations |
+| Stop criteria | if the required profiling can only run in production and no staging with mirrored traffic is available, it must stop and request explicit approval before profiling live |
+| Expected output | see `## Expected output` |
+| Minimum evidence | each PERF-XXX finding has associated trace or log evidence and a measurable before/after validation metric |
+| Recommended next prompt | `07-06-pruebas-performance-carga` to design tests confirming the improvement under load; `10-04-observabilidad-instrumentacion` if the diagnosis reveals instrumentation blind spots |
+
+---
+
 ## Required prior context
 
 > Include the block from `00-framework.md` before this prompt.

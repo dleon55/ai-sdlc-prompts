@@ -8,6 +8,22 @@ Prompt to review the CI pipeline status locally and on GitHub and determine if c
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | analysis |
+| Expected risk | low — read-only diagnosis of pipeline status, does not modify workflows, code, or re-run jobs |
+| Required inputs | local CI logs and GitHub Actions logs, PR check status, files under `.github/workflows/` |
+| Allowed tools | reading CI logs and PR checks — no re-running jobs, no modifying workflows |
+| Permitted autonomy | A0 — Analyze |
+| Stop criteria | if any PR check is pending or has no accessible logs, mark it as "pending" in the approval criterion instead of assuming it passed or failed |
+| Expected output | see `## Expected output` |
+| Minimum evidence | each reported failure must cite the job, the step, and the specific error message from the log |
+| Recommended next prompt | `09-01-integracion-ramas` if the pipeline is green and integration with the target branch proceeds |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

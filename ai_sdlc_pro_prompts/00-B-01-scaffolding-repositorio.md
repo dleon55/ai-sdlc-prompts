@@ -8,6 +8,22 @@ Prompt para diseñar y generar la estructura base de un repositorio nuevo: direc
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | diseño |
+| Riesgo esperado | medio — la estructura de repositorio propuesta es costosa de rehacer una vez que el equipo empieza a construir sobre ella, aunque el prompt no escribe archivos por sí mismo |
+| Entradas requeridas | tipo de proyecto, metodología, stack tecnológico, plataforma de hosting/CI, composición del equipo, tipo de licencia |
+| Herramientas permitidas | lectura opcional de la estructura actual del repositorio si ya existe — no requiere escritura ni ejecución; el resultado es texto para que un humano lo aplique |
+| Autonomía permitida | A1 — Proponer |
+| Criterios de detención | si el tipo de proyecto o el stack son ambiguos, o si ya existe una estructura en conflicto con la propuesta, declarar la ambigüedad y pedir confirmación antes de proponer una reestructuración completa |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | el árbol de directorios y la tabla de archivos son consistentes con el tipo de proyecto y stack declarados; cada archivo crítico (README, CONTRIBUTING, .gitignore, CODEOWNERS) incluye contenido base, no solo el nombre |
+| Siguiente prompt recomendado | `00-B-03-github-configuracion` para las protecciones y plantillas de GitHub; `00-B-05-stack-calidad-codigo` para configurar linters, formatters y quality gates sobre la estructura ya creada |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

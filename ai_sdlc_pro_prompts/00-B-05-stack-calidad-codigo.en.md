@@ -8,6 +8,22 @@ Prompt to select and configure code quality tools according to the project stack
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | operation |
+| Expected risk | medium — a miscalibrated coverage threshold or quality gate can unnecessarily block the CI pipeline or, conversely, let unvalidated changes through; the prompt delivers files and workflow, it does not execute them |
+| Required inputs | main language(s) and framework(s), CI platform, desired minimum coverage, restriction level (permissive/balanced/strict) |
+| Allowed tools | read of the repository's real stack (dependency manifests) to choose the correct tools — delivers complete configuration files and CI workflow YAML as text, without applying them or running the pipeline |
+| Permitted autonomy | A1 — Propose |
+| Stop criteria | if the detected stack is ambiguous or mixed without a clear primary language, request confirmation before generating an exhaustive configuration that might not apply |
+| Expected output | see `## Expected Output` |
+| Minimum evidence | each delivered configuration file is syntactically valid for its format (YAML/TOML/JSON); the CI workflow explicitly references the coverage threshold declared as input |
+| Recommended next prompt | `00-B-03-github-configuracion` to register the new quality workflow as a required check in branch protection |
+
+---
+
 ## Mandatory Previous Context
 
 > Include the block from file `00-framework.en.md` before this prompt.

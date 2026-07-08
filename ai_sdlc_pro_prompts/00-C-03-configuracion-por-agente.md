@@ -8,6 +8,22 @@ Prompt y referencia para configurar el comportamiento, las instrucciones y las r
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | documentación |
+| Riesgo esperado | medio — si una regla común obligatoria (no exponer secretos, no migraciones sin aprobación, no push a ramas protegidas) queda ausente en el mecanismo propio de un agente, ese agente puede operar con más autonomía de la prevista; el prompt solo redacta contenido, no lo aplica |
+| Entradas requeridas | lista de agentes activos (Copilot, Claude, Codex, Windsurf, Cursor, Antigravity), stack del proyecto, metodología, reglas críticas del proyecto, nivel de autonomía general; gobernanza base ya existente (`00-B-02`) |
+| Herramientas permitidas | lectura de la gobernanza y configuración ya existentes en el repositorio para no duplicarlas — sin escritura ni ejecución; el humano decide crear los archivos entregados (`.github/copilot-instructions.md`, `.windsurfrules`, `.cursorrules`, `AGENTS.md`, `docs/ai-agents/*.md`) |
+| Autonomía permitida | A1 — Proponer |
+| Criterios de detención | si se solicita configurar un agente sin que exista la gobernanza base (`00-B-02`), o si el nivel de autonomía solicitado para un agente entra en conflicto con las reglas comunes obligatorias, señalar el conflicto antes de generar la configuración específica |
+| Salida esperada | no existe una sección `## Salida esperada` independiente en este prompt — el formato de salida son los bloques de configuración por agente y la "TABLA COMPARATIVA DE MECANISMOS" dentro del bloque de prompt |
+| Evidencia mínima | cada agente declarado como activo tiene su bloque de configuración completo con archivo, mecanismo y contenido; las reglas comunes obligatorias aparecen en todos los mecanismos generados |
+| Siguiente prompt recomendado | `00-C-02-plan-mode-multiagente` para operar en modo plan y coordinación multi-agente con la configuración por agente ya activa |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.
@@ -103,7 +119,7 @@ Estructura del archivo:
 - instrucción de modo plan disponible: cuando se indique "plan only"
 
 ─────────────────────────────────────
-CHROME ANTIGRAVITY (pruebas E2E en navegador)
+GOOGLE ANTIGRAVITY (pruebas E2E en navegador)
 ─────────────────────────────────────
 Mecanismo: instrucciones en el prompt de tarea + archivo de configuración
 Alcance específico: solo pruebas en navegador, no modificación de código fuente

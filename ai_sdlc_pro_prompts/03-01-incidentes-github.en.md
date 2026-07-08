@@ -8,6 +8,22 @@ Prompt to normalize testing incidents, compare them against existing issues in G
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | analysis |
+| Expected risk | medium — misclassifying an incident as duplicate or "already exists" can hide a real, unreported defect |
+| Required inputs | normalized QA incident report, read access to open and closed GitHub issues |
+| Allowed tools | reading/searching GitHub issues — no creating, closing, commenting on, or modifying issues |
+| Permitted autonomy | A1 — Propose (drafts issues and actions, does not execute them) |
+| Stop criteria | the prompt itself explicitly restricts its scope to analysis and drafting; never run mutation actions on GitHub |
+| Expected output | see `## Expected output` |
+| Minimum evidence | each classified incident must reference the equivalent GitHub issue (or its confirmed absence) |
+| Recommended next prompt | `03-02-causa-raiz` if a confirmed incident requires root cause investigation |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

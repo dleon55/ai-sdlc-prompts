@@ -8,6 +8,22 @@ Prompt para redactar un issue GitHub de alta calidad que pueda ser ejecutado por
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | documentación |
+| Riesgo esperado | medio — este prompt no ejecuta nada, pero el issue que produce es el contrato que gobernará a un agente ejecutor después; un alcance, restricción o nivel de autonomía mal redactado aquí se hereda directamente en la ejecución real |
+| Entradas requeridas | título y tipo del issue, descripción del problema/requerimiento, repositorio y rama destino, ambiente, archivos/módulos involucrados (si se conocen), criterios de aceptación, restricciones, agente asignado, resultado observable esperado, permisos/herramientas autorizadas, presupuesto |
+| Herramientas permitidas | lectura del repositorio para verificar que rutas, comportamiento actual y contexto citados son reales — no debe inventar rutas ni comandos; no crea el issue en GitHub, solo redacta el contenido y sugiere el comando `gh issue create` |
+| Autonomía permitida | A1 — Proponer (redacta el issue y el comando sugerido; publicarlo en GitHub es una acción A3 que queda fuera de este prompt) |
+| Criterios de detención | si la información disponible no permite completar el `## Contrato de ejecución` (modo de autonomía, herramientas, alcance) de forma no ambigua, declarar el issue como "NO apto para agente" en la evaluación de readiness en vez de rellenar valores inventados |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | el issue generado incluye las secciones obligatorias (Descripción, Contexto técnico, Criterios de aceptación, Restricciones, Contrato de ejecución, Pruebas requeridas, Evidencia de cumplimiento, Checklist de validación humana) y declara explícitamente el modo de autonomía A0-A3 |
+| Siguiente prompt recomendado | `00-C-02-plan-mode-multiagente` para que el agente asignado ejecute la tarea en modo plan antes de tocar código |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

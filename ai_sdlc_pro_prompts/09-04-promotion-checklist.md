@@ -8,6 +8,22 @@ Prompt para planificar y documentar la promoción de cambios entre ambientes (de
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | operación |
+| Riesgo esperado | alto — el checklist determina el go/no-go de un despliegue que puede incluir migraciones de base de datos, cambios de infraestructura y llegar a producción |
+| Entradas requeridas | referencia al issue/PR, rama fuente, ambiente origen y destino, stack de despliegue, indicación de si hay migraciones de BD, cambios de infraestructura o de variables de entorno |
+| Herramientas permitidas | lectura de CHANGELOG, diff del PR, runbooks y documentación de arquitectura — sin ejecutar el despliegue, comandos contra el ambiente destino ni acciones de rollback reales |
+| Autonomía permitida | A1 — Proponer (genera el checklist y el semáforo go/no-go; la ejecución del despliegue y del rollback requiere A3 explícito por el responsable de release) |
+| Criterios de detención | si no hay responsable de rollback disponible, si hay migraciones de BD sin backup confirmado, o si se cumple alguna condición NO-GO explícita del punto 2, detener y no recomendar continuar con el despliegue |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada ítem del semáforo go/no-go debe quedar marcado con su estado (🟢/🔴) y una observación que lo justifique |
+| Siguiente prompt recomendado | `09-02-monitoreo-ci` antes de ejecutar la promoción, para confirmar que el pipeline del cambio está en verde |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

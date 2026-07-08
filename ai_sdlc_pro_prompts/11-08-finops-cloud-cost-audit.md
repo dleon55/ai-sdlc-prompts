@@ -8,6 +8,22 @@ Prompt enfocado en operaciones financieras de ingeniería (FinOps). Se le propor
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | análisis |
+| Riesgo esperado | medio — el código IaC corregido que propone es una sugerencia de texto, no se aplica automáticamente, pero un cambio de `instance_type` o `lifecycle_rule` mal evaluado podría degradar disponibilidad si se aplica sin validar |
+| Entradas requeridas | código de infraestructura (Terraform, CDK, Kubernetes manifests) o descripción de arquitectura, proveedor cloud |
+| Herramientas permitidas | lectura de código IaC y arquitectura — el código corregido se entrega como texto para revisión humana, no se aplica ni se despliega |
+| Autonomía permitida | A1 — Proponer |
+| Criterios de detención | no recomendar Spot Instances o cambios de tier de almacenamiento para cargas de trabajo sin tolerancia a interrupciones sin señalar explícitamente ese riesgo |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada recurso señalado como "desperdicio" cita el archivo/recurso IaC exacto y la estimación de ahorro asociada |
+| Siguiente prompt recomendado | `09-03-workflows-github-actions` si la optimización requiere cambios en el pipeline de despliegue |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

@@ -8,6 +8,22 @@ Prompt de análisis estático y trazable para reconstruir cómo funciona realmen
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | análisis |
+| Riesgo esperado | medio — es la base para el análisis de impacto cruzado (`02-03`) y el diseño (`04-01`); un mapeo incorrecto del flujo, contratos o dependencias propaga errores a esas fases, aunque el prompt no modifica archivos |
+| Entradas requeridas | resultado de `02-01`, repositorio o workspace, issue o requerimiento, rama o commit objetivo, ambiente, documentos y contratos a revisar |
+| Herramientas permitidas | lectura de código, logs e historial git; ejecución no destructiva limitada a inspecciones, compilaciones o pruebas enfocadas ya aprobadas por el proyecto (máximo tres ciclos de autocorrección) — sin editar archivos ni hacer commits |
+| Autonomía permitida | A0 — Analizar |
+| Criterios de detención | si el comportamiento no puede verificarse en runtime, declararlo como análisis estático; si el `status` del JSON de metadatos resulta `blocked`, detener y escalar en vez de forzar conclusiones |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada hallazgo y riesgo debe citar ruta, símbolo y línea; cada verificación ejecutada debe registrar comando, resultado y limitaciones |
+| Siguiente prompt recomendado | `02-03-impacto-cruzado` |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

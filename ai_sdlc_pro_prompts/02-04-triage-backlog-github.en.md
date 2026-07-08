@@ -8,6 +8,22 @@ Composite prompt to analyze a set of GitHub issues from the current repository o
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | analysis |
+| Expected risk | medium — the result influences a team's actual prioritization and work assignment; consolidating or recommending closure without evidence can discard valid issues, although the prompt does not close or modify issues itself |
+| Required inputs | issues source (e.g., `gh issue list` JSON output), applied filter, pending backlog criteria, target component or owner, target branch and environment, documents to review |
+| Allowed tools | reading of issues, PRs, branches, and documentation via read-only queries (`gh issue list` or equivalent) — no closing, labeling, assigning, or modifying issues |
+| Permitted autonomy | A1 — Propose |
+| Stop criteria | do not propose closing issues without evidence; if an issue's information is not enough to classify it precisely, state it as an assumption and lower the confidence level instead of assigning it a definitive priority |
+| Expected output | see `## Expected output` |
+| Minimum evidence | every row of the normalized issues matrix must be traceable to actual cited GitHub data (number, status, labels, assignee) |
+| Recommended next prompt | `05-01-plan-implementacion` for issues ready to implement; `02-01-analisis-issue` for those requiring functional clarification |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

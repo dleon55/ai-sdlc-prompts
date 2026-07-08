@@ -8,6 +8,22 @@ Prompt to perform a static security analysis of source code (SAST — Static App
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | security |
+| Expected risk | medium — this is read-only analysis, but a false negative (undetected vulnerability) can reach production without additional control |
+| Required inputs | source code and branch to analyze, language/framework, authentication model in use, type of sensitive data handled; `13-04` (Threat Modeling) result if it exists |
+| Allowed tools | reading of code and configuration only; recommends bandit/semgrep/eslint-plugin-security/gosec/etc. commands as a complement, but does not execute them or modify the repository |
+| Permitted autonomy | A0 — Analyze |
+| Stop criteria | if the language, framework, or data entry points cannot be determined, state this explicitly instead of inventing findings; do not reclassify severity without cited code evidence |
+| Expected output | see `## Expected output` |
+| Minimum evidence | each finding references a file/line (or component), OWASP Top 10 category, and a justified CVSS v3.1 severity |
+| Recommended next prompt | `13-07-gestion-vulnerabilidades-cves` to triage and backlog the findings; `08-03-remediacion-maestro` to plan remediation of the critical ones |
+
+---
+
 ## Required prior context
 
 > Include the block from `00-framework.md` before this prompt.

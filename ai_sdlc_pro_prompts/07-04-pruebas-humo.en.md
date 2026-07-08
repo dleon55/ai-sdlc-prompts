@@ -8,6 +8,22 @@ Prompt to define a smoke test plan that quickly validates the system remains ope
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | design — defines a smoke test checklist, does not execute it |
+| Expected risk | low — the prompt only produces the checklist; executing the steps (potentially in PROD) is left to a human or to `07-10` |
+| Required inputs | documented critical flows, reference to the deployed branch or version, target environment (QA/STAGING/PROD) |
+| Allowed tools | read-only access to documentation of critical flows and the last stable version; does not run commands or access live systems |
+| Permitted autonomy | A1 — Propose (delivers a prioritized checklist as an artifact, without executing it against the system) |
+| Stop criteria | stop if no critical flows are identified or the target environment is undefined, since the checklist would lose its usefulness as a quick validation |
+| Expected output | see `## Expected output` |
+| Minimum evidence | the checklist must cover authentication, main critical flow, module access, minimal integrations, and absence of visible errors, each step marked critical or not and executable in under 15 minutes |
+| Recommended next prompt | `07-10-implementacion-pruebas-humo` to automate execution of the checklist |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

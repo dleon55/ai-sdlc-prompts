@@ -8,6 +8,22 @@ Prompt para normalizar incidentes de testing, compararlos contra issues existent
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | análisis |
+| Riesgo esperado | medio — clasificar mal un incidente como duplicado o "ya existe" puede ocultar un defecto real sin reportar |
+| Entradas requeridas | reporte de incidentes de QA normalizado, acceso de lectura a issues abiertos y cerrados en GitHub |
+| Herramientas permitidas | lectura/búsqueda de issues en GitHub — sin crear, cerrar, comentar ni modificar issues |
+| Autonomía permitida | A1 — Proponer (redacta issues y acciones, no las ejecuta) |
+| Criterios de detención | el propio prompt restringe explícitamente su alcance a análisis y redacción; nunca ejecutar acciones de mutación en GitHub |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada incidente clasificado debe referenciar el issue de GitHub equivalente (o su ausencia confirmada) |
+| Siguiente prompt recomendado | `03-02-causa-raiz` si un incidente confirmado requiere investigación de causa raíz |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

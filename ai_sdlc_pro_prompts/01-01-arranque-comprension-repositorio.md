@@ -8,6 +8,22 @@ Prompt de arranque para construir un inventario técnico inicial del repositorio
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | análisis |
+| Riesgo esperado | bajo — es un inventario de solo lectura; un vacío o imprecisión se corrige en iteraciones posteriores y no genera cambios en el repositorio |
+| Entradas requeridas | acceso de lectura al repositorio completo (código fuente, configuración, documentación existente); no requiere issue ni incidente de referencia |
+| Herramientas permitidas | lectura de estructura de carpetas, código, configuración y documentación — sin ejecución ni cambios |
+| Autonomía permitida | A0 — Analizar |
+| Criterios de detención | si partes del repositorio no son accesibles o el monorepo tiene workspaces no resueltos, declarar el alcance cubierto y los vacíos en vez de inferir estructura no verificada |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada carpeta, tecnología o artefacto listado en el inventario debe corresponder a una ruta o archivo verificable en el repositorio |
+| Siguiente prompt recomendado | `01-02-analisis-procesos` para mapear el gobierno del proyecto; `02-01-analisis-issue` si ya existe un issue o requerimiento concreto que atender |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

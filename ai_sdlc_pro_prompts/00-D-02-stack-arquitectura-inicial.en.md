@@ -8,6 +8,22 @@ Prompt for defining, justifying, and documenting the **initial technology stack 
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | design |
+| Expected risk | high — the foundational decisions it covers (data model, authentication/authorization, scalability, topology) condition all subsequent development and are costly to reverse once implemented, even though the prompt itself does not execute or deploy anything |
+| Required inputs | project name and domain description, system type, known constraints (including compliance), preliminary stack if any, expected scale, deployment platform, team composition; requires the Project Charter (`00-D-01`) to already be approved |
+| Allowed tools | none for execution — a text architecture document plus a Mermaid diagram; it provisions no infrastructure and applies no decision |
+| Permitted autonomy | A1 — Propose (decisions marked `[PENDING DECISION]` or `[ADR REQUIRED]` are not considered applied until a formal ADR exists and is subsequently approved) |
+| Stop criteria | if a security, compliance, or scalability decision cannot be justified with the available information, mark it `[PENDING DECISION: reason]` and `[ADR REQUIRED]` instead of assuming a definitive choice without evidence |
+| Expected output | this prompt has no standalone `## Expected Output` section — see "Output format" at the end of the prompt block (structured document with the 9 sections, stack table, topology Mermaid diagram, `[PENDING DECISION]` and `[ADR REQUIRED]` markers) |
+| Minimum evidence | the stack table covers every requested layer with an evaluated alternative and justification; every critical decision is marked for a formal ADR; the topology Mermaid diagram is present |
+| Recommended next prompt | `04-04-adr-decisiones-arquitectura` to formalize each decision marked `[ADR REQUIRED]`; `00-B-01-scaffolding-repositorio` to generate the repository structure from the now-confirmed stack |
+
+---
+
 ## Required prior context
 
 > Include the block from `00-framework.md` before this prompt.

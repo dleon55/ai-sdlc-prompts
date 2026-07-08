@@ -8,6 +8,22 @@ Prompt para analizar un requerimiento, issue o cambio y determinar su alcance fu
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | análisis |
+| Riesgo esperado | medio — un alcance funcional mal definido (actores, comportamiento esperado, criterios de aceptación) puede dirigir mal el análisis técnico y el diseño posteriores, aunque este prompt no ejecuta cambios |
+| Entradas requeridas | issue o requerimiento a analizar, repositorio, módulo o funcionalidad, workspace/subproyecto y estándar/compliance aplicable |
+| Herramientas permitidas | lectura de código, documentación y del issue/requerimiento — sin ejecución ni cambios |
+| Autonomía permitida | A0 — Analizar |
+| Criterios de detención | si el issue no aporta información suficiente para fijar comportamiento esperado o criterios de aceptación, declarar el vacío y bajar el `confidence_score` en vez de inventar el alcance |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada caso de uso, regla de negocio y riesgo declarado debe estar vinculado al texto del issue o a código/documentación citada, con el bloque JSON de metadatos completo |
+| Siguiente prompt recomendado | `02-02-analisis-tecnico` |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

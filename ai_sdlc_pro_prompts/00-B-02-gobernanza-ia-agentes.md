@@ -8,6 +8,22 @@ Prompt para generar los archivos de configuración y gobierno que controlan el c
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | documentación |
+| Riesgo esperado | medio — reglas de gobernanza mal definidas pueden autorizar de facto más autonomía de la deseada a los agentes IA (o bloquearlos innecesariamente), aunque el prompt en sí solo redacta archivos, no los aplica |
+| Entradas requeridas | nombre y stack del proyecto, metodología, plataformas de agentes IA activas, nivel de autonomía permitido, reglas críticas y patrones prohibidos del proyecto, herramientas/integraciones disponibles, clasificación de datos y ambientes |
+| Herramientas permitidas | lectura de instrucciones y configuración existentes en el repositorio (para reutilizar y no duplicar) — sin escritura ni ejecución; el humano decide crear los archivos entregados |
+| Autonomía permitida | A1 — Proponer |
+| Criterios de detención | si no se puede confirmar qué agentes están realmente activos en el repositorio, no generar configuración para agentes hipotéticos; si las reglas críticas declaradas se contradicen entre sí, señalar el conflicto en vez de resolverlo arbitrariamente |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada archivo entregado corresponde a una plataforma declarada como activa; las reglas obligatorias (no exponer secretos, no migraciones ni cambios de CI/CD sin aprobación, no push directo a ramas protegidas, escalar ante ambigüedad) aparecen en todos los archivos generados |
+| Siguiente prompt recomendado | `00-C-03-configuracion-por-agente` para profundizar en los mecanismos propios de cada agente ya activo |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

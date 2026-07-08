@@ -8,6 +8,22 @@ Prompt para verificar que se han aplicado los controles de seguridad requeridos 
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | validación |
+| Riesgo esperado | medio — es un checklist de solo lectura, pero un veredicto de madurez incorrecto (marcar como cumplido lo que no lo está) puede autorizar un release con controles de seguridad ausentes |
+| Entradas requeridas | fase actual del ciclo, resultados disponibles de `13-01` (SAST), `13-02` (SCA) y `13-04` (Threat Modeling), arquitectura y workflows CI/CD del proyecto |
+| Herramientas permitidas | lectura de código, configuración, pipelines CI/CD y documentación del proyecto — sin ejecución de herramientas ni cambios |
+| Autonomía permitida | A0 — Analizar el estado de cada control; A1 — Proponer el plan de mejora y el roadmap de madurez priorizado |
+| Criterios de detención | marcar un control como "⚠️ parcial" o "❌ no cumple" en vez de "✅ cumple" si no hay evidencia verificable citada; detener y escalar si se detecta un secreto en código o un control crítico ausente en producción |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada ítem del checklist referencia la evidencia (archivo, pipeline, política) que sustenta el estado marcado |
+| Siguiente prompt recomendado | `08-03-remediacion-maestro` para las brechas que requieren cambio de código; `05-01-plan-implementacion` para las que requieren trabajo de diseño o proceso |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

@@ -8,6 +8,22 @@ Prompt to document architectural decisions in a structured way: problem context,
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | documentation |
+| Expected risk | medium — a poorly documented ADR, or rejected options left unjustified, can lead the team to re-evaluate a decision already made |
+| Required inputs | problem context, evaluated options, decision already made (this prompt documents, it does not decide) |
+| Allowed tools | reading existing architecture and `docs/decisions/` to avoid numbering collisions — only writes the new ADR file |
+| Permitted autonomy | A1 — Propose |
+| Stop criteria | before assigning the number, check `docs/decisions/README.md` or the existing index to avoid colliding with an already-used ADR-NNN |
+| Expected output | see `## Expected output` |
+| Minimum evidence | every evaluated option (including the rejected one) has explicit pros, cons, and reason for rejection |
+| Recommended next prompt | `05-01-plan-implementacion` if the ADR unblocks a pending implementation |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

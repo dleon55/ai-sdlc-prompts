@@ -8,6 +8,22 @@ Prompt para generar el código ejecutable de las pruebas end-to-end a partir del
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | ejecución — genera y ejecuta scripts de automatización de navegador contra un entorno de pruebas desplegado |
+| Riesgo esperado | medio — interactúa con una aplicación desplegada en QA/staging (navegación real, posible creación/eliminación de registros); el prompt prohíbe explícitamente el uso de datos o servicios de producción |
+| Entradas requeridas | Perfil de stack de pruebas (`07-00`) y plan de pruebas E2E (`07-03`) adjuntos o referenciados; aplicación desplegada y accesible en un entorno de pruebas (QA/staging) con credenciales de prueba |
+| Herramientas permitidas | lectura de casos de uso y flujos de pantalla; escritura de scripts E2E; ejecución del framework E2E (headless/headed) contra la URL de QA/staging; captura de screenshots/video; sin acceso a datos ni entornos de producción, sin push/deploy |
+| Autonomía permitida | A2 — Ejecutar controlado (ejecuta scripts contra un entorno de pruebas aislado, nunca contra producción) |
+| Criterios de detención | detener si la URL objetivo apunta a producción; detener si el flujo requeriría datos reales de usuarios; detener y documentar si el cleanup del estado generado (registros creados) no puede garantizarse al finalizar el test |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | scripts E2E ejecutables, configuración del framework, comando de ejecución verificado (headless y headed) y directorio de screenshots/reportes generado |
+| Siguiente prompt recomendado | `07-04-pruebas-humo` (o `07-10-implementacion-pruebas-humo`) tras el despliegue, para una validación rápida de salud del sistema |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

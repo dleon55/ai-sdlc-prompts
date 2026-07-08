@@ -8,6 +8,22 @@ Prompt para ejecutar cualquier tarea en **modo plan** antes de implementar: el a
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | análisis |
+| Riesgo esperado | bajo — el modo plan prohíbe explícitamente modificar archivos, hacer commits o ejecutar comandos que alteren el repositorio o el ambiente; el riesgo real es indirecto (un conflicto no detectado desperdicia trabajo de otro agente en paralelo) |
+| Entradas requeridas | issue/tarea de referencia, rama objetivo, agentes activos en paralelo si se conocen; estado local del repositorio (rama, worktrees, commits recientes, PRs abiertos) |
+| Herramientas permitidas | lectura de estado git (status, log, branches, worktrees) y de PRs/issues abiertos — explícitamente prohibido: `pull`, `fetch`, mutaciones remotas, commits o cambios de archivo |
+| Autonomía permitida | A1 — Proponer |
+| Criterios de detención | si el Paso 2 (detección de conflictos) encuentra un conflicto potencial o activo — mismo archivo tocado por otro agente o PR abierto — DETENER de inmediato y reportar antes de continuar; no pasar a ejecución controlada sin confirmación humana |
+| Salida esperada | no existe una sección `## Salida esperada` independiente en este prompt — el formato de entrega está definido inline en "Entrega en MODO PLAN" (9 subsecciones: archivos a modificar, archivos fuera de alcance, conflictos potenciales, dependencias, pasos, commits, pruebas, señales de alto, contrato de ejecución) y en el "Paso 5. Reporte de estado" del protocolo multi-agente |
+| Evidencia mínima | la tabla de archivos a modificar incluye riesgo y si requiere aprobación; la sección de detección de conflictos documenta explícitamente presencia o ausencia de solapamiento con ramas/PRs activos |
+| Siguiente prompt recomendado | `06-01-implementacion-multiagente` una vez aprobado el plan y sin conflictos, para pasar a ejecución controlada |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

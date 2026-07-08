@@ -8,6 +8,22 @@ Prompt to generate executable unit test code from the design defined in `07-01`.
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | execution — generates and runs real test code from a design matrix |
+| Expected risk | medium — writes and runs test files locally; does not modify source code or publish changes, but incorrect mocks or misestimated coverage can create false confidence |
+| Required inputs | Test stack profile (`07-00`) and unit test design matrix (`07-01`) attached or referenced; access to the source code of the units under test |
+| Allowed tools | reading source code and framework configuration; writing only test files (never source code); local execution of the generated tests; no push, commit, or deploy |
+| Permitted autonomy | A2 — Execute controlled (writes and runs test files in the workspace, without publishing changes) |
+| Stop criteria | never modify source code; stop after a maximum of 3 self-correction cycles if compilation or assertion failures persist, and report the exact diagnostics instead of continuing to retry |
+| Expected output | see `## Expected output` |
+| Minimum evidence | initial JSON metadata block (status, tests_written_count, estimated_coverage_pct, confidence_score), verified execution command, stdout/stderr results from a local run, and PSP/TSP metrics log at the end |
+| Recommended next prompt | `07-08-implementacion-pruebas-integracion` to continue with the next test layer |
+
+---
+
 ## Required prior context
 
 > Include the block from `00-framework.md` before this prompt.

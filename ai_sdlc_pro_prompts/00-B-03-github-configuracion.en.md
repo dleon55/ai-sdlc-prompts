@@ -8,6 +8,22 @@ Prompt to configure the GitHub repository completely and securely: branch protec
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | operation |
+| Expected risk | medium — misconfigured branch protection, Actions permissions, or Environments can block the team or leave `main` without real protection; the prompt delivers commands and templates, it does not execute them |
+| Required inputs | GitHub organization/user and repository name, branching methodology, branches to protect, team composition, deployment environments, CI stack |
+| Allowed tools | read of the repository's current configuration (workflows, existing protections) — the prompt delivers `gh` CLI commands and template files as text; it does not run commands or modify GitHub configuration directly |
+| Permitted autonomy | A1 — Propose |
+| Stop criteria | if the current state of branch protection, team roles, or real environments is not known with certainty, state the assumption explicitly instead of generating rules that could block the real team if applied |
+| Expected output | see `## Expected Output` |
+| Minimum evidence | the `gh` CLI commands cover every branch declared as protected; issue templates, PR template, `dependabot.yml`, and `CODEOWNERS` are complete with no unresolved placeholders |
+| Recommended next prompt | `00-B-05-stack-calidad-codigo` to register the quality-gates workflow as a required check within the branch protection rules defined here |
+
+---
+
 ## Mandatory Previous Context
 
 > Include the block from file `00-framework.en.md` before this prompt.

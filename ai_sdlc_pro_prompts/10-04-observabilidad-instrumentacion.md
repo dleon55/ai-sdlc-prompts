@@ -8,6 +8,22 @@ Prompt para diseñar e implementar la estrategia de observabilidad de una aplica
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | diseño |
+| Riesgo esperado | medio — un diseño deficiente de SLOs o alertas puede generar fatiga de alertas o puntos ciegos que retrasen la detección de incidentes reales en producción |
+| Entradas requeridas | stack tecnológico, infraestructura, stack de observabilidad actual, número de servicios, SLAs comprometidos con clientes, entorno objetivo; opcionalmente resultado de `13-04` (threat modeling) |
+| Herramientas permitidas | solo lectura de arquitectura del sistema y runbooks existentes; no se conecta a sistemas de monitoreo en vivo ni despliega instrumentación, entrega catálogo y configuración propuesta |
+| Autonomía permitida | A1 — Proponer: catálogo de SLOs, alertas y dashboards; la instrumentación real en código y el despliegue de agentes/exporters requiere A2 en workspace o rama aislada con revisión posterior |
+| Criterios de detención | si no hay SLAs ni objetivos de negocio definidos para fijar los SLOs, debe señalarlo en vez de inventar umbrales; no debe proponer instrumentación que loguee contraseñas, tokens o PII sin anonimizar |
+| Salida esperada | ver `## Resultado esperado` |
+| Evidencia mínima | cada alerta propuesta tiene condición, severidad, playbook y destinatario; cada SLO tiene SLI, objetivo y ventana definidos |
+| Siguiente prompt recomendado | `11-05-performance-produccion-diagnostico` para diagnosticar degradaciones usando las señales instrumentadas; `11-04-incident-response` como playbook de referencia en las alertas de severidad page |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

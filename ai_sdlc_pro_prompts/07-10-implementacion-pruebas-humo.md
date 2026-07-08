@@ -8,6 +8,22 @@ Prompt para generar el script ejecutable de pruebas de humo a partir del checkli
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | ejecución |
+| Riesgo esperado | medio — el script no debe generar ni modificar datos de negocio, pero su resultado (PASS/FAIL) puede determinar si se ejecuta un rollback |
+| Entradas requeridas | checklist de pruebas de humo generado por `07-04`, Perfil de stack de pruebas de `07-00`, endpoints de salud o flujos críticos documentados |
+| Herramientas permitidas | lectura del checklist y del stack del proyecto, escritura del script en el workspace/rama de trabajo, ejecución del script solo contra checks de solo lectura (health checks, flujos de verificación) — sin mutar datos de negocio ni ejecutar contra producción sin autorización |
+| Autonomía permitida | A2 — Ejecutar controlado |
+| Criterios de detención | si el checklist de `07-04` no existe o está incompleto, o si algún check requeriría escribir o modificar datos de negocio para verificarse, detener y escalar en vez de improvisar el check |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | el script debe haberse ejecutado al menos una vez de forma local o en CI mostrando el resumen PASS/FAIL con el código de salida correspondiente |
+| Siguiente prompt recomendado | `09-04-promotion-checklist` para integrar el resultado del smoke test como validación post-despliegue |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

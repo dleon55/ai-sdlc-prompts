@@ -8,6 +8,22 @@ Prompt para planificar y ejecutar el ciclo completo de gestión de parches: inve
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | operación |
+| Riesgo esperado | alto — el plan de aplicación incluye desplegar en producción actualizaciones MAJOR con posible breaking change, sujetas a rollback |
+| Entradas requeridas | stack tecnológico, ambientes disponibles, contexto de vulnerabilidades (resultado de `13-02` SCA si existe), herramientas de CI/CD, automatización existente, última fecha de parches, SLAs de seguridad comprometidos |
+| Herramientas permitidas | entorno dev: lectura y ejecución de gestores de paquetes y tests en rama dedicada; entorno staging: despliegue y ejecución de smoke/performance tests; entorno producción: despliegue solo en ventana de mantenimiento definida, con criterio de rollback ya establecido |
+| Autonomía permitida | A0 — Analizar en inventario y clasificación; A1 — Proponer en el plan de aplicación agrupado; A2 — Ejecutar controlado en dev/staging; A3 — Publicar únicamente para el despliegue a producción, y solo con aprobación explícita del responsable de rollback |
+| Criterios de detención | si una actualización MAJOR con breaking changes no ha permanecido estable en staging al menos 24h, o si el criterio de rollback (tasa de error/P95) no está definido antes de desplegar a producción, debe detenerse antes de avanzar de entorno |
+| Salida esperada | ver `## Resultado esperado` |
+| Evidencia mínima | cada componente parcheado registra versión anterior, versión nueva, resultado de tests por entorno y responsable de la aprobación |
+| Siguiente prompt recomendado | `13-02-sca-analisis-dependencias` para reescanear tras aplicar los parches; `11-07-sre-postmortem-runbook` si un parche provoca un incidente y se requiere post-mortem |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

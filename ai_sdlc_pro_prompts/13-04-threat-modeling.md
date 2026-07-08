@@ -8,6 +8,22 @@ Prompt para realizar el modelado de amenazas de un sistema, componente o feature
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | seguridad |
+| Riesgo esperado | medio — es análisis de diseño sin ejecución de código, pero una amenaza no identificada en esta fase puede convertirse en una vulnerabilidad real e inadvertida en implementación |
+| Entradas requeridas | descripción del sistema/componente a modelar, diseño de solución (`04-01`) o casos de uso (`04-03`) si existen, diagramas de arquitectura o flujo (`04-02`), modelo de autenticación y datos sensibles involucrados |
+| Herramientas permitidas | lectura de diseño, arquitectura y código existente — sin ejecución ni cambios; el DFD y los árboles de amenaza se generan como texto estructurado |
+| Autonomía permitida | A0 — Analizar el diseño y generar el modelo de amenazas STRIDE |
+| Criterios de detención | no inventar componentes, flujos o integraciones que no estén descritos en el diseño o código real; si no hay diseño disponible, solicitarlo antes de modelar amenazas especulativas |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada amenaza referencia el componente/flujo real afectado, categoría STRIDE, puntuación de riesgo (probabilidad × impacto) y control de mitigación propuesto |
+| Siguiente prompt recomendado | `13-01-sast-analisis-seguridad-codigo`, usando este modelo de amenazas como contexto de superficies de ataque conocidas una vez implementado el diseño |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

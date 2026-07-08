@@ -8,6 +8,22 @@ Prompt for manual testers and functional QAs. Generates detailed manual test cas
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | documentation |
+| Expected risk | low — generates a test case matrix as documentation, does not execute tests or modify code; a missed edge case can leave a scenario without QA coverage |
+| Required inputs | user story or requirement to validate, acceptance criteria or business rules if they exist (ideally from `15-01`) |
+| Allowed tools | no execution or system access — only drafting of the test case matrix based on the information provided |
+| Permitted autonomy | A1 — Propose the manual test case suite as an artifact ready for QA execution |
+| Stop criteria | do not invent business rules or system behaviors not described in the requirement; if acceptance criteria are missing, state this and limit coverage to what is verifiable with the available information |
+| Expected output | see `## Expected output` |
+| Minimum evidence | each test case includes ID, precondition, execution steps, test data, and a verifiable expected result; the suite covers happy path, alternate, negative, and at least one edge case |
+| Recommended next prompt | `07-05-automatizacion-antigravity` to automate the critical cases in the suite; `07-03-pruebas-e2e` if formal end-to-end test design is required |
+
+---
+
 ## Mandatory prior context
 
 > Include the block from the `00-framework.md` file before this prompt.

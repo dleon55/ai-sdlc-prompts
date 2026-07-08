@@ -8,6 +8,22 @@ Prompt para generar el código ejecutable de pruebas de performance, carga, stre
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | ejecución |
+| Riesgo esperado | alto — los scripts de stress/spike/soak generan carga real que puede degradar o tumbar un ambiente compartido si se apunta a la URL incorrecta o se ejecuta sin ventana de mantenimiento |
+| Entradas requeridas | diseño de pruebas de performance de `07-06` (escenarios, umbrales, herramienta seleccionada), Perfil de stack de pruebas de `07-00`, URL del ambiente de prueba y esquema de autenticación |
+| Herramientas permitidas | escritura de scripts de carga (k6/Locust/JMeter/Artillery/etc.) en el repositorio, ejecución headless contra ambientes no productivos configurados por variable de entorno — sin datos reales de producción y sin ejecutar contra producción salvo ventana de mantenimiento autorizada |
+| Autonomía permitida | A2 — Ejecutar controlado para load/benchmark en staging; A3 explícito y ventana de mantenimiento aprobada para cualquier ejecución de stress/spike/soak contra producción |
+| Criterios de detención | si no hay un ambiente de staging disponible, si la URL base apunta a producción sin ventana de mantenimiento confirmada, o si las credenciales provistas no son de datos sintéticos/prueba, detener y escalar |
+| Salida esperada | ver `## Resultado esperado` |
+| Evidencia mínima | cada script debe codificar los umbrales como `thresholds` que fallan el proceso (exit code ≠ 0) si se incumplen, y debe adjuntarse al menos un reporte de ejecución (JSON/HTML) con P95/P99 y tasa de error |
+| Siguiente prompt recomendado | `11-05-performance-produccion-diagnostico` si los resultados muestran una regresión o umbral incumplido |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

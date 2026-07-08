@@ -8,6 +8,22 @@ Prompt de ingeniería de software senior diseñado para realizar un análisis ex
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | análisis |
+| Riesgo esperado | medio — combina arquitectura, DBA, DevOps, seguridad y QA en un solo issue candidato a Definition of Ready; si la validación DoR o el análisis de impacto ISO/IEEE es incompleto, el issue puede pasar a implementación con supuestos no verificados |
+| Entradas requeridas | requerimiento_usuario (idea o CR sin formalizar), repositorio, rama_base, documentación y código relacionado existentes |
+| Herramientas permitidas | lectura de código, documentación y configuración — el bloque "GitHub Issue Markdown" es un artefacto de texto para copiar manualmente; el prompt no crea ni publica issues en GitHub |
+| Autonomía permitida | A1 — Proponer |
+| Criterios de detención | si no puede confirmarse el cumplimiento de la Definition of Ready (criterios de aceptación, alcance o impacto verificable), marcar el issue resultante como "no listo" en vez de presentarlo como Ready |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada afirmación en HECHOS debe corresponder a estado verificado del repositorio; SUPUESTOS y RIESGOS deben quedar declarados por separado, no mezclados con hechos |
+| Siguiente prompt recomendado | `02-04-triage-backlog-github` si se generan varios issues a priorizar; `04-01-diseno-solucion` si el issue ya fue creado y se continúa al diseño |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

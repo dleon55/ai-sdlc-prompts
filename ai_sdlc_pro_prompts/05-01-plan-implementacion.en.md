@@ -8,6 +8,22 @@ Prompt to elaborate an executable and traceable implementation plan: previous ac
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | design |
+| Expected risk | medium — does not execute changes, but it is the basis on which real implementation will be authorized; an incomplete or overly optimistic plan can lead to execution without defined rollback or evidence |
+| Required inputs | approved design (`04-01`), architecture, contracts, target branch, target environment, components to modify |
+| Allowed tools | read-only access to design/architecture/contracts; does not execute commands or modify the repository, produces the plan as a document |
+| Permitted autonomy | A1 — Propose (plan or artifact without applying it); does not by itself authorize executing, committing, or deploying |
+| Stop criteria | stop if there is no approved design to start from; do not leave any step without defined expected evidence, dependency, or risk; explicitly flag any step that requires a production environment |
+| Expected output | see `## Expected output` |
+| Minimum evidence | parser-friendly JSON metadata block at the start, each step (1-9) with defined expected evidence, complete PSP/TSP metrics log |
+| Recommended next prompt | `05-02-riesgos-implementacion`, in parallel, before moving to `06-01-implementacion-multiagente` |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

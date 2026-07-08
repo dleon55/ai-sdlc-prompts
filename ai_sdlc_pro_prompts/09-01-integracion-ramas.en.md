@@ -8,6 +8,22 @@ Prompt to plan the integration of changes with other active branches: analysis o
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | analysis |
+| Expected risk | medium — does not execute the merge, but a poorly evaluated strategy can cause conflicts or overwrite changes from other agents or developers |
+| Required inputs | commit history, list of active branches, related open PRs |
+| Allowed tools | reading git history and state (`git log`, `git diff`, `git branch`) — no merge, rebase, cherry-pick or push execution |
+| Permitted autonomy | A1 — Propose |
+| Stop criteria | if the local state is not synced with the remote (`git fetch` pending) or there are active branches from other agents with unverified changes, stop and request synchronization before recommending a definitive strategy |
+| Expected output | see `## Expected output` |
+| Minimum evidence | each potential conflict must cite the specific file or area and the branch it collides with |
+| Recommended next prompt | `09-02-monitoreo-ci` once the integration has run, to validate the resulting pipeline status |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

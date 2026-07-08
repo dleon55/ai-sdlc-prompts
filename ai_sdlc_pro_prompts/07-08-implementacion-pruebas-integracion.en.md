@@ -8,6 +8,22 @@ Prompt to generate executable integration test code from the design defined in `
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | execution — generates and runs real integration tests across modules, services, APIs, and the database |
+| Expected risk | medium — orchestrates state (database, containers, stubs) and runs complete flows; the prompt explicitly forbids calling real production services |
+| Required inputs | Test stack profile (`07-00`) and integration test plan (`07-02`) attached or referenced; available or simulable test environment (containers, stubs) |
+| Allowed tools | reading code, API contracts, and database schema; writing integration test files, fixtures, and reusable helpers; local or test-environment execution (containers, simulated services); no calls to production services and no push/deploy |
+| Permitted autonomy | A2 — Execute controlled (writes, runs, and tears down state in the workspace or an isolated test environment) |
+| Stop criteria | stop if a required external dependency cannot be simulated with a stub or container and the test would depend on a real production service; stop if teardown cannot guarantee state isolation between runs |
+| Expected output | see `## Expected output` |
+| Minimum evidence | executable integration test files, environment setup instructions, verified execution command, and notes on external dependencies pending configuration |
+| Recommended next prompt | `07-09-implementacion-pruebas-e2e` to continue with end-to-end tests |
+
+---
+
 ## Required prior context
 
 > Include the block from `00-framework.md` before this prompt.

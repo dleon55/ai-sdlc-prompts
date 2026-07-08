@@ -8,6 +8,22 @@ Prompt para diagnosticar, analizar y remediar problemas de rendimiento en produc
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | análisis |
+| Riesgo esperado | alto — diagnostica un sistema en producción activa y contempla profiling opcional que puede añadir overhead sobre un sistema ya degradado |
+| Entradas requeridas | métricas/trazas/logs del período de degradación (de `10-04` o exportación de Grafana/Datadog/CloudWatch), stack tecnológico, infraestructura, SLO impactado; opcionalmente umbrales de `07-06`/`07-11` |
+| Herramientas permitidas | pasos 1-3 y 5-7: solo lectura de métricas, trazas y logs; paso 4 (profiling) puede ejecutar herramientas de perfilado, preferentemente en staging con tráfico espejado — en producción solo con precaución explícita por el overhead que introduce |
+| Autonomía permitida | A0 — Analizar en caracterización, análisis de trazas/logs y diagnóstico por capa; A1 — Proponer en el plan de optimización; A2 — Ejecutar controlado solo para profiling en staging o para aplicar optimizaciones ya aprobadas |
+| Criterios de detención | si el profiling necesario solo puede ejecutarse en producción y no hay staging con tráfico espejado disponible, debe detenerse y solicitar aprobación explícita antes de perfilar en vivo |
+| Salida esperada | ver `## Resultado esperado` |
+| Evidencia mínima | cada hallazgo PERF-XXX tiene evidencia de traza o log asociada y una métrica de validación medible antes/después |
+| Siguiente prompt recomendado | `07-06-pruebas-performance-carga` para diseñar pruebas que confirmen la mejora bajo carga; `10-04-observabilidad-instrumentacion` si el diagnóstico revela puntos ciegos de instrumentación |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

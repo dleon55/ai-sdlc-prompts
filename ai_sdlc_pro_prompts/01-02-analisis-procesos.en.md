@@ -8,6 +8,22 @@ Startup prompt to map all project governance: processes, procedures, policies, s
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | analysis |
+| Expected risk | low — this is a read-only location of governance documents; it does not execute changes, although missing an existing policy can lead to violating it in later work |
+| Required inputs | read access to README, docs/, exported wiki, ADRs, contribution files, and workflows in the repository |
+| Allowed tools | reading of documentation, markdown files, and configuration files — no execution or changes |
+| Permitted autonomy | A0 — Analyze |
+| Stop criteria | if no documentary evidence is found for a governance category (e.g., security or branching), state it as "does not exist" instead of assuming an implicit policy |
+| Expected output | see `## Expected output` |
+| Minimum evidence | every row of the matrix must cite the file or path found; categories marked incomplete or nonexistent must state what was searched and not found |
+| Recommended next prompt | `01-01-arranque-comprension-repositorio` if the technical inventory has not been done yet; `02-01-analisis-issue` to start the functional analysis of the concrete work |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

@@ -8,6 +8,22 @@ Prompt para identificar y clasificar los riesgos de implementación: funcionales
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | análisis |
+| Riesgo esperado | medio — no ejecuta cambios, pero un riesgo omitido o mal clasificado puede llegar sin mitigación a la fase de ejecución (`06-01`) |
+| Entradas requeridas | diseño aprobado, arquitectura, historial de incidentes, plan de implementación (`05-01`) en curso o aprobado |
+| Herramientas permitidas | solo lectura de diseño, arquitectura e historial de incidentes; no ejecuta comandos ni modifica el repositorio |
+| Autonomía permitida | A0 — Analizar riesgos e impacto potencial; A1 — Proponer la matriz de riesgos con mitigación y contingencia |
+| Criterios de detención | detener si no hay diseño o plan de referencia; escalar a revisión humana antes de continuar a `06-01` si algún riesgo queda clasificado como alto sin mitigación viable |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada riesgo con categoría, probabilidad, impacto, mitigación y contingencia explícitos; ningún riesgo alto sin plan de mitigación asociado |
+| Siguiente prompt recomendado | `06-01-implementacion-multiagente`, una vez el plan (`05-01`) y esta matriz de riesgos estén aprobados |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

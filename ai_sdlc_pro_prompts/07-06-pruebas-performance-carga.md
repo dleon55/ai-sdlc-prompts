@@ -8,6 +8,22 @@ Prompt para diseñar una estrategia de pruebas de performance, carga, stress y b
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | validación |
+| Riesgo esperado | medio — el diseño de la estrategia en sí es de bajo riesgo, pero ejecutar la carga generada contra el ambiente equivocado (producción) puede degradar o caer el servicio |
+| Entradas requeridas | componentes a probar, ambiente de prueba (QA/Staging — nunca producción), usuarios concurrentes esperados en producción, SLA o tiempo de respuesta aceptable, herramienta disponible (k6/Locust/JMeter/Artillery/hey/wrk) |
+| Herramientas permitidas | diseño de escenarios y generación del script base para la herramienta elegida; la ejecución real de la carga contra cualquier ambiente compartido requiere aprobación humana explícita y nunca debe apuntar a producción |
+| Autonomía permitida | A1 — Proponer (estrategia, escenarios y script base); A2 — Ejecutar controlado solo en QA/Staging con aprobación explícita; nunca A2/A3 para ejecutar pruebas de carga contra producción |
+| Criterios de detención | detener y escalar si el ambiente propuesto es producción; no ejecutar la prueba si no hay SLA o umbrales de fallo definidos; nunca usar datos reales de usuarios o de producción en los payloads de prueba |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada escenario con umbrales de P50/P95/P99, tasa de error máxima y throughput mínimo definidos; script base incluido y ejecutable con la herramienta indicada |
+| Siguiente prompt recomendado | `07-11-implementacion-pruebas-performance` para implementar y ejecutar los scripts diseñados |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

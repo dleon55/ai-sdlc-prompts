@@ -8,6 +8,22 @@ Prompt to identify the technical debt of the repository and generate a prioritiz
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | analysis |
+| Expected risk | low — generates an inventory and prioritized backlog; does not modify code or systems |
+| Required inputs | main branch, components or modules to analyze, access to source code, tests, CI/CD configuration, architecture and documentation |
+| Allowed tools | read-only access to the repository (code, tests, CI/CD configuration, documentation) |
+| Permitted autonomy | A0 — Analyze: inventory and recommendations, without applying changes |
+| Stop criteria | if it cannot access an area declared as "to analyze" (nonexistent module or outside the repo), it must flag the omission instead of completing the matrix with assumptions |
+| Expected output | see `## Expected output` |
+| Minimum evidence | each matrix item references a real file, module, or configuration in the repository, with priority, impact, and effort justified |
+| Recommended next prompt | `05-01-plan-implementacion` to plan the resolution of prioritized items; `11-06-gestion-parches-actualizaciones` if the identified debt is outdated dependencies |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

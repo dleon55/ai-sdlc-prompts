@@ -8,6 +8,22 @@ Prompt para definir, justificar y documentar el **stack tecnológico inicial y l
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | diseño |
+| Riesgo esperado | alto — las decisiones fundacionales que cubre (modelo de datos, autenticación/autorización, escalabilidad, topología) condicionan todo el desarrollo posterior y son costosas de revertir una vez implementadas, aunque el prompt no ejecuta ni despliega nada por sí mismo |
+| Entradas requeridas | nombre del proyecto y descripción del dominio, tipo de sistema, restricciones conocidas (incluye compliance), stack preliminar si existe, escala esperada, plataforma de despliegue, composición del equipo; requiere que el Project Charter (`00-D-01`) ya esté aprobado |
+| Herramientas permitidas | ninguna de ejecución — documento de arquitectura en texto más un diagrama Mermaid; no aprovisiona infraestructura ni aplica ninguna decisión |
+| Autonomía permitida | A1 — Proponer (decisiones marcadas `[DECISIÓN PENDIENTE]` o `[ADR REQUERIDO]` no se consideran aplicadas hasta que exista un ADR formal y aprobación posterior) |
+| Criterios de detención | si una decisión de seguridad, compliance o escalabilidad no puede justificarse con la información disponible, marcarla como `[DECISIÓN PENDIENTE: razón]` y `[ADR REQUERIDO]` en vez de asumir una elección definitiva sin evidencia |
+| Salida esperada | no existe una sección `## Salida esperada` independiente en este prompt — ver "Formato de salida" al final del bloque de prompt (documento con los 9 apartados, tabla de stack, diagrama Mermaid de topología, marcado `[DECISIÓN PENDIENTE]` y `[ADR REQUERIDO]`) |
+| Evidencia mínima | la tabla de stack cubre todas las capas solicitadas con alternativa evaluada y justificación; cada decisión crítica está marcada para ADR formal; el diagrama Mermaid de topología está presente |
+| Siguiente prompt recomendado | `04-04-adr-decisiones-arquitectura` para formalizar cada decisión marcada `[ADR REQUERIDO]`; `00-B-01-scaffolding-repositorio` para generar la estructura del repositorio a partir del stack ya confirmado |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

@@ -8,6 +8,22 @@ Prompt to perform threat modeling of a system, component, or feature before or d
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | security |
+| Expected risk | medium — this is design-time analysis with no code execution, but a threat missed at this stage can become a real, unnoticed vulnerability during implementation |
+| Required inputs | description of the system/component to model, solution design (`04-01`) or use cases (`04-03`) if they exist, architecture or flow diagrams (`04-02`), authentication model and sensitive data involved |
+| Allowed tools | reading of existing design, architecture, and code — no execution or changes; the DFD and attack trees are generated as structured text |
+| Permitted autonomy | A0 — Analyze the design and generate the STRIDE threat model |
+| Stop criteria | do not invent components, flows, or integrations that are not described in the actual design or code; if no design is available, request it before modeling speculative threats |
+| Expected output | see `## Expected output` |
+| Minimum evidence | each threat references the actual affected component/flow, STRIDE category, risk score (likelihood × impact), and proposed mitigation control |
+| Recommended next prompt | `13-01-sast-analisis-seguridad-codigo`, using this threat model as context for known attack surfaces once the design is implemented |
+
+---
+
 ## Required prior context
 
 > Include the block from `00-framework.md` before this prompt.

@@ -8,6 +8,22 @@ Prompt para testers y QAs funcionales. Permite diseñar casos de prueba manuales
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | documentación |
+| Riesgo esperado | bajo — genera una matriz de casos de prueba como documentación, no ejecuta pruebas ni modifica código; un caso de borde omitido puede dejar un escenario sin cobertura de QA |
+| Entradas requeridas | historia de usuario o requerimiento a validar, criterios de aceptación o reglas de negocio si existen (idealmente de `15-01`) |
+| Herramientas permitidas | ninguna ejecución ni acceso a sistemas — solo redacción de la matriz de casos de prueba a partir de la información provista |
+| Autonomía permitida | A1 — Proponer la suite de casos de prueba manuales como artefacto listo para ejecución por QA |
+| Criterios de detención | no inventar reglas de negocio o comportamientos del sistema no descritos en el requerimiento; si faltan criterios de aceptación, señalarlo y limitar la cobertura a lo verificable con la información disponible |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada caso de prueba incluye ID, precondición, pasos de ejecución, datos de prueba y resultado esperado verificable; la suite cubre camino feliz, alterno, negativo y al menos un caso de borde |
+| Siguiente prompt recomendado | `07-05-automatizacion-antigravity` para automatizar los casos críticos de la suite; `07-03-pruebas-e2e` si se requiere diseño de pruebas end-to-end formales |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

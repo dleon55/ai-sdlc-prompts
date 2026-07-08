@@ -8,6 +8,22 @@ Prompt estructurado de aseguramiento de calidad (QA / Audit) para certificar que
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | validación |
+| Riesgo esperado | medio — es una auditoría de solo lectura, pero un veredicto de "Aprobado" indebido puede autorizar la liberación de un entregable no conforme a producción |
+| Entradas requeridas | workspace/subproyecto y estándar de compliance a auditar (ISO 29110 / MOPROSOFT / MAAGTICSI), artefactos generados (Plan de Implementación, Casos de Prueba, Código de Pruebas, Memoria Técnica) |
+| Herramientas permitidas | lectura de artefactos, código y documentación del proyecto — sin ejecución de pruebas ni cambios en el repositorio |
+| Autonomía permitida | A0 — Analizar la conformidad de cada artefacto; A1 — Proponer el veredicto y las acciones de remediación obligatorias |
+| Criterios de detención | no emitir veredicto "Aprobado" si falta trazabilidad bidireccional requerimiento-diseño-código-pruebas; marcar como "Rechazado" o "Aprobado con Reservas" ante cualquier no conformidad sin evidencia de mitigación |
+| Salida esperada | ver `Salida:` dentro de `## Prompt completo` |
+| Evidencia mínima | cada no conformidad reportada referencia el artefacto o control específico incumplido y la acción de remediación obligatoria asociada |
+| Siguiente prompt recomendado | `08-03-remediacion-maestro` si el veredicto es "Rechazado" o "Aprobado con Reservas"; `09-04-promotion-checklist` si el veredicto es "Aprobado" para continuar con la promoción del cambio |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

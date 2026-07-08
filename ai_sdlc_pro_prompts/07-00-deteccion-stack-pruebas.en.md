@@ -8,6 +8,22 @@ Prompt to detect and document the active test stack in the repository. Produces 
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | analysis |
+| Expected risk | low — a read-only discovery of the repository, does not execute tests or modify files |
+| Required inputs | read access to the repository: root configuration files (package.json, pyproject.toml, pom.xml, etc.), CI/CD workflows, existing tests directory |
+| Allowed tools | read-only access to the repository; may non-destructively verify that a test command exists (e.g. inspecting the script in package.json), but does not run the full test suite as part of this prompt |
+| Permitted autonomy | A0 — Analyze (reading and inventory); applies no changes and requires no approval |
+| Stop criteria | explicitly mark a field "not detected" instead of assuming or inventing a framework, command, or convention not backed by a real file in the repository |
+| Expected output | see `## Expected output — Test stack profile` |
+| Minimum evidence | every field in the profile backed by an explicitly cited file path or verified command, not by an unsourced inference |
+| Recommended next prompt | `07-01-pruebas-unitarias` (or directly `07-07-implementacion-pruebas-unitarias` using the profile as context) |
+
+---
+
 ## Required prior context
 
 > Include the block from `00-framework.md` before this prompt.

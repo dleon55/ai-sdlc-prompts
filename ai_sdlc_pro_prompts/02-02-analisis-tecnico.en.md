@@ -8,6 +8,22 @@ Static and traceable analysis prompt for reconstructing how code related to a re
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | analysis |
+| Expected risk | medium — this is the foundation for cross-impact analysis (`02-03`) and design (`04-01`); an incorrect mapping of flow, contracts, or dependencies propagates errors into those phases, although the prompt does not modify files |
+| Required inputs | output of `02-01`, repository or workspace, issue or requirement, target branch or commit, environment, documents and contracts to review |
+| Allowed tools | reading of code, logs, and git history; non-destructive execution limited to inspections, builds, or focused tests already approved by the project (maximum three self-correction cycles) — no file edits or commits |
+| Permitted autonomy | A0 — Analyze |
+| Stop criteria | if behavior cannot be verified at runtime, label it as static analysis; if the JSON metadata `status` is `blocked`, stop and escalate instead of forcing conclusions |
+| Expected output | see `## Expected output` |
+| Minimum evidence | every finding and risk must cite path, symbol, and line; every executed verification must record command, result, and limitations |
+| Recommended next prompt | `02-03-impacto-cruzado` |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from `00-framework.en.md` before this prompt.

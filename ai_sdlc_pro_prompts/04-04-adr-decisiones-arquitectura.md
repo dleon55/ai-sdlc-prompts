@@ -8,6 +8,22 @@ Prompt para documentar decisiones arquitectónicas de forma estructurada: contex
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | documentación |
+| Riesgo esperado | medio — un ADR mal documentado o con opciones descartadas sin justificar puede llevar a repetir una decisión ya evaluada |
+| Entradas requeridas | contexto del problema, opciones evaluadas, decisión ya tomada (este prompt documenta, no decide) |
+| Herramientas permitidas | lectura de arquitectura existente y `docs/decisions/` para evitar colisión de numeración — solo escritura del archivo ADR nuevo |
+| Autonomía permitida | A1 — Proponer |
+| Criterios de detención | antes de asignar el número, verificar `docs/decisions/README.md` o el índice existente para evitar colisión con un ADR-NNN ya usado |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada opción evaluada (incluida la descartada) tiene pros, contras y motivo de descarte explícitos |
+| Siguiente prompt recomendado | `05-01-plan-implementacion` si el ADR habilita una implementación pendiente |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

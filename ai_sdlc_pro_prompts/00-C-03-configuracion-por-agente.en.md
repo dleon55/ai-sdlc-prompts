@@ -8,6 +8,22 @@ Prompt and reference for configuring the behavior, instructions, and restriction
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | documentation |
+| Expected risk | medium — if a mandatory common rule (no exposing secrets, no migrations without approval, no push to protected branches) is missing from an agent's own mechanism, that agent may operate with more autonomy than intended; the prompt only drafts content, it does not apply it |
+| Required inputs | list of active agents (Copilot, Claude, Codex, Windsurf, Cursor, Antigravity), project stack, methodology, project critical rules, general autonomy level; baseline governance already in place (`00-B-02`) |
+| Allowed tools | read of the governance and configuration already existing in the repository to avoid duplication — no write or execution; the human decides whether to create the delivered files (`.github/copilot-instructions.md`, `.windsurfrules`, `.cursorrules`, `AGENTS.md`, `docs/ai-agents/*.md`) |
+| Permitted autonomy | A1 — Propose |
+| Stop criteria | if configuration is requested for an agent without baseline governance in place (`00-B-02`), or if the requested autonomy level for an agent conflicts with the mandatory common rules, flag the conflict before generating the agent-specific configuration |
+| Expected output | this prompt has no standalone `## Expected Output` section — the output format is the per-agent configuration blocks and the "MECHANISMS COMPARATIVE TABLE" inside the prompt block |
+| Minimum evidence | every agent declared active has a complete configuration block with file, mechanism, and content; the mandatory common rules appear in every generated mechanism |
+| Recommended next prompt | `00-C-02-plan-mode-multiagente` to operate in plan mode and multi-agent coordination with the per-agent configuration already active |
+
+---
+
 ## Mandatory Previous Context
 
 > Include the block from file `00-framework.en.md` before this prompt.
@@ -103,7 +119,7 @@ File structure:
 - plan mode available instruction: when "plan only" is indicated
 
 ─────────────────────────────────────
-CHROME ANTIGRAVITY (E2E tests in browser)
+GOOGLE ANTIGRAVITY (E2E tests in browser)
 ─────────────────────────────────────
 Mechanism: instructions in the task prompt + configuration file
 Specific scope: only browser tests, no source code modification
