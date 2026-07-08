@@ -68,6 +68,7 @@ def test_build_writes_html_and_skips_unknown_section_prefix(tmp_path, monkeypatc
     out_file = tmp_path / "out.html"
     monkeypatch.setattr(build, "PROMPTS_DIR", tmp_path)
     monkeypatch.setattr(build, "OUTPUT_FILE", out_file)
+    monkeypatch.setattr(build, "INDEX_OUTPUT_FILE", tmp_path / "out-index.json")
 
     build.build()
 
@@ -105,6 +106,7 @@ def test_build_excludes_deprecated_prompts_same_as_count_prompts(tmp_path, monke
     out_file = tmp_path / "out.html"
     monkeypatch.setattr(build, "PROMPTS_DIR", tmp_path)
     monkeypatch.setattr(build, "OUTPUT_FILE", out_file)
+    monkeypatch.setattr(build, "INDEX_OUTPUT_FILE", tmp_path / "out-index.json")
 
     assert build.count_prompts() == 1  # excluye el DEPRECATED
 
