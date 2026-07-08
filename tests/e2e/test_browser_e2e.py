@@ -161,6 +161,34 @@ def test_language_switch_updates_visible_cards_and_copy_content(app_page):
     assert "Actúa como un Principal Software Engineer" not in clip
 
 
+def test_copy_confirmation_toast_matches_active_language(app_page):
+    """El toast de confirmación de copiado respeta el idioma activo (antes
+    quedaba fijo en español -'Prompt copiado con éxito'- incluso en modo EN,
+    la acción más usada de la app)."""
+    app_page.click("#lang-btn")
+    app_page.click('.lang-option[data-lang="en"]')
+    app_page.wait_for_timeout(200)
+
+    _copy_and_read_clipboard(app_page, "00-B-01-scaffolding-repositorio", "en")
+    # Este prompt también dispara un toast .warn por placeholders sin
+    # resolver (no relacionado con este fix); filtramos por .success para
+    # aislar el toast de confirmación de copiado que sí nos interesa.
+    toast_text = app_page.locator("#toast-container .toast.success").first.inner_text()
+    assert "copied" in toast_text.lower()
+    assert "copiado" not in toast_text.lower()
+
+
+def test_toast_container_has_accessible_live_region(app_page):
+    """Los toasts deben anunciarse a lectores de pantalla: antes el
+    contenedor no tenía aria-live/role, así que un usuario de lector de
+    pantalla no se enteraba si copiar funcionó, falló, o si quedaron
+    placeholders sin resolver."""
+    role = app_page.evaluate("document.getElementById('toast-container').getAttribute('role')")
+    live = app_page.evaluate("document.getElementById('toast-container').getAttribute('aria-live')")
+    assert role == "status"
+    assert live == "polite"
+
+
 # ─────────────────────  Proyectos  ─────────────────────
 
 def test_project_switch_isolates_variables(app_page):
@@ -262,3 +290,38 @@ def test_no_horizontal_overflow_at_320px_viewport():
         f"Overflow horizontal a 320px: scrollWidth={metrics['scrollWidth']} "
         f"> clientWidth={metrics['clientWidth']}"
     )
+
+
+def test_dismissing_onboarding_with_close_button_persists_across_reload():
+    """Cerrar el onboarding con el botón 'X' debe descartarlo permanentemente,
+    igual que 'No volver a mostrar' (antes solo ese enlace persistía el
+    descarte; la 'X' -el patrón universal de cierre de modal- lo mostraba
+    de nuevo en cada recarga)."""
+    with sync_playwright() as p:
+        browser = _launch_browser(p)
+        context = browser.new_context(viewport={"width": 1400, "height": 1000})
+        page = context.new_page()
+        page.goto(APP_URL)
+        page.evaluate(
+            """
+            localStorage.setItem('AI_SDLC_welcome_seen', '1');
+            localStorage.setItem('AI_SDLC_language', 'es');
+            localStorage.removeItem('AI_SDLC_onboarding_done');
+            """
+        )
+        page.reload()
+        page.wait_for_load_state("networkidle")
+
+        assert page.evaluate(
+            "!document.getElementById('ob-overlay').classList.contains('hidden')"
+        ), "El onboarding no se mostró en la primera visita (precondición del test)"
+
+        page.click(".ob-close")
+        page.wait_for_timeout(100)
+
+        page.reload()
+        page.wait_for_load_state("networkidle")
+        assert page.evaluate(
+            "document.getElementById('ob-overlay').classList.contains('hidden')"
+        ), "El onboarding reapareció tras recargar pese a haberse cerrado con la 'X'"
+        browser.close()
