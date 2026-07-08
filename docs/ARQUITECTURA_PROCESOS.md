@@ -3,7 +3,7 @@
 ## 1. Arquitectura de Archivos (Directory Map)
 ```text
 WEB_PROMPTS/
-├── ai_sdlc_pro_prompts/  # Fuentes: 44+ archivos Markdown segmentados por fase SDLC
+├── ai_sdlc_pro_prompts/  # Fuentes: 75+ archivos Markdown segmentados por fase SDLC
 ├── docs/                # Documentación técnica, memorias y análisis
 ├── .github/workflows/   # CI/CD: Pipeline de despliegue a GitHub Pages y GCP
 ├── build.py             # Motor: Compilador Python que genera el sitio estático

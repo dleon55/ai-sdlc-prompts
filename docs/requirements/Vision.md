@@ -39,7 +39,7 @@ AI-SDLC Pro es una biblioteca interactiva web de prompts estructurados para diri
 | Aspecto | Descripción |
 |---------|-------------|
 | **Problema** | Desarrolladores obtienen outputs inconsistentes de IA por falta de contexto estructurado y metodología SDLC |
-| **Solución** | Biblioteca de 44 prompts profesionales con framework multi-agente obligatorio |
+| **Solución** | Biblioteca de 75 prompts profesionales con framework multi-agente obligatorio |
 | **Mercado** | 26.9M desarrolladores globales, crecimiento IA-assisted coding al 35% anual |
 
 ### 2.2 Definición del Problema
@@ -108,7 +108,7 @@ AI-SDLC Pro es una biblioteca interactiva web de prompts estructurados para diri
 |-------|-------------|-----------------|
 | **Usuario Visitante** | Accede por primera vez | Explorar landing, entender propuesta de valor |
 | **Usuario Free** | Registrado, tier gratuito | Usar 10 prompts básicos, evaluar producto |
-| **Usuario Pro** | Suscriptor pagado | Acceso completo 44+ prompts, variables avanzadas |
+| **Usuario Pro** | Suscriptor pagado | Acceso completo 75+ prompts, variables avanzadas |
 | **Administrador** | LionSystems | Deploys, analytics, gestión de contenido |
 
 ---
@@ -120,8 +120,8 @@ AI-SDLC Pro es una biblioteca interactiva web de prompts estructurados para diri
 | ID | Necesidad | Prioridad | Solución Propuesta |
 |----|-----------|-----------|-------------------|
 | **N-01** | Contexto obligatorio consistente | **Must** | Framework auto-prepend |
-| **N-02** | Variables de proyecto persistentes | **Must** | Sistema de proyectos con 12 variables |
-| **N-03** | Biblioteca estructurada SDLC | **Must** | 44 prompts en 15 grupos |
+| **N-02** | Variables de proyecto persistentes | **Must** | Sistema de proyectos con 19 variables |
+| **N-03** | Biblioteca estructurada SDLC | **Must** | 75 prompts en 19 grupos |
 | **N-04** | Copiar prompts fácilmente | **Must** | Botón copiar con framework + variables |
 | **N-05** | Buscar prompts rápidamente | **Should** | Búsqueda en tiempo real |
 | **N-06** | Soporte multi-idioma | **Should** | i18n ES/EN (implementado parcial) |

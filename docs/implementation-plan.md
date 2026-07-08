@@ -1,6 +1,12 @@
 # Plan de Implementación
 ## i18n Completo AI-SDLC Pro — Alternativa C (Híbrida)
 
+> **⚠️ Documento histórico (completado).** Este plan corresponde al esfuerzo de i18n
+> de abril 2026, cuando la biblioteca tenía **44 prompts**. La internacionalización
+> ES/EN ya está implementada y el proyecto creció a **75 prompts en 19 grupos (00-15)**.
+> Las cifras y el desglose por sección de abajo se conservan como registro histórico
+> del plan original; **no reflejan el estado actual** del repositorio.
+
 ---
 
 **Fecha:** 2026-04-12  

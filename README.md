@@ -13,7 +13,7 @@ Biblioteca interactiva de prompts estructurados bajo el **AI-SDLC Enterprise Fra
 
 ## Funcionalidades del sitio
 
-- **Proyectos con variables por entorno** — múltiples proyectos, cada uno con **12 variables** (`repositorio`, `issue`, `rama actual/destino`, `ambiente`, `componentes`, `módulo`, `stack`, `tipo de proyecto`, `metodología`, `agentes IA`, `nivel de autonomía`). Variables persisten en `localStorage`.
+- **Proyectos con variables por entorno** — múltiples proyectos, cada uno con **19 variables** configurables (`repositorio`, `referencia/entrada`, `rama actual/destino`, `ambiente`, `componentes`, `módulo`, `stack`, `tipo de proyecto`, `metodología`, `agentes IA`, `nivel de autonomía`, `objetivo`, `responsable`, `workspace`, `estándar/compliance`, `documentos`, `profundidad`), más asignaciones adicionales `TOKEN=valor`. Variables persisten en `localStorage`.
 - **Framework auto-prepend** — el bloque de contexto del framework se antepone automáticamente a cada prompt copiado.
 - **Onboarding guiado** — banner + overlay de bienvenida para nuevos usuarios con guía de primeros pasos.
 - **Multi-select** — selección de varios prompts para copiarlos en bloque.
@@ -57,20 +57,15 @@ python verify_clean.py
 
 ---
 
-## Despliegue a producción (GCP)
+## Despliegue a producción
 
-```bash
-# 1. Regenerar
-python build.py
+El despliegue es **automático vía CI/CD** al integrar cambios a `main` mediante Pull Request:
 
-# 2. Subir al servidor
-bash deploy-to-gcp.sh
+1. Trabaja en una **rama** y abre un **Pull Request** contra `main` (ver [CONTRIBUTING.md](CONTRIBUTING.md)).
+2. El workflow valida el PR (`build.py` + `verify_clean.py` + `pytest`) **sin desplegar**.
+3. Al **mergear el PR a `main`**, `.github/workflows/deploy.yml` publica automáticamente en **GitHub Pages** (staging) y **GCP** (`prompts.lionsystems.com.mx`).
 
-# 3. Registrar cambio
-git add -A && git commit -m "feat: descripcion" && git push origin main
-```
-
-El push a `main` también actualiza GitHub Pages automáticamente vía el workflow `.github/workflows/deploy.yml`.
+> No se hace push directo a `main` (política **OP-001**, ver CONTRIBUTING.md). `bash deploy-to-gcp.sh` queda como **respaldo manual** de re-deploy a GCP; el flujo normal no lo requiere.
 
 ---
 
@@ -79,8 +74,8 @@ El push a `main` también actualiza GitHub Pages automáticamente vía el workfl
 1. Crea `ai_sdlc_pro_prompts/XX-YY-nombre-del-prompt.md` siguiendo el patrón existente.
 2. Ejecuta `python build.py` y verifica localmente.
 3. Ejecuta `python verify_clean.py` — debe reportar 0 prompts contaminados.
-4. `git push origin main` — CI/CD despliega a GitHub Pages automáticamente.
-5. `bash deploy-to-gcp.sh` — actualiza producción GCP.
+4. Haz commit en una **rama de trabajo** (no `main`) y abre un **Pull Request**; el CI valida el PR.
+5. Al **mergear a `main`**, CI/CD despliega automáticamente a GitHub Pages y GCP producción.
 
 ---
 

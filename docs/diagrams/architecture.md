@@ -274,7 +274,7 @@ classDiagram
 **Explicación:**
 Modelo de datos 100% client-side:
 - **Proyectos:** Array JSON con ID, nombre, timestamp, y objeto variables
-- **Variables:** 12 campos string/array según tipo (globales vs por-prompt)
+- **Variables:** 19 campos string/array según tipo (globales vs por-prompt)
 - **Preferencias:** Claves sueltas para UI state (sidebar, idioma, onboarding)
 - **Relaciones:** Uno-a-muchos (proyecto → variables). No hay relaciones complejas (normalizado en JSON).
 

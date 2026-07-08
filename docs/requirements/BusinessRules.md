@@ -60,7 +60,7 @@ FR-04 (Ciclo Forzado)
 | ID | Nombre | Descripción | Severidad |
 |----|--------|-------------|-----------|
 | **MR-01** | Tier Free | 10 prompts básicos (análisis, diseño, implementación) sin costo | 🔴 Crítica |
-| **MR-02** | Tier Pro Individual | $299 MXN/mes — acceso completo 44+ prompts, 00-B, 00-C, variables avanzadas | 🔴 Crítica |
+| **MR-02** | Tier Pro Individual | $299 MXN/mes — acceso completo 75+ prompts, 00-B, 00-C, variables avanzadas | 🔴 Crítica |
 | **MR-03** | Tier Pro Equipo | $799 MXN/mes — hasta 5 devs, proyectos compartidos, sync básico | 🟡 Alta |
 | **MR-04** | Pack Único Gumroad | $499 MXN — compra única, versión del día, sin suscripción | 🟢 Media |
 | **MR-05** | Enterprise | $5,000-15,000 MXN/mes — SSO, prompts privados, soporte prioritario | 🟢 Media |
