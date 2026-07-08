@@ -43,6 +43,9 @@ jobs:
 #    4. test_variables_runtime.js -> ejecuta el JS generado (VM real) y
 #       valida resolvePrompt/copyPromptLang/persistencia de proyectos
 #    5. pytest -q        -> suite de contrato (build, i18n, variables, etc.)
+#
+#  Aparte corre el job `e2e` (Playwright, navegador real) EN PARALELO a
+#  deploy-pages/deploy-gcp: es informativo, no bloqueante (ver ese job).
 # ============================================================
   build:
     runs-on: ubuntu-latest
@@ -109,6 +112,39 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist
+
+# ============================================================
+#  JOB 1B - E2E NAVEGADOR (Playwright) - NO BLOQUEANTE
+#  No es uno de los 5 gates obligatorios: corre en paralelo, informa
+#  resultado en el check run, pero continue-on-error a nivel de job evita
+#  que un fallo (o flakiness de navegador) tumbe el workflow. deploy-pages
+#  y deploy-gcp solo declaran `needs: build`, nunca `needs: e2e`, así que
+#  esta suite jamás bloquea un deploy aunque falle.
+# ============================================================
+  e2e:
+    needs: build
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Build index.html
+        run: python build.py
+
+      - name: Install Playwright + Chromium
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest playwright
+          python -m playwright install --with-deps chromium
+
+      - name: E2E navegador (no bloqueante)
+        run: python -m pytest tests/e2e/test_browser_e2e.py -v
 
 # ============================================================
 #  JOB 2 - GITHUB PAGES  (staging / ambiente de pruebas)
