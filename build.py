@@ -109,6 +109,73 @@ def chevron_svg():
     )
 
 
+# Clasificación de bloques ```text``` por el encabezado ## que los precede,
+# no por el texto literal con el que empiezan. El contenido de cada fórmula
+# de uso incluye el nombre del prompt ("Use the SAST prompt and adapt it
+# to:", "Usa el prompt de auditoría FinOps y adáptalo a:"), así que matchear
+# un prefijo fijo es inherentemente frágil: en inglés el nombre se inserta
+# ANTES de la palabra "prompt", por lo que un prefijo como "Use the prompt"
+# casi nunca coincide y la fórmula termina filtrándose al prompt ejecutable.
+# El encabezado, en cambio, es un ancla estructural estable.
+HEADER_CATEGORY = {
+    # Bloques ejecutables: se concatenan y forman el prompt copiable.
+    "prompt completo": "prompt",
+    "complete prompt": "prompt",
+    "full prompt": "prompt",
+    "complete prompt — plan mode": "prompt",
+    "complete prompt — multi-agent protocol": "prompt",
+    "prompt completo — modo plan": "prompt",
+    "prompt completo — protocolo multi-agente": "prompt",
+    "mandatory operating principle for all prompts": "prompt",
+    "principio operativo obligatorio para todos los prompts": "prompt",
+    "complete master prompt": "prompt",
+    "prompt maestro completo": "prompt",
+    "execution prompt (second step)": "prompt",
+    "prompt de ejecución (segundo paso)": "prompt",
+    # Bloques de instrucción humana: se filtran del prompt copiable y quedan
+    # disponibles para el modal de fórmulas (ⓘ).
+    "uso con fórmula estándar": "formula",
+    "use with standard formula": "formula",
+    "standard formula usage": "formula",
+    "usage with standard formula": "formula",
+    "fórmula estándar de uso": "formula",
+    "how to use this prompt library": "formula",
+    "cómo usar esta biblioteca de prompts": "formula",
+    "recommended commit formats": "formula",
+    "formatos de commit recomendados": "formula",
+}
+
+
+def _text_blocks_with_headers(content):
+    """Devuelve [(header_h2_o_None, bloque), ...] para cada ```text``` del documento."""
+    header_positions = [
+        (m.start(), m.group(1).strip())
+        for m in re.finditer(r"^##\s+(.+)$", content, re.MULTILINE)
+    ]
+    result = []
+    for m in re.finditer(r"```text\n(.*?)```", content, re.DOTALL):
+        header = None
+        for pos, text in header_positions:
+            if pos < m.start():
+                header = text
+            else:
+                break
+        result.append((header, m.group(1).strip()))
+    return result
+
+
+def _classify_block(header, is_first_block):
+    if header is not None:
+        category = HEADER_CATEGORY.get(header.strip().lower())
+        if category:
+            return category
+    # Encabezado ausente o no registrado: el primer bloque conserva el
+    # comportamiento histórico (siempre es el prompt real); un bloque
+    # posterior no reconocido se trata como fórmula para no dejar pasar
+    # contenido no vetado al prompt ejecutable.
+    return "prompt" if is_first_block else "formula"
+
+
 def parse_md(filepath):
     content = filepath.read_text(encoding="utf-8")
 
@@ -116,31 +183,20 @@ def parse_md(filepath):
     title_match = re.search(r"^#\s+(.+)$", content, re.MULTILINE)
     title = title_match.group(1).strip() if title_match else filepath.stem
 
-    # --- todos los bloques ```text``` ---
-    blocks = [b.strip() for b in re.findall(r"```text\n(.*?)```", content, re.DOTALL)]
+    # --- todos los bloques ```text``` con su encabezado ## más cercano ---
+    blocks = _text_blocks_with_headers(content)
 
     if not blocks:
         return title, content.strip(), "", []
 
-    # El PRIMER bloque siempre es el prompt real para la IA
-    prompt_parts = [blocks[0]]
+    prompt_parts = []
     formula_blocks = []
-
-    for b in blocks[1:]:
-        # Bloques de fórmula/instrucción para el humano:
-        #   "Usa el prompt..." / "Use the prompt..."
-        #   ejemplos de invocación o CLI
-        #   bloques de formato de commit (fix( / feat( ...)
-        if (
-            re.match(r"^(Usa el prompt|Use the prompt)", b)
-            or re.match(r"^(Ejemplo|Example)\b", b)
-            or re.match(r"^gh issue list\b", b)
-            or re.match(r"^(fix|feat|refactor|docs|test|chore)\(", b)
-        ):
-            formula_blocks.append(b)
+    for i, (header, block) in enumerate(blocks):
+        if _classify_block(header, is_first_block=(i == 0)) == "formula":
+            formula_blocks.append(block)
         else:
             # Prompts reales encadenados (ej. 08-03 ejecución: "Con base en el análisis...")
-            prompt_parts.append(b)
+            prompt_parts.append(block)
 
     prompt = "\n\n---\n\n".join(prompt_parts)
 
