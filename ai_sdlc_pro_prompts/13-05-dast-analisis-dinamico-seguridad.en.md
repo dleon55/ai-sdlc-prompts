@@ -35,6 +35,15 @@ Prompt to design and execute dynamic application security testing (DAST) against
 ## Full prompt
 
 ```text
+Mandatory preconditions — verify each one before continuing. If any is missing, STOP and request it; do not run any active test (steps 3 onward) without all of them confirmed:
+- authorization: [WRITTEN AUTHORIZATION FROM THE SYSTEM OWNER]
+- scope: [AUTHORIZED SYSTEMS, DOMAINS, IPS OR URLS — explicit, with exclusions]
+- environment: [ISOLATED TEST ENVIRONMENT — never production without explicit, documented authorization]
+- window: [AUTHORIZED START/END DATE AND TIME FOR THE TEST]
+- responsible: [ACCOUNTABLE PERSON OR TEAM FOR THIS TEST]
+- limits: [ACTIONS OR SYSTEMS EXPLICITLY EXCLUDED — what must not be touched]
+- stop condition: [CONDITION THAT REQUIRES IMMEDIATELY STOPPING THE TEST — e.g. unforeseen impact, real data exposed, out-of-scope system affected]
+
 Objective:
 Perform dynamic application security testing (DAST) against the running application,
 identifying exploitable vulnerabilities in real time, validating the exposed attack surface,
