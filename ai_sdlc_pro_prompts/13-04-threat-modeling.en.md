@@ -137,6 +137,13 @@ Steps:
    - Data layer: encryption at rest, encryption in transit, minimal DB access
    - Operations layer: security logging, alerts, secret rotation
 
+Constraints:
+- don't invent components, flows, actors, or integrations that aren't described in the actual design or code; if no design is available, request it before modeling speculative threats,
+- this is a read-only design exercise: don't implement mitigations or modify code, infrastructure, or configuration as part of this modeling,
+- don't include real credentials, tokens, internal hostnames, or working exploit payloads in the DFD or threat descriptions — describe vectors abstractly, enough to communicate them without turning the document into an attack recipe,
+- if the model reveals a threat that is already exploitable in the current system (not just in design), flag it as an urgent finding and route it to `13-01` or the security reporting channel instead of only documenting it as a future threat,
+- every threat must reference the actual affected component or flow; don't assign likelihood or impact without justifying the criteria used.
+
 Deliverables:
 - textual DFD of the system with marked trust boundaries,
 - complete STRIDE threat table with risk and mitigation,

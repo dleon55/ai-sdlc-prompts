@@ -150,6 +150,12 @@ QUALITY RULES:
 - Do not ignore impact on other modules
 - Do not assume behavior without evidence
 - If something is unclear → declare it
+
+CONSTRAINTS:
+- this phase is analysis-only: don't edit files, don't run build/test commands beyond reading, and don't create commits or branches in this block,
+- any finding from the original report that you decide to discard must be explicitly justified; don't silently drop it from the plan,
+- the Phase 4 plan must precisely bound the scope of each change (file and component) — any work that falls outside that scope requires a new analysis-and-approval cycle, it is not executed as part of the same plan,
+- don't mark any finding as resolved or imply implementation already happened; the output of this phase is a proposal pending human approval.
 ```
 
 ---
@@ -171,6 +177,12 @@ Rules:
 - one finding per commit
 - do not modify outside the scope
 - validate before each commit
+
+Constraints:
+- apply only the changes that were explicitly described and approved in the Phase 1 plan — if you identify additional necessary work during execution, don't implement it: stop, document it, and request a new analysis cycle,
+- don't reinterpret or "improve" the approved plan on the fly; any deviation from the original plan requires human approval before being applied,
+- don't push or deploy without additional explicit approval, even if local commits pass validation,
+- if an approved change no longer applies (e.g. the code changed since the analysis), stop and report it instead of silently adapting it.
 
 For each change:
 1. affected file
@@ -206,13 +218,16 @@ Use the remediation master prompt and adapt it to:
 
 | Finding | Applies | Classification | Component | Root cause |
 |---|---|---|---|---|
+| `parse_editorial_contract` doesn't validate required fields before indexing them | Yes | Critical | `build.py` | Missing explicit schema validation when parsing the Editorial Contract table |
 
 ### Remediation plan
 
 | Step | Change | File | Risk | Validation | Suggested commit |
 |---|---|---|---|---|---|
+| 1 | Add validation of required fields with a clear error message before indexing the contract dictionary | `build.py` | Low — change scoped to a pure function, no side effects | `python -m pytest tests/test_parse_md_contract.py` | `fix(build): validate required contract fields before indexing` |
 
 ### Risk matrix
 
 | Risk | Probability | Impact | Mitigation |
 |---|---|---|---|
+| The build silently fails for a new prompt with an incomplete contract table | Medium | High — blocks static site generation | Add a regression test covering an incomplete contract that fails with a clear message in CI |

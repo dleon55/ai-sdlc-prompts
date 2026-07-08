@@ -36,15 +36,31 @@ Prompt to analyze an environment, deployment, service, container, pipeline or co
 Objective:
 Analyze an environment, deployment, service, container, pipeline or configuration problem and determine possible causes, necessary validations and resolution path.
 
-Include:
+Steps:
+1. Reproduce the problem: try to reproduce the symptom in a controlled way (same input, same environment if possible) before theorizing about the cause — without a reliable reproduction, any hypothesis is speculation.
+2. Isolate variables: identify what changed relative to the last known-good state (code, configuration, data, infrastructure, external dependencies) to narrow the search space.
+3. Check recent changes first: prioritize deploys, configuration changes, dependency updates, or migrations from the last few days — most environment incidents correlate with a recent change, not a spontaneous cause.
+4. Gather read-only evidence: logs, service status, metrics (CPU, memory, latency, error rate), and traces related to the symptom, without modifying anything in the environment at this stage.
+5. Formulate hypotheses ordered by probability: for each one, state how to validate it with concrete evidence (not just intuition) and what result would confirm or rule it out.
+6. Validate or discard each hypothesis in order, documenting the result of every check — including dead ends, since they bound the problem for whoever continues the investigation.
+7. Converge on the root cause: don't stop at the first coincidental symptom; confirm the cause fully explains the observed behavior, not just part of it.
+8. Propose the resolution path: concrete steps to resolve, flagging which ones require human approval before execution (restarts, rollbacks, configuration changes).
+9. Verify the proposed fix addresses the root cause rather than masking the symptom (e.g., restarting a service that temporarily relieves a memory leak without fixing it) — explicitly flag whether an action is palliative or definitive.
+
+Constraints:
+- prioritize read-only diagnostic commands (logs, service status, metrics); do not run restarts, rollbacks, configuration changes, or destructive commands — include them as part of the proposed "resolution path" instead, pending approval,
+- do not apply or recommend applying a fix without having confirmed the root cause with evidence: a fix applied on an unverified hypothesis can hide the real problem or introduce a new one,
+- do not execute or propose executing any action against production without explicit human approval, even if the diagnosis suggests an obvious fix,
+- document the full investigation trail, including discarded hypotheses and dead ends — that record prevents someone else from repeating the same failed check in a future incident,
+- if the environment is PROD and there is significant user impact, stop and escalate to `11-04-incident-response` instead of continuing this standard troubleshooting.
+
+Deliver:
 - symptom,
 - involved services,
 - suggested review,
-- commands or evidence to review,
-- hypotheses,
+- commands or evidence reviewed,
+- hypotheses ordered with their validation,
 - resolution path.
-
-⚠️ Prioritize read-only diagnostic commands (logs, service status, metrics). Do not run restarts, rollbacks, configuration changes, or destructive commands — include them as part of the proposed "resolution path" instead, pending approval.
 ```
 
 ---
@@ -75,3 +91,10 @@ Use the environment troubleshooting prompt and adapt it to:
 | Commands to execute | Ordered diagnostic commands |
 | Hypotheses | Possible causes by probability order |
 | Resolution path | Concrete steps to resolve |
+
+### Example applied
+
+| Hypothesis | Probability | How to validate it | Result |
+|---|---|---|---|
+| The 14:32 deploy introduced a missing environment variable | High | Review the deploy diff and the container's startup logs | Confirmed — the container logs `KeyError: DATABASE_URL` after deploy `a1b2c3d` |
+| The load balancer's TLS certificate expired | Medium | `openssl s_client -connect lb.internal:443` and check the expiration date | Ruled out — certificate valid until 2027-01 |

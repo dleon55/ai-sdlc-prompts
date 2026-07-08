@@ -45,6 +45,12 @@ Validate:
 - artifacts,
 - PR checks.
 
+Constraints:
+- this is read-only monitoring: don't re-run, cancel, or approve CI jobs, and don't modify workflow files as part of this analysis — any action on the pipeline requires explicit human approval outside this prompt,
+- every reported failure must cite the exact job and step, along with the specific error message from the log — don't generalize "tests failed" without naming which ones,
+- explicitly distinguish an intermittent failure (flaky test, infrastructure timeout, a downed external dependency) from a genuine regression caused by the change under review; if there isn't enough evidence to decide, mark it as "needs retry or further investigation" instead of classifying it as either,
+- if a check remains pending or has no accessible logs, don't count it as passed or failed — report it as pending in the final approval criterion.
+
 Deliver:
 1. general status,
 2. detected failures,
@@ -76,10 +82,10 @@ Use the CI monitoring prompt and adapt it to:
 |---|---|---|---|---|
 | lint | | | | |
 | build | | | | |
-| tests | | | | |
+| tests | ⚠️ Failed | 2 of 148 tests failed in `test_build_unit.py::test_missing_field` | Intermittent timeout reading `00-framework.md` on the CI runner (isolated failure, not reproducible locally) | Retry the job before blocking the PR; if it persists on a second attempt, investigate as a regression |
 | quality gates | | | | |
 | workflows | | | | |
 | artifacts | | | | |
-| PR checks | | | | |
+| PR checks | ✅ Approved | All required checks (`lint`, `build`, `tests`) are green | — | None — ready to merge once the item above is resolved |
 
 **Approval criterion:** [APPROVED / REJECTED / PENDING]

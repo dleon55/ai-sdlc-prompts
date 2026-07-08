@@ -137,6 +137,13 @@ Pasos:
    - Capa de datos: cifrado en reposo, cifrado en tránsito, acceso mínimo a BD
    - Capa de operaciones: logging de seguridad, alertas, rotación de secretos
 
+Restricciones:
+- no inventes componentes, flujos, actores o integraciones que no estén descritos en el diseño o el código real; si no hay diseño disponible, solicítalo antes de modelar amenazas especulativas,
+- este es un ejercicio de diseño de solo lectura: no implementes mitigaciones ni modifiques código, infraestructura o configuración como parte de este modelado,
+- no incluyas credenciales reales, tokens, hostnames internos ni payloads de explotación funcionales en el DFD o en la descripción de vectores — describe los vectores de forma abstracta y suficiente para comunicarlos, no como una receta de ataque,
+- si el modelo revela una amenaza ya explotable en el sistema actual (no solo en diseño), señálalo como hallazgo urgente y remite a `13-01` o al canal de reporte de seguridad en vez de solo documentarlo como amenaza futura,
+- cada amenaza debe referenciar el componente o flujo real afectado; no asignes probabilidad o impacto sin justificar el criterio usado.
+
 Entrega:
 - DFD textual del sistema con límites de confianza marcados,
 - tabla completa de amenazas STRIDE con riesgo y mitigación,

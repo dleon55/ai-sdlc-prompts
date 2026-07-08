@@ -73,6 +73,12 @@ Actividades:
    - documentación.
 5. Detecta vacíos o ausencias relevantes.
 
+Restricciones:
+- este es un análisis de solo lectura: no ejecutes instalaciones, builds, migraciones ni cambios en el repositorio para completar el inventario,
+- no asumas convenciones no documentadas (nomenclatura, estructura de carpetas, versión de dependencias) solo porque parecen consistentes en los archivos revisados; verifícalas antes de generalizarlas como regla del proyecto,
+- si una carpeta, workspace o dependencia no es accesible o no se pudo inspeccionar, decláralo como vacío de cobertura en el inventario en vez de inferir su contenido,
+- si la documentación existente está desactualizada, incompleta o contradice lo observado en el código, señala la discrepancia explícitamente en vez de asumir cuál de las dos fuentes es la vigente.
+
 Formato de salida:
 1. Resumen ejecutivo
 2. Inventario de carpetas y propósito
@@ -109,3 +115,11 @@ Usa el prompt de inventario técnico del repositorio y adáptalo a:
 | Procesos/documentación | Artefactos del ciclo de ingeniería ya presentes |
 | Riesgos o vacíos | Ausencias relevantes detectadas |
 | Orden de revisión | Recomendación de por dónde continuar el análisis |
+
+### Ejemplo (fragmento)
+
+| Sección | Ejemplo de contenido |
+|---|---|
+| Resumen ejecutivo | Librería estática bilingüe de prompts para agentes IA (`ai_sdlc_pro_prompts/*.md` + `.en.md`); sin backend ni base de datos, el sitio se genera con `build.py` a partir de pares ES/EN. |
+| Tecnologías | Python 3.x (`build.py`, `extract_vars.py`), Markdown como formato de contenido, pytest para pruebas (`tests/`), GitHub Actions para despliegue (`.github/workflows/deploy.yml`); sin framework de frontend. |
+| Riesgos o vacíos | No se encontró documentación de la estrategia de branching más allá de `CONTRIBUTING.md`; falta un ADR que explique por qué el índice se genera estáticamente en vez de servirse dinámicamente. |

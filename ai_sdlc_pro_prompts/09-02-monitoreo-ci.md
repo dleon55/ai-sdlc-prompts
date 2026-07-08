@@ -45,6 +45,12 @@ Valida:
 - artefactos,
 - checks del PR.
 
+Restricciones:
+- este es un monitoreo de solo lectura: no re-ejecutes, canceles ni apruebes jobs de CI, y no modifiques archivos de workflow como parte de este análisis — cualquier acción sobre el pipeline requiere aprobación humana explícita fuera de este prompt,
+- toda falla reportada debe citar el job y el paso exactos, junto con el mensaje de error específico del log — no generalices "los tests fallaron" sin señalar cuáles,
+- distingue explícitamente una falla intermitente (flaky test, timeout de infraestructura, dependencia externa caída) de una regresión genuina causada por el cambio bajo revisión; si no hay evidencia suficiente para decidir, márcalo como "requiere reintento o investigación adicional" en vez de clasificarlo como una u otra,
+- si un check sigue en estado pendiente o sin logs accesibles, no lo cuentes como aprobado ni como fallido — repórtalo como pendiente en el criterio de aprobación final.
+
 Entrega:
 1. estatus general,
 2. fallas detectadas,
@@ -76,10 +82,10 @@ Usa el prompt de monitoreo CI y adáptalo a:
 |---|---|---|---|---|
 | lint | | | | |
 | build | | | | |
-| pruebas | | | | |
+| pruebas | ⚠️ Falló | 2 de 148 pruebas fallaron en `test_build_unit.py::test_missing_field` | Timeout intermitente al leer `00-framework.md` en el runner de CI (falla aislada, no reproducible en local) | Reintentar el job antes de bloquear el PR; si persiste en un segundo intento, investigar como regresión |
 | quality gates | | | | |
 | workflows | | | | |
 | artefactos | | | | |
-| checks PR | | | | |
+| checks PR | ✅ Aprobado | Todos los checks requeridos (`lint`, `build`, `tests`) están en verde | — | Ninguna — listo para merge una vez resuelto el punto anterior |
 
 **Criterio de aprobación:** [APROBADO / RECHAZADO / PENDIENTE]

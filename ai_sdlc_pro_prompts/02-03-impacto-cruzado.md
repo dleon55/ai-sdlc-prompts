@@ -52,6 +52,12 @@ Actividades:
 2. Detecta impactos directos e indirectos.
 3. Evalúa afectación a otros casos de uso.
 
+Restricciones:
+- este es un análisis de solo lectura: no modifiques código, configuración ni contratos de API para evaluar el impacto,
+- para cada componente marcado como impactado, traza la cadena real de dependencias o imports que lo conecta con el cambio (archivo que importa, función que invoca, contrato que consume) — no lo marques por similitud de nombre o por intuición arquitectónica,
+- si no puedes verificar la cadena de dependencia de un componente crítico (seguridad, datos, producción, semver) por falta de visibilidad (código no accesible, contrato no versionado, documentación ausente), clasifícalo como riesgo alto no confirmado y señala explícitamente la brecha de visibilidad — nunca lo omitas de la matriz ni lo des por seguro sin evidencia,
+- no cierres la matriz de impacto con severidades "bajo" en componentes que no pudiste inspeccionar directamente.
+
 Salida:
 - matriz de impacto (incluyendo workspaces y paquetes del monorepo),
 - severidad,
@@ -83,12 +89,12 @@ Usa el prompt de análisis de impacto cruzado y adáptalo a:
 
 | Componente | Tipo de impacto | Severidad | Riesgo | Recomendación |
 |---|---|---|---|---|
+| CI/CD | Directo — `deploy.yml` invoca `build.py` en cada push a `main`; si `build.py` cambia su firma de validación, el step `python build.py` puede fallar el pipeline | Alto | El workflow no tiene un paso de rollback automático si `build.py` termina en error a mitad de la generación del índice | Agregar un paso de verificación (`pytest tests/test_build.py`) antes de generar `index.html` en el pipeline |
+| documentación | Indirecto — cada prompt modificado en `ai_sdlc_pro_prompts/*.md` requiere actualizar su par `.en.md`; verificado por import/lectura cruzada en `tests/test_i18n.py` | Medio | Riesgo de que el build publique un par ES/EN desincronizado si el test de paridad no se ejecuta en CI | Confirmar que `test_i18n.py` corre en `deploy.yml` antes del build, no solo en local |
 | frontend | | | | |
 | backend | | | | |
 | base de datos | | | | |
 | integraciones | | | | |
 | infraestructura | | | | |
-| CI/CD | | | | |
 | seguridad | | | | |
 | monitoreo | | | | |
-| documentación | | | | |

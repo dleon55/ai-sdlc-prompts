@@ -91,6 +91,12 @@ Detection steps:
    - Is active coverage configuration present? What is the current threshold?
    - Are there currently failing tests?
 
+Constraints:
+- this is a read-only detection: do not install dependencies, do not run the full test suite, and do not run any other command that changes the state of the repository or the environment,
+- if a profile field cannot be backed by a real, cited file or command, mark it explicitly as "not detected" — never assume or invent a framework, version, or convention,
+- always distinguish "not detected" (insufficient evidence was found; it may exist but was not located) from "not configured" or "not present" (actively confirmed that the element does not exist in the repository); do not treat these terms as synonyms,
+- if the same test type appears to use two different tools (e.g., two unit test frameworks in the same repo), report it as an ambiguous finding instead of arbitrarily picking one.
+
 Deliverables:
 Produce the test stack profile in the standard format defined below.
 ```
@@ -179,3 +185,28 @@ Current coverage : [X% or unmeasured]
 
 > This block must be pasted at the beginning (after the `00-framework.md` block) of any
 > test implementation prompt: `07-07`, `07-08`, `07-09`, `07-10`, `07-11`.
+
+### Example of a completed profile (excerpt, this prompt library's own repository)
+
+```
+── TEST STACK PROFILE ──────────────────────────────────────────────────
+Repository  : ai-sdlc-prompts
+Branch      : main
+
+MAIN LANGUAGE : Python
+RUNTIME / VER : not pinned in a version file — not detected (verify against the CI runner)
+
+── UNIT TESTS ──────────────────────────────────────────────────────────
+Framework        : pytest — version not detected (no pyproject.toml/requirements.txt pins it; installed via `pip install pytest` in the workflow)
+Mock library     : not detected (no use of unittest.mock or pytest-mock found in tests/)
+Coverage         : not configured (no pytest-cov or coverage configuration detected)
+Directory        : tests/
+Run command:
+  python -m pytest tests/ -q  (verified in .github/workflows/deploy.yml, build job)
+
+── CI/CD PIPELINE ──────────────────────────────────────────────────────
+Platform         : GitHub Actions
+File             : .github/workflows/deploy.yml
+Test steps       : `pip install pytest` followed by `python -m pytest tests/ -q` in the build job
+Coverage gate    : not configured
+```

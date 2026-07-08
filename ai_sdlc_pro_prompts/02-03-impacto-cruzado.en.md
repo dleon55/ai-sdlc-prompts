@@ -52,6 +52,12 @@ Activities:
 2. Detect direct and indirect impacts.
 3. Evaluate affectation to other use cases.
 
+Constraints:
+- this is a read-only analysis: don't modify code, configuration, or API contracts to evaluate the impact,
+- for every component marked as impacted, trace the actual dependency or import chain that connects it to the change (the file that imports it, the function that calls it, the contract it consumes) — don't mark it by name similarity or architectural intuition,
+- if you cannot verify the dependency chain of a critical component (security, data, production, semver) due to missing visibility (inaccessible code, an unversioned contract, absent documentation), classify it as an unconfirmed high risk and explicitly flag the visibility gap — never omit it from the matrix or treat it as safe without evidence,
+- don't close the impact matrix with "low" severity on components you could not inspect directly.
+
 Output:
 - impact matrix (including monorepo workspaces and packages),
 - severity,
@@ -83,12 +89,12 @@ Use the cross-impact analysis prompt and adapt it to:
 
 | Component | Impact type | Severity | Risk | Recommendation |
 |---|---|---|---|---|
+| CI/CD | Direct — `deploy.yml` invokes `build.py` on every push to `main`; if `build.py` changes its validation signature, the `python build.py` step can fail the pipeline | High | The workflow has no automatic rollback step if `build.py` errors out mid-way through generating the index | Add a verification step (`pytest tests/test_build.py`) before generating `index.html` in the pipeline |
+| documentation | Indirect — every prompt modified in `ai_sdlc_pro_prompts/*.md` requires updating its `.en.md` pair; verified by cross-checking `tests/test_i18n.py` | Medium | Risk that the build publishes an out-of-sync ES/EN pair if the parity test doesn't run in CI | Confirm `test_i18n.py` runs in `deploy.yml` before the build, not only locally |
 | frontend | | | | |
 | backend | | | | |
 | database | | | | |
 | integrations | | | | |
 | infrastructure | | | | |
-| CI/CD | | | | |
 | security | | | | |
 | monitoring | | | | |
-| documentation | | | | |

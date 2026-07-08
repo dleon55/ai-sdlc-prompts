@@ -57,6 +57,12 @@ Antes de redactar el issue:
 4. Determina si la tarea es apta para ejecución autónoma.
 5. No inventes rutas, comandos, criterios ni comportamiento actual.
 
+Restricciones:
+- no inventes criterios de aceptación que el solicitante no haya dado explícitamente; si faltan, decláralos como pendientes en la sección de readiness en vez de completarlos con supuestos propios,
+- si el alcance es ambiguo (archivos afectados, comportamiento esperado, ambiente destino), señala la ambigüedad y solicita precisión antes de redactar el issue final — no avances con una interpretación no confirmada,
+- no asignes en el `## Contrato de ejecución` un modo de autonomía (A0-A3) superior al que amerita el riesgo real de la tarea; ante la duda, asigna el nivel más conservador y explica por qué,
+- no crees el issue en GitHub — este prompt solo redacta el contenido y el comando sugerido; publicarlo es una acción A3 que requiere aprobación humana explícita fuera de este prompt.
+
 Genera el issue con las siguientes secciones:
 
 ## Descripción
@@ -165,6 +171,19 @@ gh issue create \
   --label "[tipo],[agente-ia],[prioridad]" \
   --assignee "@me"
 ```
+
+**Ejemplo aplicado a este proyecto:**
+
+```bash
+gh issue create \
+  --repo dleon/ai-sdlc-prompts \
+  --title "fix: build.py no valida que exista el par ES/EN antes de generar el índice" \
+  --body-file issue-draft.md \
+  --label "fix,agente-ia,alta" \
+  --assignee "@me"
+```
+
+Con `## Contrato de ejecución` → modo autorizado: A2 (ejecución controlada, alcance limitado a `build.py` y `tests/test_build.py`); y `## Evaluación de readiness` → claridad ALTA, criterios verificables SÍ, riesgo MEDIO, apto para agente SÍ CON APROBACIONES (requiere revisión humana del CHANGELOG antes de merge).
 
 ---
 

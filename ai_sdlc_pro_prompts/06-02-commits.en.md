@@ -42,6 +42,12 @@ Inputs:
 - component,
 - brief description.
 
+Constraints:
+- never bundle functionally or technically unrelated changes into a single commit; if the brief description mixes two distinct intentions, recommend splitting before proposing the final message,
+- never suggest rewriting already-published history (`git rebase`, `git commit --amend`, `git push --force`) without explicit human approval — the proposed message is for a new commit, not for modifying an existing one,
+- strictly follow the Conventional Commits format (`type(component): description #issue`), using only the types defined in `CONTRIBUTING.md` (feat, fix, refactor, docs, test, chore, among others allowed),
+- do not invent an issue number or component if they were not provided in the inputs; mark it as pending completion instead of assuming it.
+
 Deliver:
 1. suggested main commit
 2. alternative commits if the change should be divided
@@ -91,6 +97,6 @@ test(payments): adds edge cases for negative amount in processor #99
 
 | Commit | Description | Justification |
 |---|---|---|
-| Main | | |
-| Alternative 1 | | |
-| Alternative 2 | | |
+| Main | `fix(api/notifications): fixes duplicate sending when updating order #842` | Isolates the functional fix requested in the issue; it's the minimal change needed to resolve #842 |
+| Alternative 1 | `refactor(api/notifications): extracts deduplication logic into a utility function` | The original diff included an unrequested refactor; split out to avoid mixing fix intent with a design improvement |
+| Alternative 2 | `chore(logging): adds debug logging in notifications service` | Logging added during investigation is not part of the fix; it belongs in a separate commit or should be dropped before merging |

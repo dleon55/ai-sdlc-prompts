@@ -97,6 +97,12 @@ Entrega:
    - ejecución inicial de todos los checks
    - verificación de que el pipeline CI pasa en verde
 
+Restricciones:
+- no introduzcas reglas de linter o formatter en modo estricto que rompan el build sobre código ya existente sin proponer antes un plan de migración (activarlas en modo "warning" primero, corregir en lotes y recién después escalar a "error") — activar una regla bloqueante de un día para otro sobre una base de código no preparada detiene al equipo sin aportar valor inmediato,
+- no propongas deshabilitar ni relajar un quality gate, umbral de cobertura o check ya existente en CI sin señalarlo explícitamente como una regresión que requiere aprobación humana — nunca lo presentes como parte de una "simplificación",
+- si el stack detectado es ambiguo o mixto sin un lenguaje principal claro, pide confirmación antes de generar una configuración exhaustiva para lenguajes que podrían no aplicar,
+- el umbral de cobertura mínima debe quedar referenciado explícitamente en el workflow de CI entregado, no solo mencionado en la tabla de herramientas — si el archivo ejecutable no lo aplica, la entrega está incompleta.
+
 Formato de salida:
 - tabla de herramientas por capa
 - archivos de configuración completos
@@ -132,3 +138,10 @@ Usa el prompt de configuración de stack y calidad de código y adáptalo a:
 | SAST | Bandit | `pyproject.toml` | ✅ | opcional |
 | Secretos | detect-secrets | `.pre-commit-config.yaml` | ✅ | ✅ |
 | Dependencias | Safety / pip-audit | workflow | ✅ | ❌ |
+
+### Ejemplo aplicado: stack de calidad de `ai-sdlc-prompts`
+
+| Capa | Aplicado a este repositorio |
+|---|---|
+| Tests | `python -m pytest tests/ -q --ignore=tests/e2e` como gate rápido de PR (los e2e corren aparte, no bloquean cada commit) |
+| Regla nueva de linter | Ruff en modo `--select I` (orden de imports) se activa primero como `warning` sobre `build.py`; se sube a `error` recién en el siguiente sprint una vez que el archivo queda limpio |

@@ -97,6 +97,12 @@ Deliver:
    - initial execution of all checks
    - verification that the CI pipeline passes in green
 
+Constraints:
+- do not introduce strict-mode linter or formatter rules that break the build on existing code without first proposing a migration plan (enable them in "warning" mode first, fix in batches, and only then escalate to "error") — flipping on a blocking rule overnight against an unprepared codebase stops the team without delivering immediate value,
+- do not propose disabling or relaxing an existing quality gate, coverage threshold, or CI check without explicitly flagging it as a regression that requires human approval — never present it as part of a "simplification",
+- if the detected stack is ambiguous or mixed without a clear primary language, request confirmation before generating an exhaustive configuration for languages that might not apply,
+- the minimum coverage threshold must be explicitly referenced in the delivered CI workflow, not just mentioned in the tools table — if the executable file does not enforce it, the deliverable is incomplete.
+
 Output format:
 - tools table by layer
 - complete configuration files
@@ -132,3 +138,10 @@ Use the stack and code quality configuration prompt and adapt it to:
 | SAST | Bandit | `pyproject.toml` | ✅ | optional |
 | Secrets | detect-secrets | `.pre-commit-config.yaml` | ✅ | ✅ |
 | Dependencies | Safety / pip-audit | workflow | ✅ | ❌ |
+
+### Applied example: `ai-sdlc-prompts` quality stack
+
+| Layer | Applied to this repository |
+|---|---|
+| Tests | `python -m pytest tests/ -q --ignore=tests/e2e` as the fast PR gate (e2e runs separately and does not block every commit) |
+| New linter rule | Ruff in `--select I` mode (import order) is enabled first as `warning` on `build.py`; it is escalated to `error` only in the next sprint once the file is clean |

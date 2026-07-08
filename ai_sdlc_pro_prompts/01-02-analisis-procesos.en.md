@@ -51,6 +51,12 @@ Activities:
    - operations.
 3. Indicate what exists, what is incomplete and what does not exist.
 
+Constraints:
+- base every finding on observable evidence (the file, section, or commit where it is documented); don't base it on assumptions about how a team "should" work,
+- explicitly distinguish between "not documented" and "the process does not exist" — the absence of a document doesn't prove the practice isn't followed informally, so flag it as a documentation gap, not as a missing process,
+- don't execute changes or create new documentation; this prompt only locates and classifies what already exists,
+- if a governance category has no documentary evidence found, mark it "does not exist" in the matrix instead of assuming an implicit policy.
+
 Output format:
 - matrix by category,
 - found file/path,
@@ -80,13 +86,13 @@ Matrix with the following columns:
 
 | Category | File/Path | Description | Completeness | Observations |
 |---|---|---|---|---|
-| processes | | | | |
+| processes | `CONTRIBUTING.md` | Defines the contribution flow: mandatory ES/EN structure, how to run `build.py`, and pre-PR validations | Complete | References the Editorial Contract but doesn't detail the post-agent human review process |
+| QA | `tests/test_build.py`, `tests/test_i18n.py` | Pytest suite that validates index generation, ES/EN parity, and each prompt's structure | Complete | No QA strategy document exists apart from the tests themselves; it should be made explicit in text |
+| deployment | `.github/workflows/deploy.yml` | GitHub Actions pipeline that builds and publishes `index.html` | Incomplete | Doesn't document rollback conditions or a staging environment prior to production |
 | procedures | | | | |
 | policies | | | | |
 | standards | | | | |
 | architecture | | | | |
-| QA | | | | |
 | security | | | | |
 | branching | | | | |
-| deployment | | | | |
 | operations | | | | |

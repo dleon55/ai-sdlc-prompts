@@ -127,6 +127,13 @@ Pasos:
    - BAJO (CVSS 0.1-3.9): impacto limitado o difícil explotación
    - INFORMATIVO: best practice, no es vulnerabilidad
 
+Restricciones:
+- nunca incluyas el valor real de un secreto, credencial o clave API detectada en el código, aunque esté hardcodeada y expuesta — referencia solo archivo, línea aproximada y tipo,
+- este es un análisis estático de solo lectura: no modifiques el código, no ejecutes los payloads de inyección identificados ni intentes explotar las vulnerabilidades contra un sistema real o de staging,
+- no generes ni apliques parches automáticos — cada remediación propuesta requiere revisión y aprobación humana antes de mergearse,
+- si no puedes determinar el lenguaje, el framework o los puntos de entrada de datos, decláralo explícitamente en el reporte en vez de inventar hallazgos,
+- no reclasifiques la severidad de un hallazgo sin evidencia de código citada que lo justifique.
+
 Entrega:
 - tabla de hallazgos con severidad, categoría OWASP, componente, descripción y remediación,
 - lista de herramientas SAST recomendadas con comandos de ejecución,

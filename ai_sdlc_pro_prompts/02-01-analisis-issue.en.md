@@ -57,6 +57,12 @@ Activities:
 5. Relate the requirement to impacted modules, components and data.
 6. Detect dependencies, risks, and security controls (DevSecOps/ISO 27001).
 
+Constraints:
+- don't propose or hint at a technical or design solution in this analysis — the goal is to fix the functional scope, not solve it; that belongs to `02-02-analisis-tecnico` and `04-01-diseno-solucion`,
+- if the issue doesn't define explicit acceptance criteria, don't invent them: state them as missing and lower the `confidence_score` proportionally to what's missing,
+- distinguish in every section what is a fact confirmed by the issue text or by cited code/documentation, and what is your own assumption — never mix them without marking which is which,
+- don't close the analysis as complete if the expected behavior is still ambiguous; report it as a blocker in the functional summary.
+
 Output:
 0. Start with a Task Metadata JSON Block (keys: status, impacted_components, risks_detected, confidence_score [0.0 to 1.0]).
 1. Functional summary
@@ -98,3 +104,19 @@ Use the functional analysis prompt and adapt it to:
 | Risks (5) | Identified functional and technical |
 | Recommendation (6) | Priority and suggested attention order |
 | PSP/TSP Metrics (7) | Logging block for time estimations (minutes) and projected defect rate |
+
+### Example (excerpt)
+
+```json
+{
+  "status": "analyzed_with_gaps",
+  "impacted_components": ["build.py", "ai_sdlc_pro_prompts/*.en.md"],
+  "risks_detected": ["ES/EN parity break if the check only applies to .md files"],
+  "confidence_score": 0.7
+}
+```
+
+| Section | Example content |
+|---|---|
+| Functional summary (1) | The team reports that `build.py` publishes the index even when a new prompt's `.en.md` file is missing, leaving the site with a broken English link |
+| Risks (5) | High: if the build isn't stopped, the issue can pass CI and reach production with incomplete bilingual content; the issue doesn't specify whether the build should fail or just warn — flagged as a pending acceptance criterion |

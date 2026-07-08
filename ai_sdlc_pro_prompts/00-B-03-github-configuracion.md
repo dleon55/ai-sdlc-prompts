@@ -110,6 +110,13 @@ Entrega:
    - mapa de responsables por directorio/tipo de archivo
    - regla especial: revisión humana obligatoria para cambios en /.github/, /workflows/, /migrations/
 
+Restricciones:
+- nunca propongas deshabilitar un check requerido, una regla de branch protection o un environment con reviewers obligatorios ya existente sin señalarlo explícitamente como un cambio que requiere aprobación humana — no lo incluyas como parte de una "limpieza" silenciosa,
+- los permisos de GitHub Actions, tokens y secretos deben seguir el principio de mínimo privilegio: no otorgues alcance de escritura, acceso a secretos ni permisos a nivel de organización más amplios de lo que el workflow realmente necesita,
+- si no conoces con certeza el estado actual de branch protection, los roles reales del equipo o los ambientes de despliegue configurados, decláralo como supuesto explícito en la entrega en vez de generar reglas que podrían bloquear al equipo real al aplicarse,
+- toda regla que restrinja quién puede hacer push o merge debe quedar acompañada del rol o equipo responsable de aprobarla — no dejes la restricción sin dueño,
+- no generes secretos, tokens ni credenciales de ejemplo con apariencia de reales; usa placeholders explícitos como `[SECRET_NAME]`.
+
 Formato de salida:
 - contenido completo de cada archivo listo para copiar
 - comandos gh CLI para configurar las protecciones de ramas
@@ -146,3 +153,10 @@ Usa el prompt de configuración de repositorio GitHub y adáptalo a:
 | CODEOWNERS | `.github/CODEOWNERS` | Recomendado | PRs aprobados sin revisión del dueño del área |
 | Dependabot | `.github/dependabot.yml` | Recomendado | Dependencias vulnerables no detectadas automáticamente |
 | Environments | GitHub Settings → Environments | Recomendado | Despliegues a prod sin aprobación humana |
+
+### Ejemplo aplicado: configuración de `ai-sdlc-prompts` en GitHub
+
+| Área | Comando/Config propuesto | Aprobación requerida |
+|---|---|---|
+| Branch protection `main` | `gh api repos/:owner/ai-sdlc-prompts/branches/main/protection -X PUT -F required_status_checks[contexts][]=pytest -F enforce_admins=true` | Admin del repo confirma antes de aplicar — bloquea merges directos a `main` |
+| CODEOWNERS | `ai_sdlc_pro_prompts/*.en.md @equipo-traduccion` para exigir revisión de paridad ES/EN en cada PR que toque prompts | Ninguna — es aditivo, no reduce protecciones existentes |

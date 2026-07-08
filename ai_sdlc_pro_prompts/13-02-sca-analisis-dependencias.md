@@ -107,6 +107,13 @@ Pasos:
    - BAJO: CVE con CVSS < 4.0 o licencia ambigua
    - INFORMATIVO: dependencia con actualizaciones menores disponibles
 
+Restricciones:
+- nunca inventes un CVE, un CVSS o un estado de fix — reporta solo vulnerabilidades verificables en bases públicas (NVD, GitHub Advisory Database, OSV) y marca como "requiere confirmación con herramienta de auditoría" cualquier hallazgo que no puedas verificar directamente,
+- este es un análisis de solo lectura: no ejecutes `npm audit fix`, `pip install --upgrade` ni ningún comando que modifique versiones instaladas o archivos de lock — entrega los comandos para que un humano los ejecute,
+- si detectas un token o credencial embebido en un archivo de dependencias, lock file o configuración de registro privado, trátalo como secreto: nunca reveles su valor, solo su ubicación y tipo,
+- ante una licencia problemática o sin licencia detectada, escala a legal/compliance en vez de asumir que es aceptable para el tipo de producto,
+- si no tienes acceso a los lock files, declara el análisis como incompleto e indica exactamente qué falta en vez de simular CVEs inexistentes.
+
 Entrega:
 - inventario de dependencias con versiones y estado de seguridad,
 - tabla de CVEs encontrados con severidad y fix disponible,
@@ -149,10 +156,12 @@ Usa el prompt de SCA y adáptalo a:
 
 | Paquete | Versión instalada | CVE | CVSS | Descripción | Fix en versión | Acción |
 |---|---|---|---|---|---|---|
-| nombre-paquete | x.y.z | CVE-YYYY-NNNNN | 9.8 | Descripción del impacto | x.y.z+1 | Actualizar inmediatamente |
+| `lodash` | 4.17.15 | CVE-2020-8203 | 7.4 | Prototype pollution: permite añadir o modificar propiedades arbitrarias del objeto global vía `_.merge`/`_.zipObjectDeep` con input no confiable | 4.17.19 | Actualizar inmediatamente |
+| `axios` | 0.21.1 | CVE-2021-3749 | 5.3 | ReDoS por expresión regular vulnerable en el manejo de `trailing slash` de URLs | 0.21.2 | Actualizar en el próximo sprint |
 
 ### Plan de actualización
 
 | Paquete | De versión | A versión | Cambio | Riesgo de breaking change | Prioridad |
 |---|---|---|---|---|---|
-| nombre-paquete | x.y.z | a.b.c | Mayor | Alto — revisar migración | 1 |
+| `lodash` | 4.17.15 | 4.17.21 | Menor | Bajo — sin cambios de API pública | 1 |
+| `axios` | 0.21.1 | 0.21.4 | Parche | Bajo — compatible, solo corrige el parseo de URL | 2 |

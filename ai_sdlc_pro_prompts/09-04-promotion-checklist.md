@@ -47,6 +47,12 @@ Inputs requeridos:
 - hay cambios de infraestructura: [SÍ / NO]
 - hay cambios en variables de entorno: [SÍ / NO]
 
+Restricciones:
+- ningún ítem del checklist puede marcarse como cumplido u omitirse sin el sign-off explícito de la persona responsable de esa área (código, base de datos, infraestructura) — "no aplica" también requiere justificación explícita, no puede quedar en blanco.
+- la decisión de promoción es todo o nada: no propongas ni ejecutes una promoción parcial (por ejemplo, desplegar el código pero posponer la migración de base de datos) sin señalar explícitamente el riesgo de dejar los ambientes en estados inconsistentes.
+- no recomiendes GO si no existe un plan de rollback verificado y con responsable asignado — la sola intención de hacer rollback no cuenta como plan.
+- si el ambiente destino es PROD, todo comando de despliegue y de rollback queda propuesto y pendiente de aprobación explícita del responsable de release; este prompt no ejecuta el despliegue por sí mismo.
+
 Entrega:
 
 ## 1. VERIFICACIONES PREVIAS AL DESPLIEGUE (pre-flight)
@@ -180,3 +186,26 @@ Usa el prompt de promotion checklist y adáptalo a:
 | Ambiente destino estable | 🟢 / 🔴 | |
 | Responsable rollback presente | 🟢 / 🔴 | |
 | **Decisión** | **GO / NO-GO** | |
+
+### Ejemplo aplicado
+
+| Campo | Valor |
+|---|---|
+| Issue / PR | #482 |
+| Rama | release/2026-03-12 |
+| Ambiente destino | PROD |
+| Tipo de cambio | fix |
+| Migraciones BD | Sí — agrega índice a `orders.customer_id` |
+| Cambios infra | No |
+| Estimación ventana | 5 minutos de downtime esperado (rolling deploy) |
+| Responsable | María Ibáñez (release owner) |
+| Rollback disponible | Sí — revert del deploy anterior en < 3 min |
+
+| Área | Estado | Observación |
+|---|---|---|
+| CI/CD verde | 🟢 | pipeline #1203 pasó lint, tests y coverage 87% |
+| Backup BD | 🟢 | snapshot `orders-prod-20260312-1400` confirmado |
+| Revisores aprobaron | 🟢 | 2/2 aprobaciones (requerido: 2) |
+| Ambiente destino estable | 🟢 | sin incidentes activos, tasa de error 0.05% |
+| Responsable rollback presente | 🟢 | María Ibáñez disponible en canal #deploys hasta las 17:00 |
+| **Decisión** | **GO** | todos los checks en verde, ventana de mantenimiento activa |

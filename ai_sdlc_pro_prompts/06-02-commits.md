@@ -42,6 +42,12 @@ Entradas:
 - componente,
 - descripción breve.
 
+Restricciones:
+- nunca agrupes cambios sin relación funcional o técnica en un mismo commit; si la descripción breve mezcla dos intenciones distintas, recomienda dividir antes de proponer el mensaje final,
+- nunca sugieras reescribir historial ya publicado (`git rebase`, `git commit --amend`, `git push --force`) sin aprobación humana explícita — el mensaje propuesto es para un commit nuevo, no para modificar uno existente,
+- sigue estrictamente el formato Conventional Commits (`tipo(componente): descripción #issue`), usando únicamente los tipos definidos en `CONTRIBUTING.md` (feat, fix, refactor, docs, test, chore, entre otros permitidos),
+- no inventes número de issue ni componente si no fueron provistos en las entradas; márcalo como pendiente de completar en vez de asumirlo.
+
 Entrega:
 1. commit principal sugerido
 2. commits alternativos si el cambio debe dividirse
@@ -91,6 +97,6 @@ test(pagos): agrega casos borde para monto negativo en procesador #99
 
 | Commit | Descripción | Justificación |
 |---|---|---|
-| Principal | | |
-| Alternativa 1 | | |
-| Alternativa 2 | | |
+| Principal | `fix(api/notificaciones): corrige envío duplicado al actualizar orden #842` | Aísla el fix funcional solicitado en el issue; es el cambio mínimo necesario para resolver #842 |
+| Alternativa 1 | `refactor(api/notificaciones): extrae lógica de deduplicación a función utilitaria` | El diff original incluía una refactorización no solicitada; se separa para no mezclar la intención de fix con una mejora de diseño |
+| Alternativa 2 | `chore(logging): agrega logs de depuración en servicio de notificaciones` | Los logs agregados durante la investigación no son parte del fix; deben ir en un commit aparte o descartarse antes de mergear |

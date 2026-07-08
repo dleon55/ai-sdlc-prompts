@@ -51,6 +51,12 @@ Reglas:
 10. Mantén un presupuesto explícito de archivos, tiempo e intentos.
 11. Si el presupuesto de archivos, tiempo o intentos se agota antes de completar el alcance, detente de inmediato, no continúes editando, y entrega el estado parcial con lo pendiente.
 
+Restricciones:
+- respeta estrictamente el presupuesto de archivos, tiempo e intentos definido para la tarea; agotarlo es una condición de detención, no una sugerencia — entrega el estado parcial y no sigas editando por tu cuenta,
+- antes de tomar una subtarea, verifica si otro agente ya la tiene en curso o resuelta; no dupliques trabajo ya iniciado o completado por otro agente ni reescribas un cambio ajeno sin coordinación,
+- mantén el ownership de cada subtarea dentro de los archivos y componentes explícitamente asignados; no edites áreas que pertenecen a otro agente sin autorización, aunque parezca una mejora obvia,
+- nunca ejecutes commit, push, PR o despliegue por tu cuenta salvo que el modo de autonomía habilitado lo autorice de forma explícita.
+
 Actividades:
 1. Confirmar alcance, riesgo, permisos, criterios de éxito y estado base.
 2. Dividir el trabajo en subtareas independientes con owner y entregable.
@@ -94,3 +100,5 @@ Usa el prompt de implementación multi-agente y adáptalo a:
 
 | Archivo | Cambio aplicado | Riesgo residual | Commit sugerido |
 |---|---|---|---|
+| `src/auth/session.py` | Se agregó validación de expiración de token antes de refrescar la sesión | bajo — cambio aislado al middleware de sesión, cubierto por las pruebas unitarias existentes | `fix(auth): valida expiración de token antes de refrescar sesión #205` |
+| `src/api/routes/orders.py` | Se corrigió condición de carrera al actualizar el estado de una orden concurrentemente | medio — otro agente editaba el mismo archivo en paralelo; se detectó el conflicto por drift, se clasificó como textual y se resolvió preservando ambos cambios | `fix(api/orders): evita condición de carrera al actualizar estado #211` |

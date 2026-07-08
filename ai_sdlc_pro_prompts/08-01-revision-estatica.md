@@ -46,6 +46,12 @@ Reglas de revisión:
 7. Considera seguridad agéntica: instrucciones maliciosas en contenido, ampliación de permisos, exfiltración y uso inseguro de herramientas.
 8. Si no existen hallazgos, dilo explícitamente e identifica pruebas faltantes o riesgo residual.
 
+Restricciones:
+- esta es una revisión de solo lectura: no apliques ediciones, no ejecutes autoformateadores ni "arregles" el código directamente, aunque la corrección parezca trivial,
+- todo hallazgo debe citar archivo y línea exactos (o rango de líneas) — un hallazgo sin ubicación verificable no se reporta como confirmado, se reclasifica como pregunta abierta,
+- separa con claridad los hallazgos bloqueantes (defectos, vulnerabilidades, regresiones, incumplimiento de contrato) de las observaciones de estilo o preferencia — un nit de estilo nunca debe presentarse con la misma severidad que un hallazgo bloqueante,
+- si el diff no permite determinar el comportamiento real (por ejemplo, lógica que depende de configuración externa no incluida), decláralo como evidencia insuficiente en vez de asumir corrección o falla.
+
 Entrega:
 1. hallazgos ordenados por severidad
 2. preguntas abiertas o supuestos
@@ -75,6 +81,7 @@ Usa el prompt de revisión estática y adáptalo a:
 
 | Archivo | Línea | Descripción | Riesgo | Acción recomendada |
 |---|---|---|---|---|
+| `build.py` | 250-260 | `parse_editorial_contract` indexa el campo `Riesgo esperado` sin validar antes que la fila exista en la tabla del Contrato editorial | Un prompt nuevo con la tabla incompleta rompe el build con un `KeyError` no controlado | Agregar validación explícita de campos obligatorios con mensaje de error claro, o usar `.get()` con valor por defecto y registrar advertencia |
 
 ### Hallazgos medios
 
@@ -85,6 +92,7 @@ Usa el prompt de revisión estática y adáptalo a:
 
 | Archivo | Descripción | Sugerencia |
 |---|---|---|
+| `i18n_strings.py` | Nombres de variables en camelCase mezclados con snake_case dentro del mismo módulo | Unificar a snake_case, consistente con el resto del proyecto |
 
 ### Deuda técnica detectada
 

@@ -55,6 +55,12 @@ Activities:
    - Then [Expected result or system behavior].
 5. Specify critical business rules, alternate flows, and special User Experience (UX) guidelines.
 
+Constraints:
+- do not invent acceptance criteria, business rules, or roles that the original requirement does not mention explicitly or implicitly; if information is missing to complete a scenario, state it as an assumption instead of filling it in on your own,
+- explicitly flag any ambiguous statement like "should" or "the system should allow" that does not specify a verifiable behavior, and propose the concrete clarification needed instead of interpreting it at your own discretion,
+- each Gherkin scenario must be independent and self-contained: do not assume implicit shared state between scenarios (for example, that scenario 2 depends on data left behind by scenario 1) — every "Given" must establish its own complete context,
+- if a story requires validating more than one business rule, split them into separate Gherkin scenarios instead of mixing them into a single "When/Then".
+
 Output:
 1. User stories (standard template)
 2. Acceptance criteria (Gherkin format for happy path, alternate, and validation failure scenarios)
@@ -88,3 +94,14 @@ Use the user stories prompt and adapt it to:
 | Gherkin criteria | Given / When / Then of successful and failure scenarios |
 | Business rules | Validation constraints, business limits, and policies |
 | UI/UX considerations | Visual guidelines, accessibility, and component behaviors |
+
+### Applied example: registered customer login
+
+**User story:** "As a registered customer, I want to log in with my email and password, so that I can access my account and continue my purchase."
+
+| Scenario | Given | When | Then |
+|---|---|---|---|
+| Successful login | the user is registered and has valid credentials | they enter the correct email and password and click "Log in" | the system redirects them to their account dashboard and shows a welcome message |
+| Incorrect password | the user is registered | they enter the correct email but an incorrect password and click "Log in" | the system shows "Incorrect email or password" and stays on the login screen without affecting any other active session |
+
+**Stated assumption:** the original requirement does not specify a failed-attempt threshold before locking the account; this is flagged as pending confirmation with the stakeholder instead of assuming a value.

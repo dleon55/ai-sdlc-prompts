@@ -110,6 +110,13 @@ Deliver:
    - map of responsible persons per directory/file type
    - special rule: mandatory human review for changes in /.github/, /workflows/, /migrations/
 
+Constraints:
+- never propose disabling an existing required check, branch protection rule, or environment with mandatory reviewers without explicitly flagging it as a change that requires human approval — do not fold it into a silent "cleanup",
+- GitHub Actions permissions, tokens, and secrets must follow least privilege: do not grant write scope, secret access, or organization-level permissions broader than what the workflow actually needs,
+- if you do not know with certainty the current state of branch protection, the team's real roles, or the configured deployment environments, state it as an explicit assumption in the deliverable instead of generating rules that could block the real team once applied,
+- every rule restricting who can push or merge must be paired with the role or team responsible for approving it — do not leave the restriction ownerless,
+- do not generate sample secrets, tokens, or credentials that look real; use explicit placeholders like `[SECRET_NAME]`.
+
 Output format:
 - complete content of each file ready to copy
 - gh CLI commands to configure branch protections
@@ -146,3 +153,10 @@ Use the GitHub repository configuration prompt and adapt it to:
 | CODEOWNERS | `.github/CODEOWNERS` | Recommended | PRs approved without area owner review |
 | Dependabot | `.github/dependabot.yml` | Recommended | Vulnerable dependencies not automatically detected |
 | Environments | GitHub Settings → Environments | Recommended | Deployments to prod without human approval |
+
+### Applied example: configuring `ai-sdlc-prompts` on GitHub
+
+| Area | Proposed command/config | Approval required |
+|---|---|---|
+| Branch protection on `main` | `gh api repos/:owner/ai-sdlc-prompts/branches/main/protection -X PUT -F required_status_checks[contexts][]=pytest -F enforce_admins=true` | Repo admin confirms before applying — blocks direct merges to `main` |
+| CODEOWNERS | `ai_sdlc_pro_prompts/*.en.md @translation-team` to require ES/EN parity review on every PR touching prompts | None — additive only, does not reduce existing protections |

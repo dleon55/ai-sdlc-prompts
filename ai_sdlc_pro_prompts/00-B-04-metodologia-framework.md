@@ -92,6 +92,12 @@ Entrega:
    - docs/definition-of-done.md
    - docs/team-conventions.md: convenciones de código, commits, PRs
 
+Restricciones:
+- no impongas una metodología formal completa (ej. SCRUM con todas sus ceremonias) sobre un equipo que ya tiene un proceso funcional distinto, aunque sea informal — si el proceso actual funciona, propone ajustes puntuales en vez de un reemplazo total,
+- si el tamaño del equipo, la cadencia de entregas o el nivel de madurez declarados no soportan la metodología candidata (ej. Scrum completo con una sola persona, o ceremonias diarias con entregas mensuales), señala la alerta explícitamente en la recomendación en vez de aprobarla sin reservas,
+- no definas ceremonias, roles o artefactos que el equipo no tenga forma real de sostener en el tiempo — prioriza un proceso mínimo viable y sostenible sobre uno completo pero inaplicable,
+- la estrategia de branches y el DoR/DoD entregados deben ser consistentes con la metodología recomendada, no con una plantilla genérica — si hay contradicción entre ambos, corrígela antes de entregar en vez de dejarla para el equipo.
+
 Formato de salida:
 - diagrama de flujo de branches (Mermaid o ASCII)
 - tabla DoR y DoD con categoría y criterio
@@ -145,3 +151,11 @@ gitGraph
 | Seguridad | Riesgos identificados | Revisión básica completada |
 | Documentación | Impacto identificado | Actualizada si hubo cambio |
 | Para agentes IA | Contexto de repo adjunto | Validación humana completada |
+
+### Ejemplo aplicado: flujo de trabajo de `ai-sdlc-prompts`
+
+| Criterio | Aplicado a este repositorio |
+|---|---|
+| Rama en curso | `fix/prompts/reinforce-backlog-33` — convención `tipo/área/descripción-issue`, Trunk-Based con ramas de vida corta |
+| DoR para una tarea de agente IA | El `.md` a modificar y su par `.en.md` están identificados; el Contrato editorial de cada uno queda fuera de alcance (se preserva byte-idéntico) |
+| DoD para una tarea de agente IA | `python -m pytest tests/ -q --ignore=tests/e2e` pasa en verde antes de considerar la tarea completa |

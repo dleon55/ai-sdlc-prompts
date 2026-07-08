@@ -50,6 +50,12 @@ Actividades de Análisis:
 Salida Obligatoria:
 1. POST-MORTEM DOCUMENT: Estructurado con: Impacto al usuario, Línea de tiempo, Causa Raíz y Action Items (tickets preventivos).
 2. ON-CALL RUNBOOK: Instrucciones paso a paso (comandos de terminal, queries, dashboards a mirar) para mitigar si vuelve a ocurrir.
+
+Restricciones:
+- mantén el principio blameless en todo el documento, no solo en el análisis de 5 porqués: si una recomendación o action item implica "que la persona tenga más cuidado", reformúlala como un cambio de sistema o proceso (mejor validación, gate automatizado, alerta adicional).
+- no publiques el post-mortem con afirmaciones de la cronología que no estén respaldadas por evidencia (timestamps de logs, mensajes de chat, métricas) — si un hito es incierto, márcalo explícitamente como estimado en vez de presentarlo como un hecho verificado.
+- distingue explícitamente entre factores contribuyentes (condiciones que empeoraron el incidente o retrasaron su detección o mitigación) y la causa raíz (el defecto estructural que, de no existir, habría evitado el incidente) — no los mezcles en una sola lista sin etiquetarlos.
+- si los datos del incidente proporcionados no alcanzan para reconstruir un paso de la cronología o para confirmar la causa raíz, señala el vacío explícitamente en el documento en vez de completarlo con una suposición razonable.
 ```
 
 ---
@@ -73,3 +79,10 @@ Usa el prompt de post-mortem SRE y adáptalo a:
 | Post-Mortem | Documento SRE estándar (Impacto, Timeline, 5 Whys, Action Items) |
 | Enfoque Blameless | Lenguaje que audita procesos y sistemas, no individuos |
 | Runbook | Comandos ejecutables y comprobaciones para On-Call |
+
+### Ejemplo aplicado
+
+| Sección | Ejemplo de contenido |
+|---|---|
+| Post-Mortem | "El 12 de marzo, un deploy sin revisión de límites de conexión removió el máximo configurado en el pool de la API de checkout, agotando las conexiones a la base de datos. Duración: 38 minutos. Impacto: ~2.400 usuarios con checkout fallido (tasa de error 6.8%)." |
+| Runbook | "1. Verificar `SELECT count(*) FROM pg_stat_activity;` — si supera el 90% del pool configurado, 2. Ejecutar `kubectl rollout restart deploy/checkout-api` para liberar conexiones huérfanas, 3. Si el conteo no baja en 2 minutos, escalar al DBA de guardia." |

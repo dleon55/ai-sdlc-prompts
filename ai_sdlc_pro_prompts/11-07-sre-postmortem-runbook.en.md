@@ -50,6 +50,12 @@ Analysis Activities:
 Mandatory Output:
 1. POST-MORTEM DOCUMENT: Structured with: User Impact, Timeline, Root Cause, and Action Items (preventive tickets).
 2. ON-CALL RUNBOOK: Step-by-step instructions (terminal commands, queries, dashboards to check) to mitigate if it happens again.
+
+Constraints:
+- keep the blameless principle throughout the whole document, not only in the 5 Whys analysis: if a recommendation or action item implies "the person should be more careful," reframe it as a system or process change (better validation, automated gate, additional alert).
+- do not publish the post-mortem with timeline claims that aren't backed by evidence (log timestamps, chat messages, metrics) — if a milestone is uncertain, explicitly flag it as estimated instead of presenting it as a verified fact.
+- explicitly distinguish contributing factors (conditions that worsened the incident or delayed its detection or mitigation) from the root cause (the structural defect that, had it not existed, would have prevented the incident) — don't mix them into a single unlabeled list.
+- if the provided incident data isn't enough to reconstruct a timeline step or confirm the root cause, flag the gap explicitly in the document instead of filling it in with a reasonable assumption.
 ```
 
 ---
@@ -73,3 +79,10 @@ Use the SRE post-mortem prompt and adapt it to:
 | Post-Mortem | Standard SRE document (Impact, Timeline, 5 Whys, Action Items) |
 | Blameless Approach | Language that audits processes and systems, not individuals |
 | Runbook | Executable commands and checks for On-Call |
+
+### Example applied
+
+| Section | Example content |
+|---|---|
+| Post-Mortem | "On March 12, a deploy without a connection-limit review removed the configured maximum on the checkout API's connection pool, exhausting database connections. Duration: 38 minutes. Impact: ~2,400 users with failed checkout (6.8% error rate)." |
+| Runbook | "1. Check `SELECT count(*) FROM pg_stat_activity;` — if it exceeds 90% of the configured pool, 2. Run `kubectl rollout restart deploy/checkout-api` to free orphaned connections, 3. If the count doesn't drop within 2 minutes, escalate to the on-call DBA." |
