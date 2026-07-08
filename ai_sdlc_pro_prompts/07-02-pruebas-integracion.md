@@ -36,12 +36,23 @@ Prompt para definir las pruebas de integración que validen la interacción entr
 Objetivo:
 Define las pruebas de integración necesarias para validar la interacción entre módulos, servicios, APIs, base de datos e integraciones involucradas.
 
-Incluye:
-- flujo,
-- componentes integrados,
-- datos de prueba,
-- resultado esperado,
-- validación de errores.
+Pasos:
+1. Identifica el flujo a probar y los componentes que interactúan en él (servicios, APIs internas/externas, base de datos, colas, caché).
+2. Define los datos de prueba necesarios para ejercitar el flujo completo — sintéticos o anonimizados, nunca datos reales de producción.
+3. Para cada punto de integración, especifica el resultado esperado en el camino feliz y al menos un caso de fallo (timeout, respuesta de error, dato inconsistente).
+4. Define cómo se valida el estado resultante (respuesta HTTP, registro en base de datos, evento emitido) y qué se debe limpiar después de la prueba.
+5. Señala qué integraciones externas deben simularse (mocks/stubs/contract testing) porque no son controlables o estables en el entorno de prueba.
+6. Prioriza los flujos críticos de negocio y las integraciones con mayor probabilidad de fallo (servicios de terceros, colas asíncronas) antes que integraciones internas estables.
+
+Restricciones:
+- nunca usar datos reales de producción como datos de prueba, solo datos sintéticos o anonimizados,
+- cada prueba de integración debe poder ejecutarse de forma repetible sin dejar estado residual (idempotencia o limpieza explícita),
+- si falta un contrato de API o diseño de integración de referencia, detente y señálalo en vez de asumir el comportamiento.
+
+Entrega:
+- plan de pruebas de integración,
+- lista de integraciones externas a simular,
+- estrategia de datos de prueba y limpieza.
 ```
 
 ---
@@ -66,3 +77,5 @@ Usa el prompt de pruebas de integración y adáptalo a:
 
 | Flujo | Componentes integrados | Datos de prueba | Resultado esperado | Validación de error |
 |---|---|---|---|---|
+| Registro de usuario | API auth, base de datos, servicio de email (mock) | usuario sintético con email único | usuario creado, email de bienvenida encolado | email duplicado devuelve 409 sin crear registro |
+| Checkout de compra | API carrito, API pagos (stub), base de datos, cola de eventos | carrito con 2 ítems, tarjeta de prueba | orden creada, evento `order.created` emitido | pago rechazado revierte la orden y no emite el evento |

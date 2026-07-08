@@ -4438,68 +4438,118 @@ Deliverables:
 Produce the test stack profile in the standard format defined below.</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="07-01-pruebas-unitarias" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-07-01-pruebas-unitarias-es" onclick="toggleCard('07-01-pruebas-unitarias-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('07-01-pruebas-unitarias-es')">7.1 — Diseño de pruebas unitarias</span><button class="info-btn" onclick="openInfoLang('07-01-pruebas-unitarias', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Diseño de pruebas unitarias" onclick="copyPromptLang('07-01-pruebas-unitarias', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-07-01-pruebas-unitarias-es"><pre><code id="code-07-01-pruebas-unitarias-es">Objetivo:
 Diseña las pruebas unitarias necesarias para validar los cambios propuestos o implementados.
 
-Incluye:
-- función o unidad bajo prueba,
-- escenario,
-- entrada,
-- resultado esperado,
-- casos positivos,
-- casos negativos,
-- casos borde.
+Pasos:
+1. Identifica la función o unidad bajo prueba: firma, tipos de entrada/salida, efectos secundarios y dependencias externas (I/O, red, tiempo, aleatoriedad).
+2. Enumera escenarios por unidad: casos positivos (camino feliz), casos negativos (entradas inválidas o error esperado) y casos borde (límites, vacíos, nulos, valores extremos).
+3. Para cada escenario, define la entrada exacta y el resultado esperado (valor de retorno, excepción lanzada o efecto secundario observable).
+4. Identifica qué dependencias externas deben mockearse o aislarse para que la prueba sea determinista y no dependa de red, base de datos real ni sistema de archivos.
+5. Prioriza: si el tiempo es limitado, cubre primero lógica de negocio con ramificaciones (if/switch) y casos borde numéricos antes que getters/setters triviales.
+6. Recomienda un nivel de cobertura objetivo y señala explícitamente qué queda fuera de alcance de pruebas unitarias (pertenece a integración `07-02` o E2E `07-03`).
+
+Restricciones:
+- cada prueba debe ser independiente y no depender del orden de ejecución ni de estado compartido con otras pruebas,
+- no repliques detalles de implementación privados si existe una API pública equivalente que probar,
+- no uses sleep ni tiempos fijos para sincronizar pruebas asíncronas — usa mocks de tiempo o espera por condición,
+- si la cobertura recomendada no puede alcanzarse con la información disponible, señálalo en vez de inventar escenarios.
 
 Entrega:
 - matriz de pruebas unitarias,
-- recomendación de cobertura.</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="07-01-pruebas-unitarias" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-07-01-pruebas-unitarias-en" onclick="toggleCard('07-01-pruebas-unitarias-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('07-01-pruebas-unitarias-en')">7.1 — Unit test design</span><button class="info-btn" onclick="openInfoLang('07-01-pruebas-unitarias', 'en')" title="When to use · Standard usage formula">&#9432;</button><button class="copy-btn" data-title="Unit test design" onclick="copyPromptLang('07-01-pruebas-unitarias', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-07-01-pruebas-unitarias-en"><pre><code id="code-07-01-pruebas-unitarias-en">Objective:
+- recomendación de cobertura,
+- lista de dependencias a mockear o aislar.</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="07-01-pruebas-unitarias" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-07-01-pruebas-unitarias-en" onclick="toggleCard('07-01-pruebas-unitarias-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('07-01-pruebas-unitarias-en')">7.1 — Unit test design</span><button class="info-btn" onclick="openInfoLang('07-01-pruebas-unitarias', 'en')" title="When to use · Standard usage formula">&#9432;</button><button class="copy-btn" data-title="Unit test design" onclick="copyPromptLang('07-01-pruebas-unitarias', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-07-01-pruebas-unitarias-en"><pre><code id="code-07-01-pruebas-unitarias-en">Objective:
 Design the unit tests necessary to validate the proposed or implemented changes.
 
-Include:
-- function or unit under test,
-- scenario,
-- input,
-- expected result,
-- positive cases,
-- negative cases,
-- edge cases.
+Steps:
+1. Identify the function or unit under test: signature, input/output types, side effects, and external dependencies (I/O, network, time, randomness).
+2. Enumerate scenarios per unit: positive cases (happy path), negative cases (invalid input or expected error), and edge cases (limits, empty, null, extreme values).
+3. For each scenario, define the exact input and expected result (return value, thrown exception, or observable side effect).
+4. Identify which external dependencies must be mocked or isolated so the test is deterministic and does not depend on network, a real database, or the file system.
+5. Prioritize: if time is limited, cover business logic with branching (if/switch) and numeric edge cases first, before trivial getters/setters.
+6. Recommend a target coverage level and explicitly flag what is out of scope for unit tests (belongs to integration `07-02` or E2E `07-03`).
+
+Constraints:
+- each test must be independent and must not depend on execution order or state shared with other tests,
+- don't replicate private implementation details if an equivalent public API exists to test instead,
+- don't use sleep or fixed delays to synchronize async tests — use time mocks or wait-for-condition instead,
+- if the recommended coverage cannot be achieved with the available information, flag it instead of inventing scenarios.
 
 Deliver:
 - unit test matrix,
-- coverage recommendation.</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="07-02-pruebas-integracion" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-07-02-pruebas-integracion-es" onclick="toggleCard('07-02-pruebas-integracion-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('07-02-pruebas-integracion-es')">7.2 — Diseño de pruebas de integración</span><button class="info-btn" onclick="openInfoLang('07-02-pruebas-integracion', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Diseño de pruebas de integración" onclick="copyPromptLang('07-02-pruebas-integracion', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-07-02-pruebas-integracion-es"><pre><code id="code-07-02-pruebas-integracion-es">Objetivo:
+- coverage recommendation,
+- list of dependencies to mock or isolate.</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="07-02-pruebas-integracion" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-07-02-pruebas-integracion-es" onclick="toggleCard('07-02-pruebas-integracion-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('07-02-pruebas-integracion-es')">7.2 — Diseño de pruebas de integración</span><button class="info-btn" onclick="openInfoLang('07-02-pruebas-integracion', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Diseño de pruebas de integración" onclick="copyPromptLang('07-02-pruebas-integracion', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-07-02-pruebas-integracion-es"><pre><code id="code-07-02-pruebas-integracion-es">Objetivo:
 Define las pruebas de integración necesarias para validar la interacción entre módulos, servicios, APIs, base de datos e integraciones involucradas.
 
-Incluye:
-- flujo,
-- componentes integrados,
-- datos de prueba,
-- resultado esperado,
-- validación de errores.</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="07-02-pruebas-integracion" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-07-02-pruebas-integracion-en" onclick="toggleCard('07-02-pruebas-integracion-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('07-02-pruebas-integracion-en')">7.2 — Integration test design</span><button class="info-btn" onclick="openInfoLang('07-02-pruebas-integracion', 'en')" title="When to use · Standard usage formula">&#9432;</button><button class="copy-btn" data-title="Integration test design" onclick="copyPromptLang('07-02-pruebas-integracion', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-07-02-pruebas-integracion-en"><pre><code id="code-07-02-pruebas-integracion-en">Objective:
+Pasos:
+1. Identifica el flujo a probar y los componentes que interactúan en él (servicios, APIs internas/externas, base de datos, colas, caché).
+2. Define los datos de prueba necesarios para ejercitar el flujo completo — sintéticos o anonimizados, nunca datos reales de producción.
+3. Para cada punto de integración, especifica el resultado esperado en el camino feliz y al menos un caso de fallo (timeout, respuesta de error, dato inconsistente).
+4. Define cómo se valida el estado resultante (respuesta HTTP, registro en base de datos, evento emitido) y qué se debe limpiar después de la prueba.
+5. Señala qué integraciones externas deben simularse (mocks/stubs/contract testing) porque no son controlables o estables en el entorno de prueba.
+6. Prioriza los flujos críticos de negocio y las integraciones con mayor probabilidad de fallo (servicios de terceros, colas asíncronas) antes que integraciones internas estables.
+
+Restricciones:
+- nunca usar datos reales de producción como datos de prueba, solo datos sintéticos o anonimizados,
+- cada prueba de integración debe poder ejecutarse de forma repetible sin dejar estado residual (idempotencia o limpieza explícita),
+- si falta un contrato de API o diseño de integración de referencia, detente y señálalo en vez de asumir el comportamiento.
+
+Entrega:
+- plan de pruebas de integración,
+- lista de integraciones externas a simular,
+- estrategia de datos de prueba y limpieza.</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="07-02-pruebas-integracion" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-07-02-pruebas-integracion-en" onclick="toggleCard('07-02-pruebas-integracion-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('07-02-pruebas-integracion-en')">7.2 — Integration test design</span><button class="info-btn" onclick="openInfoLang('07-02-pruebas-integracion', 'en')" title="When to use · Standard usage formula">&#9432;</button><button class="copy-btn" data-title="Integration test design" onclick="copyPromptLang('07-02-pruebas-integracion', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-07-02-pruebas-integracion-en"><pre><code id="code-07-02-pruebas-integracion-en">Objective:
 Define the integration tests necessary to validate the interaction between modules, services, APIs, database and integrations involved.
 
-Include:
-- flow,
-- integrated components,
-- test data,
-- expected result,
-- error validation.</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="07-03-pruebas-e2e" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-07-03-pruebas-e2e-es" onclick="toggleCard('07-03-pruebas-e2e-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('07-03-pruebas-e2e-es')">7.3 — Diseño de pruebas E2E</span><button class="info-btn" onclick="openInfoLang('07-03-pruebas-e2e', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Diseño de pruebas E2E" onclick="copyPromptLang('07-03-pruebas-e2e', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-07-03-pruebas-e2e-es"><pre><code id="code-07-03-pruebas-e2e-es">Objetivo:
+Steps:
+1. Identify the flow to test and the components that interact in it (services, internal/external APIs, database, queues, cache).
+2. Define the test data needed to exercise the full flow — synthetic or anonymized, never real production data.
+3. For each integration point, specify the expected result on the happy path and at least one failure case (timeout, error response, inconsistent data).
+4. Define how the resulting state is validated (HTTP response, database record, emitted event) and what must be cleaned up after the test.
+5. Flag which external integrations must be simulated (mocks/stubs/contract testing) because they are not controllable or stable in the test environment.
+6. Prioritize critical business flows and integrations with the highest failure probability (third-party services, async queues) before stable internal integrations.
+
+Constraints:
+- never use real production data as test data, only synthetic or anonymized data,
+- each integration test must be repeatable without leaving residual state (idempotency or explicit cleanup),
+- if a reference API contract or integration design is missing, stop and flag it instead of assuming the behavior.
+
+Deliver:
+- integration test plan,
+- list of external integrations to simulate,
+- test data and cleanup strategy.</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="07-03-pruebas-e2e" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-07-03-pruebas-e2e-es" onclick="toggleCard('07-03-pruebas-e2e-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('07-03-pruebas-e2e-es')">7.3 — Diseño de pruebas E2E</span><button class="info-btn" onclick="openInfoLang('07-03-pruebas-e2e', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Diseño de pruebas E2E" onclick="copyPromptLang('07-03-pruebas-e2e', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-07-03-pruebas-e2e-es"><pre><code id="code-07-03-pruebas-e2e-es">Objetivo:
 Diseña pruebas end-to-end para los casos de uso impactados por el cambio.
 
-Incluye:
-- actor,
-- flujo principal,
-- precondiciones,
-- pasos,
-- resultado esperado,
-- evidencia requerida,
-- regresiones relacionadas.</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="07-03-pruebas-e2e" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-07-03-pruebas-e2e-en" onclick="toggleCard('07-03-pruebas-e2e-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('07-03-pruebas-e2e-en')">7.3 — E2E test design</span><button class="info-btn" onclick="openInfoLang('07-03-pruebas-e2e', 'en')" title="When to use · Standard usage formula">&#9432;</button><button class="copy-btn" data-title="E2E test design" onclick="copyPromptLang('07-03-pruebas-e2e', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-07-03-pruebas-e2e-en"><pre><code id="code-07-03-pruebas-e2e-en">Objective:
+Pasos:
+1. Identifica el actor (rol de usuario) y el flujo principal de punta a punta, desde la entrada del usuario hasta el resultado observable en el sistema.
+2. Define las precondiciones necesarias (estado de datos, sesión, permisos) para que el flujo sea reproducible.
+3. Detalla los pasos como el usuario los ejecutaría, en el orden exacto, sin saltar interacciones intermedias relevantes.
+4. Define el resultado esperado observable (UI, respuesta, estado persistido) y la evidencia mínima requerida para considerarlo validado (captura, log, registro en base de datos).
+5. Identifica regresiones relacionadas: qué otros flujos podrían romperse por este cambio y deberían re-verificarse.
+6. Prioriza los flujos críticos de negocio (los que generan ingreso, afectan seguridad o tienen mayor volumen de uso) antes que flujos secundarios o poco usados.
+
+Restricciones:
+- ejecutar siempre contra un ambiente QA/STAGING, nunca directamente contra producción,
+- si el caso de uso o los criterios de aceptación no están definidos con suficiente detalle para derivar pasos y resultado esperado, detente y pide aclaración en vez de asumir el comportamiento,
+- cada caso debe ser independiente: no debe depender del estado dejado por otro caso E2E previo.
+
+Entrega:
+- matriz de pruebas E2E,
+- regresiones relacionadas a re-verificar.</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="07-03-pruebas-e2e" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-07-03-pruebas-e2e-en" onclick="toggleCard('07-03-pruebas-e2e-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('07-03-pruebas-e2e-en')">7.3 — E2E test design</span><button class="info-btn" onclick="openInfoLang('07-03-pruebas-e2e', 'en')" title="When to use · Standard usage formula">&#9432;</button><button class="copy-btn" data-title="E2E test design" onclick="copyPromptLang('07-03-pruebas-e2e', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-07-03-pruebas-e2e-en"><pre><code id="code-07-03-pruebas-e2e-en">Objective:
 Design end-to-end tests for the use cases impacted by the change.
 
-Include:
-- actor,
-- main flow,
-- preconditions,
-- steps,
-- expected result,
-- required evidence,
-- related regressions.</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="07-04-pruebas-humo" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-07-04-pruebas-humo-es" onclick="toggleCard('07-04-pruebas-humo-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('07-04-pruebas-humo-es')">7.4 — Pruebas de humo</span><button class="info-btn" onclick="openInfoLang('07-04-pruebas-humo', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Pruebas de humo" onclick="copyPromptLang('07-04-pruebas-humo', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-07-04-pruebas-humo-es"><pre><code id="code-07-04-pruebas-humo-es">Objetivo:
+Steps:
+1. Identify the actor (user role) and the main flow end-to-end, from user input to the observable result in the system.
+2. Define the preconditions needed (data state, session, permissions) for the flow to be reproducible.
+3. Detail the steps as the user would execute them, in exact order, without skipping relevant intermediate interactions.
+4. Define the expected observable result (UI, response, persisted state) and the minimum evidence required to consider it validated (screenshot, log, database record).
+5. Identify related regressions: what other flows could break because of this change and should be re-verified.
+6. Prioritize critical business flows (those that generate revenue, affect security, or have the highest usage volume) before secondary or rarely used flows.
+
+Constraints:
+- always run against a QA/STAGING environment, never directly against production,
+- if the use case or acceptance criteria are not defined in enough detail to derive steps and expected result, stop and ask for clarification instead of assuming the behavior,
+- each case must be independent: it must not depend on state left by a previous E2E case.
+
+Deliver:
+- E2E test matrix,
+- related regressions to re-verify.</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="07-04-pruebas-humo" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-07-04-pruebas-humo-es" onclick="toggleCard('07-04-pruebas-humo-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('07-04-pruebas-humo-es')">7.4 — Pruebas de humo</span><button class="info-btn" onclick="openInfoLang('07-04-pruebas-humo', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Pruebas de humo" onclick="copyPromptLang('07-04-pruebas-humo', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-07-04-pruebas-humo-es"><pre><code id="code-07-04-pruebas-humo-es">Objetivo:
 Define un plan de pruebas de humo para validar rápidamente que el sistema sigue operativo después del cambio.
 
 Incluye:
@@ -4520,24 +4570,40 @@ Include:
 - visible errors.</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="07-05-automatizacion-antigravity" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-07-05-automatizacion-antigravity-es" onclick="toggleCard('07-05-automatizacion-antigravity-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('07-05-automatizacion-antigravity-es')">7.5 — Automatización en navegador con Google Antigravity</span><button class="info-btn" onclick="openInfoLang('07-05-automatizacion-antigravity', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Automatización en navegador con Google Antigravity" onclick="copyPromptLang('07-05-automatizacion-antigravity', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-07-05-automatizacion-antigravity-es"><pre><code id="code-07-05-automatizacion-antigravity-es">Objetivo:
 Diseña y documenta una estrategia de pruebas automatizadas en navegador usando Google Antigravity para validar los flujos impactados.
 
-Incluye:
-- escenario,
-- navegación,
-- selectors esperados,
-- datos de prueba,
-- validaciones visuales y funcionales,
-- capturas o evidencia esperada,
-- posibles puntos frágiles del flujo.</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="07-05-automatizacion-antigravity" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-07-05-automatizacion-antigravity-en" onclick="toggleCard('07-05-automatizacion-antigravity-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('07-05-automatizacion-antigravity-en')">7.5 — Browser automation with Google Antigravity</span><button class="info-btn" onclick="openInfoLang('07-05-automatizacion-antigravity', 'en')" title="When to use · Standard usage formula">&#9432;</button><button class="copy-btn" data-title="Browser automation with Google Antigravity" onclick="copyPromptLang('07-05-automatizacion-antigravity', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-07-05-automatizacion-antigravity-en"><pre><code id="code-07-05-automatizacion-antigravity-en">Objective:
+Pasos:
+1. Identifica el escenario y el flujo crítico a automatizar, y confirma que el ambiente de destino es QA o STAGING (nunca producción).
+2. Define la navegación paso a paso: URL de entrada, clics, formularios, y transiciones de pantalla esperadas.
+3. Identifica selectores estables para cada elemento clave (preferir `data-testid` o atributos semánticos sobre clases CSS o posición en el DOM, que son frágiles ante cambios de estilo).
+4. Define los datos de prueba a usar — únicamente datasets marcados como &quot;test data&quot;, nunca datos reales.
+5. Especifica las validaciones visuales y funcionales esperadas en cada paso, y qué evidencia (captura, video) debe generarse como prueba de ejecución.
+6. Identifica puntos frágiles del flujo: elementos dinámicos, animaciones, contenido cargado de forma asíncrona, o selectores que puedan cambiar con frecuencia.
+
+Restricciones:
+- nunca ejecutar automatización contra producción,
+- usar exclusivamente variables de entorno para credenciales de prueba, nunca hardcodearlas,
+- si faltan selectores estables o datos de prueba definidos, detente y señálalo — automatizar sobre selectores frágiles produce falsos negativos recurrentes.
+
+Entrega:
+- estrategia de automatización con escenarios, selectores y validaciones,
+- lista de puntos frágiles identificados y mitigación sugerida.</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="07-05-automatizacion-antigravity" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-07-05-automatizacion-antigravity-en" onclick="toggleCard('07-05-automatizacion-antigravity-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('07-05-automatizacion-antigravity-en')">7.5 — Browser automation with Google Antigravity</span><button class="info-btn" onclick="openInfoLang('07-05-automatizacion-antigravity', 'en')" title="When to use · Standard usage formula">&#9432;</button><button class="copy-btn" data-title="Browser automation with Google Antigravity" onclick="copyPromptLang('07-05-automatizacion-antigravity', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-07-05-automatizacion-antigravity-en"><pre><code id="code-07-05-automatizacion-antigravity-en">Objective:
 Design and document a browser test automation strategy using Google Antigravity to validate the impacted flows.
 
-Include:
-- scenario,
-- navigation,
-- expected selectors,
-- test data,
-- visual and functional validations,
-- captures or expected evidence,
-- possible fragile points in the flow.</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="07-06-pruebas-performance-carga" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-07-06-pruebas-performance-carga-es" onclick="toggleCard('07-06-pruebas-performance-carga-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('07-06-pruebas-performance-carga-es')">7.6 — Pruebas de performance y carga</span><button class="info-btn" onclick="openInfoLang('07-06-pruebas-performance-carga', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Pruebas de performance y carga" onclick="copyPromptLang('07-06-pruebas-performance-carga', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-07-06-pruebas-performance-carga-es"><pre><code id="code-07-06-pruebas-performance-carga-es">Objetivo:
+Steps:
+1. Identify the scenario and the critical flow to automate, and confirm the target environment is QA or STAGING (never production).
+2. Define step-by-step navigation: entry URL, clicks, forms, and expected screen transitions.
+3. Identify stable selectors for each key element (prefer `data-testid` or semantic attributes over CSS classes or DOM position, which are fragile to style changes).
+4. Define the test data to use — only datasets marked as &quot;test data,&quot; never real data.
+5. Specify the expected visual and functional validations at each step, and what evidence (screenshot, video) must be generated as proof of execution.
+6. Identify fragile points in the flow: dynamic elements, animations, asynchronously loaded content, or selectors likely to change frequently.
+
+Constraints:
+- never run automation against production,
+- use environment variables exclusively for test credentials, never hardcode them,
+- if stable selectors or defined test data are missing, stop and flag it — automating over fragile selectors produces recurring false negatives.
+
+Deliver:
+- automation strategy with scenarios, selectors, and validations,
+- list of identified fragile points and suggested mitigation.</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="07-06-pruebas-performance-carga" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-07-06-pruebas-performance-carga-es" onclick="toggleCard('07-06-pruebas-performance-carga-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('07-06-pruebas-performance-carga-es')">7.6 — Pruebas de performance y carga</span><button class="info-btn" onclick="openInfoLang('07-06-pruebas-performance-carga', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Pruebas de performance y carga" onclick="copyPromptLang('07-06-pruebas-performance-carga', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-07-06-pruebas-performance-carga-es"><pre><code id="code-07-06-pruebas-performance-carga-es">Objetivo:
 Diseña la estrategia de pruebas de performance y carga para los componentes afectados por este cambio.
 
 Inputs requeridos:

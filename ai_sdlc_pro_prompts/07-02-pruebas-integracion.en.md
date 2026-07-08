@@ -36,12 +36,23 @@ Prompt to define integration tests that validate the interaction between modules
 Objective:
 Define the integration tests necessary to validate the interaction between modules, services, APIs, database and integrations involved.
 
-Include:
-- flow,
-- integrated components,
-- test data,
-- expected result,
-- error validation.
+Steps:
+1. Identify the flow to test and the components that interact in it (services, internal/external APIs, database, queues, cache).
+2. Define the test data needed to exercise the full flow — synthetic or anonymized, never real production data.
+3. For each integration point, specify the expected result on the happy path and at least one failure case (timeout, error response, inconsistent data).
+4. Define how the resulting state is validated (HTTP response, database record, emitted event) and what must be cleaned up after the test.
+5. Flag which external integrations must be simulated (mocks/stubs/contract testing) because they are not controllable or stable in the test environment.
+6. Prioritize critical business flows and integrations with the highest failure probability (third-party services, async queues) before stable internal integrations.
+
+Constraints:
+- never use real production data as test data, only synthetic or anonymized data,
+- each integration test must be repeatable without leaving residual state (idempotency or explicit cleanup),
+- if a reference API contract or integration design is missing, stop and flag it instead of assuming the behavior.
+
+Deliver:
+- integration test plan,
+- list of external integrations to simulate,
+- test data and cleanup strategy.
 ```
 
 ---
@@ -66,3 +77,5 @@ Use the integration tests prompt and adapt it to:
 
 | Flow | Components | Test data | Expected result | Error cases |
 |---|---|---|---|---|
+| User registration | auth API, database, email service (mock) | synthetic user with unique email | user created, welcome email queued | duplicate email returns 409 without creating the record |
+| Purchase checkout | cart API, payments API (stub), database, event queue | cart with 2 items, test card | order created, `order.created` event emitted | rejected payment rolls back the order and does not emit the event |

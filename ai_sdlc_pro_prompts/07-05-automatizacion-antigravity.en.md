@@ -36,14 +36,22 @@ Prompt to design and document a browser test automation strategy using Google An
 Objective:
 Design and document a browser test automation strategy using Google Antigravity to validate the impacted flows.
 
-Include:
-- scenario,
-- navigation,
-- expected selectors,
-- test data,
-- visual and functional validations,
-- captures or expected evidence,
-- possible fragile points in the flow.
+Steps:
+1. Identify the scenario and the critical flow to automate, and confirm the target environment is QA or STAGING (never production).
+2. Define step-by-step navigation: entry URL, clicks, forms, and expected screen transitions.
+3. Identify stable selectors for each key element (prefer `data-testid` or semantic attributes over CSS classes or DOM position, which are fragile to style changes).
+4. Define the test data to use — only datasets marked as "test data," never real data.
+5. Specify the expected visual and functional validations at each step, and what evidence (screenshot, video) must be generated as proof of execution.
+6. Identify fragile points in the flow: dynamic elements, animations, asynchronously loaded content, or selectors likely to change frequently.
+
+Constraints:
+- never run automation against production,
+- use environment variables exclusively for test credentials, never hardcode them,
+- if stable selectors or defined test data are missing, stop and flag it — automating over fragile selectors produces recurring false negatives.
+
+Deliver:
+- automation strategy with scenarios, selectors, and validations,
+- list of identified fragile points and suggested mitigation.
 ```
 
 ---
@@ -68,3 +76,4 @@ Use the Antigravity automation prompt and adapt it to:
 
 | Scenario | Navigation | Selectors | Test data | Validations | Evidence | Fragile points |
 |---|---|---|---|---|---|---|
+| Copy prompt to clipboard | Home → search prompt → click copy button | `[data-testid="copy-btn"]` | section 07 prompt (test data) | copied text matches the displayed prompt and a visual confirmation appears | before/after click screenshot + flow video | visual confirmation is a temporary toast — verify before it disappears |
