@@ -8,6 +8,22 @@ Prompt to audit, classify, and remediate secrets management in source code, infr
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | security |
+| Expected risk | high — handles findings about real credentials, though it must not expose their values |
+| Required inputs | technology stack, current secrets manager, CI/CD used, service providers with credentials, depth of Git history analysis |
+| Allowed tools | gitleaks, truffleHog, detect-secrets (reading/scanning) — actual credential rotation/revocation and Git history rewriting require explicit human approval before execution |
+| Permitted autonomy | A0 — Analyze for inventory and classification; A1 — Propose for the remediation plan; never automatic A2/A3 to revoke/rotate secrets or rewrite history without approval |
+| Stop criteria | never include the real value of a detected secret in the output, only its location and type; stop before running `git filter-repo` without explicit team coordination (requires a forced push) |
+| Expected output | see `## Expected output` |
+| Minimum evidence | each reported secret with exact location (file:line or commit reference), status, and action SLA |
+| Recommended next prompt | `13-03-secure-sdlc-revision` to verify corrective practices become institutionalized |
+
+---
+
 ## Required prior context
 
 > Include the block from `00-framework.md` before this prompt.

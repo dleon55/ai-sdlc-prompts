@@ -8,6 +8,22 @@ Prompt maestro de nivel producción para analizar un reporte de revisión estát
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | análisis (bloque 1) y ejecución (bloque 2) — prompt de dos fases explícitas |
+| Riesgo esperado | alto — el bloque de ejecución modifica código potencialmente en producción |
+| Entradas requeridas | reporte de revisión estática con hallazgos críticos, medios y menores |
+| Herramientas permitidas | bloque 1: lectura de código y documentación; bloque 2: edición de archivos y pruebas locales, sin push/deploy sin aprobación |
+| Autonomía permitida | A1 — Proponer (bloque 1); A2 — Ejecutar controlado (bloque 2, solo tras aprobación humana del plan del bloque 1) |
+| Criterios de detención | no iniciar el bloque de ejecución sin aprobación explícita del plan de análisis; detener si un cambio propuesto afecta la estabilidad del sistema sin mitigación clara |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada paso del plan de remediación debe listar archivo, riesgo y validación asociada |
+| Siguiente prompt recomendado | `07-01-pruebas-unitarias` / `07-02-pruebas-integracion` para validar la remediación aplicada |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

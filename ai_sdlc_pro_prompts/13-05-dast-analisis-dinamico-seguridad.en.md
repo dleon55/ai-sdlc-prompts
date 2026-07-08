@@ -8,6 +8,22 @@ Prompt to design and execute dynamic application security testing (DAST) against
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | security |
+| Expected risk | high — active injection testing, even if in an isolated environment |
+| Required inputs | isolated test environment (base URL), stack, application type, authentication mechanism; results from `13-04` and `13-01` if available |
+| Allowed tools | OWASP ZAP, Burp Suite, Nikto, Nuclei, testssl.sh/ssllabs, sqlmap — only against the declared test environment, never production without explicit authorization |
+| Permitted autonomy | A2 — Execute controlled, limited to the isolated environment declared as input |
+| Stop criteria | never run against production without explicit, documented authorization; stop if the test environment is not confirmed as isolated |
+| Expected output | see `## Expected output` |
+| Minimum evidence | each finding with reproducible payload/method and CVSS v3.1 severity |
+| Recommended next prompt | `13-06-ethical-hacking-pentesting` to validate end-to-end exploitability of critical findings; `08-03-remediacion-maestro` to plan remediation |
+
+---
+
 ## Required prior context
 
 > Include the block from `00-framework.md` before this prompt.

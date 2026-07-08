@@ -8,6 +8,22 @@ Prompt to generate small, clear and traceable commit messages, aligned with the 
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | documentation |
+| Expected risk | low — only drafts text over an already-existing diff, does not execute changes |
+| Required inputs | issue, change type, component, brief description of the change already made |
+| Allowed tools | none for execution — text drafting only |
+| Permitted autonomy | A1 — Propose (the actual commit/push is run by the standard git flow, not this prompt) |
+| Stop criteria | if the described change mixes unrelated intentions, stop and recommend splitting into separate commits before proposing the final message |
+| Expected output | see `## Expected output` |
+| Minimum evidence | commit message valid under Conventional Commits (see `CONTRIBUTING.md`) |
+| Recommended next prompt | none — this is the last step before `git push` |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

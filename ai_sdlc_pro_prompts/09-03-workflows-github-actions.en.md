@@ -8,6 +8,22 @@ Prompt to audit the repository workflows and verify if they adequately cover val
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | analysis |
+| Expected risk | medium — does not modify workflows directly, only audits and recommends |
+| Required inputs | contents of `.github/workflows/`, CI/CD README |
+| Allowed tools | reading workflow files — no job execution or pipeline changes |
+| Permitted autonomy | A0 — Analyze |
+| Stop criteria | if a workflow references secrets or permissions that cannot be inspected without access to the repository configuration, document it as a visibility gap instead of assuming its state |
+| Expected output | see `## Expected output` |
+| Minimum evidence | each reported gap must cite the workflow file and the specific job |
+| Recommended next prompt | `11-02-hardening-seguridad` if security gaps are detected in the pipeline |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

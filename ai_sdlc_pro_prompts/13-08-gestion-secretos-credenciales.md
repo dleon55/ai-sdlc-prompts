@@ -8,6 +8,22 @@ Prompt para auditar, clasificar y remediar la gestión de secretos en el código
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | seguridad |
+| Riesgo esperado | alto — maneja hallazgos sobre credenciales reales, aunque no debe exponer sus valores |
+| Entradas requeridas | stack tecnológico, gestor de secretos actual, CI/CD usado, proveedores de servicio con credenciales, profundidad de análisis de historial Git |
+| Herramientas permitidas | gitleaks, truffleHog, detect-secrets (lectura/escaneo) — la rotación/revocación real de credenciales y la reescritura de historial Git requieren aprobación humana explícita antes de ejecutarse |
+| Autonomía permitida | A0 — Analizar para el inventario y clasificación; A1 — Proponer para el plan de remediación; nunca A2/A3 automático para revocar/rotar secretos o reescribir historia sin aprobación |
+| Criterios de detención | nunca incluir el valor real de un secreto detectado en la salida, solo su ubicación y tipo; detener antes de ejecutar `git filter-repo` sin coordinación explícita del equipo (requiere push forzado) |
+| Salida esperada | ver `## Resultado esperado` |
+| Evidencia mínima | cada secreto reportado con ubicación exacta (archivo:línea o referencia de commit), estado y SLA de acción |
+| Siguiente prompt recomendado | `13-03-secure-sdlc-revision` para verificar que las prácticas correctivas queden institucionalizadas |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

@@ -8,6 +8,22 @@ Prompt que clasifica una asignación y selecciona el flujo mínimo suficiente pa
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | operación (meta-prompt de enrutamiento — no ejecuta trabajo técnico directamente) |
+| Riesgo esperado | variable — depende de la asignación que enrute; el propio prompt exige declarar riesgo y reversibilidad como parte de la clasificación |
+| Entradas requeridas | issue/requerimiento, rama objetivo, ambiente, componentes, nivel de autonomía permitido, herramientas disponibles, presupuesto |
+| Herramientas permitidas | las que declare el contrato de ejecución generado en el Paso 3 — no asume herramientas por defecto |
+| Autonomía permitida | definida dinámicamente por el propio prompt (Paso 3, "Crear contrato"); nunca debe exceder el nivel de autonomía de entrada declarado |
+| Criterios de detención | "No ejecutes todas las fases por defecto"; escalar a humano cuando el riesgo o permiso exceda el contrato generado |
+| Salida esperada | ver `## Fases y entregables esperados` y el formato de salida obligatorio de 8 puntos del prompt |
+| Evidencia mínima | contrato de ejecución explícito (alcance, herramientas, checkpoints, condición de detención) antes de delegar cualquier subtarea |
+| Siguiente prompt recomendado | el que determine el propio contrato de ejecución — este prompt es el punto de entrada, no de salida |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.
