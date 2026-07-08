@@ -78,6 +78,13 @@ assert.strictEqual(
 );
 assert.deepStrictEqual(Array.from(resolved.unresolvedRequired), []);
 
+// PLACEHOLDER_IGNORE debe reflejar extract_vars.py IGNORED: [SÍ / NO] es un
+// placeholder de formato (usado en 00-C-01, 00-C-02, 09-04-promotion-checklist),
+// no un campo a llenar — no debe disparar la advertencia de "captura manual".
+const formatPlaceholder = context.resolvePrompt("permisos definidos: [SÍ / NO]");
+assert.deepStrictEqual(Array.from(formatPlaceholder.unresolvedRequired), []);
+assert.deepStrictEqual(Array.from(formatPlaceholder.unresolvedOptional), []);
+
 context.RAW_PROMPTS["code-demo-es"] = "[NOMBRE O URL] [MODULO]";
 elements.set("code-demo-es", { textContent: "PREVIEW ALTERADO" });
 elements.set("code-fw-es", { textContent: "FW ALTERADO" });

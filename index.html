@@ -9544,7 +9544,10 @@ var TOKEN_REGISTRY = {
                  'MEDIUM / HIGH / FORENSIC'] },
 };
 
-var PLACEHOLDER_IGNORE = ['N', 'X', 'Y', 'Z', 'ADR-NNN', 'NNN', 'YYYYMMDD'];
+// Debe reflejar exactamente el set IGNORED de extract_vars.py: son
+// placeholders de formato, no campos a llenar desde variables de proyecto.
+var PLACEHOLDER_IGNORE = ['N', 'X', 'Y', 'Z', 'ADR-NNN', 'NNN', 'YYYYMMDD',
+  'SÍ / NO', 'SÍ/NO', 'YES / NO', 'YES/NO'];
 var VAR_MAP = {};
 Object.keys(TOKEN_REGISTRY).forEach(function(field) {
   VAR_MAP[field] = TOKEN_REGISTRY[field].aliases.slice();
