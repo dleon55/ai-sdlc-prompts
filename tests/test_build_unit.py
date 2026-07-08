@@ -78,15 +78,19 @@ def test_build_writes_html_and_skips_unknown_section_prefix(tmp_path, monkeypatc
     assert "99-01-seccion-desconocida" not in html
 
 
-def test_build_still_renders_deprecated_prompts_unlike_count_prompts(tmp_path, monkeypatch):
+def test_is_deprecated_or_empty():
+    assert build._is_deprecated_or_empty("   \n")
+    assert build._is_deprecated_or_empty("corto")
+    assert build._is_deprecated_or_empty("# DEPRECATED\n\nContenido suficientemente largo.")
+    assert not build._is_deprecated_or_empty("# Prompt vigente\n\nContenido suficientemente largo.")
+
+
+def test_build_excludes_deprecated_prompts_same_as_count_prompts(tmp_path, monkeypatch):
     """
-    Documenta una inconsistencia real entre count_prompts() y build():
     count_prompts() (usado para TOTAL_PROMPTS, el numero que se muestra en
-    landing) excluye archivos marcados DEPRECATED, pero el loop de build()
-    que arma `sections` no aplica ese mismo filtro — un prompt DEPRECATED
-    sigue apareciendo como card real y copiable en el sitio generado.
-    Este test fija el comportamiento actual (no lo corrige); si se decide
-    alinear build() con count_prompts(), este test debe actualizarse.
+    landing) y el loop de build() que arma `sections` comparten ahora el
+    mismo filtro (_is_deprecated_or_empty): un prompt marcado DEPRECATED no
+    debe aparecer ni en el total ni como card renderizada.
     """
     (tmp_path / "00-framework.md").write_text(
         "# Framework\n\n```text\nActua como Principal Software Engineer.\n```\n", encoding="utf-8"
@@ -106,4 +110,5 @@ def test_build_still_renders_deprecated_prompts_unlike_count_prompts(tmp_path, m
 
     build.build()
     html = out_file.read_text(encoding="utf-8")
-    assert "01-02-deprecated" in html  # pero build() lo incluye igual
+    assert "01-02-deprecated" not in html  # build() ahora lo excluye también
+    assert "Prompt normal." in html

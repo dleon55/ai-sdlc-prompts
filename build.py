@@ -13,18 +13,22 @@ import i18n_strings
 PROMPTS_DIR = Path(__file__).parent / "ai_sdlc_pro_prompts"
 OUTPUT_FILE = Path(__file__).parent / "index.html"
 
+def _is_deprecated_or_empty(content):
+    """Contenido vacío/insuficiente o marcado DEPRECATED: no debe contarse
+    ni renderizarse como prompt real (ni en TOTAL_PROMPTS ni en build())."""
+    return len(content.strip()) < 20 or "DEPRECATED" in content
+
+
 def count_prompts():
     count = 0
     for f in PROMPTS_DIR.glob("*.md"):
         # Ignorar traducciones, el framework base y archivos vacíos/deprecados
         if f.name.endswith(".en.md") or f.name == "00-framework.md":
             continue
-        
-        # Validar contenido mínimo y que no esté deprecado
-        content = f.read_text(encoding="utf-8")
-        if len(content.strip()) < 20 or "DEPRECATED" in content:
+
+        if _is_deprecated_or_empty(f.read_text(encoding="utf-8")):
             continue
-            
+
         count += 1
     return count
 
@@ -2968,6 +2972,7 @@ def build():
         parts = name.split("-")
         sk = parts[0]
         if sk not in SECTION_META: continue
+        if _is_deprecated_or_empty(md_file.read_text(encoding="utf-8")): continue
         title_es, prompt_es, description_es, formulas_es = parse_md(md_file)
         en_file = md_file.with_suffix(".en.md")
         if en_file.exists():
