@@ -167,5 +167,5 @@ Usa el prompt de threat modeling y adáptalo a:
 | ID | STRIDE | Componente | Vector de amenaza | Prob. | Impacto | Riesgo | Mitigación | Estado |
 |---|---|---|---|---|---|---|---|---|
 | T-001 | Spoofing | API /login | JWT falsificado con alg:none | 2 | 3 | 6 | Validar alg explícito, usar librería confiable | Sin mitigar |
-| T-002 | Injection | BD | SQL concatenado en búsqueda | 3 | 3 | 9 | ORM / consultas parametrizadas | Sin mitigar |
+| T-002 | Tampering | BD | SQL concatenado en búsqueda | 3 | 3 | 9 | ORM / consultas parametrizadas | Sin mitigar |
 | T-003 | Info Disclosure | API errores | Stack trace en respuesta 500 | 3 | 2 | 6 | Manejo de errores genérico en producción | Sin mitigar |

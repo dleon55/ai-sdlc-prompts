@@ -49,6 +49,9 @@ Mandatory Output:
    - Technical Tasks Checklist.
    - QA & Testing Strategy.
    - Recommended Labels.
+
+3. IMPACT MATRIX:
+   Table with affected modules, tables, and services, and their impact severity.
 ```
 
 ---

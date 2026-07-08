@@ -26,11 +26,18 @@ Necesito:
 3. Diagrama de componentes
 4. Si aplica, diagrama entidad-relación simplificado
 
+Tipo de diagrama Mermaid a usar por cada uno:
+- Flujo: usa `flowchart TD` o `flowchart LR`.
+- Secuencia: usa `sequenceDiagram`.
+- Componentes: Mermaid no tiene un tipo nativo de diagrama de componentes; usa `flowchart LR` con subgraphs por módulo.
+- Entidad-relación: usa `erDiagram`.
+
 Reglas:
 - Los diagramas deben ser consistentes con el código y la arquitectura real.
 - No inventes componentes inexistentes.
 - Etiqueta claramente actores, servicios, módulos y datos.
 - Regla de Sintaxis Estricta: Escapa siempre caracteres especiales (como paréntesis, corchetes o comas) en los nombres de los nodos envolviéndolos en comillas dobles (ej: id["Nombre Nodo (Detalle)"]). NUNCA utilices etiquetas HTML (como <br> o <b>) dentro de los textos de los nodos de Mermaid para evitar errores de renderizado.
+- Nunca uses la palabra "end" como ID de nodo o como texto de nodo sin comillas: es palabra reservada y rompe el parseo de flowcharts.
 
 Entrega:
 - bloque Mermaid por diagrama,

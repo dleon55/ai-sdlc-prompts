@@ -2,9 +2,9 @@
 
 ## Descripción
 
-Prompt y referencia para configurar el comportamiento, las instrucciones y las restricciones de cada tipo de agente IA según sus capacidades y mecanismos propios: GitHub Copilot (Agent / Chat / Edits), Claude (Anthropic), OpenAI Codex, Windsurf, Cursor y Chrome Antigravity. Garantiza que cada agente opere con el contexto del proyecto y dentro de las reglas de equipo.
+Prompt y referencia para configurar el comportamiento, las instrucciones y las restricciones de cada tipo de agente IA según sus capacidades y mecanismos propios: GitHub Copilot (Agent / Chat / Edits), Claude (Anthropic), OpenAI Codex, Windsurf, Cursor y Google Antigravity. Garantiza que cada agente opere con el contexto del proyecto y dentro de las reglas de equipo.
 
-**Cuándo usarlo:** al incorporar un nuevo tipo de agente al proyecto, al detectar que un agente no sigue las convenciones, o al configurar un entorno multi-agente por primera vez.
+**Cuándo usarlo:** al incorporar un nuevo tipo de agente al proyecto, al detectar que un agente no sigue las convenciones, o al configurar un entorno multi-agente por primera vez. Requiere que la gobernanza base ya exista (ver `00-B-02-gobernanza-ia-agentes`); este prompt configura mecanismos específicos por agente, no la base.
 
 ---
 

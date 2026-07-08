@@ -61,7 +61,7 @@ Entrega los siguientes apartados:
 3. PATRONES ARQUITECTÓNICOS SELECCIONADOS
    Para cada patrón elegido, indica: patrón | razón | cuándo aplicarlo | cuándo NO escalar a él
    Candidatos a evaluar:
-   - monolito modular vs. microservicios vs. modular monolith
+   - monolito vs. microservicios vs. monolito modular
    - CQRS (separación de lectura/escritura)
    - Event sourcing
    - Saga pattern (para transacciones distribuidas)

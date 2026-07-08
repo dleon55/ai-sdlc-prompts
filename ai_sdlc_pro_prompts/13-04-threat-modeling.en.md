@@ -167,5 +167,5 @@ Use the threat modeling prompt and adapt it to:
 | ID | STRIDE | Component | Threat vector | Likelihood | Impact | Risk | Mitigation | Status |
 |---|---|---|---|---|---|---|---|---|
 | T-001 | Spoofing | API /login | Forged JWT with alg:none | 2 | 3 | 6 | Validate alg explicitly, use trusted library | Unmitigated |
-| T-002 | Injection | DB | Concatenated SQL in search | 3 | 3 | 9 | ORM / parameterized queries | Unmitigated |
+| T-002 | Tampering | DB | Concatenated SQL in search | 3 | 3 | 9 | ORM / parameterized queries | Unmitigated |
 | T-003 | Info Disclosure | API errors | Stack trace in 500 response | 3 | 2 | 6 | Generic error handling in production | Unmitigated |

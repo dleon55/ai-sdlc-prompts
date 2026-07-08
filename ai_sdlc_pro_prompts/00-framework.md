@@ -111,7 +111,7 @@ Usa el prompt de análisis de causa raíz y adáptalo a:
 | `07-02-pruebas-integracion.md` | 7.2 | Diseño de pruebas de integración |
 | `07-03-pruebas-e2e.md` | 7.3 | Diseño de pruebas E2E |
 | `07-04-pruebas-humo.md` | 7.4 | Plan de pruebas de humo |
-| `07-05-automatizacion-antigravity.md` | 7.5 | Automatización en navegador con Chrome Antigravity |
+| `07-05-automatizacion-antigravity.md` | 7.5 | Automatización en navegador con Google Antigravity |
 | `07-06-pruebas-performance-carga.md` | 7.6 | Pruebas de performance, carga e stress |
 | `07-07-implementacion-pruebas-unitarias.md` | 7.7 | Implementación de código de pruebas unitarias ejecutables |
 | `07-08-implementacion-pruebas-integracion.md` | 7.8 | Implementación de código de pruebas de integración ejecutables |

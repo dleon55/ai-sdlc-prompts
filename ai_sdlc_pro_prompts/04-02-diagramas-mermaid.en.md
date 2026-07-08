@@ -26,11 +26,18 @@ I need:
 3. Component diagram
 4. If applicable, simplified entity-relationship diagram
 
+Mermaid diagram type to use for each one:
+- Flow: use `flowchart TD` or `flowchart LR`.
+- Sequence: use `sequenceDiagram`.
+- Components: Mermaid has no native component-diagram type; use `flowchart LR` with subgraphs per module.
+- Entity-relationship: use `erDiagram`.
+
 Rules:
 - Diagrams must be consistent with the code and real architecture.
 - Do not invent non-existent components.
 - Clearly label actors, services, modules and data.
 - Strict Syntax Rule: Always escape special characters (such as parentheses, brackets, or commas) inside node labels by wrapping them in double quotes (e.g., id["Node Name (Detail)"]). NEVER use HTML tags (such as <br> or <b>) inside Mermaid node text to avoid rendering failures.
+- Never use the word "end" as a node ID or as unquoted node text: it is a reserved keyword and breaks flowchart parsing.
 
 Deliver:
 - Mermaid block per diagram,

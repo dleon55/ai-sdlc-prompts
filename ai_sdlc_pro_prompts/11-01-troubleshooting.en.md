@@ -4,7 +4,7 @@
 
 Prompt to analyze an environment, deployment, service, container, pipeline or configuration problem: symptom, involved services, hypotheses, commands to review and resolution path.
 
-**When to use it:** when a service fails, a deployment doesn't work as expected, or there's a configuration problem in any environment.
+**When to use it:** when a service fails, a deployment doesn't work as expected, or there's a configuration problem in any environment. If the environment is PROD and there is significant user impact, use `11-04-incident-response` instead.
 
 ---
 
@@ -27,6 +27,8 @@ Include:
 - commands or evidence to review,
 - hypotheses,
 - resolution path.
+
+⚠️ Prioritize read-only diagnostic commands (logs, service status, metrics). Do not run restarts, rollbacks, configuration changes, or destructive commands — include them as part of the proposed "resolution path" instead, pending approval.
 ```
 
 ---

@@ -49,7 +49,7 @@ Output:
 4. Involved technical components
 5. Functional and technical risks
 6. Attention recommendation
-7. PSP/TSP Metrics Log (Estimated task duration in minutes, actual execution time, and initial estimated defects count).
+7. PSP/TSP Metrics Log (Estimated task duration in minutes, actual execution time, and projected defect rate).
 ```
 
 ---

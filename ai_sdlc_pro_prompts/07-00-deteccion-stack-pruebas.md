@@ -2,7 +2,7 @@
 
 ## Descripción
 
-Prompt para detectar y documentar el stack de pruebas activo en el repositorio. Produce un **perfil de stack de pruebas** estructurado que se adjunta como contexto a los prompts de implementación (`07-07` al `07-10`), eliminando la necesidad de que cada agente re-descubra las herramientas y convenciones del proyecto.
+Prompt para detectar y documentar el stack de pruebas activo en el repositorio. Produce un **perfil de stack de pruebas** estructurado que se adjunta como contexto a los prompts de implementación (`07-07` al `07-11`), eliminando la necesidad de que cada agente re-descubra las herramientas y convenciones del proyecto.
 
 **Cuándo usarlo:** una sola vez por proyecto, o cuando el stack de pruebas cambie. El perfil generado se reutiliza en todas las ejecuciones de los prompts de implementación de pruebas.
 
@@ -97,7 +97,7 @@ Usa el prompt de detección de stack de pruebas y adáptalo a:
 
 ## Salida esperada — Perfil de stack de pruebas
 
-El agente debe generar un bloque con este formato exacto, listo para ser copiado y pegado como contexto en los prompts 07-07 al 07-10:
+El agente debe generar un bloque con este formato exacto, listo para ser copiado y pegado como contexto en los prompts 07-07 al 07-11:
 
 ```
 ── PERFIL DE STACK DE PRUEBAS ──────────────────────────────────────────
@@ -162,4 +162,4 @@ Cobertura actual : [X% o sin medir]
 ```
 
 > Este bloque debe pegarse al inicio (después del bloque de `00-framework.md`) de cualquier
-> prompt de implementación de pruebas: `07-07`, `07-08`, `07-09`, `07-10`.
+> prompt de implementación de pruebas: `07-07`, `07-08`, `07-09`, `07-10`, `07-11`.

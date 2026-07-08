@@ -24,7 +24,7 @@ Required inputs:
 - ADR number: [ADR-NNN]
 - short title of the decision: [TITLE]
 - date: [DATE]
-- status: [proposed / accepted / deprecated / superseded by ADR-NNN]
+- status: [proposed / accepted / rejected / deprecated / superseded by ADR-NNN]
 - author(s): [NAME OR AGENT]
 
 Generate a complete ADR with the following sections:

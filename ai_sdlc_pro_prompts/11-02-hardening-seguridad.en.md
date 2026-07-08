@@ -64,3 +64,9 @@ Use the hardening and security prompt and adapt it to:
 
 | Finding | Category | Criticality | Component | Mitigation | Priority |
 |---|---|---|---|---|---|
+| | exposed secrets | | | | |
+| | excessive permissions | | | | |
+| | exposed services | | | | |
+| | insecure configuration | | | | |
+| | vulnerable dependencies | | | | |
+| | insufficient logging | | | | |

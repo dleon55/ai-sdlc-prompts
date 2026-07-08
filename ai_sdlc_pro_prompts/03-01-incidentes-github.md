@@ -35,6 +35,7 @@ Actividades:
    - existe y está correcto,
    - existe pero está incompleto,
    - existe pero está mal documentado,
+   - es un duplicado de otro incidente ya reportado,
    - no existe.
 4. Propón acción:
    - comentar,
@@ -44,6 +45,9 @@ Actividades:
    - relacionar,
    - marcar duplicado.
 5. Si no existe, redacta el issue completo con el estándar del proyecto.
+
+Restricciones:
+Este prompt es de solo análisis y redacción. No ejecutes comandos que creen, cierren, comenten o modifiquen issues en GitHub; entrega únicamente las acciones propuestas y el contenido redactado para revisión humana.
 
 Salida:
 1. Resumen ejecutivo

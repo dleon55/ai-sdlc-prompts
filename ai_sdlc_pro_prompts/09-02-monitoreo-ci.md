@@ -62,6 +62,8 @@ Usa el prompt de monitoreo CI y adáptalo a:
 | build | | | | |
 | pruebas | | | | |
 | quality gates | | | | |
+| workflows | | | | |
+| artefactos | | | | |
 | checks PR | | | | |
 
 **Criterio de aprobación:** [APROBADO / RECHAZADO / PENDIENTE]
