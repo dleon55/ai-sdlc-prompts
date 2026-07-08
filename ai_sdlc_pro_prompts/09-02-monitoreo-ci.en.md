@@ -62,6 +62,8 @@ Use the CI monitoring prompt and adapt it to:
 | build | | | | |
 | tests | | | | |
 | quality gates | | | | |
+| workflows | | | | |
+| artifacts | | | | |
 | PR checks | | | | |
 
 **Approval criterion:** [APPROVED / REJECTED / PENDING]

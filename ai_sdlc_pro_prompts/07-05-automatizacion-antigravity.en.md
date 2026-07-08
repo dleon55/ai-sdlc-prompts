@@ -1,10 +1,10 @@
-# 7.5 — Browser automation with Chrome Antigravity
+# 7.5 — Browser automation with Google Antigravity
 
 ## Description
 
-Prompt to design and document a browser test automation strategy using Chrome Antigravity: scenarios, navigation, selectors, test data, visual validations and fragile points in the flow.
+Prompt to design and document a browser test automation strategy using Google Antigravity: scenarios, navigation, selectors, test data, visual validations and fragile points in the flow.
 
-**When to use it:** to automate E2E or regression tests of critical flows impacted by the change.
+**When to use it:** to automate E2E or regression tests of critical flows impacted by the change. Use this prompt instead of `07-03`+`07-09` when the automation will run through Google Antigravity's browser agent (autonomous verification with captures/video) rather than a traditional E2E scripting framework.
 
 ---
 
@@ -18,7 +18,7 @@ Prompt to design and document a browser test automation strategy using Chrome An
 
 ```text
 Objective:
-Design and document a browser test automation strategy using Chrome Antigravity to validate the impacted flows.
+Design and document a browser test automation strategy using Google Antigravity to validate the impacted flows.
 
 Include:
 - scenario,
@@ -50,5 +50,5 @@ Use the Antigravity automation prompt and adapt it to:
 
 ## Expected output
 
-| Scenario | Navigation | Selectors | Test data | Validations | Fragile points |
-|---|---|---|---|---|---|
+| Scenario | Navigation | Selectors | Test data | Validations | Evidence | Fragile points |
+|---|---|---|---|---|---|---|

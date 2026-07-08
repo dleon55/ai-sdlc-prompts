@@ -34,7 +34,12 @@ Required inputs:
 - authorized permissions and tools: [READ / EDIT / SHELL / GITHUB / BROWSER / OTHERS]
 - budget: [TIME / FILES / ATTEMPTS / COST, IF APPLICABLE]
 
-Before drafting, assess definition quality, missing information, dependencies, risk, and suitability for autonomous execution. Do not invent paths, commands, criteria, or current behavior.
+Before drafting the issue:
+1. Assess whether the problem is sufficiently defined.
+2. Identify missing information, contradictions, and dependencies.
+3. Classify the risk: low, medium, or high.
+4. Determine whether the task is suitable for autonomous execution.
+5. Do not invent paths, commands, criteria, or current behavior.
 
 Generate the issue with the following sections:
 
@@ -65,10 +70,13 @@ What the agent should NOT do in the context of this issue:
 
 ## Execution contract
 - authorized mode: [A0 analysis / A1 proposal / A2 controlled execution / A3 publication]
-- authorized and prohibited tools: [LIST]
-- in-scope and out-of-scope files/modules: [LIST]
+- authorized tools: [LIST]
+- prohibited tools: [LIST]
+- files or modules in scope: [LIST]
+- files or modules out of scope: [LIST]
 - actions requiring approval: [LIST]
-- execution budget and stop conditions: [LIMITS]
+- execution budget: [LIMITS]
+- stop conditions: [LIST]
 
 ## Required tests
 What tests should the agent write or update:
@@ -88,12 +96,6 @@ Review that the human must do before merging:
 - [ ] Code follows project conventions
 - [ ] No new dependencies were installed without justification
 - [ ] No unauthorized changes in workflows, migrations, or infrastructure files
-
-## Authorized autonomy level
-[ ] Analysis and proposal only (agent makes no commits)
-[ ] Proposal with draft PR (agent creates PR in draft)
-[ ] Controlled execution (agent can make commits in feature branch)
-[ ] Autonomous execution (agent can complete and request merge)
 
 ## Readiness assessment
 - objective clarity: [HIGH / MEDIUM / LOW]
@@ -152,4 +154,4 @@ gh issue create \
 | Without acceptance criteria | Agent doesn't know when it's done | Numbered and verifiable criteria |
 | Without restrictions | Agent touches files outside the scope | Explicit list of what should NOT be touched |
 | Without human checklist | PR is merged without reviewing agent output | Mandatory human validation section |
-| Autonomy level not defined | Agent assumes total autonomy | Always declare the authorized level |
+| Autonomy level not defined | Agent assumes total autonomy | Always declare the `authorized mode` (A0-A3) in `## Execution contract` |

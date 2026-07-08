@@ -149,6 +149,8 @@ Post-mortem: [FECHA PROGRAMADA]
 
 ## FASE 7 — POST-MORTEM (dentro de 48–72h)
 
+Esta fase produce un resumen inmediato del post-mortem. Para el documento formal con guía blameless detallada y un runbook on-call reutilizable, continúa con `11-07-sre-postmortem-runbook`.
+
 Documenta el incidente completo en un post-mortem sin blame (blameless):
 
 ### Cronología

@@ -1,4 +1,20 @@
-# 1.1 Prompt for repository technical inventory
+# 1.1 — Repository technical inventory
+
+## Description
+
+Starter prompt to build an initial technical inventory of the repository: structure, workspaces/sub-modules, detected technologies, engineering-cycle artifacts, and relevant gaps. This is the recommended first step before any analysis or implementation on a new or unfamiliar repository.
+
+**When to use it:** when starting work on a repository with no prior context, or to refresh the inventory after significant structural changes.
+
+---
+
+## Mandatory previous context
+
+> Include the block from the `00-framework.md` file before this prompt.
+
+---
+
+## Complete prompt
 
 ```text
 Objective:
@@ -50,3 +66,30 @@ Output format:
 6. Risks or gaps
 7. Recommended review order
 ```
+
+---
+
+## Use with standard formula
+
+```text
+Use the repository technical inventory prompt and adapt it to:
+- repository: [NAME OR URL]
+- branch: [MAIN BRANCH]
+- documents to review: complete source code, configuration, existing documentation
+- specific output objective: initial technical inventory with detected risks and gaps
+- depth level: high
+```
+
+---
+
+## Expected output
+
+| Section | Expected content |
+|---|---|
+| Executive summary | High-level overview of the repository in a few lines |
+| Folder inventory | Structure and purpose of each main folder |
+| Detected architecture | Monorepo/modular, layers, components, and services identified |
+| Technologies | Frontend, backend, DB, infrastructure, messaging, auth, observability stack |
+| Processes/documentation | Engineering-cycle artifacts already present |
+| Risks or gaps | Relevant absences detected |
+| Review order | Recommendation on where to continue the analysis |

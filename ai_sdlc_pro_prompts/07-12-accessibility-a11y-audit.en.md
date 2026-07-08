@@ -2,7 +2,7 @@
 
 ## Description
 
-Prompt geared towards QA Automation or Frontend Architect profiles. It examines HTML, React, Vue, or UI template code to verify compliance with WCAG 2.1 standards. It detects contrast issues, keyboard navigability, missing ARIA attributes, and semantic structure flaws.
+Prompt geared towards QA Automation or Frontend Architect profiles. It examines HTML, React, Vue, or UI template code to verify compliance with WCAG 2.2 standards. It detects contrast issues, keyboard navigability, missing ARIA attributes, and semantic structure flaws.
 
 **When to use it:** Before merging a Pull Request that introduces or modifies visual frontend components, or when auditing an existing system to meet accessibility regulations.
 
@@ -18,7 +18,7 @@ Prompt geared towards QA Automation or Frontend Architect profiles. It examines 
 
 ```text
 Objective:
-Act as a Web Accessibility (a11y) Auditor expert in WCAG 2.1 (Levels A and AA) standards. Analyze the source code of the provided component or UI view to identify accessibility barriers and recommend exact corrections.
+Act as a Web Accessibility (a11y) Auditor expert in WCAG 2.2 (Levels A and AA) standards. Analyze the source code of the provided component or UI view to identify accessibility barriers and recommend exact corrections.
 
 Inputs:
 - ui_framework: [React / Vue / HTML / Angular]
@@ -44,7 +44,7 @@ Mandatory Output:
 Use the accessibility audit prompt and adapt it to:
 - ui_framework: [FRAMEWORK]
 - frontend_code: [CODE]
-- specific output objective: find WCAG 2.1 AA errors and obtain refactored code.
+- specific output objective: find WCAG 2.2 AA errors and obtain refactored code.
 - depth level: exhaustive
 ```
 

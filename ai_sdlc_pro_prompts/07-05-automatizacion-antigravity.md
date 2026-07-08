@@ -1,10 +1,10 @@
-# 7.5 — Automatización en navegador con Chrome Antigravity
+# 7.5 — Automatización en navegador con Google Antigravity
 
 ## Descripción
 
-Prompt para diseñar y documentar una estrategia de pruebas automatizadas en navegador usando Chrome Antigravity: escenarios, navegación, selectors, datos de prueba, validaciones visuales y puntos frágiles del flujo.
+Prompt para diseñar y documentar una estrategia de pruebas automatizadas en navegador usando Google Antigravity: escenarios, navegación, selectors, datos de prueba, validaciones visuales y puntos frágiles del flujo.
 
-**Cuándo usarlo:** para automatizar pruebas E2E o de regresión de flujos críticos impactados por el cambio.
+**Cuándo usarlo:** para automatizar pruebas E2E o de regresión de flujos críticos impactados por el cambio. Usa este prompt en lugar de `07-03`+`07-09` cuando la automatización se ejecutará mediante el agente de navegador de Google Antigravity (verificación autónoma con capturas/video) en vez de un framework de scripting E2E tradicional.
 
 ---
 
@@ -18,7 +18,7 @@ Prompt para diseñar y documentar una estrategia de pruebas automatizadas en nav
 
 ```text
 Objetivo:
-Diseña y documenta una estrategia de pruebas automatizadas en navegador usando Chrome Antigravity para validar los flujos impactados.
+Diseña y documenta una estrategia de pruebas automatizadas en navegador usando Google Antigravity para validar los flujos impactados.
 
 Incluye:
 - escenario,

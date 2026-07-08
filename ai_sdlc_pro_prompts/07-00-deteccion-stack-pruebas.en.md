@@ -2,7 +2,7 @@
 
 ## Description
 
-Prompt to detect and document the active test stack in the repository. Produces a structured **test stack profile** that is attached as context to implementation prompts (`07-07` through `07-10`), eliminating the need for each agent to re-discover the project's tools and conventions.
+Prompt to detect and document the active test stack in the repository. Produces a structured **test stack profile** that is attached as context to implementation prompts (`07-07` through `07-11`), eliminating the need for each agent to re-discover the project's tools and conventions.
 
 **When to use:** once per project, or when the test stack changes. The generated profile is reused across all test implementation prompt executions.
 
@@ -97,7 +97,7 @@ Use the test stack detection prompt and adapt it to:
 
 ## Expected output — Test stack profile
 
-The agent must generate a block in this exact format, ready to be copied and pasted as context into prompts 07-07 through 07-10:
+The agent must generate a block in this exact format, ready to be copied and pasted as context into prompts 07-07 through 07-11:
 
 ```
 ── TEST STACK PROFILE ──────────────────────────────────────────────────
@@ -162,4 +162,4 @@ Current coverage : [X% or unmeasured]
 ```
 
 > This block must be pasted at the beginning (after the `00-framework.md` block) of any
-> test implementation prompt: `07-07`, `07-08`, `07-09`, `07-10`.
+> test implementation prompt: `07-07`, `07-08`, `07-09`, `07-10`, `07-11`.

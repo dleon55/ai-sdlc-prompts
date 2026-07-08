@@ -1,4 +1,20 @@
-# 1.1 Prompt para inventario técnico del repositorio
+# 1.1 — Inventario técnico del repositorio
+
+## Descripción
+
+Prompt de arranque para construir un inventario técnico inicial del repositorio: estructura, workspaces/sub-módulos, tecnologías detectadas, artefactos del ciclo de ingeniería y vacíos relevantes. Es el primer paso recomendado antes de cualquier análisis o implementación sobre un repositorio nuevo o desconocido.
+
+**Cuándo usarlo:** al arrancar trabajo sobre un repositorio del que no se tiene contexto previo, o para refrescar el inventario después de cambios estructurales significativos.
+
+---
+
+## Contexto obligatorio previo
+
+> Incluye el bloque del archivo `00-framework.md` antes de este prompt.
+
+---
+
+## Prompt completo
 
 ```text
 Objetivo:
@@ -50,3 +66,30 @@ Formato de salida:
 6. Riesgos o vacíos
 7. Recomendación de orden de revisión
 ```
+
+---
+
+## Uso con fórmula estándar
+
+```text
+Usa el prompt de inventario técnico del repositorio y adáptalo a:
+- repositorio: [NOMBRE O URL]
+- rama: [RAMA PRINCIPAL]
+- documentos a revisar: código fuente completo, configuración, documentación existente
+- objetivo puntual de salida: inventario técnico inicial con riesgos y vacíos detectados
+- nivel de profundidad: alto
+```
+
+---
+
+## Salida esperada
+
+| Sección | Contenido esperado |
+|---|---|
+| Resumen ejecutivo | Panorama general del repositorio en pocas líneas |
+| Inventario de carpetas | Estructura y propósito de cada carpeta principal |
+| Arquitectura detectada | Monorepo/modular, capas, componentes y servicios identificados |
+| Tecnologías | Stack de frontend, backend, BD, infraestructura, mensajería, auth, observabilidad |
+| Procesos/documentación | Artefactos del ciclo de ingeniería ya presentes |
+| Riesgos o vacíos | Ausencias relevantes detectadas |
+| Orden de revisión | Recomendación de por dónde continuar el análisis |

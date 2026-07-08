@@ -61,7 +61,7 @@ Deliver the following sections:
 3. SELECTED ARCHITECTURAL PATTERNS
    For each chosen pattern, state: pattern | reason | when to apply it | when NOT to scale to it
    Candidates to evaluate:
-   - modular monolith vs. microservices vs. modular monolith
+   - monolith vs. microservices vs. modular monolith
    - CQRS (read/write separation)
    - Event sourcing
    - Saga pattern (for distributed transactions)

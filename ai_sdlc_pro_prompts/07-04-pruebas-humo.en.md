@@ -48,5 +48,10 @@ Use the smoke tests prompt and adapt it to:
 
 ## Expected output
 
-| Step | Action | Expected result | Status |
-|---|---|---|---|
+| Step | Action | Expected result | Critical | Status |
+|---|---|---|---|---|
+| 1 | Login / authentication | Access granted | Yes | |
+| 2 | Access to main module | Loads without error | Yes | |
+| 3 | Critical basic operation | Correct result | Yes | |
+| 4 | Minimal integration | Responds without error | Yes | |
+| 5 | No visible errors in UI | No critical alerts | Yes | |

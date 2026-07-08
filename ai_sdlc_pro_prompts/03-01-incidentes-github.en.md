@@ -35,6 +35,7 @@ Activities:
    - exists and is correct,
    - exists but is incomplete,
    - exists but is poorly documented,
+   - is a duplicate of another already-reported incident,
    - does not exist.
 4. Propose action:
    - comment,
@@ -44,6 +45,9 @@ Activities:
    - relate,
    - mark as duplicate.
 5. If it does not exist, draft the complete issue with the project standard.
+
+Restrictions:
+This prompt is analysis and drafting only. Do not run commands that create, close, comment on, or modify issues in GitHub; deliver only the proposed actions and the drafted content for human review.
 
 Output:
 1. Executive summary

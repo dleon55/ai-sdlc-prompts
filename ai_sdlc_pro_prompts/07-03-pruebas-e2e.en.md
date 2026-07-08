@@ -50,5 +50,5 @@ Use the E2E tests prompt and adapt it to:
 
 ## Expected output
 
-| Use case | Actor | Preconditions | Steps | Expected result | Evidence |
-|---|---|---|---|---|---|
+| Actor | Flow | Preconditions | Steps | Expected result | Evidence | Regressions |
+|---|---|---|---|---|---|---|

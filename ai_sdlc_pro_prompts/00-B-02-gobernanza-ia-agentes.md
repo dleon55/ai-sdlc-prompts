@@ -4,7 +4,7 @@
 
 Prompt para generar los archivos de configuración y gobierno que controlan el comportamiento de los agentes IA sobre el repositorio: instrucciones de rol, reglas de codificación, restricciones de seguridad, contexto del proyecto y protocolo de trabajo. Compatible con GitHub Copilot, Claude, Windsurf, Cursor, Codex y otros agentes.
 
-**Cuándo usarlo:** al iniciar un repositorio nuevo, al incorporar agentes IA a un proyecto existente, o cuando los agentes no siguen las convenciones ni el marco de trabajo del proyecto.
+**Cuándo usarlo:** al iniciar un repositorio nuevo, al incorporar agentes IA a un proyecto existente, o cuando los agentes no siguen las convenciones ni el marco de trabajo del proyecto. Es la configuración base de gobernanza (una sola vez por repositorio); para configurar en profundidad un mecanismo específico de un agente ya activo, usa `00-C-03-configuracion-por-agente`.
 
 ---
 

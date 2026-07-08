@@ -108,7 +108,7 @@ Use the root cause analysis prompt and adapt it to:
 | `07-02-pruebas-integracion.md` | 7.2 | Integration test design |
 | `07-03-pruebas-e2e.md` | 7.3 | E2E test design |
 | `07-04-pruebas-humo.md` | 7.4 | Smoke tests |
-| `07-05-automatizacion-antigravity.md` | 7.5 | Browser automation with Chrome Antigravity |
+| `07-05-automatizacion-antigravity.md` | 7.5 | Browser automation with Google Antigravity |
 | `07-06-pruebas-performance-carga.md` | 7.6 | Performance and load tests |
 | `07-07-implementacion-pruebas-unitarias.md` | 7.7 | Unit Test Implementation |
 | `07-08-implementacion-pruebas-integracion.md` | 7.8 | Integration Test Implementation |

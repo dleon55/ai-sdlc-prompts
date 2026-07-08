@@ -4,7 +4,7 @@
 
 Prompt para analizar un problema de ambiente, despliegue, servicio, contenedor, pipeline o configuración: síntoma, servicios involucrados, hipótesis, comandos a revisar y ruta de resolución.
 
-**Cuándo usarlo:** cuando un servicio falla, un despliegue no funciona como esperado, o hay un problema de configuración en cualquier ambiente.
+**Cuándo usarlo:** cuando un servicio falla, un despliegue no funciona como esperado, o hay un problema de configuración en cualquier ambiente. Si el ambiente es PROD y hay impacto significativo en usuarios, usa `11-04-incident-response` en su lugar.
 
 ---
 
@@ -27,6 +27,8 @@ Incluye:
 - comandos o evidencias a revisar,
 - hipótesis,
 - ruta de resolución.
+
+⚠️ Prioriza comandos de solo lectura para diagnóstico (logs, estado de servicios, métricas). No ejecutes reinicios, rollbacks, cambios de configuración o comandos destructivos — inclúyelos como parte de la "ruta de resolución" propuesta, pendientes de aprobación.
 ```
 
 ---

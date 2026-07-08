@@ -45,7 +45,12 @@ Input:
 - available tools: [AVAILABLE TOOLS]
 - budget: [TIME / CHANGES / ATTEMPTS / COST]
 
-Step 1. CLASSIFY intent, complexity, risk, reversibility, and required evidence.
+Step 1. CLASSIFY
+- intent: [analyze / design / implement / review / investigate / operate]
+- complexity: [simple / composite / open-ended]
+- risk: [low / medium / high]
+- reversibility: [high / medium / low]
+- evidence required to close
 
 Step 2. SELECT A PATTERN
 - single agent for a scoped, verifiable task
@@ -57,7 +62,12 @@ Step 2. SELECT A PATTERN
 Do not execute every phase by default.
 
 Step 3. CREATE THE CONTRACT
-- scope, exclusions, tools, permissions, approvals, checkpoints, budget, stop conditions, success criteria, and evidence
+- scope and exclusions
+- tools and permissions
+- actions requiring approval
+- states and checkpoints
+- budget and stop condition
+- success criteria and evidence
 
 Allowed states:
 `discovered`, `planned`, `approved`, `executing`, `verifying`, `blocked`, `completed`, `rolled_back`.
@@ -69,7 +79,12 @@ Step 4. EXECUTE
 - record relevant decisions, tool calls, and evidence
 - reconcile before integration
 
-Step 5. VERIFY acceptance criteria, proportional tests, security, regressions, actual diff, and residual risks.
+Step 5. VERIFY
+- acceptance criteria
+- tests proportional to impact
+- security and regressions
+- diff and actual scope
+- residual risks
 
 Step 6. CLOSE OR ESCALATE
 - complete only with sufficient evidence

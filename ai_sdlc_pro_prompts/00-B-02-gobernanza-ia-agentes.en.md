@@ -4,7 +4,7 @@
 
 Prompt to generate the configuration and governance files that control the behavior of AI agents over the repository: role instructions, coding rules, security restrictions, project context, and work protocol. Compatible with GitHub Copilot, Claude, Windsurf, Cursor, Codex, and other agents.
 
-**When to use:** when starting a new repository, when incorporating AI agents into an existing project, or when agents are not following the project's conventions or framework.
+**When to use:** when starting a new repository, when incorporating AI agents into an existing project, or when agents are not following the project's conventions or framework. This is the baseline governance setup (once per repository); to deeply configure a specific mechanism of an already-active agent, use `00-C-03-configuracion-por-agente`.
 
 ---
 

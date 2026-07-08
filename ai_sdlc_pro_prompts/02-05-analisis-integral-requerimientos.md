@@ -49,6 +49,9 @@ Salida Obligatoria:
    - Technical Tasks Checklist.
    - QA & Testing Strategy.
    - Labels recomendados.
+
+3. MATRIZ DE IMPACTO:
+   Tabla con módulos, tablas y servicios afectados y su severidad de impacto.
 ```
 
 ---

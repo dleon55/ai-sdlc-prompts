@@ -103,12 +103,6 @@ Revisión que debe hacer el humano antes de hacer merge:
 - [ ] No se instalaron dependencias nuevas sin justificación
 - [ ] No hay cambios en workflows, migraciones ni archivos de infraestructura no autorizados
 
-## Nivel de autonomía autorizado
-[ ] Solo análisis y propuesta (el agente no hace commits)
-[ ] Propuesta con draft PR (el agente crea PR en borrador)
-[ ] Ejecución controlada (el agente puede hacer commits en rama de feature)
-[ ] Ejecución autónoma (el agente puede completar y pedir merge)
-
 ## Evaluación de readiness
 - claridad del objetivo: [ALTA / MEDIA / BAJA]
 - criterios verificables: [SÍ / PARCIAL / NO]
@@ -166,4 +160,4 @@ gh issue create \
 | Sin criterios de aceptación | El agente no sabe cuándo terminó | Criterios numerados y verificables |
 | Sin restricciones | El agente toca archivos fuera del alcance | Lista explícita de lo que NO debe tocar |
 | Sin checklist humano | PR se mergea sin revisar output del agente | Sección de validación humana obligatoria |
-| Nivel de autonomía no definido | El agente asume autonomía total | Siempre declarar el nivel autorizado |
+| Nivel de autonomía no definido | El agente asume autonomía total | Siempre declarar el `modo autorizado` (A0-A3) en `## Contrato de ejecución` |
