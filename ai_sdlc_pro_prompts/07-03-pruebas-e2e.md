@@ -36,14 +36,22 @@ Prompt para diseñar pruebas end-to-end de los casos de uso impactados por el ca
 Objetivo:
 Diseña pruebas end-to-end para los casos de uso impactados por el cambio.
 
-Incluye:
-- actor,
-- flujo principal,
-- precondiciones,
-- pasos,
-- resultado esperado,
-- evidencia requerida,
-- regresiones relacionadas.
+Pasos:
+1. Identifica el actor (rol de usuario) y el flujo principal de punta a punta, desde la entrada del usuario hasta el resultado observable en el sistema.
+2. Define las precondiciones necesarias (estado de datos, sesión, permisos) para que el flujo sea reproducible.
+3. Detalla los pasos como el usuario los ejecutaría, en el orden exacto, sin saltar interacciones intermedias relevantes.
+4. Define el resultado esperado observable (UI, respuesta, estado persistido) y la evidencia mínima requerida para considerarlo validado (captura, log, registro en base de datos).
+5. Identifica regresiones relacionadas: qué otros flujos podrían romperse por este cambio y deberían re-verificarse.
+6. Prioriza los flujos críticos de negocio (los que generan ingreso, afectan seguridad o tienen mayor volumen de uso) antes que flujos secundarios o poco usados.
+
+Restricciones:
+- ejecutar siempre contra un ambiente QA/STAGING, nunca directamente contra producción,
+- si el caso de uso o los criterios de aceptación no están definidos con suficiente detalle para derivar pasos y resultado esperado, detente y pide aclaración en vez de asumir el comportamiento,
+- cada caso debe ser independiente: no debe depender del estado dejado por otro caso E2E previo.
+
+Entrega:
+- matriz de pruebas E2E,
+- regresiones relacionadas a re-verificar.
 ```
 
 ---
@@ -68,3 +76,4 @@ Usa el prompt de pruebas E2E y adáptalo a:
 
 | Actor | Flujo | Precondiciones | Pasos | Resultado esperado | Evidencia | Regresiones |
 |---|---|---|---|---|---|---|
+| Usuario autenticado | Actualizar dirección de envío en el perfil | sesión activa, al menos una dirección guardada | 1. Ir a Perfil → Direcciones. 2. Editar dirección existente. 3. Guardar cambios. | la dirección se actualiza y aparece preseleccionada en el próximo checkout | captura de pantalla del perfil actualizado + registro en base de datos | checkout con dirección por defecto |

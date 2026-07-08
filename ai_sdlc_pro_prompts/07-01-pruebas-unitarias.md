@@ -36,18 +36,24 @@ Prompt para diseñar la suite de pruebas unitarias que valide los cambios propue
 Objetivo:
 Diseña las pruebas unitarias necesarias para validar los cambios propuestos o implementados.
 
-Incluye:
-- función o unidad bajo prueba,
-- escenario,
-- entrada,
-- resultado esperado,
-- casos positivos,
-- casos negativos,
-- casos borde.
+Pasos:
+1. Identifica la función o unidad bajo prueba: firma, tipos de entrada/salida, efectos secundarios y dependencias externas (I/O, red, tiempo, aleatoriedad).
+2. Enumera escenarios por unidad: casos positivos (camino feliz), casos negativos (entradas inválidas o error esperado) y casos borde (límites, vacíos, nulos, valores extremos).
+3. Para cada escenario, define la entrada exacta y el resultado esperado (valor de retorno, excepción lanzada o efecto secundario observable).
+4. Identifica qué dependencias externas deben mockearse o aislarse para que la prueba sea determinista y no dependa de red, base de datos real ni sistema de archivos.
+5. Prioriza: si el tiempo es limitado, cubre primero lógica de negocio con ramificaciones (if/switch) y casos borde numéricos antes que getters/setters triviales.
+6. Recomienda un nivel de cobertura objetivo y señala explícitamente qué queda fuera de alcance de pruebas unitarias (pertenece a integración `07-02` o E2E `07-03`).
+
+Restricciones:
+- cada prueba debe ser independiente y no depender del orden de ejecución ni de estado compartido con otras pruebas,
+- no repliques detalles de implementación privados si existe una API pública equivalente que probar,
+- no uses sleep ni tiempos fijos para sincronizar pruebas asíncronas — usa mocks de tiempo o espera por condición,
+- si la cobertura recomendada no puede alcanzarse con la información disponible, señálalo en vez de inventar escenarios.
 
 Entrega:
 - matriz de pruebas unitarias,
-- recomendación de cobertura.
+- recomendación de cobertura,
+- lista de dependencias a mockear o aislar.
 ```
 
 ---
@@ -72,3 +78,6 @@ Usa el prompt de pruebas unitarias y adáptalo a:
 
 | Unidad | Escenario | Entrada | Resultado esperado | Tipo |
 |---|---|---|---|---|
+| calcularDescuento() | descuento válido dentro de rango | precio=100, porcentaje=10 | 90 | positivo |
+| calcularDescuento() | porcentaje negativo | precio=100, porcentaje=-5 | lanza ValueError | negativo |
+| calcularDescuento() | porcentaje en el límite superior (100%) | precio=100, porcentaje=100 | 0 | borde |

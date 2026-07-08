@@ -36,14 +36,22 @@ Prompt para diseñar y documentar una estrategia de pruebas automatizadas en nav
 Objetivo:
 Diseña y documenta una estrategia de pruebas automatizadas en navegador usando Google Antigravity para validar los flujos impactados.
 
-Incluye:
-- escenario,
-- navegación,
-- selectors esperados,
-- datos de prueba,
-- validaciones visuales y funcionales,
-- capturas o evidencia esperada,
-- posibles puntos frágiles del flujo.
+Pasos:
+1. Identifica el escenario y el flujo crítico a automatizar, y confirma que el ambiente de destino es QA o STAGING (nunca producción).
+2. Define la navegación paso a paso: URL de entrada, clics, formularios, y transiciones de pantalla esperadas.
+3. Identifica selectores estables para cada elemento clave (preferir `data-testid` o atributos semánticos sobre clases CSS o posición en el DOM, que son frágiles ante cambios de estilo).
+4. Define los datos de prueba a usar — únicamente datasets marcados como "test data", nunca datos reales.
+5. Especifica las validaciones visuales y funcionales esperadas en cada paso, y qué evidencia (captura, video) debe generarse como prueba de ejecución.
+6. Identifica puntos frágiles del flujo: elementos dinámicos, animaciones, contenido cargado de forma asíncrona, o selectores que puedan cambiar con frecuencia.
+
+Restricciones:
+- nunca ejecutar automatización contra producción,
+- usar exclusivamente variables de entorno para credenciales de prueba, nunca hardcodearlas,
+- si faltan selectores estables o datos de prueba definidos, detente y señálalo — automatizar sobre selectores frágiles produce falsos negativos recurrentes.
+
+Entrega:
+- estrategia de automatización con escenarios, selectores y validaciones,
+- lista de puntos frágiles identificados y mitigación sugerida.
 ```
 
 ---
@@ -68,3 +76,4 @@ Usa el prompt de automatización con Antigravity y adáptalo a:
 
 | Escenario | Navegación | Selector clave | Datos de prueba | Validación | Evidencia | Punto frágil |
 |---|---|---|---|---|---|---|
+| Copiar prompt al portapapeles | Home → buscar prompt → clic en botón copiar | `[data-testid="copy-btn"]` | prompt de sección 07 (test data) | el texto copiado coincide con el prompt mostrado y aparece confirmación visual | captura antes/después del clic + video del flujo | confirmación visual es un toast temporal — verificar antes de que desaparezca |

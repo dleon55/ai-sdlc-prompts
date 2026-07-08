@@ -36,14 +36,22 @@ Prompt to design end-to-end tests for the use cases impacted by the change: from
 Objective:
 Design end-to-end tests for the use cases impacted by the change.
 
-Include:
-- actor,
-- main flow,
-- preconditions,
-- steps,
-- expected result,
-- required evidence,
-- related regressions.
+Steps:
+1. Identify the actor (user role) and the main flow end-to-end, from user input to the observable result in the system.
+2. Define the preconditions needed (data state, session, permissions) for the flow to be reproducible.
+3. Detail the steps as the user would execute them, in exact order, without skipping relevant intermediate interactions.
+4. Define the expected observable result (UI, response, persisted state) and the minimum evidence required to consider it validated (screenshot, log, database record).
+5. Identify related regressions: what other flows could break because of this change and should be re-verified.
+6. Prioritize critical business flows (those that generate revenue, affect security, or have the highest usage volume) before secondary or rarely used flows.
+
+Constraints:
+- always run against a QA/STAGING environment, never directly against production,
+- if the use case or acceptance criteria are not defined in enough detail to derive steps and expected result, stop and ask for clarification instead of assuming the behavior,
+- each case must be independent: it must not depend on state left by a previous E2E case.
+
+Deliver:
+- E2E test matrix,
+- related regressions to re-verify.
 ```
 
 ---
@@ -68,3 +76,4 @@ Use the E2E tests prompt and adapt it to:
 
 | Actor | Flow | Preconditions | Steps | Expected result | Evidence | Regressions |
 |---|---|---|---|---|---|---|
+| Authenticated user | Update shipping address in profile | active session, at least one saved address | 1. Go to Profile → Addresses. 2. Edit existing address. 3. Save changes. | address is updated and appears preselected on the next checkout | screenshot of updated profile + database record | checkout with default address |
