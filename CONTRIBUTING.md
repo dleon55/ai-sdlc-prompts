@@ -2,7 +2,7 @@
 
 ## Requisitos previos
 
-- Python 3.8+
+- Python 3.8+ (el pipeline CI/CD valida con Python 3.11)
 - Git configurado con [Conventional Commits](https://www.conventionalcommits.org/es/v1.0.0/)
 - Acceso al repositorio con rama `main` como base
 
@@ -70,9 +70,15 @@ Reglas:
 
 ## Flujo de contribución
 
+Todo trabajo técnico se gestiona en **GitHub Issues**, con su Milestone y Project de seguimiento:
+
 ```
-prompt nuevo → build.py → verify_clean.py → commit → push → CI auto-despliega
+issue (milestone + project) → rama de trabajo → build.py → verify_clean.py →
+commit → push → Pull Request → CI (gates) → merge controlado → CI despliega
 ```
+
+Las decisiones, el estado de avance y la evidencia de validación se registran
+como **comentarios en el issue o el PR** — no en documentos nuevos del repo.
 
 ### Política operativa temporal (OP-001)
 
@@ -106,14 +112,14 @@ Referencia de coordinación:
    git add ai_sdlc_pro_prompts/<archivo>.md index.html
    git commit -m "feat(prompts): agregar prompt 04-04 ADR decisiones de arquitectura"
    ```
-5. **Push** a `main`:
+5. **Push** a tu **rama de trabajo** y abre un **Pull Request** contra `main`:
    ```bash
-   git push origin main
+   git push -u origin <tu-rama>
    ```
+   > No hagas push directo a `main` (política **OP-001**). La integración a `main` se realiza vía Pull Request.
 6. **CI/CD** ejecuta automáticamente:
-   - QA gate: `build.py` + `verify_clean.py`
-   - Deploy a GitHub Pages (staging)
-   - Deploy a GCP production (`prompts.lionsystems.com.mx`)
+   - En el **PR**: QA gate `build.py` + `verify_clean.py` + `pytest` (sin desplegar)
+   - Al **mergear a `main`**: Deploy a GitHub Pages (staging) + GCP production (`prompts.lionsystems.com.mx`)
 
 > **Nunca editar `index.html` directamente.** Siempre usar `build.py` como fuente de verdad.
 

@@ -32,7 +32,7 @@ Cubre todas las funcionalidades accesibles por usuarios finales (visitantes, usu
 
 | ID | Requerimiento | Prioridad | Caso de Uso | Estado |
 |----|---------------|-----------|-------------|--------|
-| **FR-BLD-01** | El generador `build.py` debe procesar 44 archivos `.md` en `ai_sdlc_pro_prompts/` | Must | - | ✅ |
+| **FR-BLD-01** | El generador `build.py` debe procesar 75 archivos `.md` en `ai_sdlc_pro_prompts/` | Must | - | ✅ |
 | **FR-BLD-02** | Debe generar único archivo `index.html` (~255KB) sin dependencias externas | Must | - | ✅ |
 | **FR-BLD-03** | Debe extraer título, descripción, prompt, fórmulas y variables de cada `.md` | Must | - | ✅ |
 | **FR-BLD-04** | Debe generar cards HTML con IDs únicos por prompt (`pid = seccion-sub`) | Must | - | ✅ |
@@ -43,7 +43,7 @@ Cubre todas las funcionalidades accesibles por usuarios finales (visitantes, usu
 
 | ID | Requerimiento | Prioridad | Caso de Uso | Estado |
 |----|---------------|-----------|-------------|--------|
-| **FR-PRM-01** | Mostrar biblioteca de 44 prompts organizados en 15 grupos (00-12) | Must | UC-01 | ✅ |
+| **FR-PRM-01** | Mostrar biblioteca de 75 prompts organizados en 19 grupos (00-15) | Must | UC-01 | ✅ |
 | **FR-PRM-02** | Permitir expansión/colapso individual de cada card de prompt | Must | UC-10 | ✅ |
 | **FR-PRM-03** | Mostrar descripción corta y botón "Copiar" en card colapsada | Must | UC-07 | ✅ |
 | **FR-PRM-04** | Mostrar contenido completo del prompt en card expandida | Must | UC-07 | ✅ |
@@ -101,7 +101,7 @@ Cubre todas las funcionalidades accesibles por usuarios finales (visitantes, usu
 | **FR-I18N-07** | Actualizar meta tags dinámicamente al cambiar idioma | Could | UC-12 | 🔶 |
 | **FR-I18N-08** | Fallback a ES si contenido EN no disponible | Should | i18n | ✅ |
 | **FR-I18N-09** | Traducir UI completa (strings, labels, tooltips) | Must | i18n | ✅ |
-| **FR-I18N-10** | Traducir contenido de los 44 prompts | Should | i18n | 🔶 |
+| **FR-I18N-10** | Traducir contenido de los 75 prompts | Should | i18n | 🔶 |
 | **FR-I18N-11** | Traducir landing page completa | Could | i18n | 🔶 |
 
 ### 2.7 Sistema de UI/UX

@@ -15,7 +15,7 @@ Un dev o equipo que usa AI-SDLC Pro obtiene outputs consistentes, trazables y de
 **Diferenciadores competitivos confirmados:**
 - Único catálogo estructurado SDLC end-to-end en español
 - Framework de contexto multi-agente (auto-prepend)
-- Sistema de proyectos con 12 variables persistentes
+- Sistema de proyectos con 19 variables persistentes
 - Infraestructura production-grade (GCP + TLS + CI/CD)
 - Licencia propietaria — contenido curado por LionSystems
 
@@ -51,7 +51,7 @@ Un dev o equipo que usa AI-SDLC Pro obtiene outputs consistentes, trazables y de
 | Tier | Precio | Contenido | Target |
 |------|--------|-----------|--------|
 | **Free** | $0 | 10 prompts del ciclo básico (análisis, diseño, implementación) | Adquisición |
-| **Pro Individual** | $299 MXN/mes | Todos los prompts (44+) + 00-B + 00-C + variables avanzadas + actualizaciones mensuales | Dev individual |
+| **Pro Individual** | $299 MXN/mes | Todos los prompts (75+) + 00-B + 00-C + variables avanzadas + actualizaciones mensuales | Dev individual |
 | **Pro Equipo** | $799 MXN/mes | Todo Pro + hasta 5 devs + proyectos compartidos | Equipos pequeños |
 | **Enterprise** | $5,000-15,000 MXN/mes | Todo Equipo + SSO + prompts privados cliente + soporte prioritario | Agencias / empresas |
 

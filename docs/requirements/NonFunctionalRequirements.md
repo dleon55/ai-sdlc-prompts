@@ -142,7 +142,7 @@
 
 | ID | Requerimiento | Prioridad | Estado |
 |----|---------------|-----------|--------|
-| **NFR-MAN-05** | Componente card de prompt reusable para todos los 44 prompts | Must | ✅ |
+| **NFR-MAN-05** | Componente card de prompt reusable para todos los 75 prompts | Must | ✅ |
 | **NFR-MAN-06** | Funciones de copia/variables reutilizables | Must | ✅ |
 
 ### 5.3 Analizabilidad

@@ -150,13 +150,13 @@
 | **ID** | UC-04 |
 | **Nombre** | Configurar Variables de Contexto |
 | **Actor(es)** | Usuario Registrado |
-| **Descripción** | Usuario define las 12 variables de contexto que personalizarán los prompts |
+| **Descripción** | Usuario define las 19 variables de contexto que personalizarán los prompts |
 | **Precondiciones** | Proyecto activo existente |
 | **Postcondiciones** | Variables persistidas en `localStorage.AI_SDLC_v1_projects` |
 
 **Flujo Principal:**
 1. Usuario abre panel de variables (botón "Variables")
-2. Sistema muestra formulario con 12 campos:
+2. Sistema muestra formulario con 19 campos:
    - Globales: repositorio, ambiente, stack...
    - Por prompt: issue, rama, componentes...
 3. Usuario completa campos relevantes
@@ -210,7 +210,7 @@
 1. Usuario posiciona cursor en campo de búsqueda
 2. Escribe término de búsqueda (ej: "incidente")
 3. Sistema filtra en tiempo real (debounce 150ms)
-4. Muestra contador: "3 de 44 prompts"
+4. Muestra contador: "3 de 75 prompts"
 5. Cards no coincidentes ocultados
 6. Usuario limpia búsqueda → restaura todos
 
@@ -365,7 +365,7 @@ Ver documento `Monetization-UseCases.md` para especificación detallada de:
 | **Landing** | Hero, Features, CTA, Footer | CTA → /app |
 | **App/Main** | Header, Search, Sidebar, Content | Sidebar → #sec-XX |
 | **Projects Modal** | Lista proyectos, CRUD, Import/Export | Modal overlay |
-| **Var Panel** | Form 12 campos, Global/Per-prompt | Slide-in panel derecho |
+| **Var Panel** | Form 19 campos, Global/Per-prompt | Slide-in panel derecho |
 | **Info Modal** | Descripción, Fórmulas, Variables | Modal centered |
 
 ---
