@@ -3,7 +3,7 @@
 tests/test_ci_gates_contract.py — Contrato del workflow de CI/CD
 
 Bloquea que un futuro cambio a .github/workflows/deploy.yml elimine
-silenciosamente alguno de los 4 gates obligatorios antes de desplegar, o
+silenciosamente alguno de los 5 gates obligatorios antes de desplegar, o
 reintroduzca un umbral de smoke test hardcodeado que vuelva a quedar
 obsoleto (como pasó con ">=44" cuando la biblioteca creció a 75 prompts).
 """
@@ -16,6 +16,7 @@ GATES_IN_ORDER = (
     "python build.py",
     "python verify_clean.py",
     "python extract_vars.py",
+    "node tests/js/test_variables_runtime.js",
     "python -m pytest",
 )
 

@@ -10,7 +10,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from i18n_strings import (
     get_string, get_landing_string, get_section_label,
-    SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE, UI_STRINGS, LANDING_STRINGS
+    SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE, UI_STRINGS, LANDING_STRINGS,
+    SECTION_LABELS_I18N,
 )
 
 
@@ -61,6 +62,30 @@ def test_get_landing_string_en():
     result = get_landing_string('cta_primary', 'en')
     assert result == 'Explore prompts for free →'
     print("✓ get_landing_string('cta_primary', 'en'): 'Explore prompts for free →'")
+
+
+def test_get_landing_string_fallback():
+    """Validar fallback a idioma por defecto cuando el idioma no existe"""
+    result = get_landing_string('cta_primary', 'fr')  # Francés no soportado
+    assert result == LANDING_STRINGS['es']['cta_primary']
+    print("✓ get_landing_string fallback: fr → es")
+
+
+def test_get_section_label_es_and_en():
+    """Validar obtención de label de sección en ambos idiomas"""
+    assert get_section_label('01', 'es') == SECTION_LABELS_I18N['es']['01']
+    assert get_section_label('01', 'en') == SECTION_LABELS_I18N['en']['01']
+    print("✓ get_section_label('01'): es/en")
+
+
+def test_get_section_label_fallback_and_unknown_key():
+    """Validar fallback de idioma y fallback de clave desconocida"""
+    result = get_section_label('01', 'fr')  # Francés no soportado
+    assert result == SECTION_LABELS_I18N['es']['01']
+
+    unknown = get_section_label('no-existe', 'es')
+    assert unknown == 'no-existe'
+    print("✓ get_section_label fallback: fr → es, clave desconocida → clave")
 
 
 def test_all_ui_strings_have_both_languages():
@@ -115,6 +140,9 @@ def run_all_tests() -> bool:
         test_get_string_en,
         test_get_landing_string_es,
         test_get_landing_string_en,
+        test_get_landing_string_fallback,
+        test_get_section_label_es_and_en,
+        test_get_section_label_fallback_and_unknown_key,
         test_all_ui_strings_have_both_languages,
         test_all_landing_strings_have_both_languages,
         test_section_labels,

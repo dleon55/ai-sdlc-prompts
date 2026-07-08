@@ -33,14 +33,16 @@ concurrency:
 jobs:
 
 # ============================================================
-#  JOB 1 - BUILD + VALIDACION (los 4 gates obligatorios)
-#  Corre en push a main y en cada PR. Si cualquiera de los 4 falla,
+#  JOB 1 - BUILD + VALIDACION (los 5 gates obligatorios)
+#  Corre en push a main y en cada PR. Si cualquiera de los 5 falla,
 #  el job termina en failure y ningun deploy avanza (ver dependencia
-#  arriba). Los 4 gates, en orden:
+#  arriba). Los 5 gates, en orden:
 #    1. build.py         -> regenera index.html desde los .md fuente
 #    2. verify_clean.py  -> ninguna formula ES/EN queda en el prompt copiable
 #    3. extract_vars.py  -> ningun placeholder generico invalido ([NOMBRE], [TIPO]...)
-#    4. pytest -q        -> suite de contrato (build, i18n, variables, etc.)
+#    4. test_variables_runtime.js -> ejecuta el JS generado (VM real) y
+#       valida resolvePrompt/copyPromptLang/persistencia de proyectos
+#    5. pytest -q        -> suite de contrato (build, i18n, variables, etc.)
 # ============================================================
   build:
     runs-on: ubuntu-latest
@@ -55,6 +57,11 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
       - name: Build index.html
         run: python build.py
 
@@ -63,6 +70,9 @@ jobs:
 
       - name: QA gate - audit placeholders
         run: python extract_vars.py
+
+      - name: QA gate - JS runtime tests
+        run: node tests/js/test_variables_runtime.js
 
       - name: Run tests
         run: |
