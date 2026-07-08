@@ -12,6 +12,7 @@ import i18n_strings
 
 PROMPTS_DIR = Path(__file__).parent / "ai_sdlc_pro_prompts"
 OUTPUT_FILE = Path(__file__).parent / "index.html"
+INDEX_OUTPUT_FILE = Path(__file__).parent / "prompts-index.json"
 
 def _is_deprecated_or_empty(content):
     """Contenido vacío/insuficiente o marcado DEPRECATED: no debe contarse
@@ -223,6 +224,112 @@ def parse_md(filepath):
         description = raw.strip()
 
     return title, prompt, description, formula_blocks
+
+
+# ── Índice JSON machine-readable (issue #63) ──────────────────────────────
+# Extrae la tabla "## Contrato editorial" / "## Editorial Contract" (issue #47/#60)
+# de cada prompt para que un orquestador (humano o agente) pueda seleccionar el
+# prompt correcto por consulta estructurada, sin leer las 75 páginas completas.
+# Extractor de solo lectura: nunca toca RAW_PROMPTS, HEADER_CATEGORY ni parse_md().
+CONTRACT_FIELD_MAP = {
+    "tipo": "type", "type": "type",
+    "riesgo esperado": "expected_risk", "expected risk": "expected_risk",
+    "entradas requeridas": "required_inputs", "required inputs": "required_inputs",
+    "herramientas permitidas": "allowed_tools", "allowed tools": "allowed_tools",
+    "autonomía permitida": "permitted_autonomy", "permitted autonomy": "permitted_autonomy",
+    "criterios de detención": "stop_criteria", "stop criteria": "stop_criteria",
+    "salida esperada": "expected_output", "expected output": "expected_output",
+    "evidencia mínima": "minimum_evidence", "minimum evidence": "minimum_evidence",
+    "siguiente prompt recomendado": "recommended_next_prompt",
+    "recommended next prompt": "recommended_next_prompt",
+}
+
+_CONTRACT_ROW_RE = re.compile(r"^\|([^|]+)\|(.+)\|\s*$")
+
+
+def parse_editorial_contract(content, lang):
+    """Parsea la tabla de 9 campos del Contrato editorial a un dict con claves
+    canónicas en inglés (type, expected_risk, ...), sin importar el idioma
+    fuente. Devuelve {} si el prompt todavía no tiene contrato."""
+    heading = "## Contrato editorial" if lang == "es" else "## Editorial Contract"
+    idx = content.find(heading)
+    if idx == -1:
+        return {}
+    rest = content[idx + len(heading):]
+    end_match = re.search(r"\n##\s", rest)
+    block = rest[:end_match.start()] if end_match else rest
+    fields = {}
+    for line in block.splitlines():
+        row = _CONTRACT_ROW_RE.match(line.strip())
+        if not row:
+            continue
+        label_raw, value = row.group(1).strip(), row.group(2).strip()
+        label = label_raw.strip("* ").lower()
+        if label in ("campo", "field") or set(label_raw) <= {"-", ":"}:
+            continue
+        key = CONTRACT_FIELD_MAP.get(label)
+        if key:
+            fields[key] = value
+    return fields
+
+
+_TYPE_TAGS = (
+    (("análisis", "analysis"), "analysis"),
+    (("diseño", "design"), "design"),
+    (("ejecución", "execution"), "execution"),
+    (("validación", "validation"), "validation"),
+    (("operación", "operation"), "operation"),
+    (("seguridad", "security"), "security"),
+    (("documentación", "documentation"), "documentation"),
+)
+_RISK_TAGS = (
+    (("bajo", "low"), "low"),
+    (("medio", "medium"), "medium"),
+    (("alto", "high"), "high"),
+    # "variable": riesgo real declarado por meta-prompts de enrutamiento
+    # (ej. 12-orquestador), cuyo riesgo depende del prompt al que deriven.
+    (("variable",), "variable"),
+)
+
+
+def _extract_tags(value, tag_table):
+    low = value.lower()
+    tags = []
+    for variants, canon in tag_table:
+        if canon in tags:
+            continue
+        if any(re.search(r"\b" + re.escape(v) + r"\b", low) for v in variants):
+            tags.append(canon)
+    return tags
+
+
+def _extract_autonomy_tags(value):
+    return sorted(set(re.findall(r"\bA[0-3]\b", value)))
+
+
+def _extract_next_prompt_ids(value, known_ids):
+    ids = []
+    for token in re.findall(r"`([\w.\-]+)`", value):
+        base = token.replace(".en.md", "").replace(".md", "")
+        if base in known_ids and base not in ids:
+            ids.append(base)
+    return ids
+
+
+def _enrich_contract_fields(fields, known_ids):
+    """Agrega listas normalizadas y consultables a los campos categóricos,
+    preservando el texto completo original en el propio campo."""
+    if "type" in fields:
+        fields["type_tags"] = _extract_tags(fields["type"], _TYPE_TAGS)
+    if "expected_risk" in fields:
+        fields["expected_risk_tags"] = _extract_tags(fields["expected_risk"], _RISK_TAGS)
+    if "permitted_autonomy" in fields:
+        fields["permitted_autonomy_tags"] = _extract_autonomy_tags(fields["permitted_autonomy"])
+    if "recommended_next_prompt" in fields:
+        fields["recommended_next_prompt_ids"] = _extract_next_prompt_ids(
+            fields["recommended_next_prompt"], known_ids
+        )
+    return fields
 
 
 def h(text):
@@ -2980,22 +3087,49 @@ def build():
         parts = name.split("-")
         sk = parts[0]
         if sk not in SECTION_META: continue
-        if _is_deprecated_or_empty(md_file.read_text(encoding="utf-8")): continue
+        content_es = md_file.read_text(encoding="utf-8")
+        if _is_deprecated_or_empty(content_es): continue
         title_es, prompt_es, description_es, formulas_es = parse_md(md_file)
+        contract_es = parse_editorial_contract(content_es, "es")
         en_file = md_file.with_suffix(".en.md")
         if en_file.exists():
+            content_en = en_file.read_text(encoding="utf-8")
             title_en, prompt_en, description_en, formulas_en = parse_md(en_file)
+            contract_en = parse_editorial_contract(content_en, "en")
         else:
             title_en, prompt_en, description_en, formulas_en = title_es, prompt_es, description_es, formulas_es
+            contract_en = contract_es
         sections[sk].append({
             "id": name,
             "title_es": title_es, "prompt_es": prompt_es,
             "description_es": description_es, "formulas_es": formulas_es,
             "title_en": title_en, "prompt_en": prompt_en,
             "description_en": description_en, "formulas_en": formulas_en,
+            "contract_es": contract_es, "contract_en": contract_en,
         })
 
     total = sum(len(v) for v in sections.values())
+
+    # ── índice JSON machine-readable (issue #63) ──
+    all_ids = {p["id"] for items in sections.values() for p in items}
+    index_prompts = []
+    for sk, items in sections.items():
+        for p in items:
+            index_prompts.append({
+                "id": p["id"],
+                "section": sk,
+                "title": {"es": p["title_es"], "en": p["title_en"]},
+                "contract": {
+                    "es": _enrich_contract_fields(dict(p["contract_es"]), all_ids),
+                    "en": _enrich_contract_fields(dict(p["contract_en"]), all_ids),
+                },
+            })
+    index_prompts.sort(key=lambda e: e["id"])
+    contracted = sum(1 for e in index_prompts if e["contract"]["es"])
+    INDEX_OUTPUT_FILE.write_text(
+        json.dumps({"prompts": index_prompts}, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
 
     # ── PROMPT_INFO para el modal de ⓘ ──
     info_data = {}
@@ -3848,6 +3982,7 @@ def build():
     print(f"Prompts   : {total}")
     print(f"Framework : incluido")
     print(f"Tamano    : {size_kb:.1f} KB")
+    print(f"Indice    : {INDEX_OUTPUT_FILE.name} ({contracted}/{total} con contrato editorial)")
 
 
 if __name__ == "__main__":
