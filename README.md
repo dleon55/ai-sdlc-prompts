@@ -57,15 +57,23 @@ python verify_clean.py
 
 ---
 
-## Despliegue a producción
+## Flujo operativo
 
-El despliegue es **automático vía CI/CD** al integrar cambios a `main` mediante Pull Request:
+Todo trabajo técnico (P0/P1/P2) se gestiona en **GitHub Issues** con su **Milestone** y **Project** correspondientes — no en documentos transitorios del repositorio:
 
-1. Trabaja en una **rama** y abre un **Pull Request** contra `main` (ver [CONTRIBUTING.md](CONTRIBUTING.md)).
-2. El workflow valida el PR (`build.py` + `verify_clean.py` + `pytest`) **sin desplegar**.
-3. Al **mergear el PR a `main`**, `.github/workflows/deploy.yml` publica automáticamente en **GitHub Pages** (staging) y **GCP** (`prompts.lionsystems.com.mx`).
+```
+issue (milestone + project) → rama de trabajo → Pull Request → CI (gates) → merge controlado a main
+```
 
-> No se hace push directo a `main` (política **OP-001**, ver CONTRIBUTING.md). `bash deploy-to-gcp.sh` queda como **respaldo manual** de re-deploy a GCP; el flujo normal no lo requiere.
+1. **Issue**: se crea con objetivo, alcance, criterios de aceptación y evidencia esperada; se asigna a un Milestone y al Project de seguimiento.
+2. **Rama**: se crea desde `main` actualizado (nunca se trabaja directo en `main` — política **OP-001**, ver [CONTRIBUTING.md](CONTRIBUTING.md)).
+3. **Pull Request**: contra `main`, referenciando el issue que cierra.
+4. **CI**: el workflow valida el PR (`build.py` + `verify_clean.py` + `pytest`) **sin desplegar**.
+5. **Merge controlado**: requiere revisión; al mergear a `main`, `.github/workflows/deploy.yml` publica automáticamente en **GitHub Pages** (staging) y **GCP** (`prompts.lionsystems.com.mx`).
+
+**Bitácora operativa:** las decisiones, el estado de avance y la evidencia (validaciones, diffs, resultados) se registran como **comentarios en el issue o el PR vinculado** — no en archivos nuevos del repositorio. El repo conserva solo documentación estable (README, CONTRIBUTING, arquitectura y políticas vigentes).
+
+> `bash deploy-to-gcp.sh` queda como **respaldo manual** de re-deploy a GCP; el flujo normal no lo requiere.
 
 ---
 

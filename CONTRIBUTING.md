@@ -70,9 +70,15 @@ Reglas:
 
 ## Flujo de contribución
 
+Todo trabajo técnico se gestiona en **GitHub Issues**, con su Milestone y Project de seguimiento:
+
 ```
-prompt nuevo → build.py → verify_clean.py → commit → push → CI auto-despliega
+issue (milestone + project) → rama de trabajo → build.py → verify_clean.py →
+commit → push → Pull Request → CI (gates) → merge controlado → CI despliega
 ```
+
+Las decisiones, el estado de avance y la evidencia de validación se registran
+como **comentarios en el issue o el PR** — no en documentos nuevos del repo.
 
 ### Política operativa temporal (OP-001)
 
