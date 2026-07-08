@@ -8,6 +8,22 @@ Prompt para investigar un defecto o incidente y determinar la causa raíz real, 
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | análisis |
+| Riesgo esperado | medio — una causa raíz mal identificada puede dirigir mal la remediación, aunque este prompt no ejecuta cambios |
+| Entradas requeridas | logs, código, configuraciones, commits y despliegues recientes; issue o incidente de referencia |
+| Herramientas permitidas | lectura de código, logs e historial git — sin ejecución ni cambios |
+| Autonomía permitida | A0 — Analizar |
+| Criterios de detención | si no se puede confirmar la causa raíz, declarar nivel de confianza y evidencia faltante en vez de forzar una conclusión |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | hipótesis validada contra al menos una fuente de evidencia citada (log, commit o configuración) |
+| Siguiente prompt recomendado | `05-01-plan-implementacion` si la causa raíz requiere cambio de código; `08-03-remediacion-maestro` si ya existe un reporte de revisión estática relacionado |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

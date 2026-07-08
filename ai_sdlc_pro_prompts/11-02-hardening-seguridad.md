@@ -8,6 +8,22 @@ Prompt para analizar el repositorio y la configuración operativa en busca de op
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | seguridad |
+| Riesgo esperado | alto — puede exponer configuración de infraestructura y secretos si se usa sin cuidado |
+| Entradas requeridas | docker-compose, configuración nginx, `.env` (estructura, no valores), workflows, permisos de GitHub |
+| Herramientas permitidas | lectura de configuración e infraestructura — nunca ejecutar cambios de configuración en el mismo paso |
+| Autonomía permitida | A0 — Analizar (solo entrega hallazgos y plan de mitigación, no aplica cambios) |
+| Criterios de detención | nunca incluir valores reales de secretos en la salida, aunque se detecten expuestos; referenciar solo ubicación y tipo |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada hallazgo debe indicar el archivo/componente exacto y la criticidad justificada |
+| Siguiente prompt recomendado | `13-08-gestion-secretos-credenciales` si se detectan credenciales expuestas; `13-03-secure-sdlc-revision` para una revisión más amplia |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

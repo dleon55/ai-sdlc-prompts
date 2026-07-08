@@ -8,6 +8,22 @@ Production-level master prompt to analyze a static review report with critical, 
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | analysis (block 1) and execution (block 2) — explicit two-phase prompt |
+| Expected risk | high — the execution block modifies code, potentially in production |
+| Required inputs | static review report with critical, medium, and minor findings |
+| Allowed tools | block 1: reading code and documentation; block 2: editing files and running local tests, no push/deploy without approval |
+| Permitted autonomy | A1 — Propose (block 1); A2 — Execute controlled (block 2, only after human approval of block 1's plan) |
+| Stop criteria | do not start the execution block without explicit approval of the analysis plan; stop if a proposed change affects system stability without a clear mitigation |
+| Expected output | see `## Expected output` |
+| Minimum evidence | each step of the remediation plan must list file, risk, and associated validation |
+| Recommended next prompt | `07-01-pruebas-unitarias` / `07-02-pruebas-integracion` to validate the applied remediation |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

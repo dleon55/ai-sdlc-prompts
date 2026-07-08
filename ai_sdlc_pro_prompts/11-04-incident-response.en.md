@@ -8,6 +8,22 @@ Prompt to execute the complete incident response process in production: detectio
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | operation |
+| Expected risk | high — coordinates actions on active production, including containment with possible rollback |
+| Required inputs | symptom/alert, affected system, environment, detection time, detection source, stack |
+| Allowed tools | phases 1-3 and 6-7: log/metrics reading only; phase 4 (containment) may require rollback or mitigation, always with approval |
+| Permitted autonomy | A0 — Analyze in phases 1-3 and 6-7; A2 — Execute controlled in phase 4, only if the runbook already authorized the specific action |
+| Stop criteria | the prompt itself requires stopping all AI agent operations in the repository and not deploying code while the incident is active |
+| Expected output | see `## Expected output` |
+| Minimum evidence | timeline with exact time for each phase and responsible actor |
+| Recommended next prompt | `03-02-causa-raiz` for formal analysis if the post-mortem requires additional depth; `11-07-sre-postmortem-runbook` to consolidate lessons learned |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

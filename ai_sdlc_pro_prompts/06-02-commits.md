@@ -8,6 +8,22 @@ Prompt para generar mensajes de commit pequeños, claros y trazables, alineados 
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | documentación |
+| Riesgo esperado | bajo — solo redacta texto sobre un diff ya existente, no ejecuta cambios |
+| Entradas requeridas | issue, tipo de cambio, componente, descripción breve del cambio ya realizado |
+| Herramientas permitidas | ninguna de ejecución — redacción de texto únicamente |
+| Autonomía permitida | A1 — Proponer (el commit/push real lo ejecuta el flujo estándar de git, no este prompt) |
+| Criterios de detención | si el cambio descrito mezcla intenciones no relacionadas, detener y recomendar dividir en commits separados antes de proponer el mensaje final |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | mensaje de commit válido bajo Conventional Commits (ver `CONTRIBUTING.md`) |
+| Siguiente prompt recomendado | ninguno — es el último paso antes de `git push` |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

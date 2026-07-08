@@ -68,6 +68,33 @@ Reglas:
 
 ---
 
+## Contrato editorial de prompts (Agentic Prompt Contract)
+
+Los prompts críticos (`risk:high`/`p0`, seguridad ofensiva, operación en producción, multifase) incluyen, además del formato mínimo de la sección anterior, un bloque `## Contrato editorial` (ES) / `## Editorial Contract` (EN) ubicado inmediatamente después de `## Descripción` / `## Description`.
+
+Es **metadata de proceso para quien decide cuándo y cómo despachar el prompt** (un humano coordinando agentes, o un prompt orquestador como `12-orquestador.md`) — no es un bloque ` ```text ``` ` copiable. `parse_md()` nunca lo ve como candidato a bloque (solo escanea contenido dentro de fences ` ```text ``` `), así que no puede filtrarse al prompt ejecutable ni requiere registrarse en `HEADER_CATEGORY`.
+
+Campos obligatorios del contrato:
+
+| Campo | Qué responde |
+|---|---|
+| **Tipo** | Naturaleza del trabajo: `análisis` / `diseño` / `ejecución` / `validación` / `operación` / `seguridad` / `documentación` |
+| **Riesgo esperado** | `bajo` / `medio` / `alto` — impacto si el resultado es incorrecto o se aplica sin revisión |
+| **Entradas requeridas** | Qué debe existir o proporcionarse antes de ejecutar el prompt |
+| **Herramientas permitidas** | Qué puede tocar el agente (lectura, escritura, ejecución, red) y qué límites aplican |
+| **Autonomía permitida** | Nivel del [Modelo de autonomía](ai_sdlc_pro_prompts/00-framework.md) del framework: `A0` Analizar / `A1` Proponer / `A2` Ejecutar controlado / `A3` Publicar |
+| **Criterios de detención** | Bajo qué condición el agente debe parar y escalar a un humano en vez de continuar |
+| **Salida esperada** | Referencia a la sección `## Salida esperada` / `## Expected output` del propio prompt (no se duplica el contenido) |
+| **Evidencia mínima** | Qué debe poder verificarse en el resultado para considerarlo válido |
+| **Siguiente prompt recomendado** | Con qué prompt de la biblioteca continúa el flujo, si aplica |
+
+Reglas:
+- El contrato es metadata de proceso; no reemplaza ni duplica el contenido del prompt ejecutable ni la sección `## Salida esperada`.
+- ES/EN deben mantener equivalencia funcional en los 9 campos — no requiere traducción palabra por palabra, pero el contenido decisional (riesgo, autonomía, criterios de detención) debe ser el mismo.
+- No es obligatorio para los 75 prompts de una sola vez: se normaliza progresivamente empezando por los prompts críticos. La lista de prompts ya normalizados se documenta en el PR/issue correspondiente, no en un archivo nuevo del repo.
+
+---
+
 ## Flujo de contribución
 
 ```

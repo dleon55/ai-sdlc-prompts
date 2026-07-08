@@ -8,6 +8,22 @@ Prompt para diseñar y ejecutar un análisis dinámico de seguridad (DAST — Dy
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | seguridad |
+| Riesgo esperado | alto — pruebas de inyección activas, aunque en entorno aislado |
+| Entradas requeridas | entorno de pruebas aislado (URL base), stack, tipo de aplicación, mecanismo de autenticación; resultados de `13-04` y `13-01` si existen |
+| Herramientas permitidas | OWASP ZAP, Burp Suite, Nikto, Nuclei, testssl.sh/ssllabs, sqlmap — únicamente contra el entorno de pruebas declarado, nunca producción sin autorización explícita |
+| Autonomía permitida | A2 — Ejecutar controlado, limitado al entorno aislado declarado como entrada |
+| Criterios de detención | nunca ejecutar contra producción sin autorización explícita y documentada; detener si el entorno de pruebas no está confirmado como aislado |
+| Salida esperada | ver `## Resultado esperado` |
+| Evidencia mínima | cada hallazgo con payload/método reproducible y severidad CVSS v3.1 |
+| Siguiente prompt recomendado | `13-06-ethical-hacking-pentesting` para validar explotabilidad end-to-end de los hallazgos críticos; `08-03-remediacion-maestro` para planificar la remediación |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

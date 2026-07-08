@@ -8,6 +8,22 @@ Prompt to investigate a defect or incident and determine the real root cause, no
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | analysis |
+| Expected risk | medium — a wrongly identified root cause can misdirect remediation, although this prompt does not execute changes |
+| Required inputs | logs, code, configurations, recent commits and deployments; reference issue or incident |
+| Allowed tools | reading of code, logs, and git history — no execution or changes |
+| Permitted autonomy | A0 — Analyze |
+| Stop criteria | if the root cause cannot be confirmed, state confidence level and missing evidence instead of forcing a conclusion |
+| Expected output | see `## Expected output` |
+| Minimum evidence | hypothesis validated against at least one cited evidence source (log, commit, or configuration) |
+| Recommended next prompt | `05-01-plan-implementacion` if the root cause requires a code change; `08-03-remediacion-maestro` if a related static review report already exists |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

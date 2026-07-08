@@ -8,6 +8,22 @@ Prompt para ejecutar el proceso completo de respuesta a incidentes en producció
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | operación |
+| Riesgo esperado | alto — coordina acciones sobre producción activa, incluida contención con posible rollback |
+| Entradas requeridas | síntoma/alerta, sistema afectado, ambiente, hora de detección, fuente de detección, stack |
+| Herramientas permitidas | fases 1-3 y 6-7: solo lectura de logs/métricas; fase 4 (contención) puede requerir rollback o mitigación, siempre con aprobación |
+| Autonomía permitida | A0 — Analizar en fases 1-3 y 6-7; A2 — Ejecutar controlado en fase 4, solo si el runbook ya autorizó la acción específica |
+| Criterios de detención | el propio prompt exige detener toda operación de agentes IA en el repositorio y no desplegar código mientras el incidente esté activo |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cronología con hora exacta de cada fase y actor responsable |
+| Siguiente prompt recomendado | `03-02-causa-raiz` para el análisis formal si el post-mortem requiere profundidad adicional; `11-07-sre-postmortem-runbook` para consolidar lecciones aprendidas |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

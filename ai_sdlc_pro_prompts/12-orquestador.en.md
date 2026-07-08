@@ -8,6 +8,22 @@ Prompt that classifies an assignment and selects the minimum sufficient flow to 
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | operation (routing meta-prompt — does not execute technical work directly) |
+| Expected risk | variable — depends on the assignment being routed; the prompt itself requires declaring risk and reversibility as part of classification |
+| Required inputs | issue/requirement, target branch, environment, components, permitted autonomy level, available tools, budget |
+| Allowed tools | whatever the execution contract generated in Step 3 declares — assumes no tools by default |
+| Permitted autonomy | dynamically defined by the prompt itself (Step 3, "Create contract"); must never exceed the declared input autonomy level |
+| Stop criteria | "Do not execute all phases by default"; escalate to a human when risk or permission exceeds the generated contract |
+| Expected output | see `## Patterns and expected deliverables` and the prompt's mandatory 8-point output format |
+| Minimum evidence | explicit execution contract (scope, tools, checkpoints, stop condition) before delegating any subtask |
+| Recommended next prompt | whatever the execution contract itself determines — this prompt is the entry point, not the exit |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

@@ -8,6 +8,22 @@ Prompt para auditar los workflows del repositorio y verificar si cubren adecuada
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | análisis |
+| Riesgo esperado | medio — no modifica workflows directamente, solo audita y recomienda |
+| Entradas requeridas | contenido de `.github/workflows/`, README de CI/CD |
+| Herramientas permitidas | lectura de archivos de workflow — sin ejecución de jobs ni cambios al pipeline |
+| Autonomía permitida | A0 — Analizar |
+| Criterios de detención | si un workflow referencia secretos o permisos no inspeccionables sin acceso a la configuración del repositorio, documentarlo como brecha de visibilidad en vez de asumir su estado |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada brecha reportada debe citar el archivo de workflow y el job específico |
+| Siguiente prompt recomendado | `11-02-hardening-seguridad` si se detectan brechas de seguridad en el pipeline |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.
