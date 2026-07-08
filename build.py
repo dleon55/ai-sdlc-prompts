@@ -1779,20 +1779,21 @@ function toggleSidebar() {
 
 // Registro único de variables: campo persistente, aliases y obligatoriedad.
 var TOKEN_REGISTRY = {
-  repositorio: { required: true, aliases: ['NOMBRE O URL', 'ORG/REPO', 'NOMBRE O URL DEL REPOSITORIO', 'NAME OR URL', 'REPO', 'ORG/USER'] },
+  repositorio: { required: true, aliases: ['NOMBRE O URL', 'ORG/REPO', 'NOMBRE O URL DEL REPOSITORIO', 'NAME OR URL', 'REPO', 'ORG/USER', 'NOMBRE DEL PROYECTO', 'PROJECT NAME'] },
   referencia:  { required: true, aliases: ['REFERENCIA', 'REFERENCE', 'PEGAR TEXTO O REFERENCIA', 'PEGAR TEXTO COMPLETO',
                  'PEGAR LISTA DE INCIDENTES', 'PEGAR REPORTE', 'PEGAR', 'REFERENCE TO ISSUE OR PR',
                  'REFERENCIA AL ISSUE O PR', 'PASTE', 'PEGAR TEXTO...', 'PASTE TEXT OR REFERENCE', 'NUMBER OR REFERENCE', 'PROBLEM DESCRIPTION', 'INCIDENT DESCRIPTION'] },
   rama_actual: { required: false, aliases: ['RAMA ACTUAL', 'CURRENT BRANCH', 'RAMA CON LOS CAMBIOS', 'RAMA EN PRUEBAS',
                  'RAMA AFECTADA', 'RAMA DE TRABAJO', 'RAMA DE PRUEBAS', 'BRANCH WITH CHANGES',
-                 'BRANCH IN TESTING', 'WORKING BRANCH', 'BRANCH', 'BRANCH TO ANALYZE', 'RAMA A ANALIZAR', 'AFFECTED BRANCH'] },
+                 'BRANCH IN TESTING', 'WORKING BRANCH', 'BRANCH', 'BRANCH TO ANALYZE', 'RAMA A ANALIZAR', 'AFFECTED BRANCH',
+                 'RAMA', 'TEST BRANCH', 'BRANCH IN TEST'] },
   rama_destino:{ required: false, aliases: ['RAMA OBJETIVO', 'TARGET BRANCH', 'RAMA PRINCIPAL', 'RAMA INTEGRADA',
                  'RAMA DESTINO', 'RAMA DE RELEASE', 'DEVELOP / MAIN / RELEASE', 'RELEASE BRANCH',
                  'INTEGRATED BRANCH', 'MAIN BRANCH', 'MAIN/DEVELOP', 'PR OR INTEGRATION BRANCH'] },
   ambiente:    { required: false, aliases: ['DEV / QA / PROD', 'ENVIRONMENT', 'QA / STAGING', 'QA / STAGING / PROD',
                  'DEV / QA / STAGING / PROD', 'PROD / STAGING', 'DEV / QA',
                  'URL DEL AMBIENTE', 'ENVIRONMENT URL', 'URL DE QA O STAGING', 'DEV / QA / STAGING',
-                 'QA OR STAGING URL', 'DEV / STAGING / PROD', 'AMBIENTE'] },
+                 'QA OR STAGING URL', 'DEV / STAGING / PROD', 'AMBIENTE', 'LOCAL / DEV / QA / PROD'] },
   componentes: { required: false, aliases: ['COMPONENTES INVOLUCRADOS', 'INVOLVED COMPONENTS', 'COMPONENTES MODIFICADOS',
                  'COMPONENTES A MODIFICAR', 'COMPONENTES REVISADOS',
                  'RUTAS DE ARCHIVOS MODIFICADOS', 'FUNCIONES O UNIDADES A PROBAR',
@@ -1800,7 +1801,7 @@ var TOKEN_REGISTRY = {
                  'MODIFIED COMPONENTS', 'FILES AND MODULES TO MODIFY', 'AFFECTED MODULE OR FILE', 'DIRECTORY/PACKAGE', 'DIRECTORIO/PAQUETE'] },
   modulo:      { required: false, aliases: ['NOMBRE DEL PROCESO', 'PROCESS NAME', 'MODULE OR FUNCTIONALITY',
                  'MÓDULO O FUNCIONALIDAD', 'MODULO O FUNCIONALIDAD', 'MODULO', 'MODULE'] },
-  stack:       { required: false, aliases: ['STACK', 'STACK TECNOLÓGICO', 'STACK PRINCIPAL',
+  stack:       { required: false, aliases: ['STACK', 'STACK TECNOLÓGICO', 'STACK PRINCIPAL', 'TECH STACK',
                  'ej. Python + FastAPI + PostgreSQL / Node + React + MongoDB / etc.',
                  'ej: Python 3.11 + FastAPI + PostgreSQL + Docker'] },
   tipo_proyecto: { required: false, aliases: ['TIPO DE PROYECTO', 'PROJECT TYPE',
@@ -1812,7 +1813,8 @@ var TOKEN_REGISTRY = {
                  'BRANCHING STRATEGY'] },
   agentes:     { required: false, aliases: ['LISTA DE AGENTES', 'AI AGENTS', 'AGENTES A CONFIGURAR', 'AGENTES ACTIVOS',
                  'Copilot / Claude / Codex / Windsurf / Cursor / Antigravity',
-                 'GitHub Copilot / Claude / Windsurf / Cursor / Codex / Antigravity / combinación', 'LIST OF AGENTS'] },
+                 'GitHub Copilot / Claude / Windsurf / Cursor / Codex / Antigravity / combinación', 'LIST OF AGENTS',
+                 'AGENT LIST', 'AGENTS TO CONFIGURE'] },
   autonomia:   { required: false, aliases: ['NIVEL DE AUTONOMÍA', 'AUTONOMY LEVEL',
                   'solo análisis / análisis + propuesta / ejecución controlada / ejecución autónoma',
                   'BAJO / MEDIO / ALTO', 'LOW / MEDIUM / HIGH', 'A0 / A1 / A2 / A3'] },
@@ -3557,7 +3559,6 @@ def build():
         '</select>'
         '<div class="var-tags">'
         '<span class="var-tag"><span class="fw-lang-es">[TIPO DE PROYECTO]</span><span class="fw-lang-en">[PROJECT TYPE]</span></span>'
-        '<span class="var-tag"><span class="fw-lang-es">[TIPO]</span><span class="fw-lang-en">[TYPE]</span></span>'
         '</div>'
         '</div>\n'
 
@@ -3610,7 +3611,6 @@ def build():
         '</select>'
         '<div class="var-tags">'
         '<span class="var-tag"><span class="fw-lang-es">[NIVEL DE AUTONOMÍA]</span><span class="fw-lang-en">[AUTONOMY LEVEL]</span></span>'
-        '<span class="var-tag"><span class="fw-lang-es">[NIVEL]</span><span class="fw-lang-en">[LEVEL]</span></span>'
         '</div>'
         '</div>\n'
 

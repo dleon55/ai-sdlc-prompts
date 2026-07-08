@@ -8898,10 +8898,10 @@ Generate a structured defect report form with the following sections:
     <div class="var-group" data-field="modulo"><label for="vf-modulo"><span class="fw-lang-es">Módulo / proceso / indicación</span><span class="fw-lang-en">Module / process / indication</span></label><input id="vf-modulo" type="text" placeholder="" oninput="syncProjectFromPanel();updateVarsBadge();"><div class="var-tags"><span class="var-tag"><span class="fw-lang-es">[NOMBRE DEL PROCESO]</span><span class="fw-lang-en">[PROCESS NAME]</span></span><span class="var-tag"><span class="fw-lang-es">[MODULO]</span><span class="fw-lang-en">[MODULE]</span></span></div></div>
     <div style="margin:.2rem 0 .1rem;font-size:.6rem;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.1em;border-top:1px solid var(--bdr);padding-top:.65rem;">⚙ <span class="fw-lang-es">Stack &amp; Agentes IA</span><span class="fw-lang-en">Stack &amp; AI Agents</span></div>
     <div class="var-group" data-field="stack"><label for="vf-stack"><span class="fw-lang-es">Stack tecnológico</span><span class="fw-lang-en">Tech stack</span></label><input id="vf-stack" type="text" placeholder="" oninput="syncProjectFromPanel();updateVarsBadge();"><div class="var-tags"><span class="var-tag"><span class="fw-lang-es">[STACK]</span><span class="fw-lang-en">[STACK]</span></span><span class="var-tag"><span class="fw-lang-es">[STACK TECNOLÓGICO]</span><span class="fw-lang-en">[TECH STACK]</span></span></div></div>
-    <div class="var-group" data-field="tipo_proyecto"><label for="vf-tipo-proyecto"><span class="fw-lang-es">Tipo de proyecto</span><span class="fw-lang-en">Project type</span></label><select id="vf-tipo-proyecto" onchange="syncProjectFromPanel();updateVarsBadge();"><option value="">-- seleccionar --</option><option>frontend SPA</option><option>API REST</option><option>full-stack</option><option>microservicio</option><option>monorepo</option><option>librería</option><option>data science</option><option>IaC</option><option>otro</option></select><div class="var-tags"><span class="var-tag"><span class="fw-lang-es">[TIPO DE PROYECTO]</span><span class="fw-lang-en">[PROJECT TYPE]</span></span><span class="var-tag"><span class="fw-lang-es">[TIPO]</span><span class="fw-lang-en">[TYPE]</span></span></div></div>
+    <div class="var-group" data-field="tipo_proyecto"><label for="vf-tipo-proyecto"><span class="fw-lang-es">Tipo de proyecto</span><span class="fw-lang-en">Project type</span></label><select id="vf-tipo-proyecto" onchange="syncProjectFromPanel();updateVarsBadge();"><option value="">-- seleccionar --</option><option>frontend SPA</option><option>API REST</option><option>full-stack</option><option>microservicio</option><option>monorepo</option><option>librería</option><option>data science</option><option>IaC</option><option>otro</option></select><div class="var-tags"><span class="var-tag"><span class="fw-lang-es">[TIPO DE PROYECTO]</span><span class="fw-lang-en">[PROJECT TYPE]</span></span></div></div>
     <div class="var-group" data-field="metodologia"><label for="vf-metodologia"><span class="fw-lang-es">Metodologías / proceso / branching</span><span class="fw-lang-en">Methodologies / process / branching</span></label><select id="vf-metodologia" multiple data-other-input="vf-metodologia-other" aria-describedby="vf-metodologia-help" onchange="syncMultiSelectOther('vf-metodologia')"><option value="Scrum">Scrum</option><option value="Kanban">Kanban</option><option value="RUP">RUP</option><option value="Cascada">Cascada / Waterfall</option><option value="Espiral">Espiral / Spiral</option><option value="XP">XP</option><option value="Lean">Lean</option><option value="SAFe">SAFe</option><option value="DevOps">DevOps</option><option value="DevSecOps">DevSecOps</option><option value="Trunk-Based Development">Trunk-Based Development</option><option value="GitHub Flow">GitHub Flow</option><option value="GitFlow">GitFlow</option><option value="__OTHER__">Otro / Other...</option></select><small class="var-help" id="vf-metodologia-help"><span class="fw-lang-es">Permite combinar metodología, proceso y estrategia de ramas.</span><span class="fw-lang-en">Allows combining methodology, process and branching strategy.</span></small><input id="vf-metodologia-other" class="var-other-input" type="text" hidden placeholder="Otra metodología o proceso" oninput="syncProjectFromPanel();updateVarsBadge();"><div class="var-tags"><span class="var-tag"><span class="fw-lang-es">[METODOLOGÍA]</span><span class="fw-lang-en">[METHODOLOGY]</span></span><span class="var-tag"><span class="fw-lang-es">[BRANCHING STRATEGY]</span><span class="fw-lang-en">[BRANCHING STRATEGY]</span></span></div></div>
     <div class="var-group" data-field="agentes"><label for="vf-agentes"><span class="fw-lang-es">Agentes IA activos</span><span class="fw-lang-en">Active AI agents</span></label><input id="vf-agentes" type="text" placeholder="" oninput="syncProjectFromPanel();updateVarsBadge();"><div class="var-tags"><span class="var-tag"><span class="fw-lang-es">[LISTA DE AGENTES]</span><span class="fw-lang-en">[AGENT LIST]</span></span><span class="var-tag"><span class="fw-lang-es">[AGENTES A CONFIGURAR]</span><span class="fw-lang-en">[AGENTS TO CONFIGURE]</span></span></div></div>
-    <div class="var-group" data-field="autonomia"><label for="vf-autonomia"><span class="fw-lang-es">Nivel de autonomía IA</span><span class="fw-lang-en">AI autonomy level</span></label><select id="vf-autonomia" onchange="syncProjectFromPanel();updateVarsBadge();"><option value="">-- seleccionar --</option><option>solo análisis</option><option>análisis + propuesta</option><option>ejecución controlada</option><option>ejecución autónoma</option></select><div class="var-tags"><span class="var-tag"><span class="fw-lang-es">[NIVEL DE AUTONOMÍA]</span><span class="fw-lang-en">[AUTONOMY LEVEL]</span></span><span class="var-tag"><span class="fw-lang-es">[NIVEL]</span><span class="fw-lang-en">[LEVEL]</span></span></div></div>
+    <div class="var-group" data-field="autonomia"><label for="vf-autonomia"><span class="fw-lang-es">Nivel de autonomía IA</span><span class="fw-lang-en">AI autonomy level</span></label><select id="vf-autonomia" onchange="syncProjectFromPanel();updateVarsBadge();"><option value="">-- seleccionar --</option><option>solo análisis</option><option>análisis + propuesta</option><option>ejecución controlada</option><option>ejecución autónoma</option></select><div class="var-tags"><span class="var-tag"><span class="fw-lang-es">[NIVEL DE AUTONOMÍA]</span><span class="fw-lang-en">[AUTONOMY LEVEL]</span></span></div></div>
   </div>
   <div class="var-panel-footer"><button class="var-apply-btn" id="var-apply-btn" onclick="closeVarPanel(); flash(this)"><span class="fw-lang-es">&#10003; Listo</span><span class="fw-lang-en">&#10003; Done</span></button><button class="var-clear-btn" onclick="clearVars()"><span class="fw-lang-es">Limpiar</span><span class="fw-lang-en">Clear</span></button></div>
 </div>
@@ -9398,20 +9398,21 @@ function toggleSidebar() {
 
 // Registro único de variables: campo persistente, aliases y obligatoriedad.
 var TOKEN_REGISTRY = {
-  repositorio: { required: true, aliases: ['NOMBRE O URL', 'ORG/REPO', 'NOMBRE O URL DEL REPOSITORIO', 'NAME OR URL', 'REPO', 'ORG/USER'] },
+  repositorio: { required: true, aliases: ['NOMBRE O URL', 'ORG/REPO', 'NOMBRE O URL DEL REPOSITORIO', 'NAME OR URL', 'REPO', 'ORG/USER', 'NOMBRE DEL PROYECTO', 'PROJECT NAME'] },
   referencia:  { required: true, aliases: ['REFERENCIA', 'REFERENCE', 'PEGAR TEXTO O REFERENCIA', 'PEGAR TEXTO COMPLETO',
                  'PEGAR LISTA DE INCIDENTES', 'PEGAR REPORTE', 'PEGAR', 'REFERENCE TO ISSUE OR PR',
                  'REFERENCIA AL ISSUE O PR', 'PASTE', 'PEGAR TEXTO...', 'PASTE TEXT OR REFERENCE', 'NUMBER OR REFERENCE', 'PROBLEM DESCRIPTION', 'INCIDENT DESCRIPTION'] },
   rama_actual: { required: false, aliases: ['RAMA ACTUAL', 'CURRENT BRANCH', 'RAMA CON LOS CAMBIOS', 'RAMA EN PRUEBAS',
                  'RAMA AFECTADA', 'RAMA DE TRABAJO', 'RAMA DE PRUEBAS', 'BRANCH WITH CHANGES',
-                 'BRANCH IN TESTING', 'WORKING BRANCH', 'BRANCH', 'BRANCH TO ANALYZE', 'RAMA A ANALIZAR', 'AFFECTED BRANCH'] },
+                 'BRANCH IN TESTING', 'WORKING BRANCH', 'BRANCH', 'BRANCH TO ANALYZE', 'RAMA A ANALIZAR', 'AFFECTED BRANCH',
+                 'RAMA', 'TEST BRANCH', 'BRANCH IN TEST'] },
   rama_destino:{ required: false, aliases: ['RAMA OBJETIVO', 'TARGET BRANCH', 'RAMA PRINCIPAL', 'RAMA INTEGRADA',
                  'RAMA DESTINO', 'RAMA DE RELEASE', 'DEVELOP / MAIN / RELEASE', 'RELEASE BRANCH',
                  'INTEGRATED BRANCH', 'MAIN BRANCH', 'MAIN/DEVELOP', 'PR OR INTEGRATION BRANCH'] },
   ambiente:    { required: false, aliases: ['DEV / QA / PROD', 'ENVIRONMENT', 'QA / STAGING', 'QA / STAGING / PROD',
                  'DEV / QA / STAGING / PROD', 'PROD / STAGING', 'DEV / QA',
                  'URL DEL AMBIENTE', 'ENVIRONMENT URL', 'URL DE QA O STAGING', 'DEV / QA / STAGING',
-                 'QA OR STAGING URL', 'DEV / STAGING / PROD', 'AMBIENTE'] },
+                 'QA OR STAGING URL', 'DEV / STAGING / PROD', 'AMBIENTE', 'LOCAL / DEV / QA / PROD'] },
   componentes: { required: false, aliases: ['COMPONENTES INVOLUCRADOS', 'INVOLVED COMPONENTS', 'COMPONENTES MODIFICADOS',
                  'COMPONENTES A MODIFICAR', 'COMPONENTES REVISADOS',
                  'RUTAS DE ARCHIVOS MODIFICADOS', 'FUNCIONES O UNIDADES A PROBAR',
@@ -9419,7 +9420,7 @@ var TOKEN_REGISTRY = {
                  'MODIFIED COMPONENTS', 'FILES AND MODULES TO MODIFY', 'AFFECTED MODULE OR FILE', 'DIRECTORY/PACKAGE', 'DIRECTORIO/PAQUETE'] },
   modulo:      { required: false, aliases: ['NOMBRE DEL PROCESO', 'PROCESS NAME', 'MODULE OR FUNCTIONALITY',
                  'MÓDULO O FUNCIONALIDAD', 'MODULO O FUNCIONALIDAD', 'MODULO', 'MODULE'] },
-  stack:       { required: false, aliases: ['STACK', 'STACK TECNOLÓGICO', 'STACK PRINCIPAL',
+  stack:       { required: false, aliases: ['STACK', 'STACK TECNOLÓGICO', 'STACK PRINCIPAL', 'TECH STACK',
                  'ej. Python + FastAPI + PostgreSQL / Node + React + MongoDB / etc.',
                  'ej: Python 3.11 + FastAPI + PostgreSQL + Docker'] },
   tipo_proyecto: { required: false, aliases: ['TIPO DE PROYECTO', 'PROJECT TYPE',
@@ -9431,7 +9432,8 @@ var TOKEN_REGISTRY = {
                  'BRANCHING STRATEGY'] },
   agentes:     { required: false, aliases: ['LISTA DE AGENTES', 'AI AGENTS', 'AGENTES A CONFIGURAR', 'AGENTES ACTIVOS',
                  'Copilot / Claude / Codex / Windsurf / Cursor / Antigravity',
-                 'GitHub Copilot / Claude / Windsurf / Cursor / Codex / Antigravity / combinación', 'LIST OF AGENTS'] },
+                 'GitHub Copilot / Claude / Windsurf / Cursor / Codex / Antigravity / combinación', 'LIST OF AGENTS',
+                 'AGENT LIST', 'AGENTS TO CONFIGURE'] },
   autonomia:   { required: false, aliases: ['NIVEL DE AUTONOMÍA', 'AUTONOMY LEVEL',
                   'solo análisis / análisis + propuesta / ejecución controlada / ejecución autónoma',
                   'BAJO / MEDIO / ALTO', 'LOW / MEDIUM / HIGH', 'A0 / A1 / A2 / A3'] },
