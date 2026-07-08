@@ -50,6 +50,12 @@ Activities:
 3. Evaluate if the proposed change introduces unnecessary coupling.
 4. Design an import relationship matrix.
 
+Constraints:
+- don't run the build, install dependencies, or execute any monorepo scripts — the analysis is strictly read-only over configuration and source code,
+- if the configuration files are not accessible or are ambiguous, state the graph as incomplete instead of assuming unverified dependency relationships,
+- every reported local dependency (direct, transitive, or circular) must reference the exact configuration file where it is declared,
+- don't flag a coupling as "requires isolation" without concrete graph evidence — avoid speculative conclusions about build impact.
+
 Output:
 1. Dependency Graph Mapping (workspaces involved)
 2. Potential Cycles and Conflicts Analysis
@@ -74,3 +80,15 @@ Use the monorepo dependency audit prompt and adapt it to:
 - specific output objective: dependency graph with local impact matrix
 - depth level: high
 ```
+
+---
+
+## Expected output
+
+| Workspace | Depends on (local) | Dependency type | Key external dependency | Risk / Note |
+|---|---|---|---|---|
+| apps/web | @repo/ui, @repo/utils | runtime | react, next | low |
+| apps/api | @repo/shared, @repo/db | runtime | express, prisma | medium — @repo/shared also imports from apps/api (cycle detected) |
+| packages/shared | @repo/utils | runtime | zod | low |
+| packages/ui | — | runtime | react | low |
+| packages/db | @repo/utils | dev + runtime | prisma, pg | low |

@@ -50,6 +50,12 @@ Actividades:
 2. Identifica no conformidades y desviaciones.
 3. Evalúa si el código cumple con las directrices de seguridad de la información del proyecto (ISO 27001).
 
+Restricciones:
+- no emitas veredicto "Aprobado" si falta trazabilidad bidireccional completa entre requerimiento, diseño, código y pruebas,
+- ante cualquier no conformidad detectada sin evidencia de mitigación, marca el veredicto como "Rechazado" o "Aprobado con Reservas" — nunca "Aprobado" por omisión o duda,
+- no ejecutes pruebas ni modifiques el repositorio — la auditoría es exclusivamente de lectura sobre artefactos y documentación existentes,
+- cada no conformidad reportada debe referenciar el artefacto o control específico incumplido junto con la acción de remediación obligatoria asociada.
+
 Salida:
 1. Reporte de Cumplimiento Normativo (Checklist Aprobado/Faltante)
 2. Matriz de Trazabilidad de Requerimiento a Pruebas
@@ -74,3 +80,17 @@ Usa el prompt de auditoría de cumplimiento ISO/MOPROSOFT y adáptalo a:
 - objetivo puntual de salida: reporte formal de auditoría de liberación y trazabilidad
 - nivel de profundidad: alto
 ```
+
+---
+
+## Salida esperada
+
+| Control | Estándar | Estado | Evidencia | Acción de remediación |
+|---|---|---|---|---|
+| Requerimiento mapeado a diseño técnico (ADR) | ISO 29110 §Diseño | Cumple | ADR-042 referenciado en issue #128 | — |
+| Trazabilidad requerimiento-código-pruebas | MOPROSOFT DS.3 | No cumple | Sin matriz de trazabilidad para el módulo de pagos | Generar matriz de trazabilidad antes de liberar |
+| Pruebas de verificación (unitarias/integración) | ISO 29110 §Construcción | Cumple parcialmente | Cobertura unitaria 68%, sin pruebas de integración | Completar pruebas de integración del flujo de pago |
+| Memoria técnica del cambio | MOPROSOFT ASEG | No cumple | No se encontró documento de memoria técnica | Redactar memoria técnica y anexarla al release |
+| Cumplimiento de seguridad de la información (ISO 27001) | ISO 27001 | Cumple | Escaneo SAST sin hallazgos críticos | — |
+
+**Veredicto final:** Aprobado con Reservas — la liberación puede continuar únicamente tras generar la matriz de trazabilidad y completar las pruebas de integración faltantes.

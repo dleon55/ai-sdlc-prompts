@@ -36,14 +36,20 @@ Prompt para redactar las notas de release o changelog de un cambio con enfoque t
 Objetivo:
 Redacta las notas de release o changelog del cambio con enfoque técnico y funcional.
 
-Incluye:
-- resumen del cambio,
-- módulos impactados,
-- correcciones,
-- mejoras,
-- riesgos,
-- consideraciones de despliegue,
-- notas de compatibilidad.
+Pasos:
+1. Recopila los commits y PRs mergeados dentro del período o versión declarada, filtrando por la rama de release.
+2. Clasifica cada entrada en corrección, mejora, cambio interno (sin impacto de usuario) o breaking change; descarta del changelog visible los commits puramente de mantenimiento (formateo, dependencias menores) salvo que tengan impacto de seguridad.
+3. Redacta el resumen ejecutivo primero (2-4 frases), orientado a quien lee el release sin contexto técnico previo.
+4. Para cada corrección o mejora, describe el impacto observable para el usuario o integrador (no solo el título técnico del commit) y enlaza el número de PR o commit.
+5. Identifica los módulos impactados agrupando por área funcional, priorizando los que tocan contratos públicos (API, CLI, esquema de datos) sobre cambios puramente internos.
+6. Si detectas un cambio que rompe compatibilidad, documenta la nota de migración explícita (qué debe hacer quien actualiza) antes de dar el changelog por completo; si no existe esa nota, detente y solicítala.
+7. Añade consideraciones de despliegue: variables nuevas, migraciones a ejecutar y orden de despliegue si hay dependencias entre servicios.
+
+Restricciones:
+- cada entrada del changelog debe ser trazable a un commit o PR real dentro del período declarado; no incluyas cambios fuera de ese rango,
+- no publiques el changelog ni crees el tag — la publicación efectiva es una acción A3 separada y explícita,
+- si detectas breaking changes sin nota de migración clara, detente y solicita esa información antes de entregar el changelog como completo,
+- no mezcles lenguaje de marketing con el reporte técnico: describe el impacto real, sin exagerar beneficios ni ocultar riesgos conocidos.
 ```
 
 ---
@@ -75,10 +81,10 @@ Usa el prompt de release/changelog y adáptalo a:
 
 | Sección | Contenido |
 |---|---|
-| Resumen | Descripción ejecutiva del release |
-| Correcciones (fixes) | Bugs y defectos corregidos |
-| Mejoras (features) | Funcionalidades nuevas o mejoradas |
-| Módulos impactados | Lista de módulos con cambios |
-| Riesgos | Riesgos conocidos en esta versión |
-| Notas de despliegue | Pasos especiales, migraciones, variables nuevas |
-| Compatibilidad | Cambios que rompen compatibilidad (breaking changes) |
+| Resumen | v2.3.0 introduce rate limiting por usuario en la API de pedidos para prevenir abuso, corrige el timeout intermitente en `POST /payments` y actualiza la librería de autenticación por una vulnerabilidad de severidad media |
+| Correcciones (fixes) | `POST /payments` ya no expira bajo carga concurrente alta (PR #498); corregido el cálculo de impuestos con descuentos combinados (PR #495) |
+| Mejoras (features) | Nuevo rate limiting configurable por usuario en `POST /orders`, 100 req/min por defecto (PR #501) |
+| Módulos impactados | `orders-api`, `payments-service`, `auth-lib` (bump v3.4.1 → v3.4.2) |
+| Riesgos | Usuarios con integraciones que hacen ráfagas legítimas > 100 req/min pueden recibir 429 (mitigado documentando la cabecera `Retry-After`) |
+| Notas de despliegue | Configurar `RATE_LIMIT_WINDOW_MS` en producción antes del despliegue; ejecutar la migración `2026_07_08_add_rate_limit_table` antes de desplegar `orders-api` |
+| Compatibilidad | Sin breaking changes en esta versión; `auth-lib` v3.4.2 es compatible hacia atrás con v3.4.x |

@@ -36,18 +36,25 @@ Prompt to elaborate an executable and traceable implementation plan: previous ac
 Objective:
 Elaborate a detailed, executable and traceable implementation plan for the proposed solution.
 
-Include:
-0. Start with a Task Metadata JSON Block (keys: status, task_count, impacted_components, estimated_hours).
-1. previous activities,
-2. changes by component,
-3. data adjustments or migrations,
-4. required tests,
-5. environment validations,
-6. branch integration,
-7. deployment,
-8. rollback,
-9. expected evidence,
-10. PSP/TSP Metrics Log (Estimated design time in minutes, estimated coding time in minutes, and projected defects count).
+Steps:
+0. Start with a parser-friendly JSON metadata block (keys: status, task_count, impacted_components, estimated_hours) — this lets orchestration tools or CI read the plan without re-interpreting free text.
+1. List the previous activities needed before touching code (access grants, branch creation, backups, feature flags, stakeholder notice).
+2. Detail the changes by component, at the same scope and granularity as the approved design (`04-01`) — if you add a component the design did not cover, flag it explicitly as a deviation instead of including it without comment.
+3. Specify the required data adjustments or migrations, stating whether they are reversible and what happens to existing data during and after the migration.
+4. Define the tests required per step (unit, integration, E2E, performance), prioritizing those that cover the change's critical path over peripheral cases if QA time is limited.
+5. Define the validations to run in each environment (dev/QA/staging) before promoting the change to the next one, and what result gates the move to the following environment.
+6. Describe the branch integration strategy: merge order, expected conflict resolution, and who approves each integration.
+7. Detail the deployment: deployment order by component, maintenance windows if applicable, and who executes each step.
+8. Detail the rollback per step — if a step has no possible rollback, state that explicitly instead of omitting it or assuming it won't be needed.
+9. Define the expected evidence per step (logs, screenshots, test results, metrics) that verifiably demonstrates the step was completed.
+10. Close with the PSP/TSP Metrics Log: estimated design time in minutes, estimated coding time in minutes, and projected defect count, to later compare against the actuals.
+
+Constraints:
+- do not execute commands or modify the repository or environment — this prompt produces the plan as a document; executing, committing, or deploying requires explicit approval and a separate prompt,
+- do not leave any step (1 to 9) without a declared dependency, risk, or expected evidence; if one of those fields does not apply, say so explicitly instead of leaving it blank,
+- if any step requires a production environment, flag it explicitly and do not mix it with dev/QA/staging steps,
+- if there is no approved design (`04-01`) to start from, stop and request it — do not derive the plan from your own assumptions,
+- the JSON metadata block must be valid and parser-friendly (no comments, no missing keys) — do not replace it with a free-text description.
 
 Format for steps 1 to 9:
 | Step | Activity | Component | Dependency | Risk | Expected evidence |
@@ -75,6 +82,7 @@ Use the implementation plan prompt and adapt it to:
 
 | Section / Step | Activity | Component | Dependency | Risk | Expected evidence |
 |---|---|---|---|---|---|
-| JSON Metadata (0) | Structured and parser-friendly JSON block containing plan metadata | - | - | - | - |
-| Steps 1 to 9 | Structured table listing implementation and rollback activities | - | - | - | - |
-| PSP/TSP Metrics (10) | Logging block for estimated design/coding times and projected defect rate | - | - | - | - |
+| JSON Metadata (0) | `{"status":"planned","task_count":6,"impacted_components":["build.py","tests/test_i18n.py"],"estimated_hours":6}` | - | - | - | - |
+| Step 2 — Changes by component | Add a `check_i18n_parity()` function in `build.py` that compares `##` headers between each `.md` file and its `.en.md` counterpart | `build.py` | Design approved in `04-01` | False positives from minor cross-language formatting differences | Passing unit test in `tests/test_i18n.py` + build log showing the check ran |
+| Step 8 — Rollback | Revert the commit that adds the check; the build goes back to generating `index.html` without the parity validation | `build.py` | Step 2 completed | Low — isolated change in a single script, no data impact | Post-revert build run whose log no longer includes the validation step |
+| PSP/TSP Metrics (10) | Design: 45 min · Coding: 180 min · Projected defects: 1 | - | - | - | - |
