@@ -13,45 +13,54 @@ import i18n_strings
 PROMPTS_DIR = Path(__file__).parent / "ai_sdlc_pro_prompts"
 OUTPUT_FILE = Path(__file__).parent / "index.html"
 
+def _is_deprecated_or_empty(content):
+    """Contenido vacío/insuficiente o marcado DEPRECATED: no debe contarse
+    ni renderizarse como prompt real (ni en TOTAL_PROMPTS ni en build())."""
+    return len(content.strip()) < 20 or "DEPRECATED" in content
+
+
 def count_prompts():
     count = 0
     for f in PROMPTS_DIR.glob("*.md"):
         # Ignorar traducciones, el framework base y archivos vacíos/deprecados
         if f.name.endswith(".en.md") or f.name == "00-framework.md":
             continue
-        
-        # Validar contenido mínimo y que no esté deprecado
-        content = f.read_text(encoding="utf-8")
-        if len(content.strip()) < 20 or "DEPRECATED" in content:
+
+        if _is_deprecated_or_empty(f.read_text(encoding="utf-8")):
             continue
-            
+
+        # Mismo filtro de sección reconocida que aplica el loop de build():
+        # si el prefijo no está en SECTION_META, build() nunca renderiza
+        # ese archivo como card, así que tampoco debe contarse aquí.
+        sk = f.stem.split("-")[0]
+        if sk not in SECTION_META:
+            continue
+
         count += 1
     return count
 
-TOTAL_PROMPTS = count_prompts()
-
-# (etiqueta, clave-icono)
+# Prefijo de sección -> clave de icono. Los labels mostrados en UI vienen
+# de i18n_strings.SECTION_LABELS_I18N (bilingüe), no de aquí.
 SECTION_META = {
-    "00": ("Framework base",              "framework"),
-    "01": ("Comprension del repositorio", "repo"),
-    "02": ("Analisis",                    "analysis"),
-    "03": ("Incidentes",                  "bug"),
-    "04": ("Diseno de solucion",          "design"),
-    "05": ("Plan de implementacion",      "plan"),
-    "06": ("Ejecucion",                   "code"),
-    "07": ("Pruebas",                     "test"),
-    "08": ("Revision y remediacion",      "review"),
-    "09": ("Integracion y CI/CD",         "ci"),
-    "10": ("Documentacion",               "docs"),
-    "11": ("Operaciones",                 "ops"),
-    "12": ("Orquestador",                 "orchestrator"),
-    "13": ("Seguridad y DevSecOps",          "security"),
-    "14": ("Monorepo y Estandares",        "orchestrator"),
-    "15": ("Negocio y QA Funcional",       "docs"),
+    "00": "framework",
+    "01": "repo",
+    "02": "analysis",
+    "03": "bug",
+    "04": "design",
+    "05": "plan",
+    "06": "code",
+    "07": "test",
+    "08": "review",
+    "09": "ci",
+    "10": "docs",
+    "11": "ops",
+    "12": "orchestrator",
+    "13": "security",
+    "14": "orchestrator",
+    "15": "docs",
 }
 
-# Labels con tildes/enye para mostrar en UI
-SECTION_LABEL = i18n_strings.SECTION_LABELS_I18N['es']
+TOTAL_PROMPTS = count_prompts()
 
 # Color accent por sección (hue de HSL)
 SECTION_COLOR = {
@@ -1836,7 +1845,10 @@ var TOKEN_REGISTRY = {
                  'MEDIUM / HIGH / FORENSIC'] },
 };
 
-var PLACEHOLDER_IGNORE = ['N', 'X', 'Y', 'Z', 'ADR-NNN', 'NNN', 'YYYYMMDD'];
+// Debe reflejar exactamente el set IGNORED de extract_vars.py: son
+// placeholders de formato, no campos a llenar desde variables de proyecto.
+var PLACEHOLDER_IGNORE = ['N', 'X', 'Y', 'Z', 'ADR-NNN', 'NNN', 'YYYYMMDD',
+  'SÍ / NO', 'SÍ/NO', 'YES / NO', 'YES/NO'];
 var VAR_MAP = {};
 Object.keys(TOKEN_REGISTRY).forEach(function(field) {
   VAR_MAP[field] = TOKEN_REGISTRY[field].aliases.slice();
@@ -2968,6 +2980,7 @@ def build():
         parts = name.split("-")
         sk = parts[0]
         if sk not in SECTION_META: continue
+        if _is_deprecated_or_empty(md_file.read_text(encoding="utf-8")): continue
         title_es, prompt_es, description_es, formulas_es = parse_md(md_file)
         en_file = md_file.with_suffix(".en.md")
         if en_file.exists():
@@ -3003,7 +3016,7 @@ def build():
     )
 
     fw_color = SECTION_COLOR["00"]
-    fw_icon_key = SECTION_META["00"][1]
+    fw_icon_key = SECTION_META["00"]
 
     # ── Sidebar ──
     sidebar_html = (
@@ -3028,7 +3041,7 @@ def build():
     for sk in sorted(k for k in sections if k != "00"):
         label_es = SEC_LABELS['es'].get(sk, sk)
         label_en = SEC_LABELS['en'].get(sk, sk)
-        icon_key = SECTION_META.get(sk, ("", "docs"))[1]
+        icon_key = SECTION_META.get(sk, "docs")
         color = SECTION_COLOR.get(sk, "#6366f1")
         cnt = len(sections[sk])
         sidebar_html += (
@@ -3101,7 +3114,7 @@ def build():
     for sk in sorted(sections.keys()):
         label_es = SEC_LABELS['es'].get(sk, sk)
         label_en = SEC_LABELS['en'].get(sk, sk)
-        icon_key = SECTION_META.get(sk, ("", "docs"))[1]
+        icon_key = SECTION_META.get(sk, "docs")
         color = SECTION_COLOR.get(sk, "#6366f1")
         cnt = len(sections[sk])
         gid = "sec-" + sk

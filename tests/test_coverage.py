@@ -86,6 +86,25 @@ def print_section_report(by_section):
     return total_prompts, total_translated, overall_pct
 
 
+def test_all_prompts_have_english_translation():
+    """Bloquea el merge si un prompt nuevo se sube sin su .en.md.
+
+    check_translation_coverage()/print_section_report() ya existían pero
+    ninguna función de este archivo tenía el prefijo test_, así que pytest
+    nunca las recolectaba (0 tests) y el gate de cobertura i18n no corría
+    nunca en CI pese a que `pytest tests/ -q` es uno de los 4 gates
+    obligatorios del workflow.
+    """
+    prompts = get_all_prompts()
+    assert prompts, "No se encontraron prompts en ai_sdlc_pro_prompts/"
+
+    results = check_translation_coverage(prompts)
+
+    assert not results['missing'], (
+        f"Prompts sin traducción EN: {results['missing']}"
+    )
+
+
 def main():
     print("=" * 60)
     print("VALIDACIÓN DE COBERTURA I18N — Fase 5.8")
