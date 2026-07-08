@@ -36,14 +36,20 @@ Prompt to draft release notes or changelog of a change with technical and functi
 Objective:
 Draft the release notes or changelog of the change with technical and functional focus.
 
-Include:
-- change summary,
-- impacted modules,
-- fixes,
-- improvements,
-- risks,
-- deployment considerations,
-- compatibility notes.
+Steps:
+1. Gather the commits and merged PRs within the declared period or version, filtering by the release branch.
+2. Classify each entry as a fix, an improvement, an internal change (no user impact), or a breaking change; drop purely maintenance commits (formatting, minor dependency bumps) from the visible changelog unless they carry security impact.
+3. Draft the executive summary first (2-4 sentences), aimed at someone reading the release with no prior technical context.
+4. For each fix or improvement, describe the observable impact for the user or integrator (not just the commit's technical title) and link the PR or commit number.
+5. Identify impacted modules, grouping by functional area, prioritizing ones that touch public contracts (API, CLI, data schema) over purely internal changes.
+6. If you detect a change that breaks compatibility, document the explicit migration note (what the upgrader must do) before treating the changelog as complete; if that note doesn't exist, stop and request it.
+7. Add deployment considerations: new variables, migrations to run, and deployment order if there are dependencies between services.
+
+Constraints:
+- every changelog entry must be traceable to a real commit or PR within the declared period; don't include changes outside that range,
+- don't publish the changelog or create the tag — actual publication is a separate, explicit A3 action,
+- if you detect breaking changes without a clear migration note, stop and request that information before delivering the changelog as complete,
+- don't mix marketing language with the technical report: describe the real impact, without overselling benefits or hiding known risks.
 ```
 
 ---
@@ -75,10 +81,10 @@ Use the release/changelog prompt and adapt it to:
 
 | Section | Content |
 |---|---|
-| Summary | Executive description of the release |
-| Fixes | Bugs and defects corrected |
-| Improvements (features) | New or improved functionalities |
-| Impacted modules | List of modules with changes |
-| Risks | Known risks in this version |
-| Deployment notes | Special steps, migrations, new variables |
-| Compatibility | Breaking changes |
+| Summary | v2.3.0 introduces per-user rate limiting on the orders API to prevent abuse, fixes the intermittent timeout on `POST /payments`, and upgrades the authentication library for a medium-severity vulnerability |
+| Fixes | `POST /payments` no longer times out under high concurrent load (PR #498); fixed tax calculation with combined discounts (PR #495) |
+| Improvements (features) | New configurable per-user rate limiting on `POST /orders`, 100 req/min by default (PR #501) |
+| Impacted modules | `orders-api`, `payments-service`, `auth-lib` (bump v3.4.1 → v3.4.2) |
+| Risks | Users with integrations that legitimately burst > 100 req/min may receive 429s (mitigated by documenting the `Retry-After` header) |
+| Deployment notes | Set `RATE_LIMIT_WINDOW_MS` in production before deployment; run migration `2026_07_08_add_rate_limit_table` before deploying `orders-api` |
+| Compatibility | No breaking changes in this version; `auth-lib` v3.4.2 is backward compatible with v3.4.x |

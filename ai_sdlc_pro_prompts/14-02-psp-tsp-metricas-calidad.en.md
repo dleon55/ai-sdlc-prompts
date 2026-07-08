@@ -50,6 +50,12 @@ Activities:
    - log of defects found (injection phase, removal phase, defect type, description, and fix time).
 3. Calculate process yield and defect density (defects/KLOC).
 
+Constraints:
+- don't invent actual times or defects not reported by the developer — if a data point wasn't provided, mark it as pending instead of estimating it,
+- don't calculate yield or defect density if the phase's base estimate (Plan) is missing — request it before continuing,
+- record the injection phase and removal phase of each defect separately; don't collapse them into a single field,
+- don't overwrite the metrics history of previous cycles or phases — the log is cumulative, it doesn't replace prior data.
+
 Output:
 1. Planning vs. Actual Summary (Time per Phase)
 2. Defect Log (Injected/Removed)
@@ -74,3 +80,15 @@ Use the PSP/TSP metrics prompt and adapt it to:
 - specific output objective: estimation vs. actual report and defect log
 - depth level: high
 ```
+
+---
+
+## Expected output
+
+| Phase | Estimated time (min) | Actual time (min) | Deviation | Defects injected | Defects removed | Density (defects/KLOC) |
+|---|---|---|---|---|---|---|
+| Planning | 60 | 75 | +25% | 0 | 0 | — |
+| Design | 90 | 80 | -11% | 1 | 0 | — |
+| Coding | 240 | 310 | +29% | 5 | 2 | 3.2 |
+| Code Review | 45 | 60 | +33% | 0 | 3 | — |
+| Testing | 120 | 150 | +25% | 0 | 1 | — |

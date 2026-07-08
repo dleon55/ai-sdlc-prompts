@@ -36,17 +36,23 @@ Prompt para generar una memoria técnica clara y ejecutiva del cambio realizado:
 Objetivo:
 Genera una memoria técnica clara y ejecutiva del cambio realizado.
 
-Incluye:
-1. contexto
-2. problema o requerimiento
-3. análisis
-4. causa raíz si aplica
-5. solución implementada
-6. componentes modificados
-7. pruebas ejecutadas
-8. riesgos
-9. resultados
-10. puntos pendientes
+Pasos:
+1. Contexto: resume en 2-3 frases el estado previo del sistema y por qué se necesitó el cambio, citando el issue o requerimiento de origen.
+2. Problema o requerimiento: describe el problema concreto o la necesidad de negocio sin mezclarlo con la solución adoptada.
+3. Análisis: documenta las alternativas consideradas y por qué se descartaron, referenciando el diseño aprobado si existe.
+4. Causa raíz (si aplica): si el cambio es una corrección, identifica la causa raíz confirmada y distíngala de síntomas o causas hipotéticas descartadas durante el análisis.
+5. Solución implementada: describe exactamente qué se implementó en términos verificables — no "se mejoró el sistema", sino qué lógica, endpoint o configuración cambió.
+6. Componentes modificados: lista archivos, módulos o servicios afectados, con referencia a los commits o PRs correspondientes.
+7. Pruebas ejecutadas: para cada tipo de prueba relevante (unitaria, integración, E2E, performance) indica si se ejecutó, el resultado y la referencia al artefacto (pipeline run, reporte). Si algún tipo relevante no se ejecutó, decláralo explícitamente en vez de omitirlo.
+8. Riesgos: riesgos residuales que persisten después del cambio, priorizados por severidad, indicando si tienen plan de mitigación o quedan aceptados sin mitigar.
+9. Resultados: estado final observable del sistema tras el despliegue (métricas, comportamiento validado en producción o staging), no solo la intención del cambio.
+10. Puntos pendientes: tareas derivadas, deuda técnica nueva o seguimientos necesarios, cada uno con dueño sugerido cuando sea posible.
+
+Restricciones:
+- cada sección debe estar respaldada por una referencia verificable (commit, PR, resultado de test o pipeline run), no redactada de forma genérica,
+- si faltan resultados de pruebas o el diseño aprobado no está disponible, señálalo explícitamente en la sección correspondiente en vez de inventar resultados,
+- no mezcles el problema con la solución en las secciones de contexto y problema — cada una responde una pregunta distinta,
+- distingue explícitamente entre riesgos mitigados y riesgos aceptados que quedan pendientes de resolución.
 ```
 
 ---
@@ -71,13 +77,13 @@ Usa el prompt de memoria técnica y adáptalo a:
 
 | Sección | Contenido |
 |---|---|
-| Contexto | Antecedentes del cambio |
-| Problema / Requerimiento | Qué se necesitaba resolver |
-| Análisis | Hallazgos del análisis previo |
-| Causa raíz | Si aplica, causa confirmada |
-| Solución implementada | Qué se hizo exactamente |
-| Componentes modificados | Lista de archivos y módulos |
-| Pruebas ejecutadas | Tipos de prueba y resultados |
-| Riesgos | Residuales o pendientes |
-| Resultados | Estado final del sistema |
-| Puntos pendientes | Tareas derivadas o deuda nueva |
+| Contexto | El servicio de pedidos (`orders-api`) venía recibiendo picos de tráfico automatizado desde mediados de junio que degradaban la latencia P95 de todos los endpoints (issue #482) |
+| Problema / Requerimiento | Evitar que un cliente pueda saturar `POST /orders` sin bloquear tráfico legítimo, cumpliendo un SLA de P95 < 300ms |
+| Análisis | Se evaluó rate limiting a nivel de gateway (Kong) vs. en aplicación; se eligió aplicación por permitir límites por usuario autenticado, no solo por IP |
+| Causa raíz | Ausencia de control de tasa por usuario en `POST /orders`; el gateway solo limitaba por IP, insuficiente contra bots rotando IPs |
+| Solución implementada | Middleware `rateLimiter` en `src/middleware/rateLimiter.ts`, límite de 100 req/min por `userId`, ventana configurable vía `RATE_LIMIT_WINDOW_MS` |
+| Componentes modificados | `src/middleware/rateLimiter.ts`, `src/routes/orders.ts`, `docs/api/orders.md` (PR #501) |
+| Pruebas ejecutadas | Unitarias: 12/12 verdes (PR #501, CI run #3892). Carga: k6 confirmó P95 280ms con 300 req/s sostenidos. E2E de checkout: no re-ejecutado, pendiente |
+| Riesgos | Aceptado: usuarios con múltiples pestañas activas pueden alcanzar el límite; mitigado con mensaje de error claro y cabecera `Retry-After` |
+| Resultados | Latencia P95 de `POST /orders` estable en producción tras 48h de monitoreo; 0 incidentes de saturación reportados |
+| Puntos pendientes | Re-ejecutar la suite E2E de checkout con el middleware activo (ticket #503, sin dueño asignado aún) |

@@ -50,6 +50,12 @@ Actividades:
    - bitácora de defectos encontrados (fase de inyección, fase de remoción, tipo de defecto, descripción y tiempo de reparación).
 3. Calcula el rendimiento del proceso (Yield) y la densidad de defectos (defectos/KLOC).
 
+Restricciones:
+- no inventes tiempos reales ni defectos no reportados por la persona desarrolladora — si un dato no fue provisto, márcalo como pendiente en vez de estimarlo,
+- no calcules rendimiento (Yield) ni densidad de defectos si falta la estimación base (Plan) de la fase — solicítala antes de continuar,
+- registra fase de inyección y fase de remoción de cada defecto por separado; no las combines en un solo campo,
+- no sobrescribas el historial de métricas de ciclos o fases anteriores — el registro es acumulativo, no reemplaza datos previos.
+
 Salida:
 1. Resumen de Planeación vs. Real (Tiempos por Fase)
 2. Bitácora de Defectos Inyectados/Removidos
@@ -74,3 +80,15 @@ Usa el prompt de métricas PSP/TSP y adáptalo a:
 - objetivo puntual de salida: reporte de estimación vs real y bitácora de defectos
 - nivel de profundidad: alto
 ```
+
+---
+
+## Salida esperada
+
+| Fase | Tiempo estimado (min) | Tiempo real (min) | Desviación | Defectos inyectados | Defectos removidos | Densidad (def/KLOC) |
+|---|---|---|---|---|---|---|
+| Planeación | 60 | 75 | +25% | 0 | 0 | — |
+| Diseño | 90 | 80 | -11% | 1 | 0 | — |
+| Codificación | 240 | 310 | +29% | 5 | 2 | 3.2 |
+| Revisión de código | 45 | 60 | +33% | 0 | 3 | — |
+| Pruebas | 120 | 150 | +25% | 0 | 1 | — |

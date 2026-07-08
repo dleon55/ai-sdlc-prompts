@@ -50,6 +50,12 @@ Actividades:
 3. Evalúa si el cambio propuesto introduce acoplamiento innecesario.
 4. Diseña una matriz de relaciones de importación.
 
+Restricciones:
+- no ejecutes build, instalación de dependencias ni scripts del monorepo — el análisis es exclusivamente de lectura de configuración y código fuente,
+- si los archivos de configuración no son accesibles o son ambiguos, declara el grafo como incompleto en vez de asumir relaciones de dependencia no verificadas,
+- toda dependencia local reportada (directa, transitiva o circular) debe referenciar el archivo de configuración exacto donde se declara,
+- no marques un acoplamiento como "requiere aislamiento" sin evidencia concreta del grafo — evita conclusiones especulativas sobre el impacto en el build.
+
 Salida:
 1. Mapeo del Grafo de Dependencias (workspaces involucrados)
 2. Análisis de Ciclos y Conflictos Potenciales
@@ -74,3 +80,15 @@ Usa el prompt de auditoría de dependencias en monorepos y adáptalo a:
 - objetivo puntual de salida: grafo de dependencias con matriz de impacto local
 - nivel de profundidad: alto
 ```
+
+---
+
+## Salida esperada
+
+| Workspace | Depende de (local) | Tipo de dependencia | Dependencia externa clave | Riesgo / Nota |
+|---|---|---|---|---|
+| apps/web | @repo/ui, @repo/utils | runtime | react, next | bajo |
+| apps/api | @repo/shared, @repo/db | runtime | express, prisma | medio — @repo/shared también importa de apps/api (ciclo detectado) |
+| packages/shared | @repo/utils | runtime | zod | bajo |
+| packages/ui | — | runtime | react | bajo |
+| packages/db | @repo/utils | dev + runtime | prisma, pg | bajo |

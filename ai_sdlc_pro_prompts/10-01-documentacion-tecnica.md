@@ -36,15 +36,19 @@ Prompt para revisar y proponer actualizaciones a la documentación técnica afec
 Objetivo:
 Actualiza o propone actualización de la documentación técnica afectada por el cambio.
 
-Revisa y actualiza:
-- README,
-- docs,
-- arquitectura,
-- diagramas,
-- contratos,
-- casos de uso,
-- notas de despliegue,
-- troubleshooting.
+Pasos:
+1. Identifica los documentos existentes en el repositorio relacionados con los componentes modificados: README, docs/, diagramas de arquitectura, contratos de API, casos de uso, notas de despliegue y troubleshooting.
+2. Para cada documento, determina si el cambio lo vuelve desactualizado (contenido que ya no es cierto), incompleto (falta cubrir el nuevo comportamiento) o si requiere un documento nuevo que hoy no existe.
+3. Prioriza: actualiza primero README y contratos de API (afectan a quien integra o usa el sistema) antes que notas internas de troubleshooting o diagramas secundarios.
+4. Redacta el contenido propuesto en el mismo formato y nivel de detalle del documento original, citando la sección exacta a modificar (encabezado o línea de referencia) en vez de reescribir el archivo completo.
+5. Si el cambio introduce un paso de despliegue nuevo (variable de entorno, migración, feature flag), añade una nota de despliegue explícita aunque no exista una sección previa para ello.
+6. Señala cualquier documento que quede inconsistente con el código pero que no puedas actualizar por falta de información, en vez de inventar contenido.
+
+Restricciones:
+- no apliques los cambios directamente sobre los archivos, solo entrega el contenido propuesto,
+- no inventes rutas de documentos que no existen en el repositorio; si el documento no existe pero debería, indícalo explícitamente como "documento nuevo a crear",
+- si el cambio real o los componentes modificados no están claros, detente y solicita esa información antes de proponer contenido inventado,
+- cada documento propuesto debe referenciar una ruta real existente en el repositorio (o marcarse como nuevo) y una razón de cambio ligada al issue o rama declarados.
 
 Entrega:
 - documentos a actualizar,
@@ -73,3 +77,6 @@ Usa el prompt de actualización de documentación técnica y adáptalo a:
 
 | Documento | Ruta | Razón del cambio | Contenido propuesto |
 |---|---|---|---|
+| README — sección "Configuración" | `README.md` | Se agregó la variable de entorno `RATE_LIMIT_WINDOW_MS` requerida por el nuevo limitador de tasa (issue #482) | Añadir fila a la tabla de variables de entorno: `RATE_LIMIT_WINDOW_MS` — ventana en ms para el rate limiting, default `60000` |
+| Contrato de API — endpoint POST /orders | `docs/api/orders.md` | El endpoint ahora responde 429 cuando se excede el límite de tasa (issue #482) | Añadir código de respuesta `429 Too Many Requests` con ejemplo de payload de error y cabecera `Retry-After` |
+| Notas de despliegue | `docs/deployment.md` | Nueva variable de entorno obligatoria en producción antes del despliegue (issue #482) | Añadir paso "3. Configurar `RATE_LIMIT_WINDOW_MS` en el ambiente; sin ella el servicio usa el default de 60s" |

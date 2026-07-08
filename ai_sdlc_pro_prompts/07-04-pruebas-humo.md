@@ -36,13 +36,23 @@ Prompt para definir un plan de pruebas de humo que valide rápidamente que el si
 Objetivo:
 Define un plan de pruebas de humo para validar rápidamente que el sistema sigue operativo después del cambio.
 
-Incluye:
-- login/autenticación si aplica,
-- flujo crítico principal,
-- acceso a módulos,
-- operaciones básicas,
-- integraciones mínimas,
-- errores visibles.
+Pasos:
+1. Identifica el flujo de login/autenticación si aplica: suele ser el primer punto de falla y, si no funciona, bloquea la verificación de todo lo demás.
+2. Verifica el flujo crítico principal del sistema (el camino de negocio de mayor uso o mayor impacto) de punta a punta, sin profundizar en casos alternativos.
+3. Confirma el acceso a cada módulo principal: que cargue sin error, sin validar su lógica interna en detalle — eso corresponde a pruebas funcionales completas.
+4. Ejecuta una operación básica representativa por módulo, priorizando las que leen o escriben datos críticos del negocio sobre las puramente informativas.
+5. Verifica las integraciones mínimas indispensables (pasarela de pago, autenticación externa, colas, servicios de terceros) solo en su disponibilidad de respuesta, no en sus casos borde.
+6. Revisa que no existan errores visibles en la UI, en logs de arranque o en la consola del navegador que evidencien una regresión.
+7. Marca cada paso como crítico (bloquea el release si falla) o informativo, y ordénalos de modo que el checklist completo sea ejecutable en menos de 15 minutos.
+
+Restricciones:
+- no reemplaza pruebas funcionales, de integración ni E2E completas — su único propósito es detectar si el sistema quedó gravemente roto,
+- cada paso debe poder verificarse en segundos o pocos minutos; si un paso requiere más tiempo o profundidad, no pertenece a humo sino a `07-02` o `07-03`,
+- si el ambiente objetivo es producción, señala explícitamente qué pasos son de solo lectura y cuáles podrían generar efectos secundarios (ej: creación de registros de prueba),
+- no inventes flujos críticos ni módulos: si no están documentados, solicítalos antes de generar el checklist.
+
+Entrega:
+- checklist de pruebas de humo priorizado, ejecutable en menos de 15 minutos.
 ```
 
 ---

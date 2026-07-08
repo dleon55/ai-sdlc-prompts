@@ -3935,18 +3935,25 @@ Output:
 8. PSP/TSP Metrics Log (Actual time spent diagnosing, estimated fix time in minutes, and related issues detected).</code></pre></div></div></div></div><div class="section-group" id="sec-04" data-observe><div class="section-header-row"><input type="checkbox" class="sec-check" title="Seleccionar toda la sección" onchange="onSecCheck(this)"><span class="sec-num" style="color:#8b5cf6;border-color:#8b5cf622;background:#8b5cf611">04</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42"/></svg><span class="sec-label sec-lang-es">Diseño</span><span class="sec-label sec-lang-en">Design</span><span class="sec-count">4</span></div><div class="cards-grid"><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="04-01-diseno-solucion" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-04-01-diseno-solucion-es" onclick="toggleCard('04-01-diseno-solucion-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('04-01-diseno-solucion-es')">4.1 — Diseño funcional y técnico de solución</span><button class="info-btn" onclick="openInfoLang('04-01-diseno-solucion', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Diseño funcional y técnico de solución" onclick="copyPromptLang('04-01-diseno-solucion', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-04-01-diseno-solucion-es"><pre><code id="code-04-01-diseno-solucion-es">Objetivo:
 Diseña una solución completa, funcional y técnica, para el requerimiento o incidente analizado.
 
-Incluye:
-1. Objetivo de la solución
-2. Alcance
-3. Supuestos
-4. Restricciones
-5. Casos de uso impactados
-6. Reglas de negocio
-7. Cambios requeridos por componente
-8. Riesgos
-9. Dependencias
-10. Estrategia de validación
-11. Estrategia de rollback
+Pasos:
+1. Define el objetivo de la solución: qué problema resuelve, para quién y qué resultado observable confirma que quedó resuelto — sin un objetivo verificable no hay forma de validar el diseño después.
+2. Define el alcance: qué queda dentro y qué queda explícitamente fuera, para evitar que la implementación se expanda sin control o deje huecos sin cubrir.
+3. Documenta los supuestos sobre los que se apoya el diseño (datos disponibles, comportamiento de terceros, infraestructura existente); si algún supuesto resulta falso, el diseño debe declararse inválido en vez de ajustarse silenciosamente durante la implementación.
+4. Documenta las restricciones técnicas, de negocio, de tiempo o de compatibilidad que limitan las opciones de diseño.
+5. Lista los casos de uso impactados y cómo cambia su comportamiento, citando los hallazgos del análisis funcional (`02-01`) que los sustentan.
+6. Lista las reglas de negocio nuevas o modificadas, citando el análisis técnico y de impacto cruzado (`02-02`/`02-03`) correspondiente.
+7. Detalla los cambios requeridos por componente: qué cambia, por qué ese componente es el punto correcto de intervención y qué contratos existentes (APIs, esquemas, formatos de archivo) se ven afectados.
+8. Identifica los riesgos del diseño y, para cada uno, una mitigación concreta — prioriza los riesgos sobre componentes críticos o sin estrategia de rollback clara antes que riesgos menores o cosméticos.
+9. Lista las dependencias entre componentes y con sistemas externos, señalando cuáles bloquean el orden de implementación.
+10. Define la estrategia de validación: cómo se comprobará, con evidencia concreta, que la solución cumple el objetivo antes de darla por lista.
+11. Define la estrategia de rollback por cada componente crítico; si no existe una estrategia viable, decláralo como riesgo abierto en el diseño en vez de omitirlo.
+
+Restricciones:
+- este prompt produce únicamente un documento de diseño: no propongas comandos a ejecutar ni modifiques código, configuración o infraestructura,
+- cada cambio propuesto por componente debe quedar vinculado explícitamente a un riesgo, su mitigación y al hallazgo del análisis previo (02-01/02-02/02-03) que lo justifica — no incluyas cambios sin esa trazabilidad,
+- si no existe una estrategia de rollback viable para un componente crítico, decláralo como riesgo abierto en vez de inventar una o de omitirlo,
+- si el análisis funcional, técnico o de impacto cruzado previo no está disponible o está incompleto, detente y solicítalo antes de diseñar — no rellenes esos vacíos con suposiciones,
+- si una decisión de diseño contradice la arquitectura o los contratos existentes, señálalo explícitamente como una desviación a validar, no la presentes como un hecho consumado.
 
 Formato de salida:
 1. Resumen de diseño
@@ -3957,18 +3964,25 @@ Formato de salida:
 6. Recomendación de implementación</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="04-01-diseno-solucion" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-04-01-diseno-solucion-en" onclick="toggleCard('04-01-diseno-solucion-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('04-01-diseno-solucion-en')">4.1 — Functional and technical solution design</span><button class="info-btn" onclick="openInfoLang('04-01-diseno-solucion', 'en')" title="When to use · Standard usage formula">&#9432;</button><button class="copy-btn" data-title="Functional and technical solution design" onclick="copyPromptLang('04-01-diseno-solucion', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-04-01-diseno-solucion-en"><pre><code id="code-04-01-diseno-solucion-en">Objective:
 Design a complete, functional and technical solution for the analyzed requirement or incident.
 
-Include:
-1. Solution objective
-2. Scope
-3. Assumptions
-4. Restrictions
-5. Impacted use cases
-6. Business rules
-7. Changes required by component
-8. Risks
-9. Dependencies
-10. Validation strategy
-11. Rollback strategy
+Steps:
+1. Define the solution objective: what problem it solves, for whom, and what observable result confirms it is resolved — without a verifiable objective there is no way to validate the design afterward.
+2. Define the scope: what is explicitly in and what is explicitly out, to keep implementation from expanding without control or leaving gaps uncovered.
+3. Document the assumptions the design relies on (available data, third-party behavior, existing infrastructure); if an assumption turns out to be false, the design must be declared invalid rather than silently adjusted during implementation.
+4. Document the technical, business, time, or compatibility restrictions that limit the design options.
+5. List the impacted use cases and how their behavior changes, citing the findings from the functional analysis (`02-01`) that support them.
+6. List the new or modified business rules, citing the corresponding technical and cross-impact analysis (`02-02`/`02-03`).
+7. Detail the changes required by component: what changes, why that component is the right point of intervention, and which existing contracts (APIs, schemas, file formats) are affected.
+8. Identify the design's risks and, for each one, a concrete mitigation — prioritize risks on critical components or without a clear rollback strategy over minor or cosmetic risks.
+9. List dependencies between components and with external systems, flagging which ones block the implementation order.
+10. Define the validation strategy: how it will be confirmed, with concrete evidence, that the solution meets the objective before considering it done.
+11. Define the rollback strategy for each critical component; if no viable strategy exists, state it as an open risk in the design instead of omitting it.
+
+Constraints:
+- this prompt produces only a design document: do not propose commands to run or modify code, configuration, or infrastructure,
+- every proposed change by component must be explicitly linked to a risk, its mitigation, and the finding from the prior analysis (02-01/02-02/02-03) that justifies it — do not include changes without that traceability,
+- if no viable rollback strategy exists for a critical component, state it as an open risk instead of inventing one or omitting it,
+- if the prior functional, technical, or cross-impact analysis is unavailable or incomplete, stop and request it before designing — do not fill those gaps with assumptions,
+- if a design decision contradicts existing architecture or contracts, flag it explicitly as a deviation to validate, not present it as a settled fact.
 
 Output format:
 1. Design summary
@@ -4155,35 +4169,49 @@ For each option considered (including the rejected one):
 Output file format: docs/decisions/ADR-NNN-short-title.md</code></pre></div></div></div></div><div class="section-group" id="sec-05" data-observe><div class="section-header-row"><input type="checkbox" class="sec-check" title="Seleccionar toda la sección" onchange="onSecCheck(this)"><span class="sec-num" style="color:#06b6d4;border-color:#06b6d422;background:#06b6d411">05</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg><span class="sec-label sec-lang-es">Planificación</span><span class="sec-label sec-lang-en">Planning</span><span class="sec-count">2</span></div><div class="cards-grid"><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="05-01-plan-implementacion" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-05-01-plan-implementacion-es" onclick="toggleCard('05-01-plan-implementacion-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('05-01-plan-implementacion-es')">5.1 — Plan de implementación detallado</span><button class="info-btn" onclick="openInfoLang('05-01-plan-implementacion', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Plan de implementación detallado" onclick="copyPromptLang('05-01-plan-implementacion', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-05-01-plan-implementacion-es"><pre><code id="code-05-01-plan-implementacion-es">Objetivo:
 Elabora un plan de implementación detallado, ejecutable y trazable para la solución propuesta.
 
-Incluye:
-0. Bloque JSON de Metadatos al inicio (claves: status, task_count, impacted_components, estimated_hours).
-1. actividades previas,
-2. cambios por componente,
-3. ajustes de datos o migraciones,
-4. pruebas requeridas,
-5. validaciones en ambiente,
-6. integración con ramas,
-7. despliegue,
-8. rollback,
-9. evidencias esperadas,
-10. Registro de Métricas PSP/TSP (Tiempo de diseño estimado en minutos, tiempo de codificación estimado en minutos y conteo estimado de defectos).
+Pasos:
+0. Abre con un bloque JSON de metadatos parseable (claves: status, task_count, impacted_components, estimated_hours) — permite que herramientas de orquestación o CI lean el plan sin re-interpretar texto libre.
+1. Lista las actividades previas necesarias antes de tocar código (accesos, creación de rama, backups, feature flags, aviso a stakeholders).
+2. Detalla los cambios por componente, con el mismo alcance y granularidad que el diseño aprobado (`04-01`) — si agregas un componente que el diseño no contemplaba, señálalo explícitamente como desviación en vez de incluirlo sin comentario.
+3. Especifica los ajustes de datos o migraciones necesarios, indicando si son reversibles y qué ocurre con los datos existentes durante y después de la migración.
+4. Define las pruebas requeridas por paso (unitarias, integración, E2E, performance), priorizando las que cubren el camino crítico del cambio antes que casos periféricos si el tiempo de QA es limitado.
+5. Define las validaciones a ejecutar en cada ambiente (dev/QA/staging) antes de promover el cambio al siguiente, y qué resultado habilita el paso al ambiente posterior.
+6. Describe la estrategia de integración con ramas: orden de merges, resolución de conflictos esperada y quién aprueba cada integración.
+7. Detalla el despliegue: orden de despliegue por componente, ventanas de mantenimiento si aplica, y quién ejecuta cada paso.
+8. Detalla el rollback por paso — si algún paso no tiene rollback posible, decláralo explícitamente en vez de omitirlo o asumir que no hará falta.
+9. Define la evidencia esperada por paso (logs, capturas, resultados de test, métricas) que demuestre de forma verificable que el paso se completó.
+10. Cierra con el Registro de Métricas PSP/TSP: tiempo de diseño estimado en minutos, tiempo de codificación estimado en minutos y conteo estimado de defectos, para comparar después contra lo real.
+
+Restricciones:
+- no ejecutes comandos ni modifiques el repositorio o el ambiente — este prompt produce el plan como documento; ejecutar, commitear o desplegar requiere aprobación explícita y un prompt separado,
+- no dejes ningún paso (1 a 9) sin dependencia, riesgo o evidencia esperada declarados; si alguno de esos campos no aplica, dilo explícitamente en vez de dejarlo vacío,
+- si algún paso requiere ambiente de producción, señálalo de forma explícita y no lo mezcles con pasos de dev/QA/staging,
+- si no existe un diseño aprobado (`04-01`) del cual partir, detente y solicítalo — no derives el plan de supuestos propios,
+- el bloque JSON de metadatos debe ser válido y parseable (sin comentarios, sin claves faltantes) — no lo reemplaces por una descripción en texto libre.
 
 Formato para pasos 1 a 9:
 | Paso | Actividad | Componente | Dependencia | Riesgo | Evidencia esperada |</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="05-01-plan-implementacion" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-05-01-plan-implementacion-en" onclick="toggleCard('05-01-plan-implementacion-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('05-01-plan-implementacion-en')">5.1 — Detailed implementation plan</span><button class="info-btn" onclick="openInfoLang('05-01-plan-implementacion', 'en')" title="When to use · Standard usage formula">&#9432;</button><button class="copy-btn" data-title="Detailed implementation plan" onclick="copyPromptLang('05-01-plan-implementacion', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-05-01-plan-implementacion-en"><pre><code id="code-05-01-plan-implementacion-en">Objective:
 Elaborate a detailed, executable and traceable implementation plan for the proposed solution.
 
-Include:
-0. Start with a Task Metadata JSON Block (keys: status, task_count, impacted_components, estimated_hours).
-1. previous activities,
-2. changes by component,
-3. data adjustments or migrations,
-4. required tests,
-5. environment validations,
-6. branch integration,
-7. deployment,
-8. rollback,
-9. expected evidence,
-10. PSP/TSP Metrics Log (Estimated design time in minutes, estimated coding time in minutes, and projected defects count).
+Steps:
+0. Start with a parser-friendly JSON metadata block (keys: status, task_count, impacted_components, estimated_hours) — this lets orchestration tools or CI read the plan without re-interpreting free text.
+1. List the previous activities needed before touching code (access grants, branch creation, backups, feature flags, stakeholder notice).
+2. Detail the changes by component, at the same scope and granularity as the approved design (`04-01`) — if you add a component the design did not cover, flag it explicitly as a deviation instead of including it without comment.
+3. Specify the required data adjustments or migrations, stating whether they are reversible and what happens to existing data during and after the migration.
+4. Define the tests required per step (unit, integration, E2E, performance), prioritizing those that cover the change's critical path over peripheral cases if QA time is limited.
+5. Define the validations to run in each environment (dev/QA/staging) before promoting the change to the next one, and what result gates the move to the following environment.
+6. Describe the branch integration strategy: merge order, expected conflict resolution, and who approves each integration.
+7. Detail the deployment: deployment order by component, maintenance windows if applicable, and who executes each step.
+8. Detail the rollback per step — if a step has no possible rollback, state that explicitly instead of omitting it or assuming it won't be needed.
+9. Define the expected evidence per step (logs, screenshots, test results, metrics) that verifiably demonstrates the step was completed.
+10. Close with the PSP/TSP Metrics Log: estimated design time in minutes, estimated coding time in minutes, and projected defect count, to later compare against the actuals.
+
+Constraints:
+- do not execute commands or modify the repository or environment — this prompt produces the plan as a document; executing, committing, or deploying requires explicit approval and a separate prompt,
+- do not leave any step (1 to 9) without a declared dependency, risk, or expected evidence; if one of those fields does not apply, say so explicitly instead of leaving it blank,
+- if any step requires a production environment, flag it explicitly and do not mix it with dev/QA/staging steps,
+- if there is no approved design (`04-01`) to start from, stop and request it — do not derive the plan from your own assumptions,
+- the JSON metadata block must be valid and parser-friendly (no comments, no missing keys) — do not replace it with a free-text description.
 
 Format for steps 1 to 9:
 | Step | Activity | Component | Dependency | Risk | Expected evidence |</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="05-02-riesgos-implementacion" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-05-02-riesgos-implementacion-es" onclick="toggleCard('05-02-riesgos-implementacion-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('05-02-riesgos-implementacion-es')">5.2 — Análisis de riesgos e impacto de implementación</span><button class="info-btn" onclick="openInfoLang('05-02-riesgos-implementacion', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Análisis de riesgos e impacto de implementación" onclick="copyPromptLang('05-02-riesgos-implementacion', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-05-02-riesgos-implementacion-es"><pre><code id="code-05-02-riesgos-implementacion-es">Objetivo:
@@ -4552,22 +4580,42 @@ Deliver:
 - related regressions to re-verify.</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="07-04-pruebas-humo" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-07-04-pruebas-humo-es" onclick="toggleCard('07-04-pruebas-humo-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('07-04-pruebas-humo-es')">7.4 — Pruebas de humo</span><button class="info-btn" onclick="openInfoLang('07-04-pruebas-humo', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Pruebas de humo" onclick="copyPromptLang('07-04-pruebas-humo', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-07-04-pruebas-humo-es"><pre><code id="code-07-04-pruebas-humo-es">Objetivo:
 Define un plan de pruebas de humo para validar rápidamente que el sistema sigue operativo después del cambio.
 
-Incluye:
-- login/autenticación si aplica,
-- flujo crítico principal,
-- acceso a módulos,
-- operaciones básicas,
-- integraciones mínimas,
-- errores visibles.</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="07-04-pruebas-humo" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-07-04-pruebas-humo-en" onclick="toggleCard('07-04-pruebas-humo-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('07-04-pruebas-humo-en')">7.4 — Smoke tests</span><button class="info-btn" onclick="openInfoLang('07-04-pruebas-humo', 'en')" title="When to use · Standard usage formula">&#9432;</button><button class="copy-btn" data-title="Smoke tests" onclick="copyPromptLang('07-04-pruebas-humo', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-07-04-pruebas-humo-en"><pre><code id="code-07-04-pruebas-humo-en">Objective:
+Pasos:
+1. Identifica el flujo de login/autenticación si aplica: suele ser el primer punto de falla y, si no funciona, bloquea la verificación de todo lo demás.
+2. Verifica el flujo crítico principal del sistema (el camino de negocio de mayor uso o mayor impacto) de punta a punta, sin profundizar en casos alternativos.
+3. Confirma el acceso a cada módulo principal: que cargue sin error, sin validar su lógica interna en detalle — eso corresponde a pruebas funcionales completas.
+4. Ejecuta una operación básica representativa por módulo, priorizando las que leen o escriben datos críticos del negocio sobre las puramente informativas.
+5. Verifica las integraciones mínimas indispensables (pasarela de pago, autenticación externa, colas, servicios de terceros) solo en su disponibilidad de respuesta, no en sus casos borde.
+6. Revisa que no existan errores visibles en la UI, en logs de arranque o en la consola del navegador que evidencien una regresión.
+7. Marca cada paso como crítico (bloquea el release si falla) o informativo, y ordénalos de modo que el checklist completo sea ejecutable en menos de 15 minutos.
+
+Restricciones:
+- no reemplaza pruebas funcionales, de integración ni E2E completas — su único propósito es detectar si el sistema quedó gravemente roto,
+- cada paso debe poder verificarse en segundos o pocos minutos; si un paso requiere más tiempo o profundidad, no pertenece a humo sino a `07-02` o `07-03`,
+- si el ambiente objetivo es producción, señala explícitamente qué pasos son de solo lectura y cuáles podrían generar efectos secundarios (ej: creación de registros de prueba),
+- no inventes flujos críticos ni módulos: si no están documentados, solicítalos antes de generar el checklist.
+
+Entrega:
+- checklist de pruebas de humo priorizado, ejecutable en menos de 15 minutos.</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="07-04-pruebas-humo" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-07-04-pruebas-humo-en" onclick="toggleCard('07-04-pruebas-humo-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('07-04-pruebas-humo-en')">7.4 — Smoke tests</span><button class="info-btn" onclick="openInfoLang('07-04-pruebas-humo', 'en')" title="When to use · Standard usage formula">&#9432;</button><button class="copy-btn" data-title="Smoke tests" onclick="copyPromptLang('07-04-pruebas-humo', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-07-04-pruebas-humo-en"><pre><code id="code-07-04-pruebas-humo-en">Objective:
 Define a smoke test plan to quickly validate that the system remains operational after the change.
 
-Include:
-- login/authentication if applicable,
-- main critical flow,
-- module access,
-- basic operations,
-- minimal integrations,
-- visible errors.</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="07-05-automatizacion-antigravity" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-07-05-automatizacion-antigravity-es" onclick="toggleCard('07-05-automatizacion-antigravity-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('07-05-automatizacion-antigravity-es')">7.5 — Automatización en navegador con Google Antigravity</span><button class="info-btn" onclick="openInfoLang('07-05-automatizacion-antigravity', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Automatización en navegador con Google Antigravity" onclick="copyPromptLang('07-05-automatizacion-antigravity', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-07-05-automatizacion-antigravity-es"><pre><code id="code-07-05-automatizacion-antigravity-es">Objetivo:
+Steps:
+1. Identify the login/authentication flow if applicable: it is usually the first point of failure and, if broken, blocks verification of everything else.
+2. Verify the system's main critical flow (the highest-use or highest-impact business path) end to end, without going deep into alternative paths.
+3. Confirm access to each main module: that it loads without error, without validating its internal logic in detail — that belongs to full functional tests.
+4. Run one representative basic operation per module, prioritizing those that read or write critical business data over purely informational ones.
+5. Verify the minimal indispensable integrations (payment gateway, external authentication, queues, third-party services) only for response availability, not their edge cases.
+6. Check that there are no visible errors in the UI, in startup logs, or in the browser console that would indicate a regression.
+7. Mark each step as critical (blocks the release if it fails) or informational, and order them so the full checklist is executable in under 15 minutes.
+
+Constraints:
+- this does not replace complete functional, integration, or E2E tests — its only purpose is to detect whether the system is badly broken,
+- each step must be verifiable in seconds or a few minutes; if a step requires more time or depth, it belongs to `07-02` or `07-03`, not to smoke testing,
+- if the target environment is production, explicitly flag which steps are read-only and which could produce side effects (e.g., creating test records),
+- don't invent critical flows or modules: if they aren't documented, request them before generating the checklist.
+
+Deliver:
+- prioritized smoke test checklist, executable in under 15 minutes.</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="07-05-automatizacion-antigravity" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-07-05-automatizacion-antigravity-es" onclick="toggleCard('07-05-automatizacion-antigravity-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('07-05-automatizacion-antigravity-es')">7.5 — Automatización en navegador con Google Antigravity</span><button class="info-btn" onclick="openInfoLang('07-05-automatizacion-antigravity', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Automatización en navegador con Google Antigravity" onclick="copyPromptLang('07-05-automatizacion-antigravity', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-07-05-automatizacion-antigravity-es"><pre><code id="code-07-05-automatizacion-antigravity-es">Objetivo:
 Diseña y documenta una estrategia de pruebas automatizadas en navegador usando Google Antigravity para validar los flujos impactados.
 
 Pasos:
@@ -5083,11 +5131,19 @@ Deliver:
 4. brief summary of the reviewed change</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="08-02-cumplimiento-requerimiento" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-08-02-cumplimiento-requerimiento-es" onclick="toggleCard('08-02-cumplimiento-requerimiento-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('08-02-cumplimiento-requerimiento-es')">8.2 — Revisión de cumplimiento contra requerimiento</span><button class="info-btn" onclick="openInfoLang('08-02-cumplimiento-requerimiento', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Revisión de cumplimiento contra requerimiento" onclick="copyPromptLang('08-02-cumplimiento-requerimiento', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-08-02-cumplimiento-requerimiento-es"><pre><code id="code-08-02-cumplimiento-requerimiento-es">Objetivo:
 Valida si la implementación realmente cumple con el issue, requerimiento, caso de uso y criterios de aceptación.
 
-Compara:
-- lo solicitado,
-- lo diseñado,
-- lo implementado,
-- lo probado.
+Pasos:
+1. Reúne los cuatro insumos a comparar: issue o requerimiento original, diseño aprobado, código implementado y resultados de pruebas; si falta alguno, detente y repórtalo como brecha de evidencia antes de continuar.
+2. Compara lo solicitado contra lo diseñado: verifica que el diseño aprobado cubra literalmente cada criterio de aceptación del issue y señala cualquier caso que el diseño haya dejado fuera.
+3. Compara lo diseñado contra lo implementado: verifica que cada decisión del diseño se haya traducido en código real, no en un subconjunto simplificado o en un atajo no documentado.
+4. Compara lo implementado contra lo probado: verifica que exista evidencia de prueba para cada criterio de aceptación, no solo para el camino feliz — la ausencia de prueba es una brecha aunque el código &quot;se vea correcto&quot;.
+5. Para cada criterio de aceptación, asigna un estado (cumple / parcial / no cumple) citando la brecha específica que lo sustenta; nunca marques &quot;cumple&quot; sin evidencia trazable a los cuatro insumos.
+6. Prioriza las brechas por riesgo: una brecha en un criterio de negocio crítico o de seguridad pesa más que una brecha cosmética o de nomenclatura.
+
+Restricciones:
+- no marques un criterio como &quot;cumple&quot; si no hay evidencia de prueba que lo respalde, aunque el código parezca correcto a simple vista,
+- no ejecutes pruebas nuevas ni modifiques código — esta revisión es de solo lectura sobre evidencia existente,
+- si falta alguno de los cuatro insumos (solicitado, diseñado, implementado, probado), detén el análisis y repórtalo como brecha de evidencia en vez de asumir cumplimiento,
+- distingue explícitamente entre &quot;no implementado&quot; y &quot;no probado&quot; — son brechas distintas que requieren acciones distintas.
 
 Entrega:
 - cumplimiento total/parcial/no cumple,
@@ -5096,11 +5152,19 @@ Entrega:
 - acciones requeridas.</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="08-02-cumplimiento-requerimiento" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-08-02-cumplimiento-requerimiento-en" onclick="toggleCard('08-02-cumplimiento-requerimiento-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('08-02-cumplimiento-requerimiento-en')">8.2 — Requirement compliance review</span><button class="info-btn" onclick="openInfoLang('08-02-cumplimiento-requerimiento', 'en')" title="When to use · Standard usage formula">&#9432;</button><button class="copy-btn" data-title="Requirement compliance review" onclick="copyPromptLang('08-02-cumplimiento-requerimiento', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-08-02-cumplimiento-requerimiento-en"><pre><code id="code-08-02-cumplimiento-requerimiento-en">Objective:
 Validate if the implementation really complies with the issue, requirement, use case and acceptance criteria.
 
-Compare:
-- what was requested,
-- what was designed,
-- what was implemented,
-- what was tested.
+Steps:
+1. Gather the four inputs to compare: original issue or requirement, approved design, implemented code, and test results; if any is missing, stop and report it as an evidence gap before continuing.
+2. Compare what was requested against what was designed: verify the approved design literally covers each acceptance criterion in the issue, and flag any case the design left out.
+3. Compare what was designed against what was implemented: verify each design decision was translated into real code, not into a simplified subset or an undocumented shortcut.
+4. Compare what was implemented against what was tested: verify there is test evidence for each acceptance criterion, not just the happy path — a missing test is a gap even if the code &quot;looks correct.&quot;
+5. For each acceptance criterion, assign a status (fully met / partial / not met) citing the specific gap that supports it; never mark &quot;fully met&quot; without evidence traceable across the four inputs.
+6. Prioritize the gaps by risk: a gap in a critical business or security criterion outweighs a cosmetic or naming gap.
+
+Constraints:
+- don't mark a criterion as &quot;fully met&quot; if there's no test evidence backing it, even if the code looks correct at a glance,
+- don't run new tests or modify code — this review is read-only over existing evidence,
+- if any of the four inputs (requested, designed, implemented, tested) is missing, stop the analysis and report it as an evidence gap instead of assuming compliance,
+- explicitly distinguish &quot;not implemented&quot; from &quot;not tested&quot; — they are different gaps requiring different actions.
 
 Deliver:
 - total/partial/non compliance,
@@ -5425,28 +5489,54 @@ Mandatory Output:
 4. ESTIMATED IMPACT: Expected reduction in computational cost or execution time.</code></pre></div></div></div></div><div class="section-group" id="sec-09" data-observe><div class="section-header-row"><input type="checkbox" class="sec-check" title="Seleccionar toda la sección" onchange="onSecCheck(this)"><span class="sec-num" style="color:#14b8a6;border-color:#14b8a622;background:#14b8a611">09</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#14b8a6" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/></svg><span class="sec-label sec-lang-es">Integración</span><span class="sec-label sec-lang-en">Integration</span><span class="sec-count">4</span></div><div class="cards-grid"><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="09-01-integracion-ramas" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-09-01-integracion-ramas-es" onclick="toggleCard('09-01-integracion-ramas-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('09-01-integracion-ramas-es')">9.1 — Integración controlada con ramas</span><button class="info-btn" onclick="openInfoLang('09-01-integracion-ramas', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Integración controlada con ramas" onclick="copyPromptLang('09-01-integracion-ramas', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-09-01-integracion-ramas-es"><pre><code id="code-09-01-integracion-ramas-es">Objetivo:
 Analiza cómo integrar los cambios con otras ramas activas, evitando conflictos y asegurando consistencia funcional y técnica.
 
-Incluye:
-1. ramas relacionadas,
-2. cambios potencialmente conflictivos,
-3. estrategia recomendada:
-   - merge,
-   - rebase,
-   - cherry-pick,
-   - espera controlada,
-   - integración por fases.
-4. riesgos de integración.</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="09-01-integracion-ramas" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-09-01-integracion-ramas-en" onclick="toggleCard('09-01-integracion-ramas-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('09-01-integracion-ramas-en')">9.1 — Controlled integration with branches</span><button class="info-btn" onclick="openInfoLang('09-01-integracion-ramas', 'en')" title="When to use · Standard usage formula">&#9432;</button><button class="copy-btn" data-title="Controlled integration with branches" onclick="copyPromptLang('09-01-integracion-ramas', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-09-01-integracion-ramas-en"><pre><code id="code-09-01-integracion-ramas-en">Objective:
+Pasos:
+1. Verifica que el estado local esté sincronizado con el remoto (`git fetch`) antes de analizar nada; un análisis sobre información desactualizada puede recomendar una estrategia que ya no aplica.
+2. Identifica las ramas activas relacionadas: mismas áreas del código, mismo módulo funcional o mismo issue/epic, y quién las está trabajando (agente o desarrollador).
+3. Compara el historial de commits y el diff de cada rama relacionada contra la rama origen para detectar cambios potencialmente conflictivos: mismos archivos, mismas funciones, migraciones de esquema concurrentes.
+4. Evalúa la estrategia de integración más adecuada según el tipo de conflicto y el estado de las ramas:
+   - merge — cuando el historial debe preservarse y no hay conflictos relevantes,
+   - rebase — cuando se busca un historial lineal y la rama origen no ha sido compartida con otros agentes,
+   - cherry-pick — cuando solo se necesita un subconjunto de commits,
+   - espera controlada — cuando otra rama activa está por mergearse y su resultado cambiaría el análisis,
+   - integración por fases — cuando el cambio es grande y conviene dividirlo en pasos verificables.
+5. Documenta los riesgos de integración: qué puede romperse, qué pruebas deben re-ejecutarse después de integrar y en qué estado queda cada componente si la integración se detiene a mitad de camino.
+6. Define las condiciones que deben cumplirse antes de ejecutar el merge (CI verde, aprobación de code review, ausencia de ramas activas con cambios no verificados) y un plan de rollback si la integración falla.
+
+Restricciones:
+- no ejecutes merge, rebase, cherry-pick ni push — este prompt solo produce el análisis y la recomendación, la ejecución requiere aprobación humana explícita,
+- si el estado local no está sincronizado con el remoto o existen ramas activas de otros agentes con cambios no verificados, detente y solicita sincronización antes de recomendar una estrategia definitiva,
+- no asumas el contenido de una rama que no has podido inspeccionar directamente; si el acceso está limitado, señálalo como brecha de visibilidad en vez de inferir su estado,
+- cada conflicto potencial reportado debe citar el archivo o zona específica y la rama con la que colisiona — no generalices &quot;puede haber conflictos&quot; sin evidencia concreta.
+
+Entrega:
+- estrategia de integración recomendada con justificación,
+- plan de resolución de conflictos,
+- condiciones de merge y plan de rollback.</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="09-01-integracion-ramas" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-09-01-integracion-ramas-en" onclick="toggleCard('09-01-integracion-ramas-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('09-01-integracion-ramas-en')">9.1 — Controlled integration with branches</span><button class="info-btn" onclick="openInfoLang('09-01-integracion-ramas', 'en')" title="When to use · Standard usage formula">&#9432;</button><button class="copy-btn" data-title="Controlled integration with branches" onclick="copyPromptLang('09-01-integracion-ramas', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-09-01-integracion-ramas-en"><pre><code id="code-09-01-integracion-ramas-en">Objective:
 Analyze how to integrate the changes with other active branches, avoiding conflicts and ensuring functional and technical consistency.
 
-Include:
-1. related branches,
-2. potentially conflicting changes,
-3. recommended strategy:
-   - merge,
-   - rebase,
-   - cherry-pick,
-   - controlled wait,
-   - phased integration.
-4. integration risks.</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="09-02-monitoreo-ci" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-09-02-monitoreo-ci-es" onclick="toggleCard('09-02-monitoreo-ci-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('09-02-monitoreo-ci-es')">9.2 — Monitoreo de CI local y remoto</span><button class="info-btn" onclick="openInfoLang('09-02-monitoreo-ci', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Monitoreo de CI local y remoto" onclick="copyPromptLang('09-02-monitoreo-ci', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-09-02-monitoreo-ci-es"><pre><code id="code-09-02-monitoreo-ci-es">Objetivo:
+Steps:
+1. Verify the local state is synced with the remote (`git fetch`) before analyzing anything; analysis based on stale information can recommend a strategy that no longer applies.
+2. Identify related active branches: same areas of the code, same functional module, or same issue/epic, and who is working on them (agent or developer).
+3. Compare the commit history and diff of each related branch against the source branch to detect potentially conflicting changes: same files, same functions, concurrent schema migrations.
+4. Evaluate the most suitable integration strategy based on the type of conflict and the state of the branches:
+   - merge — when history must be preserved and there are no relevant conflicts,
+   - rebase — when a linear history is desired and the source branch has not been shared with other agents,
+   - cherry-pick — when only a subset of commits is needed,
+   - controlled wait — when another active branch is about to merge and its result would change the analysis,
+   - phased integration — when the change is large and splitting it into verifiable steps is safer.
+5. Document the integration risks: what can break, which tests must be re-run after integrating, and what state each component is left in if the integration stops halfway through.
+6. Define the conditions that must be met before running the merge (green CI, approved code review, no active branches with unverified changes) and a rollback plan if the integration fails.
+
+Constraints:
+- don't execute merge, rebase, cherry-pick, or push — this prompt only produces the analysis and recommendation, execution requires explicit human approval,
+- if the local state is not synced with the remote or there are active branches from other agents with unverified changes, stop and request synchronization before recommending a definitive strategy,
+- don't assume the contents of a branch you haven't been able to inspect directly; if access is limited, flag it as a visibility gap instead of inferring its state,
+- every reported potential conflict must cite the specific file or area and the branch it collides with — don't generalize &quot;there may be conflicts&quot; without concrete evidence.
+
+Deliver:
+- recommended integration strategy with justification,
+- conflict resolution plan,
+- merge conditions and rollback plan.</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="09-02-monitoreo-ci" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-09-02-monitoreo-ci-es" onclick="toggleCard('09-02-monitoreo-ci-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('09-02-monitoreo-ci-es')">9.2 — Monitoreo de CI local y remoto</span><button class="info-btn" onclick="openInfoLang('09-02-monitoreo-ci', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Monitoreo de CI local y remoto" onclick="copyPromptLang('09-02-monitoreo-ci', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-09-02-monitoreo-ci-es"><pre><code id="code-09-02-monitoreo-ci-es">Objetivo:
 Revisa el estado del pipeline de CI tanto localmente como en GitHub y determina si los cambios están listos para integrarse.
 
 Valida:
@@ -5483,24 +5573,46 @@ Deliver:
 5. approval or rejection criterion.</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="09-03-workflows-github-actions" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-09-03-workflows-github-actions-es" onclick="toggleCard('09-03-workflows-github-actions-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('09-03-workflows-github-actions-es')">9.3 — Revisión de workflows de GitHub Actions</span><button class="info-btn" onclick="openInfoLang('09-03-workflows-github-actions', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Revisión de workflows de GitHub Actions" onclick="copyPromptLang('09-03-workflows-github-actions', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-09-03-workflows-github-actions-es"><pre><code id="code-09-03-workflows-github-actions-es">Objetivo:
 Analiza los workflows del repositorio y determina si cubren adecuadamente validación, pruebas, seguridad, despliegue y calidad.
 
-Incluye:
-- inventario de workflows,
-- disparadores,
-- jobs,
-- validaciones existentes,
-- faltantes,
-- riesgos,
-- mejoras recomendadas.</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="09-03-workflows-github-actions" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-09-03-workflows-github-actions-en" onclick="toggleCard('09-03-workflows-github-actions-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('09-03-workflows-github-actions-en')">9.3 — GitHub Actions workflows review</span><button class="info-btn" onclick="openInfoLang('09-03-workflows-github-actions', 'en')" title="When to use · Standard usage formula">&#9432;</button><button class="copy-btn" data-title="GitHub Actions workflows review" onclick="copyPromptLang('09-03-workflows-github-actions', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-09-03-workflows-github-actions-en"><pre><code id="code-09-03-workflows-github-actions-en">Objective:
+Pasos:
+1. Inventaría todos los workflows en `.github/workflows/`: nombre, archivo, disparadores (push, pull_request, schedule, workflow_dispatch, release) y jobs que contiene cada uno.
+2. Para cada job, identifica qué valida realmente (lint, build, tests, escaneo de seguridad, despliegue) y con qué herramienta — no asumas por el nombre del job, revisa los steps.
+3. Compara el inventario contra las áreas de cobertura esperadas (validación/lint, build, pruebas unitarias, pruebas de integración, análisis de seguridad, despliegue por ambiente, notificaciones) y marca cada una como cubierta, parcial o faltante.
+4. Para las áreas cubiertas, evalúa si la cobertura es suficiente: ¿el job realmente bloquea el merge o solo es informativo? ¿corre en cada push o solo en algunos casos? ¿tiene umbrales de fallo definidos (cobertura mínima, severidad de vulnerabilidades)?
+5. Para las áreas faltantes o parciales, prioriza por riesgo: primero brechas de seguridad y despliegue sin control (pueden causar incidentes en producción), luego brechas de pruebas (pueden dejar pasar bugs), y por último brechas de notificación o eficiencia.
+6. Verifica permisos y secretos usados por cada workflow (`permissions:`, `secrets.*`) y si siguen el principio de mínimo privilegio; si no puedes inspeccionar la configuración real del repositorio (secretos, environments protegidos), documenta esto como brecha de visibilidad en vez de asumir su estado.
+7. Redacta mejoras recomendadas, priorizadas y accionables, indicando el archivo y el job específico a modificar.
+
+Restricciones:
+- no ejecutes ni dispares ningún workflow, y no modifiques archivos de `.github/workflows/` — esto es una auditoría de solo lectura,
+- no asumas el estado de secretos, permisos o environments protegidos que no puedas inspeccionar directamente; decláralo como brecha de visibilidad en vez de inventar su configuración,
+- cada brecha reportada debe citar el archivo de workflow y el job específico afectado — no generalices sin evidencia concreta,
+- si un workflow depende de un servicio externo (registry, ambiente de despliegue) cuyo estado no puedes verificar, señálalo explícitamente en vez de dar por hecho que funciona.
+
+Entrega:
+- inventario completo de workflows,
+- análisis de cobertura por área con brechas y riesgos,
+- mejoras recomendadas priorizadas por riesgo.</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="09-03-workflows-github-actions" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-09-03-workflows-github-actions-en" onclick="toggleCard('09-03-workflows-github-actions-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('09-03-workflows-github-actions-en')">9.3 — GitHub Actions workflows review</span><button class="info-btn" onclick="openInfoLang('09-03-workflows-github-actions', 'en')" title="When to use · Standard usage formula">&#9432;</button><button class="copy-btn" data-title="GitHub Actions workflows review" onclick="copyPromptLang('09-03-workflows-github-actions', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-09-03-workflows-github-actions-en"><pre><code id="code-09-03-workflows-github-actions-en">Objective:
 Analyze the repository workflows and determine if they adequately cover validation, tests, security, deployment and quality.
 
-Include:
-- workflow inventory,
-- triggers,
-- jobs,
-- existing validations,
-- missing ones,
-- risks,
-- recommended improvements.</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="09-04-promotion-checklist" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-09-04-promotion-checklist-es" onclick="toggleCard('09-04-promotion-checklist-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('09-04-promotion-checklist-es')">9.4 — Promotion checklist: integración y despliegue entre ambientes</span><button class="info-btn" onclick="openInfoLang('09-04-promotion-checklist', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Promotion checklist: integración y despliegue entre ambientes" onclick="copyPromptLang('09-04-promotion-checklist', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-09-04-promotion-checklist-es"><pre><code id="code-09-04-promotion-checklist-es">Objetivo:
+Steps:
+1. Inventory every workflow in `.github/workflows/`: name, file, triggers (push, pull_request, schedule, workflow_dispatch, release) and the jobs each one contains.
+2. For each job, identify what it actually validates (lint, build, tests, security scanning, deployment) and with which tool — don't assume from the job name, inspect the steps.
+3. Compare the inventory against the expected coverage areas (validation/lint, build, unit tests, integration tests, security analysis, per-environment deployment, notifications) and mark each one as covered, partial, or missing.
+4. For covered areas, assess whether the coverage is actually sufficient: does the job really block the merge or is it only informational? Does it run on every push or only in some cases? Does it have defined failure thresholds (minimum coverage, vulnerability severity)?
+5. For missing or partial areas, prioritize by risk: first, security and uncontrolled-deployment gaps (can cause production incidents); then testing gaps (can let bugs through); and last, notification or efficiency gaps.
+6. Check the permissions and secrets each workflow uses (`permissions:`, `secrets.*`) and whether they follow least privilege; if you can't inspect the actual repository configuration (secrets, protected environments), document this as a visibility gap instead of assuming its state.
+7. Write recommended improvements, prioritized and actionable, pointing to the specific file and job to modify.
+
+Constraints:
+- don't execute or trigger any workflow, and don't modify files under `.github/workflows/` — this is a read-only audit,
+- don't assume the state of secrets, permissions, or protected environments you can't inspect directly; declare it as a visibility gap instead of inventing its configuration,
+- every reported gap must cite the workflow file and the specific job affected — don't generalize without concrete evidence,
+- if a workflow depends on an external service (registry, deployment environment) whose state you can't verify, flag it explicitly instead of assuming it works.
+
+Deliver:
+- complete workflow inventory,
+- coverage analysis per area with gaps and risks,
+- recommended improvements prioritized by risk.</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="09-04-promotion-checklist" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-09-04-promotion-checklist-es" onclick="toggleCard('09-04-promotion-checklist-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('09-04-promotion-checklist-es')">9.4 — Promotion checklist: integración y despliegue entre ambientes</span><button class="info-btn" onclick="openInfoLang('09-04-promotion-checklist', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Promotion checklist: integración y despliegue entre ambientes" onclick="copyPromptLang('09-04-promotion-checklist', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-09-04-promotion-checklist-es"><pre><code id="code-09-04-promotion-checklist-es">Objetivo:
 Genera el checklist completo de promotion para el despliegue de este cambio entre ambientes.
 
 Inputs requeridos:
@@ -5699,15 +5811,19 @@ For each step indicate:
 - Rollback decision made by: [ROLE / PERSON]</code></pre></div></div></div></div><div class="section-group" id="sec-10" data-observe><div class="section-header-row"><input type="checkbox" class="sec-check" title="Seleccionar toda la sección" onchange="onSecCheck(this)"><span class="sec-num" style="color:#a3e635;border-color:#a3e63522;background:#a3e63511">10</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a3e635" stroke-width="1.7" style="flex-shrink:0;margin-top:1px"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg><span class="sec-label sec-lang-es">Documentación</span><span class="sec-label sec-lang-en">Documentation</span><span class="sec-count">4</span></div><div class="cards-grid"><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="10-01-documentacion-tecnica" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-10-01-documentacion-tecnica-es" onclick="toggleCard('10-01-documentacion-tecnica-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('10-01-documentacion-tecnica-es')">10.1 — Actualizar documentación técnica</span><button class="info-btn" onclick="openInfoLang('10-01-documentacion-tecnica', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Actualizar documentación técnica" onclick="copyPromptLang('10-01-documentacion-tecnica', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-10-01-documentacion-tecnica-es"><pre><code id="code-10-01-documentacion-tecnica-es">Objetivo:
 Actualiza o propone actualización de la documentación técnica afectada por el cambio.
 
-Revisa y actualiza:
-- README,
-- docs,
-- arquitectura,
-- diagramas,
-- contratos,
-- casos de uso,
-- notas de despliegue,
-- troubleshooting.
+Pasos:
+1. Identifica los documentos existentes en el repositorio relacionados con los componentes modificados: README, docs/, diagramas de arquitectura, contratos de API, casos de uso, notas de despliegue y troubleshooting.
+2. Para cada documento, determina si el cambio lo vuelve desactualizado (contenido que ya no es cierto), incompleto (falta cubrir el nuevo comportamiento) o si requiere un documento nuevo que hoy no existe.
+3. Prioriza: actualiza primero README y contratos de API (afectan a quien integra o usa el sistema) antes que notas internas de troubleshooting o diagramas secundarios.
+4. Redacta el contenido propuesto en el mismo formato y nivel de detalle del documento original, citando la sección exacta a modificar (encabezado o línea de referencia) en vez de reescribir el archivo completo.
+5. Si el cambio introduce un paso de despliegue nuevo (variable de entorno, migración, feature flag), añade una nota de despliegue explícita aunque no exista una sección previa para ello.
+6. Señala cualquier documento que quede inconsistente con el código pero que no puedas actualizar por falta de información, en vez de inventar contenido.
+
+Restricciones:
+- no apliques los cambios directamente sobre los archivos, solo entrega el contenido propuesto,
+- no inventes rutas de documentos que no existen en el repositorio; si el documento no existe pero debería, indícalo explícitamente como &quot;documento nuevo a crear&quot;,
+- si el cambio real o los componentes modificados no están claros, detente y solicita esa información antes de proponer contenido inventado,
+- cada documento propuesto debe referenciar una ruta real existente en el repositorio (o marcarse como nuevo) y una razón de cambio ligada al issue o rama declarados.
 
 Entrega:
 - documentos a actualizar,
@@ -5715,15 +5831,19 @@ Entrega:
 - razón del cambio.</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="10-01-documentacion-tecnica" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-10-01-documentacion-tecnica-en" onclick="toggleCard('10-01-documentacion-tecnica-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('10-01-documentacion-tecnica-en')">10.1 — Update technical documentation</span><button class="info-btn" onclick="openInfoLang('10-01-documentacion-tecnica', 'en')" title="When to use · Standard usage formula">&#9432;</button><button class="copy-btn" data-title="Update technical documentation" onclick="copyPromptLang('10-01-documentacion-tecnica', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-10-01-documentacion-tecnica-en"><pre><code id="code-10-01-documentacion-tecnica-en">Objective:
 Update or propose update of the technical documentation affected by the change.
 
-Review and update:
-- README,
-- docs,
-- architecture,
-- diagrams,
-- contracts,
-- use cases,
-- deployment notes,
-- troubleshooting.
+Steps:
+1. Identify the existing repository documents related to the modified components: README, docs/, architecture diagrams, API contracts, use cases, deployment notes, and troubleshooting.
+2. For each document, determine whether the change makes it stale (content that is no longer true), incomplete (missing coverage of the new behavior), or whether it calls for a new document that doesn't exist yet.
+3. Prioritize: update the README and API contracts first (they affect anyone integrating with or using the system) before internal troubleshooting notes or secondary diagrams.
+4. Draft the proposed content in the same format and level of detail as the original document, citing the exact section to modify (heading or reference line) instead of rewriting the whole file.
+5. If the change introduces a new deployment step (environment variable, migration, feature flag), add an explicit deployment note even if no prior section existed for it.
+6. Flag any document that becomes inconsistent with the code but that you cannot update due to missing information, instead of inventing content.
+
+Constraints:
+- don't apply the changes directly to the files, only deliver the proposed content,
+- don't invent document paths that don't exist in the repository; if the document doesn't exist but should, mark it explicitly as &quot;new document to create&quot;,
+- if the actual change or modified components are unclear, stop and request that information instead of proposing invented content,
+- each proposed document must reference a real existing path in the repository (or be marked as new) and a reason for change tied to the declared issue or branch.
 
 Deliver:
 - documents to update,
@@ -5731,50 +5851,74 @@ Deliver:
 - reason for the change.</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="10-02-memoria-tecnica" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-10-02-memoria-tecnica-es" onclick="toggleCard('10-02-memoria-tecnica-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('10-02-memoria-tecnica-es')">10.2 — Memoria técnica del cambio</span><button class="info-btn" onclick="openInfoLang('10-02-memoria-tecnica', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Memoria técnica del cambio" onclick="copyPromptLang('10-02-memoria-tecnica', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-10-02-memoria-tecnica-es"><pre><code id="code-10-02-memoria-tecnica-es">Objetivo:
 Genera una memoria técnica clara y ejecutiva del cambio realizado.
 
-Incluye:
-1. contexto
-2. problema o requerimiento
-3. análisis
-4. causa raíz si aplica
-5. solución implementada
-6. componentes modificados
-7. pruebas ejecutadas
-8. riesgos
-9. resultados
-10. puntos pendientes</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="10-02-memoria-tecnica" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-10-02-memoria-tecnica-en" onclick="toggleCard('10-02-memoria-tecnica-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('10-02-memoria-tecnica-en')">10.2 — Technical memory of the change</span><button class="info-btn" onclick="openInfoLang('10-02-memoria-tecnica', 'en')" title="When to use · Standard usage formula">&#9432;</button><button class="copy-btn" data-title="Technical memory of the change" onclick="copyPromptLang('10-02-memoria-tecnica', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-10-02-memoria-tecnica-en"><pre><code id="code-10-02-memoria-tecnica-en">Objective:
+Pasos:
+1. Contexto: resume en 2-3 frases el estado previo del sistema y por qué se necesitó el cambio, citando el issue o requerimiento de origen.
+2. Problema o requerimiento: describe el problema concreto o la necesidad de negocio sin mezclarlo con la solución adoptada.
+3. Análisis: documenta las alternativas consideradas y por qué se descartaron, referenciando el diseño aprobado si existe.
+4. Causa raíz (si aplica): si el cambio es una corrección, identifica la causa raíz confirmada y distíngala de síntomas o causas hipotéticas descartadas durante el análisis.
+5. Solución implementada: describe exactamente qué se implementó en términos verificables — no &quot;se mejoró el sistema&quot;, sino qué lógica, endpoint o configuración cambió.
+6. Componentes modificados: lista archivos, módulos o servicios afectados, con referencia a los commits o PRs correspondientes.
+7. Pruebas ejecutadas: para cada tipo de prueba relevante (unitaria, integración, E2E, performance) indica si se ejecutó, el resultado y la referencia al artefacto (pipeline run, reporte). Si algún tipo relevante no se ejecutó, decláralo explícitamente en vez de omitirlo.
+8. Riesgos: riesgos residuales que persisten después del cambio, priorizados por severidad, indicando si tienen plan de mitigación o quedan aceptados sin mitigar.
+9. Resultados: estado final observable del sistema tras el despliegue (métricas, comportamiento validado en producción o staging), no solo la intención del cambio.
+10. Puntos pendientes: tareas derivadas, deuda técnica nueva o seguimientos necesarios, cada uno con dueño sugerido cuando sea posible.
+
+Restricciones:
+- cada sección debe estar respaldada por una referencia verificable (commit, PR, resultado de test o pipeline run), no redactada de forma genérica,
+- si faltan resultados de pruebas o el diseño aprobado no está disponible, señálalo explícitamente en la sección correspondiente en vez de inventar resultados,
+- no mezcles el problema con la solución en las secciones de contexto y problema — cada una responde una pregunta distinta,
+- distingue explícitamente entre riesgos mitigados y riesgos aceptados que quedan pendientes de resolución.</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="10-02-memoria-tecnica" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-10-02-memoria-tecnica-en" onclick="toggleCard('10-02-memoria-tecnica-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('10-02-memoria-tecnica-en')">10.2 — Technical memory of the change</span><button class="info-btn" onclick="openInfoLang('10-02-memoria-tecnica', 'en')" title="When to use · Standard usage formula">&#9432;</button><button class="copy-btn" data-title="Technical memory of the change" onclick="copyPromptLang('10-02-memoria-tecnica', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-10-02-memoria-tecnica-en"><pre><code id="code-10-02-memoria-tecnica-en">Objective:
 Generate a clear and executive technical memory of the change made.
 
-Include:
-1. context
-2. problem or requirement
-3. analysis
-4. root cause if applicable
-5. implemented solution
-6. modified components
-7. executed tests
-8. risks
-9. results
-10. pending points</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="10-03-release-changelog" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-10-03-release-changelog-es" onclick="toggleCard('10-03-release-changelog-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('10-03-release-changelog-es')">10.3 — Documentación de release o changelog</span><button class="info-btn" onclick="openInfoLang('10-03-release-changelog', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Documentación de release o changelog" onclick="copyPromptLang('10-03-release-changelog', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-10-03-release-changelog-es"><pre><code id="code-10-03-release-changelog-es">Objetivo:
+Steps:
+1. Context: summarize in 2-3 sentences the system's prior state and why the change was needed, citing the originating issue or requirement.
+2. Problem or requirement: describe the concrete problem or business need without mixing it with the solution adopted.
+3. Analysis: document the alternatives considered and why they were discarded, referencing the approved design if it exists.
+4. Root cause (if applicable): if the change is a fix, identify the confirmed root cause and distinguish it from symptoms or hypothetical causes ruled out during analysis.
+5. Implemented solution: describe exactly what was implemented in verifiable terms — not &quot;the system was improved,&quot; but which logic, endpoint, or configuration changed.
+6. Modified components: list the affected files, modules, or services, with references to the corresponding commits or PRs.
+7. Executed tests: for each relevant test type (unit, integration, E2E, performance) state whether it ran, the result, and the reference to the artifact (pipeline run, report). If a relevant type was not executed, state that explicitly instead of omitting it.
+8. Risks: residual risks that persist after the change, prioritized by severity, stating whether they have a mitigation plan or remain accepted without mitigation.
+9. Results: the final observable state of the system after deployment (metrics, behavior validated in production or staging), not just the intent of the change.
+10. Pending points: derived tasks, new technical debt, or necessary follow-ups, each with a suggested owner when possible.
+
+Constraints:
+- each section must be backed by a verifiable reference (commit, PR, test result, or pipeline run), not written generically,
+- if test results are missing or the approved design is unavailable, flag that explicitly in the relevant section instead of inventing results,
+- don't mix the problem with the solution in the context and problem sections — each answers a different question,
+- explicitly distinguish between mitigated risks and accepted risks that remain unresolved.</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="10-03-release-changelog" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-10-03-release-changelog-es" onclick="toggleCard('10-03-release-changelog-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('10-03-release-changelog-es')">10.3 — Documentación de release o changelog</span><button class="info-btn" onclick="openInfoLang('10-03-release-changelog', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Documentación de release o changelog" onclick="copyPromptLang('10-03-release-changelog', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-10-03-release-changelog-es"><pre><code id="code-10-03-release-changelog-es">Objetivo:
 Redacta las notas de release o changelog del cambio con enfoque técnico y funcional.
 
-Incluye:
-- resumen del cambio,
-- módulos impactados,
-- correcciones,
-- mejoras,
-- riesgos,
-- consideraciones de despliegue,
-- notas de compatibilidad.</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="10-03-release-changelog" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-10-03-release-changelog-en" onclick="toggleCard('10-03-release-changelog-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('10-03-release-changelog-en')">10.3 — Release or changelog documentation</span><button class="info-btn" onclick="openInfoLang('10-03-release-changelog', 'en')" title="When to use · Standard usage formula">&#9432;</button><button class="copy-btn" data-title="Release or changelog documentation" onclick="copyPromptLang('10-03-release-changelog', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-10-03-release-changelog-en"><pre><code id="code-10-03-release-changelog-en">Objective:
+Pasos:
+1. Recopila los commits y PRs mergeados dentro del período o versión declarada, filtrando por la rama de release.
+2. Clasifica cada entrada en corrección, mejora, cambio interno (sin impacto de usuario) o breaking change; descarta del changelog visible los commits puramente de mantenimiento (formateo, dependencias menores) salvo que tengan impacto de seguridad.
+3. Redacta el resumen ejecutivo primero (2-4 frases), orientado a quien lee el release sin contexto técnico previo.
+4. Para cada corrección o mejora, describe el impacto observable para el usuario o integrador (no solo el título técnico del commit) y enlaza el número de PR o commit.
+5. Identifica los módulos impactados agrupando por área funcional, priorizando los que tocan contratos públicos (API, CLI, esquema de datos) sobre cambios puramente internos.
+6. Si detectas un cambio que rompe compatibilidad, documenta la nota de migración explícita (qué debe hacer quien actualiza) antes de dar el changelog por completo; si no existe esa nota, detente y solicítala.
+7. Añade consideraciones de despliegue: variables nuevas, migraciones a ejecutar y orden de despliegue si hay dependencias entre servicios.
+
+Restricciones:
+- cada entrada del changelog debe ser trazable a un commit o PR real dentro del período declarado; no incluyas cambios fuera de ese rango,
+- no publiques el changelog ni crees el tag — la publicación efectiva es una acción A3 separada y explícita,
+- si detectas breaking changes sin nota de migración clara, detente y solicita esa información antes de entregar el changelog como completo,
+- no mezcles lenguaje de marketing con el reporte técnico: describe el impacto real, sin exagerar beneficios ni ocultar riesgos conocidos.</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="10-03-release-changelog" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-10-03-release-changelog-en" onclick="toggleCard('10-03-release-changelog-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('10-03-release-changelog-en')">10.3 — Release or changelog documentation</span><button class="info-btn" onclick="openInfoLang('10-03-release-changelog', 'en')" title="When to use · Standard usage formula">&#9432;</button><button class="copy-btn" data-title="Release or changelog documentation" onclick="copyPromptLang('10-03-release-changelog', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-10-03-release-changelog-en"><pre><code id="code-10-03-release-changelog-en">Objective:
 Draft the release notes or changelog of the change with technical and functional focus.
 
-Include:
-- change summary,
-- impacted modules,
-- fixes,
-- improvements,
-- risks,
-- deployment considerations,
-- compatibility notes.</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="10-04-observabilidad-instrumentacion" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-10-04-observabilidad-instrumentacion-es" onclick="toggleCard('10-04-observabilidad-instrumentacion-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('10-04-observabilidad-instrumentacion-es')">10.4 — Observabilidad: Instrumentación y Monitoreo</span><button class="info-btn" onclick="openInfoLang('10-04-observabilidad-instrumentacion', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Observabilidad: Instrumentación y Monitoreo" onclick="copyPromptLang('10-04-observabilidad-instrumentacion', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-10-04-observabilidad-instrumentacion-es"><pre><code id="code-10-04-observabilidad-instrumentacion-es">Objetivo:
+Steps:
+1. Gather the commits and merged PRs within the declared period or version, filtering by the release branch.
+2. Classify each entry as a fix, an improvement, an internal change (no user impact), or a breaking change; drop purely maintenance commits (formatting, minor dependency bumps) from the visible changelog unless they carry security impact.
+3. Draft the executive summary first (2-4 sentences), aimed at someone reading the release with no prior technical context.
+4. For each fix or improvement, describe the observable impact for the user or integrator (not just the commit's technical title) and link the PR or commit number.
+5. Identify impacted modules, grouping by functional area, prioritizing ones that touch public contracts (API, CLI, data schema) over purely internal changes.
+6. If you detect a change that breaks compatibility, document the explicit migration note (what the upgrader must do) before treating the changelog as complete; if that note doesn't exist, stop and request it.
+7. Add deployment considerations: new variables, migrations to run, and deployment order if there are dependencies between services.
+
+Constraints:
+- every changelog entry must be traceable to a real commit or PR within the declared period; don't include changes outside that range,
+- don't publish the changelog or create the tag — actual publication is a separate, explicit A3 action,
+- if you detect breaking changes without a clear migration note, stop and request that information before delivering the changelog as complete,
+- don't mix marketing language with the technical report: describe the real impact, without overselling benefits or hiding known risks.</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="10-04-observabilidad-instrumentacion" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-10-04-observabilidad-instrumentacion-es" onclick="toggleCard('10-04-observabilidad-instrumentacion-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('10-04-observabilidad-instrumentacion-es')">10.4 — Observabilidad: Instrumentación y Monitoreo</span><button class="info-btn" onclick="openInfoLang('10-04-observabilidad-instrumentacion', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Observabilidad: Instrumentación y Monitoreo" onclick="copyPromptLang('10-04-observabilidad-instrumentacion', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-10-04-observabilidad-instrumentacion-es"><pre><code id="code-10-04-observabilidad-instrumentacion-es">Objetivo:
 Diseñar e implementar la estrategia de observabilidad completa para la aplicación,
 cubriendo los tres pilares (métricas, logs, trazas), definiendo SLOs, alertas accionables
 y dashboards para detectar y diagnosticar problemas antes de que impacten a los usuarios.
@@ -6089,12 +6233,46 @@ Include:
 ⚠️ Prioritize read-only diagnostic commands (logs, service status, metrics). Do not run restarts, rollbacks, configuration changes, or destructive commands — include them as part of the proposed &quot;resolution path&quot; instead, pending approval.</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="11-02-hardening-seguridad" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-11-02-hardening-seguridad-es" onclick="toggleCard('11-02-hardening-seguridad-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('11-02-hardening-seguridad-es')">11.2 — Hardening y seguridad operativa</span><button class="info-btn" onclick="openInfoLang('11-02-hardening-seguridad', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Hardening y seguridad operativa" onclick="copyPromptLang('11-02-hardening-seguridad', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-11-02-hardening-seguridad-es"><pre><code id="code-11-02-hardening-seguridad-es">Objetivo:
 Analiza el repositorio y la configuración operativa para detectar oportunidades de fortalecimiento de seguridad, hardening, manejo de secretos, permisos, exposición de servicios y riesgos de despliegue.
 
+Pasos:
+1. Inventaria las fuentes de configuración operativa disponibles (docker-compose, nginx, `.env`, workflows de CI/CD, permisos de GitHub) y confirma cuáles son accesibles antes de continuar; si falta alguna, señálalo en vez de asumir que esa área está segura.
+2. Revisa manejo de secretos: busca credenciales, tokens o claves hardcodeadas en código, configuración o historial de commits recientes. Reporta únicamente ubicación y tipo, nunca el valor real.
+3. Revisa permisos: identifica cuentas de servicio, tokens de CI/CD o roles con privilegios más amplios de los que su función requiere (principio de mínimo privilegio).
+4. Revisa exposición de servicios: puertos publicados innecesariamente, servicios sin autenticación, endpoints administrativos accesibles desde fuera de la red interna.
+5. Revisa configuración insegura: flags de debug activos, CORS permisivo, headers de seguridad ausentes (CSP, HSTS, X-Frame-Options), TLS mal configurado o deshabilitado.
+6. Revisa dependencias vulnerables: paquetes con CVEs conocidos o versiones desactualizadas de componentes críticos (framework web, librerías de autenticación/criptografía).
+7. Revisa logging y auditoría: confirma que existan registros suficientes para detectar incidentes, sin que ese logging capture datos sensibles (PII, secretos) en texto plano.
+8. Prioriza los hallazgos por explotabilidad e impacto: un secreto expuesto en un repositorio accesible es más urgente que un header de seguridad ausente en un endpoint interno de bajo riesgo.
+
+Restricciones:
+- nunca incluyas el valor real de un secreto, credencial o token en la salida, aunque lo detectes expuesto — referencia solo archivo, línea aproximada y tipo,
+- esta es una auditoría de solo lectura: no apliques cambios de configuración, no rotes credenciales ni reinicies servicios como parte del mismo paso,
+- si detectas una credencial que pudo haber sido comprometida, señala la necesidad de rotación inmediata y sigue el proceso de disclosure responsable del equipo — no la publiques ni la compartas fuera del canal de reporte designado,
+- toda mitigación propuesta requiere revisión y aprobación humana antes de aplicarse; no ejecutes remediaciones automáticas ni scripts de corrección,
+- si no tienes acceso a algún insumo requerido, señala la omisión explícitamente en la salida en vez de completar la matriz con supuestos.
+
 Entrega:
 - hallazgos,
 - criticidad,
 - mitigación,
 - prioridad.</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="11-02-hardening-seguridad" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-11-02-hardening-seguridad-en" onclick="toggleCard('11-02-hardening-seguridad-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('11-02-hardening-seguridad-en')">11.2 — Security hardening and operations</span><button class="info-btn" onclick="openInfoLang('11-02-hardening-seguridad', 'en')" title="When to use · Standard usage formula">&#9432;</button><button class="copy-btn" data-title="Security hardening and operations" onclick="copyPromptLang('11-02-hardening-seguridad', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-11-02-hardening-seguridad-en"><pre><code id="code-11-02-hardening-seguridad-en">Objective:
 Analyze the repository and operational configuration to detect security strengthening opportunities, hardening, secrets management, permissions, service exposure and deployment risks.
+
+Steps:
+1. Inventory the available operational configuration sources (docker-compose, nginx, `.env`, CI/CD workflows, GitHub permissions) and confirm which are accessible before continuing; if one is missing, flag it instead of assuming that area is safe.
+2. Review secrets management: look for hardcoded credentials, tokens, or keys in code, configuration, or recent commit history. Report only location and type, never the real value.
+3. Review permissions: identify service accounts, CI/CD tokens, or roles with broader privileges than their function requires (principle of least privilege).
+4. Review service exposure: unnecessarily published ports, services without authentication, admin endpoints reachable from outside the internal network.
+5. Review insecure configuration: active debug flags, permissive CORS, missing security headers (CSP, HSTS, X-Frame-Options), misconfigured or disabled TLS.
+6. Review vulnerable dependencies: packages with known CVEs or outdated versions of critical components (web framework, auth/crypto libraries).
+7. Review logging and auditing: confirm there is enough logging to detect incidents, without that logging capturing sensitive data (PII, secrets) in plain text.
+8. Prioritize findings by exploitability and impact: a secret exposed in an accessible repository is more urgent than a missing security header on a low-risk internal endpoint.
+
+Constraints:
+- never include the real value of a secret, credential, or token in the output, even if found exposed — reference only file, approximate line, and type,
+- this is a read-only audit: don't apply configuration changes, rotate credentials, or restart services as part of the same step,
+- if you find a credential that may have already been compromised, flag the need for immediate rotation and follow the team's responsible disclosure process — don't publish or share it outside the designated reporting channel,
+- every proposed mitigation requires human review and approval before it's applied; don't run automated remediations or fix-it scripts,
+- if you lack access to a required input, flag the omission explicitly in the output instead of completing the matrix with assumptions.
 
 Deliver:
 - findings,
@@ -6103,16 +6281,23 @@ Deliver:
 - priority.</code></pre></div></div><div class="card" data-lang="es"><div class="card-head"><input type="checkbox" class="card-check" data-pid="11-03-deuda-tecnica" onchange="onCardCheck(this)" title="Seleccionar prompt"><button class="card-expand" id="ce-11-03-deuda-tecnica-es" onclick="toggleCard('11-03-deuda-tecnica-es')" title="Ver / ocultar prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('11-03-deuda-tecnica-es')">11.3 — Deuda técnica y mejora continua</span><button class="info-btn" onclick="openInfoLang('11-03-deuda-tecnica', 'es')" title="Cuándo usar · Fórmula de uso estándar">&#9432;</button><button class="copy-btn" data-title="Deuda técnica y mejora continua" onclick="copyPromptLang('11-03-deuda-tecnica', 'es', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copiar</button></div><div class="card-body" id="cb-11-03-deuda-tecnica-es"><pre><code id="code-11-03-deuda-tecnica-es">Objetivo:
 Identifica deuda técnica en el repositorio y propón un backlog priorizado de mejoras.
 
-Clasifica por:
-- arquitectura,
-- código,
-- pruebas,
-- documentación,
-- seguridad,
-- CI/CD,
-- observabilidad,
-- datos,
-- performance.
+Pasos:
+1. Recorre arquitectura: identifica acoplamientos fuertes, módulos que deberían estar separados y decisiones de diseño que ya no reflejan cómo creció el sistema.
+2. Recorre código: identifica duplicación, funciones o clases con complejidad alta, código muerto y violaciones de las convenciones que el propio repositorio ya establece.
+3. Recorre pruebas: identifica cobertura insuficiente en módulos críticos, pruebas frágiles (flaky) y ausencia de pruebas de integración o E2E donde el riesgo del componente lo justifica.
+4. Recorre documentación: identifica documentación desactualizada respecto al código actual, decisiones de arquitectura sin registrar (ADR faltantes) y README desalineados con el comportamiento real.
+5. Recorre seguridad: identifica prácticas inseguras de bajo alcance que ameritan quedar en el backlog (validaciones ausentes, dependencias desactualizadas) sin sustituir una auditoría completa (`11-02-hardening-seguridad`).
+6. Recorre CI/CD: identifica pipelines lentos, pasos manuales automatizables y ausencia de gates de calidad (lint, tests, cobertura mínima) antes de merge.
+7. Recorre observabilidad: identifica ausencia de métricas, logs o trazas en rutas críticas, o alertas mal calibradas (demasiado ruido o silencio total ante fallos reales).
+8. Recorre datos: identifica esquemas sin migraciones versionadas, ausencia de índices en consultas frecuentes o inconsistencias entre el modelo de datos y su uso real en el código.
+9. Recorre performance: identifica cuellos de botella conocidos, consultas N+1, operaciones síncronas que deberían ser asíncronas o ausencia de caché en rutas de alto tráfico.
+10. Para cada ítem detectado, estima impacto (costo de dejarlo sin resolver) y esfuerzo (trabajo necesario para resolverlo), y prioriza primero lo que combina alto impacto con esfuerzo bajo o medio.
+
+Restricciones:
+- cada ítem del backlog debe referenciar un archivo, módulo o configuración real del repositorio — no generalices con frases como &quot;mejorar la arquitectura&quot; sin evidencia concreta,
+- no propongas cambios de código ni los apliques: esta es una fase de inventario y priorización, no de implementación,
+- si un área declarada para análisis no es accesible (módulo inexistente o fuera del repo), señala la omisión explícitamente en vez de completar la matriz con supuestos,
+- no dupliques como ítem de backlog un hallazgo que corresponde a una auditoría de seguridad completa — referencia `11-02-hardening-seguridad` si el hallazgo es de esa naturaleza.
 
 Entrega:
 - matriz de deuda técnica,
@@ -6122,16 +6307,23 @@ Entrega:
 - recomendación de atención.</code></pre></div></div><div class="card" data-lang="en"><div class="card-head"><input type="checkbox" class="card-check" data-pid="11-03-deuda-tecnica" onchange="onCardCheck(this)" title="Select prompt"><button class="card-expand" id="ce-11-03-deuda-tecnica-en" onclick="toggleCard('11-03-deuda-tecnica-en')" title="Show / hide prompt"><svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="card-title" onclick="toggleCard('11-03-deuda-tecnica-en')">11.3 — Technical debt and continuous improvement</span><button class="info-btn" onclick="openInfoLang('11-03-deuda-tecnica', 'en')" title="When to use · Standard usage formula">&#9432;</button><button class="copy-btn" data-title="Technical debt and continuous improvement" onclick="copyPromptLang('11-03-deuda-tecnica', 'en', this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy</button></div><div class="card-body" id="cb-11-03-deuda-tecnica-en"><pre><code id="code-11-03-deuda-tecnica-en">Objective:
 Identify technical debt in the repository and propose a prioritized backlog of improvements.
 
-Classify by:
-- architecture,
-- code,
-- tests,
-- documentation,
-- security,
-- CI/CD,
-- observability,
-- data,
-- performance.
+Steps:
+1. Go through architecture: identify tight coupling, modules that should be split apart, and design decisions that no longer reflect how the system actually grew.
+2. Go through code: identify duplication, high-complexity functions or classes, dead code, and violations of the conventions the repository itself already establishes.
+3. Go through tests: identify insufficient coverage in critical modules, flaky tests, and missing integration or E2E tests where the component's risk warrants them.
+4. Go through documentation: identify docs that are out of sync with the current code, missing architecture decision records (ADRs), and READMEs that no longer match real behavior.
+5. Go through security: identify narrow-scope insecure practices worth tracking in the backlog (missing validation, outdated dependencies) without substituting for a full audit (`11-02-hardening-seguridad`).
+6. Go through CI/CD: identify slow pipelines, manual steps that could be automated, and missing quality gates (lint, tests, minimum coverage) before merge.
+7. Go through observability: identify missing metrics, logs, or traces on critical paths, or alerts that are poorly calibrated (too noisy or silent during real failures).
+8. Go through data: identify schemas without versioned migrations, missing indexes on frequent queries, or inconsistencies between the data model and how it's actually used in code.
+9. Go through performance: identify known bottlenecks, N+1 queries, synchronous operations that should be async, or missing caching on high-traffic paths.
+10. For each item found, estimate impact (the cost of leaving it unresolved) and effort (the work needed to fix it), and prioritize first what combines high impact with low or medium effort.
+
+Constraints:
+- every backlog item must reference a real file, module, or configuration in the repository — don't generalize with phrases like &quot;improve the architecture&quot; without concrete evidence,
+- don't propose or apply code changes: this is an inventory and prioritization phase, not implementation,
+- if an area declared for analysis isn't accessible (nonexistent module or outside the repo), flag the omission explicitly instead of completing the matrix with assumptions,
+- don't duplicate as a backlog item a finding that belongs to a full security audit — reference `11-02-hardening-seguridad` if the finding is of that nature.
 
 Deliver:
 - technical debt matrix,
@@ -8763,6 +8955,12 @@ Actividades:
 3. Evalúa si el cambio propuesto introduce acoplamiento innecesario.
 4. Diseña una matriz de relaciones de importación.
 
+Restricciones:
+- no ejecutes build, instalación de dependencias ni scripts del monorepo — el análisis es exclusivamente de lectura de configuración y código fuente,
+- si los archivos de configuración no son accesibles o son ambiguos, declara el grafo como incompleto en vez de asumir relaciones de dependencia no verificadas,
+- toda dependencia local reportada (directa, transitiva o circular) debe referenciar el archivo de configuración exacto donde se declara,
+- no marques un acoplamiento como &quot;requiere aislamiento&quot; sin evidencia concreta del grafo — evita conclusiones especulativas sobre el impacto en el build.
+
 Salida:
 1. Mapeo del Grafo de Dependencias (workspaces involucrados)
 2. Análisis de Ciclos y Conflictos Potenciales
@@ -8783,6 +8981,12 @@ Activities:
    - potential circular imports (package A imports B and B imports A).
 3. Evaluate if the proposed change introduces unnecessary coupling.
 4. Design an import relationship matrix.
+
+Constraints:
+- don't run the build, install dependencies, or execute any monorepo scripts — the analysis is strictly read-only over configuration and source code,
+- if the configuration files are not accessible or are ambiguous, state the graph as incomplete instead of assuming unverified dependency relationships,
+- every reported local dependency (direct, transitive, or circular) must reference the exact configuration file where it is declared,
+- don't flag a coupling as &quot;requires isolation&quot; without concrete graph evidence — avoid speculative conclusions about build impact.
 
 Output:
 1. Dependency Graph Mapping (workspaces involved)
@@ -8805,6 +9009,12 @@ Actividades:
    - bitácora de defectos encontrados (fase de inyección, fase de remoción, tipo de defecto, descripción y tiempo de reparación).
 3. Calcula el rendimiento del proceso (Yield) y la densidad de defectos (defectos/KLOC).
 
+Restricciones:
+- no inventes tiempos reales ni defectos no reportados por la persona desarrolladora — si un dato no fue provisto, márcalo como pendiente en vez de estimarlo,
+- no calcules rendimiento (Yield) ni densidad de defectos si falta la estimación base (Plan) de la fase — solicítala antes de continuar,
+- registra fase de inyección y fase de remoción de cada defecto por separado; no las combines en un solo campo,
+- no sobrescribas el historial de métricas de ciclos o fases anteriores — el registro es acumulativo, no reemplaza datos previos.
+
 Salida:
 1. Resumen de Planeación vs. Real (Tiempos por Fase)
 2. Bitácora de Defectos Inyectados/Removidos
@@ -8825,6 +9035,12 @@ Activities:
    - actual time consumed in the phase,
    - log of defects found (injection phase, removal phase, defect type, description, and fix time).
 3. Calculate process yield and defect density (defects/KLOC).
+
+Constraints:
+- don't invent actual times or defects not reported by the developer — if a data point wasn't provided, mark it as pending instead of estimating it,
+- don't calculate yield or defect density if the phase's base estimate (Plan) is missing — request it before continuing,
+- record the injection phase and removal phase of each defect separately; don't collapse them into a single field,
+- don't overwrite the metrics history of previous cycles or phases — the log is cumulative, it doesn't replace prior data.
 
 Output:
 1. Planning vs. Actual Summary (Time per Phase)
@@ -8847,6 +9063,12 @@ Actividades:
 2. Identifica no conformidades y desviaciones.
 3. Evalúa si el código cumple con las directrices de seguridad de la información del proyecto (ISO 27001).
 
+Restricciones:
+- no emitas veredicto &quot;Aprobado&quot; si falta trazabilidad bidireccional completa entre requerimiento, diseño, código y pruebas,
+- ante cualquier no conformidad detectada sin evidencia de mitigación, marca el veredicto como &quot;Rechazado&quot; o &quot;Aprobado con Reservas&quot; — nunca &quot;Aprobado&quot; por omisión o duda,
+- no ejecutes pruebas ni modifiques el repositorio — la auditoría es exclusivamente de lectura sobre artefactos y documentación existentes,
+- cada no conformidad reportada debe referenciar el artefacto o control específico incumplido junto con la acción de remediación obligatoria asociada.
+
 Salida:
 1. Reporte de Cumplimiento Normativo (Checklist Aprobado/Faltante)
 2. Matriz de Trazabilidad de Requerimiento a Pruebas
@@ -8867,6 +9089,12 @@ Activities:
    - Was the technical memory of the change recorded and user/operational documentation updated?
 2. Identify non-conformities and deviations.
 3. Evaluate if the code complies with the project's information security guidelines (ISO 27001).
+
+Constraints:
+- don't issue an &quot;Approved&quot; verdict if full bidirectional traceability between requirement, design, code, and tests is missing,
+- for any non-conformity detected without mitigation evidence, mark the verdict as &quot;Rejected&quot; or &quot;Approved with Reservations&quot; — never &quot;Approved&quot; by omission or doubt,
+- don't run tests or modify the repository — the audit is strictly read-only over existing artifacts and documentation,
+- each reported non-conformity must reference the specific artifact or control that was not met, along with its associated mandatory remediation action.
 
 Output:
 1. Regulatory Compliance Report (Approved/Missing Checklist)

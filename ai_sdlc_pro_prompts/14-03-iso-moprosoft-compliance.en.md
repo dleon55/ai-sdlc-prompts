@@ -50,6 +50,12 @@ Activities:
 2. Identify non-conformities and deviations.
 3. Evaluate if the code complies with the project's information security guidelines (ISO 27001).
 
+Constraints:
+- don't issue an "Approved" verdict if full bidirectional traceability between requirement, design, code, and tests is missing,
+- for any non-conformity detected without mitigation evidence, mark the verdict as "Rejected" or "Approved with Reservations" — never "Approved" by omission or doubt,
+- don't run tests or modify the repository — the audit is strictly read-only over existing artifacts and documentation,
+- each reported non-conformity must reference the specific artifact or control that was not met, along with its associated mandatory remediation action.
+
 Output:
 1. Regulatory Compliance Report (Approved/Missing Checklist)
 2. Traceability Matrix from Requirement to Tests
@@ -74,3 +80,17 @@ Use the ISO/MOPROSOFT compliance audit prompt and adapt it to:
 - specific output objective: formal release audit and traceability report
 - depth level: high
 ```
+
+---
+
+## Expected output
+
+| Control | Standard | Status | Evidence | Remediation action |
+|---|---|---|---|---|
+| Requirement mapped to technical design (ADR) | ISO 29110 §Design | Compliant | ADR-042 referenced in issue #128 | — |
+| Requirement-code-test traceability | MOPROSOFT DS.3 | Non-compliant | No traceability matrix for the payments module | Generate traceability matrix before release |
+| Verification tests (unit/integration) | ISO 29110 §Construction | Partially compliant | 68% unit coverage, no integration tests | Complete integration tests for the payment flow |
+| Technical memory of the change | MOPROSOFT ASEG | Non-compliant | No technical memory document found | Draft the technical memory and attach it to the release |
+| Information security compliance (ISO 27001) | ISO 27001 | Compliant | SAST scan with no critical findings | — |
+
+**Final verdict:** Approved with Reservations — the release can proceed only after generating the traceability matrix and completing the missing integration tests.
