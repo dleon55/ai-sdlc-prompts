@@ -1260,7 +1260,7 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
 </div>
 <div class="search-bar">
   <div class="proj-quick" id="proj-quick"><button class="proj-quick-btn" id="proj-quick-btn" onclick="toggleProjQuick(event)" title="Cambiar proyecto activo / Change active project"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M3 12h18M3 17h18"/></svg><span class="proj-quick-name" id="proj-quick-name">Proyecto</span><span class="proj-quick-chevron"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button><div class="proj-quick-dropdown" id="proj-quick-dropdown"></div></div>
-  <div class="search-wrap"><span class="search-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></span><input type="text" placeholder="Buscar por nombre o contenido del prompt..." oninput="filterPrompts(this.value)" autocomplete="off"></div>
+  <div class="search-wrap"><span class="search-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></span><input type="text" placeholder="Buscar por nombre o contenido del prompt..." aria-label="Buscar por nombre o contenido del prompt" oninput="filterPrompts(this.value)" autocomplete="off"></div>
   <div class="chips-container" id="category-chips"></div>
   <span class="search-count" id="vis-count">prompts</span>
   <span class="vars-active-badge" id="vars-badge">■ Vars activas</span>
@@ -9792,6 +9792,9 @@ function setLanguage(lang) {
     searchInput.placeholder = (lang === 'en')
       ? 'Search by prompt name or content...'
       : 'Buscar por nombre o contenido del prompt...';
+    searchInput.setAttribute('aria-label', (lang === 'en')
+      ? 'Search by prompt name or content'
+      : 'Buscar por nombre o contenido del prompt');
   }
 
   // Traducir empty state
