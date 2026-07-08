@@ -2175,6 +2175,9 @@ function setLanguage(lang) {
     searchInput.placeholder = (lang === 'en')
       ? 'Search by prompt name or content...'
       : 'Buscar por nombre o contenido del prompt...';
+    searchInput.setAttribute('aria-label', (lang === 'en')
+      ? 'Search by prompt name or content'
+      : 'Buscar por nombre o contenido del prompt');
   }
 
   // Traducir empty state
@@ -3289,6 +3292,7 @@ def build():
         '<circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>'
         '</span>'
         '<input type="text" placeholder="Buscar por nombre o contenido del prompt..."'
+        ' aria-label="Buscar por nombre o contenido del prompt"'
         ' oninput="filterPrompts(this.value)" autocomplete="off">'
         '</div>\n'
         '  <div class="chips-container" id="category-chips"></div>\n'
