@@ -8,6 +8,22 @@ Prompt para diseñar la solución completa antes de implementar: objetivo, alcan
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | diseño |
+| Riesgo esperado | medio — el diseño resultante guía directamente la implementación; un diseño incompleto en riesgos o estrategia de rollback puede llevar a una implementación insegura o sin plan de reversión, aunque este prompt no ejecuta cambios |
+| Entradas requeridas | análisis funcional, técnico y de impacto cruzado ya completados (`02-01`, `02-02`, `02-03`), arquitectura y contratos existentes |
+| Herramientas permitidas | lectura de código, arquitectura y documentación — sin ejecución ni cambios; el resultado es un documento de diseño, no código |
+| Autonomía permitida | A1 — Proponer |
+| Criterios de detención | si no existe una estrategia de rollback viable para un componente crítico, declararlo como riesgo abierto en el diseño en vez de omitirlo |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada cambio propuesto por componente debe estar vinculado a un riesgo y su mitigación, y a los hallazgos del análisis previo citado |
+| Siguiente prompt recomendado | `05-01-plan-implementacion` |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

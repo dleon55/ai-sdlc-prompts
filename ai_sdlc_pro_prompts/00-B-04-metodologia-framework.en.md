@@ -8,6 +8,22 @@ Prompt to select, document, and operationally configure the project methodology 
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | design |
+| Expected risk | medium — a methodology poorly matched to the team's real maturity produces sustained operational friction (ceremonies that don't happen, ignored DoR/DoD), even though the prompt executes no technical change |
+| Required inputs | project type, team size (people + AI agent types), expected delivery frequency, candidate or chosen methodology, third-party integrations/dependencies, current team maturity level |
+| Allowed tools | read of README, CONTRIBUTING, current issues, and repository structure to contextualize the recommendation — no write or execution |
+| Permitted autonomy | A1 — Propose |
+| Stop criteria | if the candidate methodology requires conditions the declared team does not meet (e.g., full SCRUM with a one-person team), state the alert explicitly instead of recommending it without reservations |
+| Expected output | see `## Expected Output` |
+| Minimum evidence | the branch flow diagram is consistent with the recommended methodology; the Definition of Ready and Definition of Done tables explicitly cover both human and AI agent work |
+| Recommended next prompt | `00-B-01-scaffolding-repositorio` if no repository structure exists yet; `00-B-03-github-configuracion` to apply the branch strategy in real GitHub protections |
+
+---
+
 ## Mandatory Previous Context
 
 > Include the block from file `00-framework.en.md` before this prompt.

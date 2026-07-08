@@ -8,6 +8,22 @@ Prompt para seleccionar, documentar y configurar operativamente la metodología 
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | diseño |
+| Riesgo esperado | medio — una metodología mal ajustada a la madurez real del equipo genera fricción operativa sostenida (ceremonias que no se cumplen, DoR/DoD ignorados), aunque el prompt no ejecuta ningún cambio técnico |
+| Entradas requeridas | tipo de proyecto, tamaño del equipo (personas + tipos de agentes IA), frecuencia de entregas esperada, metodología candidata o elegida, integraciones/dependencias de terceros, nivel de madurez actual del equipo |
+| Herramientas permitidas | lectura de README, CONTRIBUTING, issues actuales y estructura del repositorio para contextualizar la recomendación — sin escritura ni ejecución |
+| Autonomía permitida | A1 — Proponer |
+| Criterios de detención | si la metodología candidata requiere condiciones que el equipo declarado no cumple (ej. SCRUM completo con equipo de una persona), señalar la alerta explícitamente en vez de recomendarla sin reservas |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | el diagrama de branches es consistente con la metodología recomendada; las tablas de Definition of Ready y Definition of Done cubren explícitamente tanto el trabajo humano como el de agentes IA |
+| Siguiente prompt recomendado | `00-B-01-scaffolding-repositorio` si aún no existe estructura de repositorio; `00-B-03-github-configuracion` para aplicar la estrategia de branches en protecciones reales de GitHub |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

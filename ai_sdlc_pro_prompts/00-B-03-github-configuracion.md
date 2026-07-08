@@ -8,6 +8,22 @@ Prompt para configurar el repositorio GitHub de forma completa y segura: protecc
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | operación |
+| Riesgo esperado | medio — branch protection, permisos de Actions y Environments mal configurados pueden bloquear al equipo o dejar `main` sin protección real; el prompt entrega comandos y plantillas, no los ejecuta |
+| Entradas requeridas | organización/usuario y nombre del repositorio, metodología de branching, ramas a proteger, composición del equipo, ambientes de despliegue, stack de CI |
+| Herramientas permitidas | lectura de la configuración actual del repositorio (workflows, protecciones existentes) — el prompt entrega comandos `gh` CLI y archivos de plantilla en texto; no ejecuta comandos ni modifica configuración de GitHub directamente |
+| Autonomía permitida | A1 — Proponer |
+| Criterios de detención | si no se conoce con certeza el estado actual de branch protection, los roles del equipo o los ambientes reales, declarar el supuesto explícitamente en vez de generar reglas que podrían bloquear al equipo real al aplicarse |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | los comandos `gh` CLI cubren cada rama declarada como protegida; las plantillas de issues, PR, `dependabot.yml` y `CODEOWNERS` están completas y sin placeholders sin resolver |
+| Siguiente prompt recomendado | `00-B-05-stack-calidad-codigo` para registrar el workflow de quality gates como required check dentro de las branch protection rules aquí definidas |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

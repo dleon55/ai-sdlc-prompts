@@ -8,6 +8,22 @@ Structured prompt to guide the developer in recording size, effort, times per ph
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | documentation |
+| Expected risk | low — records metrics and a defect log, does not modify code, configuration, or the build process |
+| Required inputs | current issue or requirement, cycle phase (Planning, Design, Coding, Code Review, Testing, Post-mortem), previous metrics or log if they exist |
+| Allowed tools | reading of previous time/defect history and the current issue — no execution or access to external tracking systems required |
+| Permitted autonomy | A0 — Analyze the current status; A1 — Propose the updated log of estimates and actual metrics |
+| Stop criteria | do not invent actual times or defects not reported by the developer; if the base estimate (plan) for a phase is missing, request it before calculating yield or defect density |
+| Expected output | see `Output:` inside `## Complete prompt` |
+| Minimum evidence | each time or defect entry is tied to a specific phase and, for defects, to its injection and removal phase |
+| Recommended next prompt | repeat this same prompt at the close of the next cycle phase; `14-03-iso-moprosoft-compliance` if the metrics feed into a formal compliance audit |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

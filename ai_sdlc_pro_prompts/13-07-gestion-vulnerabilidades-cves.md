@@ -8,6 +8,22 @@ Prompt para realizar el triaje, clasificación, priorización y gestión del cic
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | seguridad |
+| Riesgo esperado | medio — un triaje incorrecto (marcar un verdadero positivo como falso positivo, o asignar un SLA laxo a un hallazgo crítico) puede dejar sin remediar una vulnerabilidad explotable |
+| Entradas requeridas | reportes de las herramientas de seguridad ejecutadas (`13-01`, `13-02`, `13-05`, `13-06` o escáneres automáticos), criticidad del sistema afectado, SLAs de remediación definidos por el proyecto (o usar los estándar) |
+| Herramientas permitidas | lectura y consolidación de reportes existentes; genera el backlog de issues como texto listo para crear en GitHub Issues/Jira, pero no los crea ni los publica |
+| Autonomía permitida | A1 — Proponer el backlog de seguridad priorizado, sin crear issues ni aplicar cambios directamente |
+| Criterios de detención | no clasificar un hallazgo como falso positivo o aceptado con riesgo sin documentar el razonamiento y, en el caso de "aceptado con riesgo", sin aprobación y fecha de revisión explícitas; si existe exploit público activo, escalar el SLA a inmediato sin excepción |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada vulnerabilidad del backlog referencia su fuente original, severidad CVSS, resultado del triaje y SLA asignado con justificación |
+| Siguiente prompt recomendado | `08-03-remediacion-maestro` para ejecutar el plan de remediación de los hallazgos priorizados |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

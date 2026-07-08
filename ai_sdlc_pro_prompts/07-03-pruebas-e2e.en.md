@@ -8,6 +8,22 @@ Prompt to design end-to-end tests for the use cases impacted by the change: from
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | design — produces an E2E test plan as a table, not executable code |
+| Expected risk | low — it is a planning document; it does not modify systems or execute tests |
+| Required inputs | use case or requirement to cover, acceptance criteria, reference to the prior integration plan (`07-02`) |
+| Allowed tools | read-only access to documentation (use cases, acceptance criteria, documented flows); no write access or execution required |
+| Permitted autonomy | A1 — Propose (delivers a plan/artifact without applying it; execution happens in `07-09`) |
+| Stop criteria | stop and request clarification if the use case or acceptance criteria are not defined in enough detail to derive steps, expected result, and evidence |
+| Expected output | see `## Expected output` |
+| Minimum evidence | each table row must specify actor, flow, preconditions, steps, expected result, required evidence, and related regressions |
+| Recommended next prompt | `07-09-implementacion-pruebas-e2e` to turn this plan into executable E2E scripts |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

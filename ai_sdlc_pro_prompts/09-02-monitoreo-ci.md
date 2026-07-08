@@ -8,6 +8,22 @@ Prompt para revisar el estado del pipeline de CI local y en GitHub y determinar 
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | análisis |
+| Riesgo esperado | bajo — es diagnóstico de solo lectura sobre el estado del pipeline, no modifica workflows, código ni re-ejecuta jobs |
+| Entradas requeridas | logs de CI local y de GitHub Actions, estado de checks del PR, archivos de `.github/workflows/` |
+| Herramientas permitidas | lectura de logs de CI y checks del PR — sin re-ejecutar jobs, sin modificar workflows |
+| Autonomía permitida | A0 — Analizar |
+| Criterios de detención | si algún check del PR está en estado pendiente o sin logs accesibles, marcarlo como "pendiente" en el criterio de aprobación en vez de asumir que pasó o falló |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada falla reportada debe citar el job, el paso y el mensaje de error específico del log |
+| Siguiente prompt recomendado | `09-01-integracion-ramas` si el pipeline está en verde y se procede a integrar con la rama destino |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

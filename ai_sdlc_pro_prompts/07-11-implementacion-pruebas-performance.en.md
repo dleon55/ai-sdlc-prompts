@@ -8,6 +8,22 @@ Prompt to generate executable performance, load, stress, and benchmark test code
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | execution |
+| Expected risk | high — stress/spike/soak scripts generate real load that can degrade or take down a shared environment if pointed at the wrong URL or run without a maintenance window |
+| Required inputs | performance test design from `07-06` (scenarios, thresholds, selected tool), Test stack profile from `07-00`, test environment URL and authentication scheme |
+| Allowed tools | writing load scripts (k6/Locust/JMeter/Artillery/etc.) in the repository, headless execution against non-production environments configured via environment variable — no real production data and no execution against production without an authorized maintenance window |
+| Permitted autonomy | A2 — Execute controlled for load/benchmark tests on staging; explicit A3 with an approved maintenance window for any stress/spike/soak run against production |
+| Stop criteria | if no staging environment is available, if the base URL points to production without a confirmed maintenance window, or if the provided credentials are not synthetic/test data, stop and escalate |
+| Expected output | see `## Expected output` |
+| Minimum evidence | each script must encode thresholds that fail the process (exit code ≠ 0) when violated, and at least one execution report (JSON/HTML) with P95/P99 and error rate must be attached |
+| Recommended next prompt | `11-05-performance-produccion-diagnostico` if results show a regression or a violated threshold |
+
+---
+
 ## Required prior context
 
 > Include the block from `00-framework.md` before this prompt.

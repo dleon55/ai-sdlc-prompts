@@ -8,6 +8,22 @@ Prompt for generating the **Project Charter** of a new project: the foundational
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | documentation |
+| Expected risk | medium — an incomplete charter or one with unmarked assumptions (scope, budget, stakeholders) misaligns from the start the technical design and implementation plan built on top of it, even though the prompt executes or commits to nothing by itself |
+| Required inputs | project name and type, sponsor, client/end user, business context or need, preliminary technology stack, known constraints, key assumptions |
+| Allowed tools | none for execution — this is a document; it may draw on prior project notes or documentation if available, but that is not required |
+| Permitted autonomy | A1 — Propose (the document requires explicit human signature/approval in section 12 before it is considered in effect) |
+| Stop criteria | if critical information for a section (sponsor, scope, budget) is missing and cannot be reasonably inferred from the inputs, mark it with `[PENDING: reason]` instead of inventing figures, dates, or commitments |
+| Expected output | this prompt has no standalone `## Expected Output` section — see "Output format" at the end of the prompt block (structured document with the 12 sections, Markdown tables, `[PENDING: reason]` markers on unconfirmed data) |
+| Minimum evidence | all 12 sections are present; the signatures/approval table exists (even if pending); every unconfirmed data point is explicitly marked rather than assumed |
+| Recommended next prompt | `00-D-02-stack-arquitectura-inicial` for detailed technical analysis of the stack; `00-B-01-scaffolding-repositorio` to generate the repository structure from the already-approved charter |
+
+---
+
 ## Required prior context
 
 > Include the block from `00-framework.md` before this prompt.

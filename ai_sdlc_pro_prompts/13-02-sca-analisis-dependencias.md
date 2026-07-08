@@ -8,6 +8,22 @@ Prompt para analizar las dependencias de terceros del proyecto e identificar vul
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | seguridad |
+| Riesgo esperado | medio — análisis de solo lectura, pero una vulnerabilidad de cadena de suministro no detectada o mal priorizada puede escalar a alto si no se remedia a tiempo |
+| Entradas requeridas | archivos de gestión de dependencias y lock files del proyecto (package.json, requirements.txt, go.mod, etc.), tipo de producto (comercial/open source/interno) para el análisis de licencias; hallazgos previos de `13-07` si existen |
+| Herramientas permitidas | lectura de archivos de dependencias y lock files; recomienda comandos de pip-audit/npm audit/Snyk/Trivy/etc., pero no los ejecuta ni modifica versiones instaladas |
+| Autonomía permitida | A0 — Analizar |
+| Criterios de detención | si no hay acceso a lock files, declarar el análisis como incompleto e indicar qué falta en vez de simular CVEs inexistentes; escalar a legal/compliance ante licencias problemáticas o sin licencia detectada |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada CVE reportado incluye paquete, versión instalada, CVSS y versión con fix disponible (o mitigación alternativa si no existe fix) |
+| Siguiente prompt recomendado | `13-07-gestion-vulnerabilidades-cves` para triaje y priorización de los CVEs y licencias encontradas |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

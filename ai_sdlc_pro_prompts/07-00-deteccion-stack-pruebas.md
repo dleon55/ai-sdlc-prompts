@@ -8,6 +8,22 @@ Prompt para detectar y documentar el stack de pruebas activo en el repositorio. 
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | análisis |
+| Riesgo esperado | bajo — es un descubrimiento de solo lectura sobre el repositorio, no ejecuta pruebas ni modifica archivos |
+| Entradas requeridas | acceso de lectura al repositorio: archivos de configuración raíz (package.json, pyproject.toml, pom.xml, etc.), workflows de CI/CD, directorio de pruebas existente |
+| Herramientas permitidas | solo lectura del repositorio; puede verificar de forma no destructiva que un comando de prueba existe (ej. revisar el script en package.json), pero no ejecuta la suite de pruebas completa como parte de este prompt |
+| Autonomía permitida | A0 — Analizar (lectura e inventario); no aplica cambios ni requiere aprobación |
+| Criterios de detención | marcar explícitamente "sin detectar" en vez de asumir o inventar un framework, comando o convención que no esté respaldado por un archivo real del repositorio |
+| Salida esperada | ver `## Salida esperada — Perfil de stack de pruebas` |
+| Evidencia mínima | cada campo del perfil respaldado por una ruta de archivo o comando verificado citado explícitamente, no por inferencia sin fuente |
+| Siguiente prompt recomendado | `07-01-pruebas-unitarias` (o directamente `07-07-implementacion-pruebas-unitarias` usando el perfil como contexto) |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

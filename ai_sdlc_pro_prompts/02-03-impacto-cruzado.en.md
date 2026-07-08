@@ -8,6 +8,22 @@ Prompt to evaluate the impact of the change on all modules, processes, data, int
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | analysis |
+| Expected risk | medium — although read-only, it has a wide blast radius (modules, data, integrations, environments, pipelines, semver); underestimating an impact can let a breaking change or an undetected production risk slip through |
+| Required inputs | output of `02-02` (technical flow and dependencies), architecture, API contracts, database schema, involved components |
+| Allowed tools | reading of code, architecture, contracts, and configuration — no execution or changes |
+| Permitted autonomy | A0 — Analyze |
+| Stop criteria | if there is not enough evidence to rule out impact on a critical component (security, data, production, semver), classify it as an unconfirmed high risk instead of omitting it from the matrix |
+| Expected output | see `## Expected output` |
+| Minimum evidence | every row of the impact matrix must cite the verified component or contract, not just one assumed by name or convention |
+| Recommended next prompt | `04-01-diseno-solucion` |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

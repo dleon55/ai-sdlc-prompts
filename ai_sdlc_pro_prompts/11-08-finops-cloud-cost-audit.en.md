@@ -8,6 +8,22 @@ Prompt focused on engineering financial operations (FinOps). It takes infrastruc
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | analysis |
+| Expected risk | medium — the corrected IaC code it proposes is a text suggestion, not auto-applied, but a poorly evaluated `instance_type` or `lifecycle_rule` change could degrade availability if applied without validation |
+| Required inputs | infrastructure code (Terraform, CDK, Kubernetes manifests) or architecture description, cloud provider |
+| Allowed tools | reading IaC code and architecture — the corrected code is delivered as text for human review, not applied or deployed |
+| Permitted autonomy | A1 — Propose |
+| Stop criteria | do not recommend Spot Instances or storage-tier changes for interruption-intolerant workloads without explicitly flagging that risk |
+| Expected output | see `## Expected output` |
+| Minimum evidence | each resource flagged as "waste" cites the exact IaC file/resource and its associated savings estimate |
+| Recommended next prompt | `09-03-workflows-github-actions` if the optimization requires changes to the deployment pipeline |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

@@ -8,6 +8,22 @@ Prompt to perform a static review of the code related to the change: quality, ma
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | analysis |
+| Expected risk | medium — does not modify code, but its findings determine whether a change is ready for PR or merge; a missed finding can let a defect or vulnerability through |
+| Required inputs | actual diff of the changes, associated requirement or issue, project code standards and architecture |
+| Allowed tools | reading code, diff and applicable documentation — no test execution or file modification |
+| Permitted autonomy | A0 — Analyze |
+| Stop criteria | if the full diff or the original requirement cannot be accessed, document it as an evidence gap in the report instead of inferring the scope of the change |
+| Expected output | see `## Expected output` |
+| Minimum evidence | each finding must include file and line, affected behavior, justified severity and concrete remediation, per the "Minimum evidence per finding" table |
+| Recommended next prompt | `08-03-remediacion-maestro` if critical or medium findings requiring correction before merge are detected |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

@@ -8,6 +8,22 @@ Prompt to plan and document the promotion of changes between environments (dev �
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | operation |
+| Expected risk | high — the checklist determines the go/no-go decision for a deployment that may include database migrations, infrastructure changes, and reach production |
+| Required inputs | reference to the issue/PR, source branch, source and target environment, deployment stack, indication of whether there are DB migrations, infrastructure changes or environment variable changes |
+| Allowed tools | reading CHANGELOG, PR diff, runbooks and architecture documentation — no executing the deployment, running commands against the target environment, or performing real rollback actions |
+| Permitted autonomy | A1 — Propose (generates the checklist and the go/no-go semaphore; executing the deployment and rollback requires explicit A3 by the release owner) |
+| Stop criteria | if no rollback owner is available, if there are DB migrations without a confirmed backup, or if any explicit NO-GO condition from section 2 is met, stop and do not recommend proceeding with the deployment |
+| Expected output | see `## Expected output` |
+| Minimum evidence | each item in the go/no-go semaphore must be marked with its status (🟢/🔴) and an observation justifying it |
+| Recommended next prompt | `09-02-monitoreo-ci` before executing the promotion, to confirm the change's pipeline is green |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

@@ -8,6 +8,22 @@ Prompt estructurado para guiar al desarrollador en el registro de métricas de t
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | documentación |
+| Riesgo esperado | bajo — registra métricas y bitácora de defectos, no modifica código, configuración ni proceso de build |
+| Entradas requeridas | issue o requerimiento actual, fase del ciclo (Planeación, Diseño, Codificación, Revisión de Código, Pruebas, Post-mortem), métricas o bitácora previa si existen |
+| Herramientas permitidas | lectura de historial de tiempos/defectos previos y del issue actual — no requiere ejecución ni acceso a sistemas externos de tracking |
+| Autonomía permitida | A0 — Analizar el estado actual; A1 — Proponer el registro actualizado de estimaciones y métricas reales |
+| Criterios de detención | no inventar tiempos reales o defectos no reportados por la persona desarrolladora; si falta la estimación base (plan) de una fase, solicitarla antes de calcular rendimiento o densidad de defectos |
+| Salida esperada | ver `Salida:` dentro de `## Prompt completo` |
+| Evidencia mínima | cada entrada de tiempo o defecto queda asociada a una fase específica y, en el caso de defectos, a su fase de inyección y remoción |
+| Siguiente prompt recomendado | repetir este mismo prompt al cierre de la siguiente fase del ciclo; `14-03-iso-moprosoft-compliance` si las métricas alimentan una auditoría formal de cumplimiento |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

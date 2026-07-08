@@ -8,6 +8,22 @@ Prompt para revisar y proponer actualizaciones a la documentación técnica afec
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | documentación |
+| Riesgo esperado | bajo — propone contenido de documentación, no modifica código ni sistemas en ejecución; el riesgo real es que la documentación quede desactualizada o induzca a error si no se revisa |
+| Entradas requeridas | issue o requerimiento de referencia, rama integrada, componentes modificados, documentos existentes a revisar (README, docs/, arquitectura, contratos API) |
+| Herramientas permitidas | solo lectura del repositorio (código y documentación existente); no aplica cambios directamente sobre los documentos, solo entrega contenido propuesto |
+| Autonomía permitida | A1 — Proponer: entrega lista de documentos a actualizar con contenido propuesto, sin aplicar el cambio |
+| Criterios de detención | si el cambio real o los componentes modificados no están claros, debe solicitar esa información antes de proponer contenido inventado |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada documento propuesto referencia una ruta real existente en el repositorio y una razón de cambio ligada al issue o rama declarados |
+| Siguiente prompt recomendado | `10-02-memoria-tecnica` para consolidar el registro de auditoría del cambio; `10-03-release-changelog` si el cambio se agrupa en un release |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

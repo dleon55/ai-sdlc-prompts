@@ -8,6 +8,22 @@ Prompt to verify that required security controls have been applied in each phase
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | validation |
+| Expected risk | medium — this is a read-only checklist, but an incorrect maturity verdict (marking something as compliant when it isn't) can authorize a release with missing security controls |
+| Required inputs | current cycle phase, available results from `13-01` (SAST), `13-02` (SCA), and `13-04` (Threat Modeling), project architecture and CI/CD workflows |
+| Allowed tools | reading of code, configuration, CI/CD pipelines, and project documentation — no tool execution or changes |
+| Permitted autonomy | A0 — Analyze the status of each control; A1 — Propose the improvement plan and the prioritized maturity roadmap |
+| Stop criteria | mark a control as "⚠️ partial" or "❌ non-compliant" instead of "✅ compliant" if there is no citable verifiable evidence; stop and escalate if a secret in code or a missing critical production control is detected |
+| Expected output | see `## Expected output` |
+| Minimum evidence | each checklist item references the evidence (file, pipeline, policy) that supports the marked status |
+| Recommended next prompt | `08-03-remediacion-maestro` for gaps that require a code change; `05-01-plan-implementacion` for gaps that require design or process work |
+
+---
+
 ## Required prior context
 
 > Include the block from `00-framework.md` before this prompt.

@@ -8,6 +8,22 @@ Prompt for business analysts and product owners. Converts raw business requests 
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | documentation |
+| Expected risk | low — generates requirement documentation, does not modify code; a poorly defined story or acceptance criterion can propagate errors downstream into technical design and testing |
+| Required inputs | business requirement or request to convert, affected module or process, applicable compliance standard if any (ISO 29110 / MOPROSOFT) |
+| Allowed tools | no execution or system access — only drafting of user stories and Gherkin criteria based on the information provided |
+| Permitted autonomy | A1 — Propose the user stories and acceptance criteria as a documentation artifact |
+| Stop criteria | do not invent business rules, roles, or flows that are not implied by the original request; if the requirement is ambiguous, state the assumptions used instead of silently assuming |
+| Expected output | see `## Expected output` |
+| Minimum evidence | each user story has at least one Gherkin acceptance criterion for the happy path and one for an alternate or error flow |
+| Recommended next prompt | `04-01-diseno-solucion` for the technical design based on these stories; `15-02-casos-prueba-manuales` to derive the corresponding test cases |
+
+---
+
 ## Mandatory prior context
 
 > Include the block from the `00-framework.md` file before this prompt.

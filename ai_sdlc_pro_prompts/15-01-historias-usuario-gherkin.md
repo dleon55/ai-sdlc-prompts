@@ -8,6 +8,22 @@ Prompt para analistas de negocio y product owners. Convierte requerimientos y so
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | documentación |
+| Riesgo esperado | bajo — genera documentación de requerimientos, no modifica código; una historia o criterio de aceptación mal definido puede propagar errores al diseño técnico y a las pruebas aguas abajo |
+| Entradas requeridas | requerimiento o solicitud de negocio a convertir, módulo o proceso afectado, estándar de compliance aplicable si existe (ISO 29110 / MOPROSOFT) |
+| Herramientas permitidas | ninguna ejecución ni acceso a sistemas — solo redacción de historias de usuario y criterios Gherkin a partir de la información provista |
+| Autonomía permitida | A1 — Proponer las historias de usuario y criterios de aceptación como artefacto de documentación |
+| Criterios de detención | no inventar reglas de negocio, roles o flujos que no estén implícitos en la solicitud original; si el requerimiento es ambiguo, señalar los supuestos usados en vez de asumir silenciosamente |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada historia de usuario tiene al menos un criterio de aceptación en formato Gherkin para el flujo feliz y uno para un flujo alterno o de error |
+| Siguiente prompt recomendado | `04-01-diseno-solucion` para el diseño técnico basado en estas historias; `15-02-casos-prueba-manuales` para derivar los casos de prueba correspondientes |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

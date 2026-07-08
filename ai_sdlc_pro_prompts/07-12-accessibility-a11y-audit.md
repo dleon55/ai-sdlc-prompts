@@ -8,6 +8,22 @@ Prompt orientado a perfiles de QA Automation o Frontend Architect. Examina el c�
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | validación |
+| Riesgo esperado | medio — no aplica cambios directamente, pero un veredicto de cumplimiento incorrecto puede dejar pasar barreras de accesibilidad a producción |
+| Entradas requeridas | código fuente del componente o vista (`codigo_frontend`) y el framework UI usado (`framework_ui`) |
+| Herramientas permitidas | lectura del fragmento de código proporcionado — sin acceso a otros archivos del repositorio, sin ejecutar el componente ni herramientas automatizadas de a11y (axe, Lighthouse) |
+| Autonomía permitida | A1 — Proponer (entrega informe y código corregido como propuesta; no aplica el cambio directamente al repositorio) |
+| Criterios de detención | si el fragmento de código no incluye suficiente contexto para evaluar un criterio (p. ej. contraste de color definido en una hoja de estilos externa no provista, o comportamiento dinámico no visible en el snippet), documentarlo como limitación de evidencia en vez de asumir cumplimiento o incumplimiento |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada violación reportada debe citar el elemento o línea del código y el criterio WCAG 2.2 específico incumplido |
+| Siguiente prompt recomendado | `08-01-revision-estatica` para incluir el código corregido en la revisión estática previa al merge |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

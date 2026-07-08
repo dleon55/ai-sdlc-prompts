@@ -8,6 +8,22 @@ Prompt para diseñar y documentar una estrategia de pruebas automatizadas en nav
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | diseño/documentación — produce una estrategia de automatización en navegador, no la ejecuta directamente |
+| Riesgo esperado | medio — aunque el prompt solo documenta la estrategia, esta se entrega tal cual al agente de navegador de Google Antigravity para ejecución autónoma contra QA/staging, sin una revisión de código intermedia como en `07-03`+`07-09` |
+| Entradas requeridas | casos de uso o flujos críticos a automatizar, plan E2E previo si existe, diseño de UI, URL base del ambiente QA/STAGING |
+| Herramientas permitidas | lectura de documentación y diseño de UI; no incluye acceso al navegador ni ejecución — la ejecución real ocurre fuera de este prompt, a cargo del agente de Google Antigravity |
+| Autonomía permitida | A1 — Proponer (entrega la estrategia como artefacto; la ejecución autónoma por Google Antigravity es un paso externo posterior que requiere ambiente y credenciales de prueba ya autorizados) |
+| Criterios de detención | detener si el ambiente de destino no es QA/STAGING (nunca automatizar directamente contra producción); detener si faltan selectors o datos de prueba estables, ya que produciría una automatización frágil |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada escenario debe listar navegación, selector clave, datos de prueba, validación esperada, evidencia (captura/video) y punto frágil identificado |
+| Siguiente prompt recomendado | ninguno en la biblioteca — la estrategia se entrega directamente al agente de navegador de Google Antigravity para su ejecución autónoma (alternativa a `07-03`+`07-09`) |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

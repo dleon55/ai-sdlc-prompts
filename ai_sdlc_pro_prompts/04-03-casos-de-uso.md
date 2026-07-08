@@ -8,6 +8,22 @@ Prompt para documentar formalmente los casos de uso del requerimiento o módulo 
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | diseño |
+| Riesgo esperado | bajo — formaliza en documentación el comportamiento ya analizado, sin ejecutar cambios; el riesgo es que casos de uso incompletos (flujos alternos, criterios de aceptación) generen ambigüedad para la implementación y las pruebas posteriores |
+| Entradas requeridas | análisis funcional previo (`02-01`), documentación existente de casos de uso, módulo o funcionalidad objetivo |
+| Herramientas permitidas | lectura de documentación y código relacionado — sin ejecución ni cambios |
+| Autonomía permitida | A1 — Proponer |
+| Criterios de detención | si faltan reglas de negocio, postcondiciones o criterios de aceptación verificables para un flujo, marcarlo como pendiente de validación funcional en vez de inventarlos |
+| Salida esperada | ver `## Estructura de cada caso de uso` |
+| Evidencia mínima | cada caso de uso debe incluir flujo principal, al menos un flujo alterno y criterios de aceptación verificables contra el análisis funcional citado |
+| Siguiente prompt recomendado | `04-04-adr-decisiones-arquitectura` si hay decisiones de arquitectura pendientes derivadas de los casos de uso; `05-01-plan-implementacion` si el diseño ya está completo |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

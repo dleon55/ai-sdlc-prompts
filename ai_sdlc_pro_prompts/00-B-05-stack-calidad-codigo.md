@@ -8,6 +8,22 @@ Prompt para seleccionar y configurar las herramientas de calidad de código seg�
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | operación |
+| Riesgo esperado | medio — un umbral de cobertura o un quality gate mal calibrado puede bloquear el pipeline de CI de forma innecesaria o, al revés, dejar pasar cambios sin validar; el prompt entrega archivos y workflow, no los ejecuta |
+| Entradas requeridas | lenguaje(s) y framework(s) principales, plataforma de CI, cobertura mínima deseada, nivel de restricción (permisivo/balanceado/estricto) |
+| Herramientas permitidas | lectura del stack real del repositorio (manifiestos de dependencias) para elegir herramientas correctas — entrega archivos de configuración y workflow YAML completos en texto, sin aplicarlos ni ejecutar el pipeline |
+| Autonomía permitida | A1 — Proponer |
+| Criterios de detención | si el stack detectado es ambiguo o mixto sin un lenguaje principal claro, pedir confirmación antes de generar una configuración exhaustiva que podría no aplicar |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada archivo de configuración entregado es sintácticamente válido para su formato (YAML/TOML/JSON); el workflow de CI referencia explícitamente el umbral de cobertura declarado como input |
+| Siguiente prompt recomendado | `00-B-03-github-configuracion` para registrar el nuevo workflow de calidad como required check en branch protection |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

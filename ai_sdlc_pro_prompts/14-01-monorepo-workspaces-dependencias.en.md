@@ -8,6 +8,22 @@ Prompt to map, audit, and document architectural boundaries, the local dependenc
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | analysis |
+| Expected risk | low — maps the dependency graph read-only, does not modify code or workspace configuration |
+| Required inputs | source workspace/subproject to analyze, monorepo configuration files (package.json, pnpm-workspace.yaml, go.work, lerna.json, turbo.json, tsconfig.json) |
+| Allowed tools | reading of configuration files and workspace source code — no build execution or dependency installation |
+| Permitted autonomy | A0 — Analyze |
+| Stop criteria | if the monorepo configuration files are not accessible or are ambiguous, state the graph as incomplete instead of assuming unverified dependency relationships |
+| Expected output | see `Output:` inside `## Complete prompt` |
+| Minimum evidence | each reported local dependency (direct, transitive, or circular) references the configuration file where it is declared |
+| Recommended next prompt | `05-01-plan-implementacion` to plan the isolation refactor; `04-04-adr-decisiones-arquitectura` to document the decision if it involves an architectural boundary change |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

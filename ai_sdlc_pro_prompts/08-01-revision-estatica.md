@@ -8,6 +8,22 @@ Prompt para realizar una revisión estática del código relacionado con el camb
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | análisis |
+| Riesgo esperado | medio — no modifica código, pero sus hallazgos determinan si un cambio está listo para PR o merge; un hallazgo omitido puede dejar pasar un defecto o vulnerabilidad |
+| Entradas requeridas | diff real de los cambios, requerimiento o issue asociado, estándares de código y arquitectura del proyecto |
+| Herramientas permitidas | lectura del código, del diff y de la documentación aplicable — sin ejecutar pruebas ni modificar archivos |
+| Autonomía permitida | A0 — Analizar |
+| Criterios de detención | si no se puede acceder al diff completo o al requerimiento original, documentarlo como brecha de evidencia en el reporte en vez de inferir el alcance del cambio |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada hallazgo debe incluir archivo y línea, comportamiento afectado, severidad justificada y remediación concreta, según la tabla "Evidencia mínima por hallazgo" |
+| Siguiente prompt recomendado | `08-03-remediacion-maestro` si se detectan hallazgos críticos o medios que requieren corrección antes de merge |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

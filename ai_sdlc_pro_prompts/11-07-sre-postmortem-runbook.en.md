@@ -8,6 +8,22 @@ Prompt designed to adopt the SRE (Site Reliability Engineering) culture. It take
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | documentation |
+| Expected risk | medium — the resulting runbook can be executed directly by the on-call team in future incidents, so an incorrect or unreviewed step can worsen a real incident |
+| Required inputs | raw incident data (timeline, logs, chat), applied resolution; optionally the root cause analysis result from `03-02` |
+| Allowed tools | read-only access to the provided incident data; does not execute commands against live systems, the incident is already resolved |
+| Permitted autonomy | A1 — Propose: delivers the post-mortem document and the proposed runbook; adopting it as the official runbook operable by on-call requires human review (A3) |
+| Stop criteria | if the 5 Whys analysis converges on attributing the failure to a person instead of a system or process, it must reframe the finding in blameless terms before continuing; if there is insufficient incident data, it must flag that instead of inventing the timeline |
+| Expected output | see `## Expected output` |
+| Minimum evidence | timeline with verifiable times and phases, action items formulated as actionable tickets, and a runbook with executable, checkable commands/queries |
+| Recommended next prompt | `10-04-observabilidad-instrumentacion` if the post-mortem reveals monitoring blind spots; `11-06-gestion-parches-actualizaciones` if the root cause is an outdated dependency |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

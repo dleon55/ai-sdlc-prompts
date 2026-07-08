@@ -8,6 +8,22 @@ Prompt to generate executable end-to-end test code from the design defined in `0
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | execution — generates and runs browser automation scripts against a deployed test environment |
+| Expected risk | medium — interacts with an application deployed to QA/staging (real navigation, possible creation/deletion of records); the prompt explicitly forbids using production data or services |
+| Required inputs | Test stack profile (`07-00`) and E2E test plan (`07-03`) attached or referenced; application deployed and accessible in a test environment (QA/staging) with test credentials |
+| Allowed tools | reading use cases and screen flows; writing E2E scripts; running the E2E framework (headless/headed) against the QA/staging URL; capturing screenshots/video; no access to production data or environments, no push/deploy |
+| Permitted autonomy | A2 — Execute controlled (runs scripts against an isolated test environment, never against production) |
+| Stop criteria | stop if the target URL points to production; stop if the flow would require real user data; stop and document if cleanup of the generated state (created records) cannot be guaranteed at the end of the test |
+| Expected output | see `## Expected output` |
+| Minimum evidence | executable E2E scripts, framework configuration, verified execution command (headless and headed), and the generated screenshots/reports directory |
+| Recommended next prompt | `07-04-pruebas-humo` (or `07-10-implementacion-pruebas-humo`) after deployment, for a quick system health validation |
+
+---
+
 ## Required prior context
 
 > Include the block from `00-framework.md` before this prompt.

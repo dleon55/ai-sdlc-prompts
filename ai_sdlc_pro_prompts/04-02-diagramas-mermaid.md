@@ -8,6 +8,22 @@ Prompt para generar diagramas Mermaid que documenten la solución: flujo actual 
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | documentación |
+| Riesgo esperado | bajo — genera artefactos de documentación visual, no modifica código ni configuración |
+| Entradas requeridas | diseño aprobado (`04-01`), arquitectura real del sistema, código fuente o componentes involucrados en el cambio |
+| Herramientas permitidas | solo lectura de código, diseño y arquitectura; no requiere ejecución ni escritura en el repositorio, únicamente genera bloques Mermaid como texto |
+| Autonomía permitida | A0 — Analizar el diseño y código existente; A1 — Proponer los diagramas como artefacto de documentación |
+| Criterios de detención | detener si no existe diseño aprobado (`04-01`) del cual derivar los diagramas; nunca inventar componentes, actores o flujos que no existan en el código o diseño real |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada diagrama corresponde a componentes/flujos verificables en el código o diseño citado; sintaxis Mermaid válida (caracteres especiales escapados, sin usar `end` sin comillas como texto de nodo) |
+| Siguiente prompt recomendado | `04-03-casos-de-uso` para completar la documentación funcional de la solución |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

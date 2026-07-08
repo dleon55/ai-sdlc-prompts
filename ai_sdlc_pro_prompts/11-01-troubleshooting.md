@@ -8,6 +8,22 @@ Prompt para analizar un problema de ambiente, despliegue, servicio, contenedor, 
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | análisis |
+| Riesgo esperado | medio — analiza un ambiente con posible impacto en servicio; si el ambiente es PROD con impacto significativo, el propio prompt exige derivar a `11-04-incident-response` |
+| Entradas requeridas | síntoma, ambiente (DEV/QA/STAGING/PROD), servicios involucrados, evidencias disponibles (logs, errores, capturas) |
+| Herramientas permitidas | solo lectura para diagnóstico (logs, estado de servicios, métricas); prohibido explícitamente ejecutar reinicios, rollbacks, cambios de configuración o comandos destructivos |
+| Autonomía permitida | A0 — Analizar: diagnóstico e hipótesis; la ruta de resolución queda propuesta y pendiente de aprobación antes de pasar a A2 |
+| Criterios de detención | si el ambiente es PROD y hay impacto significativo en usuarios, debe detenerse y derivar a `11-04-incident-response` en vez de continuar el troubleshooting estándar |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | hipótesis ordenadas por probabilidad con evidencia asociada, y comandos de diagnóstico limitados a solo lectura |
+| Siguiente prompt recomendado | `11-04-incident-response` si escala a incidente en PROD con impacto significativo; `03-02-causa-raiz` si se requiere análisis de causa raíz formal tras resolver |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

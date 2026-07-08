@@ -8,6 +8,22 @@ Prompt to generate Mermaid diagrams that document the solution: current and prop
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | documentation |
+| Expected risk | low — produces visual documentation artifacts, does not modify code or configuration |
+| Required inputs | approved design (`04-01`), real system architecture, source code or components involved in the change |
+| Allowed tools | read-only access to code, design and architecture; no execution or repository writes required, only generates Mermaid blocks as text |
+| Permitted autonomy | A0 — Analyze the existing design and code; A1 — Propose the diagrams as a documentation artifact |
+| Stop criteria | stop if there is no approved design (`04-01`) to derive the diagrams from; never invent components, actors, or flows that do not exist in the real code or design |
+| Expected output | see `## Expected output` |
+| Minimum evidence | each diagram corresponds to components/flows verifiable in the cited code or design; valid Mermaid syntax (special characters escaped, no unquoted `end` used as node text) |
+| Recommended next prompt | `04-03-casos-de-uso` to complete the functional documentation of the solution |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

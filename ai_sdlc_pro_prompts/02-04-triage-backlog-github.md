@@ -8,6 +8,22 @@ Prompt compuesto para analizar un conjunto de issues de GitHub del repositorio a
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | análisis |
+| Riesgo esperado | medio — el resultado influye en la priorización y asignación real de trabajo de un equipo; una consolidación o recomendación de cierre sin evidencia puede descartar issues válidos, aunque el prompt no cierra ni modifica issues por sí mismo |
+| Entradas requeridas | fuente de issues (por ejemplo, salida JSON de `gh issue list`), filtro aplicado, criterio de backlog pendiente, componente o responsable objetivo, rama y ambiente objetivo, documentos a revisar |
+| Herramientas permitidas | lectura de issues, PRs, ramas y documentación mediante consultas de solo lectura (`gh issue list` u equivalente) — sin cerrar, etiquetar, asignar ni modificar issues |
+| Autonomía permitida | A1 — Proponer |
+| Criterios de detención | no proponer cierre de issues sin evidencia; si la información de un issue no basta para clasificarlo con precisión, declararlo como supuesto y reducir el nivel de confianza en vez de asignarle prioridad definitiva |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada fila de la matriz de issues normalizados debe ser trazable a datos reales de GitHub (número, estado, labels, assignee) citados |
+| Siguiente prompt recomendado | `05-01-plan-implementacion` para los issues listos para implementar; `02-01-analisis-issue` para los que requieren aclaración funcional |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

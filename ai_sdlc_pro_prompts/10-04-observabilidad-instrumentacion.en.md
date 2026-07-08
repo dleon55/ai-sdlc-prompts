@@ -8,6 +8,22 @@ Prompt to design and implement an application observability strategy: metrics, s
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | design |
+| Expected risk | medium — a poor design of SLOs or alerts can create alert fatigue or blind spots that delay detection of real production incidents |
+| Required inputs | technology stack, infrastructure, current observability stack, number of services, SLAs committed to customers, target environment; optionally a result from `13-04` (threat modeling) |
+| Allowed tools | read-only access to system architecture and existing runbooks; does not connect to live monitoring systems or deploy instrumentation, delivers a proposed catalog and configuration |
+| Permitted autonomy | A1 — Propose: catalog of SLOs, alerts, and dashboards; actual code instrumentation and deployment of agents/exporters requires A2 in an isolated workspace or branch with subsequent review |
+| Stop criteria | if there are no SLAs or business objectives defined to set the SLOs, it must flag this instead of inventing thresholds; it must not propose instrumentation that logs passwords, tokens, or unanonymized PII |
+| Expected output | see `## Expected output` |
+| Minimum evidence | each proposed alert has a condition, severity, playbook, and recipient; each SLO has an SLI, target, and window defined |
+| Recommended next prompt | `11-05-performance-produccion-diagnostico` to diagnose degradations using the instrumented signals; `11-04-incident-response` as the reference playbook in page-severity alerts |
+
+---
+
 ## Required prior context
 
 > Include the block from `00-framework.md` before this prompt.

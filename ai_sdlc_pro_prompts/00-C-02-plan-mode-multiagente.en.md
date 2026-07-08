@@ -8,6 +8,22 @@ Prompt to execute any task in **plan mode** before implementing: the agent analy
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | analysis |
+| Expected risk | low — plan mode explicitly forbids modifying files, making commits, or running commands that alter the repository or environment; the real risk is indirect (an undetected conflict wastes another agent's parallel work) |
+| Required inputs | reference issue/task, target branch, active parallel agents if known; local repository state (branch, worktrees, recent commits, open PRs) |
+| Allowed tools | read of git state (status, log, branches, worktrees) and open PRs/issues — explicitly prohibited: `pull`, `fetch`, remote mutations, commits, or file changes |
+| Permitted autonomy | A1 — Propose |
+| Stop criteria | if Step 2 (conflict detection) finds a potential or active conflict — same file touched by another agent or open PR — STOP immediately and report before continuing; do not move to controlled execution without human confirmation |
+| Expected output | this prompt has no standalone `## Expected Output` section — the delivery format is defined inline in "Deliver in PLAN MODE" (9 subsections: files to modify, out-of-scope files, potential conflicts, dependencies, steps, commits, test plan, stop signals, execution contract) and in "Step 5. Status report" of the multi-agent protocol |
+| Minimum evidence | the files-to-modify table includes risk and whether approval is required; the conflict-detection section explicitly documents the presence or absence of overlap with active branches/PRs |
+| Recommended next prompt | `06-01-implementacion-multiagente` once the plan is approved and free of conflicts, to move into controlled execution |
+
+---
+
 ## Mandatory Previous Context
 
 > Include the block from file `00-framework.en.md` before this prompt.

@@ -8,6 +8,22 @@ Specialized prompt to act as a Database Administrator (DBA). It analyzes the out
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | analysis |
+| Expected risk | medium — does not execute or apply database changes; the real risk is that the proposed DDL or query gets applied to production without further validation |
+| Required inputs | `EXPLAIN ANALYZE` output or ORM log, DDL or models of the relevant schema, database engine used |
+| Allowed tools | reading the provided execution plan/log and schema — no access to the real database or query execution |
+| Permitted autonomy | A1 — Propose (delivers diagnosis, optimized query and index DDL as a proposal; does not execute them) |
+| Stop criteria | if the schema or execution plan lacks real table volumetry or up-to-date statistics, present the diagnosis as preliminary and do not guarantee the estimated impact |
+| Expected output | see `## Expected output` |
+| Minimum evidence | the diagnosis must cite the specific execution plan node (or the exact N+1 query) responsible for the bottleneck |
+| Recommended next prompt | `08-01-revision-estatica` to validate the optimized query and index DDL before applying them |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

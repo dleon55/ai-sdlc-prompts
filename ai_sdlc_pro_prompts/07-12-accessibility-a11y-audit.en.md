@@ -8,6 +8,22 @@ Prompt geared towards QA Automation or Frontend Architect profiles. It examines 
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | validation |
+| Expected risk | medium — does not apply changes directly, but an incorrect compliance verdict can let accessibility barriers reach production |
+| Required inputs | source code of the component or view (`frontend_code`) and the UI framework used (`ui_framework`) |
+| Allowed tools | reading the provided code fragment — no access to other repository files, no executing the component or automated a11y tools (axe, Lighthouse) |
+| Permitted autonomy | A1 — Propose (delivers report and corrected code as a proposal; does not apply the change directly to the repository) |
+| Stop criteria | if the code fragment lacks enough context to evaluate a criterion (e.g., color contrast defined in an external, unprovided stylesheet, or dynamic behavior not visible in the snippet), document it as an evidence limitation instead of assuming compliance or non-compliance |
+| Expected output | see `## Expected output` |
+| Minimum evidence | each reported violation must cite the code element or line and the specific WCAG 2.2 criterion violated |
+| Recommended next prompt | `08-01-revision-estatica` to include the corrected code in the static review before merge |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

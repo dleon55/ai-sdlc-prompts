@@ -8,6 +8,22 @@ Prompt para mapear, auditar y documentar las fronteras arquitectónicas, la red 
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | análisis |
+| Riesgo esperado | bajo — mapea el grafo de dependencias de solo lectura, no modifica código ni configuración de los workspaces |
+| Entradas requeridas | workspace/subproyecto origen a analizar, archivos de configuración del monorepo (package.json, pnpm-workspace.yaml, go.work, lerna.json, turbo.json, tsconfig.json) |
+| Herramientas permitidas | lectura de archivos de configuración y código fuente de los workspaces — sin ejecución de build ni instalación de dependencias |
+| Autonomía permitida | A0 — Analizar |
+| Criterios de detención | si los archivos de configuración del monorepo no son accesibles o son ambiguos, declarar el grafo como incompleto en vez de asumir relaciones de dependencia no verificadas |
+| Salida esperada | ver `Salida:` dentro de `## Prompt completo` |
+| Evidencia mínima | cada dependencia local reportada (directa, transitiva o circular) referencia el archivo de configuración donde se declara |
+| Siguiente prompt recomendado | `05-01-plan-implementacion` para planear el refactor de aislamiento; `04-04-adr-decisiones-arquitectura` para documentar la decisión si implica un cambio de frontera arquitectónica |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

@@ -8,6 +8,22 @@ Structured quality assurance (QA / Audit) prompt to certify that functional, des
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | validation |
+| Expected risk | medium — this is a read-only audit, but an unwarranted "Approved" verdict can authorize the release of a non-compliant deliverable to production |
+| Required inputs | workspace/subproject and compliance standard to audit (ISO 29110 / MOPROSOFT / MAAGTICSI), generated artifacts (Implementation Plan, Test Cases, Test Code, Technical Memory) |
+| Allowed tools | reading of project artifacts, code, and documentation — no test execution or repository changes |
+| Permitted autonomy | A0 — Analyze the conformity of each artifact; A1 — Propose the verdict and the mandatory remediation actions |
+| Stop criteria | do not issue an "Approved" verdict if bidirectional requirement-design-code-test traceability is missing; mark as "Rejected" or "Approved with Reservations" for any non-conformity without evidence of mitigation |
+| Expected output | see `Output:` inside `## Complete prompt` |
+| Minimum evidence | each reported non-conformity references the specific artifact or control that was not met and its associated mandatory remediation action |
+| Recommended next prompt | `08-03-remediacion-maestro` if the verdict is "Rejected" or "Approved with Reservations"; `09-04-promotion-checklist` if the verdict is "Approved," to continue with promoting the change |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

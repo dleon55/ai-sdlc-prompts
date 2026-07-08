@@ -8,6 +8,22 @@ Prompt to write a high-quality GitHub issue that can be executed by an AI agent 
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | documentation |
+| Expected risk | medium — this prompt executes nothing itself, but the issue it produces is the contract that will govern an executing agent afterward; a poorly written scope, restriction, or autonomy level here is inherited directly by the real execution |
+| Required inputs | issue title and type, description of the problem/requirement, repository and target branch, environment, involved files/modules (if known), acceptance criteria, restrictions, assigned agent, expected observable result, authorized permissions/tools, budget |
+| Allowed tools | read of the repository to verify that cited paths, current behavior, and context are real — must not invent paths or commands; does not create the issue on GitHub, only drafts the content and suggests the `gh issue create` command |
+| Permitted autonomy | A1 — Propose (drafts the issue and the suggested command; publishing it on GitHub is an A3 action outside this prompt's scope) |
+| Stop criteria | if available information does not allow the `## Execution contract` (autonomy mode, tools, scope) to be completed unambiguously, mark the issue "NOT suitable for an agent" in the readiness assessment instead of filling in invented values |
+| Expected output | see `## Expected Output` |
+| Minimum evidence | the generated issue includes all mandatory sections (Description, Technical context, Acceptance criteria, Restrictions, Execution contract, Required tests, Compliance evidence, Human validation checklist) and explicitly declares the A0-A3 autonomy mode |
+| Recommended next prompt | `00-C-02-plan-mode-multiagente` so the assigned agent executes the task in plan mode before touching code |
+
+---
+
 ## Mandatory Previous Context
 
 > Include the block from file `00-framework.en.md` before this prompt.

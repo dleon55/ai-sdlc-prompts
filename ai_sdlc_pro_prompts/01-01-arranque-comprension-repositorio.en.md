@@ -8,6 +8,22 @@ Starter prompt to build an initial technical inventory of the repository: struct
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | analysis |
+| Expected risk | low — this is a read-only inventory; a gap or inaccuracy is corrected in later iterations and does not produce repository changes |
+| Required inputs | read access to the complete repository (source code, configuration, existing documentation); no reference issue or incident required |
+| Allowed tools | reading of folder structure, code, configuration, and documentation — no execution or changes |
+| Permitted autonomy | A0 — Analyze |
+| Stop criteria | if parts of the repository are inaccessible or the monorepo has unresolved workspaces, state the covered scope and gaps instead of inferring unverified structure |
+| Expected output | see `## Expected output` |
+| Minimum evidence | every folder, technology, or artifact listed in the inventory must correspond to a verifiable path or file in the repository |
+| Recommended next prompt | `01-02-analisis-procesos` to map project governance; `02-01-analisis-issue` if a concrete issue or requirement already exists to address |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

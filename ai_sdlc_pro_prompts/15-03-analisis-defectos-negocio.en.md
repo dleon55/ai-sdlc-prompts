@@ -8,6 +8,22 @@ Prompt for manual testers and functional analysts. Helps structure professional 
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | documentation |
+| Expected risk | low — drafts a bug report, does not execute changes or actions on the system |
+| Required inputs | description of the observed error, steps performed, expected behavior, technical evidence if available (log, HTTP code, screenshot) |
+| Allowed tools | none for execution — text drafting from the provided evidence |
+| Permitted autonomy | A1 — Propose |
+| Stop criteria | if technical severity and business priority cannot be justified from the given evidence, state that instead of assuming an impact level |
+| Expected output | see `## Expected output` |
+| Minimum evidence | concrete reproduction steps and actual vs. expected behavior, both verifiable by the developer receiving the report |
+| Recommended next prompt | `03-01-incidentes-github` to compare the defect against existing issues before creating it |
+
+---
+
 ## Mandatory prior context
 
 > Include the block from the `00-framework.md` file before this prompt.

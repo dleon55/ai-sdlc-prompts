@@ -8,6 +8,22 @@ Prompt para validar si la implementación realmente cumple con el issue, requeri
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | validación |
+| Riesgo esperado | medio — el veredicto determina si un issue puede cerrarse; un falso "cumple" puede cerrar trabajo incompleto y un falso "no cumple" bloquea innecesariamente |
+| Entradas requeridas | issue o requerimiento original, diseño aprobado, código implementado, resultados de pruebas |
+| Herramientas permitidas | lectura del issue, diseño, código y resultados de pruebas existentes — sin ejecutar pruebas nuevas ni modificar código |
+| Autonomía permitida | A0 — Analizar |
+| Criterios de detención | si falta alguno de los cuatro insumos a comparar (lo solicitado, lo diseñado, lo implementado o lo probado), detener y reportarlo como brecha de evidencia antes de emitir un veredicto de cumplimiento |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada criterio de aceptación debe quedar marcado como cumplido, parcial o no cumplido, con la brecha específica citada en la matriz |
+| Siguiente prompt recomendado | `09-01-integracion-ramas` si el cumplimiento es total y el cambio queda listo para integrar |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

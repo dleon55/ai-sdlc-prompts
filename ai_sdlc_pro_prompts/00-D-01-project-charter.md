@@ -8,6 +8,22 @@ Prompt para generar el **Project Charter** de un proyecto nuevo: el documento fu
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | documentación |
+| Riesgo esperado | medio — un charter incompleto o con supuestos no marcados (alcance, presupuesto, stakeholders) desalinea desde el inicio el diseño técnico y el plan de implementación que se construyen sobre él, aunque el prompt no ejecuta ni compromete nada por sí mismo |
+| Entradas requeridas | nombre y tipo de proyecto, patrocinador, cliente/usuario final, contexto o necesidad de negocio, stack tecnológico preliminar, restricciones conocidas, supuestos clave |
+| Herramientas permitidas | ninguna de ejecución — es un documento; puede apoyarse en lectura de notas o documentación previa del proyecto si existe, pero no es obligatorio |
+| Autonomía permitida | A1 — Proponer (el documento requiere firma/aprobación humana explícita en el apartado 12 antes de considerarse vigente) |
+| Criterios de detención | si falta información crítica para un apartado (patrocinador, alcance, presupuesto) que no pueda inferirse razonablemente de las entradas, marcarla con `[PENDIENTE: razón]` en vez de inventar cifras, fechas o compromisos |
+| Salida esperada | no existe una sección `## Salida esperada` independiente en este prompt — ver "Formato de salida" al final del bloque de prompt (documento con los 12 apartados, tablas Markdown, marcado `[PENDIENTE: razón]` en datos no confirmados) |
+| Evidencia mínima | los 12 apartados están presentes; la tabla de firmas y aprobación existe (aunque quede pendiente); todo dato no confirmado está marcado explícitamente en vez de darse por hecho |
+| Siguiente prompt recomendado | `00-D-02-stack-arquitectura-inicial` para el análisis técnico detallado del stack; `00-B-01-scaffolding-repositorio` para generar la estructura del repositorio a partir del charter ya aprobado |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

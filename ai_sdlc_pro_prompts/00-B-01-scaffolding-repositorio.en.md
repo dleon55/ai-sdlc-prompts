@@ -8,6 +8,22 @@ Prompt to design and generate the base structure of a new repository: directorie
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | design |
+| Expected risk | medium — the proposed repository structure is costly to redo once the team starts building on it, even though the prompt does not write any files itself |
+| Required inputs | project type, methodology, technology stack, hosting/CI platform, team composition, license type |
+| Allowed tools | optional read of the current repository structure if one already exists — no write or execution required; the output is text for a human to apply |
+| Permitted autonomy | A1 — Propose |
+| Stop criteria | if project type or stack are ambiguous, or an existing structure conflicts with the proposal, state the ambiguity and request confirmation before proposing a full restructuring |
+| Expected output | see `## Expected Output` |
+| Minimum evidence | the directory tree and file table are consistent with the declared project type and stack; each critical file (README, CONTRIBUTING, .gitignore, CODEOWNERS) includes base content, not just a name |
+| Recommended next prompt | `00-B-03-github-configuracion` for GitHub protections and templates; `00-B-05-stack-calidad-codigo` to configure linters, formatters, and quality gates on top of the structure just created |
+
+---
+
 ## Mandatory Previous Context
 
 > Include the block from file `00-framework.en.md` before this prompt.

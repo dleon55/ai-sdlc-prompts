@@ -8,6 +8,22 @@ Prompt to analyze third-party dependencies of the project and identify known vul
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | security |
+| Expected risk | medium — read-only analysis, but an undetected or poorly prioritized supply chain vulnerability can escalate to high if not remediated in time |
+| Required inputs | the project's dependency management files and lock files (package.json, requirements.txt, go.mod, etc.), product type (commercial/open source/internal) for license analysis; previous `13-07` findings if they exist |
+| Allowed tools | reading of dependency files and lock files; recommends pip-audit/npm audit/Snyk/Trivy/etc. commands, but does not execute them or modify installed versions |
+| Permitted autonomy | A0 — Analyze |
+| Stop criteria | if lock files are not accessible, state the analysis as incomplete and indicate what is missing instead of simulating nonexistent CVEs; escalate to legal/compliance for problematic or unlicensed dependencies |
+| Expected output | see `## Expected output` |
+| Minimum evidence | each reported CVE includes package, installed version, CVSS score, and version with an available fix (or alternative mitigation if no fix exists) |
+| Recommended next prompt | `13-07-gestion-vulnerabilidades-cves` to triage and prioritize the CVEs and licenses found |
+
+---
+
 ## Required prior context
 
 > Include the block from `00-framework.md` before this prompt.

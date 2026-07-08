@@ -8,6 +8,22 @@ Prompt para evaluar el impacto del cambio en todos los módulos, procesos, datos
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | análisis |
+| Riesgo esperado | medio — aunque es de solo lectura, tiene alcance amplio (módulos, datos, integraciones, ambientes, pipelines, semver); subestimar un impacto puede dejar pasar una ruptura de retrocompatibilidad o un riesgo de producción no detectado |
+| Entradas requeridas | resultado de `02-02` (flujo técnico y dependencias), arquitectura, contratos de API, esquema de base de datos, componentes involucrados |
+| Herramientas permitidas | lectura de código, arquitectura, contratos y configuración — sin ejecución ni cambios |
+| Autonomía permitida | A0 — Analizar |
+| Criterios de detención | si no hay evidencia suficiente para descartar impacto en un componente crítico (seguridad, datos, producción, semver), clasificarlo como riesgo alto no confirmado en vez de omitirlo de la matriz |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada fila de la matriz de impacto debe citar el componente o contrato verificado, no solo asumido por nombre o convención |
+| Siguiente prompt recomendado | `04-01-diseno-solucion` |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

@@ -8,6 +8,22 @@ Prompt de arranque para mapear todo el gobierno del proyecto: procesos, procedim
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | análisis |
+| Riesgo esperado | bajo — es una localización de solo lectura de documentos de gobierno; no ejecuta cambios, aunque omitir una política existente puede llevar a violarla en trabajo posterior |
+| Entradas requeridas | acceso de lectura a README, docs/, wiki exportada, ADRs, archivos de contribución y workflows del repositorio |
+| Herramientas permitidas | lectura de documentación, markdowns y archivos de configuración — sin ejecución ni cambios |
+| Autonomía permitida | A0 — Analizar |
+| Criterios de detención | si no se encuentra evidencia documental de una categoría de gobierno (por ejemplo, seguridad o branching), declararla como "no existe" en vez de asumir una política implícita |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada fila de la matriz debe citar el archivo o ruta encontrada; las categorías marcadas como incompletas o inexistentes deben indicar qué se buscó y no se halló |
+| Siguiente prompt recomendado | `01-01-arranque-comprension-repositorio` si aún no se hizo el inventario técnico; `02-01-analisis-issue` para iniciar el análisis funcional del trabajo concreto |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

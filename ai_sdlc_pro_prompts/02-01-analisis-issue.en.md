@@ -8,6 +8,22 @@ Prompt to analyze a requirement, issue or change and determine its functional sc
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | analysis |
+| Expected risk | medium — a poorly defined functional scope (actors, expected behavior, acceptance criteria) can misdirect the subsequent technical analysis and design, although this prompt does not execute changes |
+| Required inputs | issue or requirement to analyze, repository, module or functionality, workspace/subproject, and applicable standard/compliance |
+| Allowed tools | reading of code, documentation, and the issue/requirement — no execution or changes |
+| Permitted autonomy | A0 — Analyze |
+| Stop criteria | if the issue does not provide enough information to fix expected behavior or acceptance criteria, state the gap and lower the `confidence_score` instead of inventing the scope |
+| Expected output | see `## Expected output` |
+| Minimum evidence | every use case, business rule, and declared risk must be linked to the issue text or cited code/documentation, with the complete JSON metadata block |
+| Recommended next prompt | `02-02-analisis-tecnico` |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

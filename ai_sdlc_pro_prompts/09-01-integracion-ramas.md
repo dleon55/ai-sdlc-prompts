@@ -8,6 +8,22 @@ Prompt para planificar la integración de cambios con otras ramas activas: anál
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | análisis |
+| Riesgo esperado | medio — no ejecuta el merge, pero una estrategia mal evaluada puede causar conflictos o sobrescribir cambios de otros agentes o desarrolladores |
+| Entradas requeridas | historial de commits, listado de ramas activas, PRs abiertos relacionados |
+| Herramientas permitidas | lectura del historial y estado de git (`git log`, `git diff`, `git branch`) — sin ejecutar merge, rebase, cherry-pick ni push |
+| Autonomía permitida | A1 — Proponer |
+| Criterios de detención | si el estado local no está sincronizado con el remoto (`git fetch` pendiente) o existen ramas activas de otros agentes con cambios no verificados, detener y solicitar sincronización antes de recomendar una estrategia definitiva |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | cada conflicto potencial debe citar el archivo o zona específica y la rama con la que colisiona |
+| Siguiente prompt recomendado | `09-02-monitoreo-ci` una vez ejecutada la integración, para validar el estado del pipeline resultante |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

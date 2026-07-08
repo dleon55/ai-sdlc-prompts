@@ -8,6 +8,22 @@ Prompt to draft release notes or changelog of a change with technical and functi
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | documentation |
+| Expected risk | low — a release communication document; the risk is reputational/operational if it omits breaking changes or deployment notes, it does not act on the system |
+| Required inputs | version or tag, release branch, included issues or PRs, commits of the period |
+| Allowed tools | read-only access (commit history, merged PRs, closed issues); does not publish the release or create the tag |
+| Permitted autonomy | A1 — Propose: delivers the changelog ready to publish; the actual publication in GitHub Releases or CHANGELOG.md is a separate, explicit A3 action |
+| Stop criteria | if it detects breaking changes without a clear migration note, it must stop and request that information before treating the changelog as complete |
+| Expected output | see `## Expected output` |
+| Minimum evidence | each changelog entry is traceable to a real commit or PR within the declared period |
+| Recommended next prompt | `10-02-memoria-tecnica` if the change's audit record does not exist yet; `09-04-promotion-checklist` to validate the release is ready for promotion |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.

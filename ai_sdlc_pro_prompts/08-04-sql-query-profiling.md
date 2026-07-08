@@ -8,6 +8,22 @@ Prompt especializado para actuar como Database Administrator (DBA). Analiza el o
 
 ---
 
+## Contrato editorial
+
+| Campo | Valor |
+|---|---|
+| Tipo | análisis |
+| Riesgo esperado | medio — no ejecuta ni aplica cambios en la base de datos; el riesgo real está en que el DDL o la query propuestos se apliquen en producción sin validación adicional |
+| Entradas requeridas | `EXPLAIN ANALYZE` o log del ORM, DDL o modelos del esquema relevante, motor de base de datos usado |
+| Herramientas permitidas | lectura del plan de ejecución/log y del esquema proporcionados — sin acceso a la base de datos real ni ejecución de consultas |
+| Autonomía permitida | A1 — Proponer (entrega diagnóstico, query optimizada y DDL de índices como propuesta; no los ejecuta) |
+| Criterios de detención | si el esquema o el plan de ejecución no incluye volumetría real ni estadísticas actualizadas de las tablas, presentar el diagnóstico como preliminar y no garantizar el impacto estimado |
+| Salida esperada | ver `## Salida esperada` |
+| Evidencia mínima | el diagnóstico debe citar el nodo específico del plan de ejecución (o la consulta N+1 exacta) responsable del cuello de botella |
+| Siguiente prompt recomendado | `08-01-revision-estatica` para validar la query optimizada y el DDL de índices antes de aplicarlos |
+
+---
+
 ## Contexto obligatorio previo
 
 > Incluye el bloque del archivo `00-framework.md` antes de este prompt.

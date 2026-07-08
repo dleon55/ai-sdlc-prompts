@@ -8,6 +8,22 @@ Prompt to formally document the use cases of the analyzed requirement or module:
 
 ---
 
+## Editorial Contract
+
+| Field | Value |
+|---|---|
+| Type | design |
+| Expected risk | low — it formalizes already-analyzed behavior into documentation without executing changes; the risk is that incomplete use cases (alternate flows, acceptance criteria) create ambiguity for subsequent implementation and testing |
+| Required inputs | prior functional analysis (`02-01`), existing use-case documentation, target module or functionality |
+| Allowed tools | reading of documentation and related code — no execution or changes |
+| Permitted autonomy | A1 — Propose |
+| Stop criteria | if business rules, postconditions, or verifiable acceptance criteria are missing for a flow, mark it as pending functional validation instead of inventing them |
+| Expected output | see `## Structure of each use case` |
+| Minimum evidence | every use case must include a main flow, at least one alternate flow, and acceptance criteria verifiable against the cited functional analysis |
+| Recommended next prompt | `04-04-adr-decisiones-arquitectura` if architecture decisions derived from the use cases are pending; `05-01-plan-implementacion` if the design is already complete |
+
+---
+
 ## Mandatory previous context
 
 > Include the block from the `00-framework.md` file before this prompt.
