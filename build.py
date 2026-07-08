@@ -354,7 +354,7 @@ CSS = """
   --bdr2: #262b45;
   --tx:   #dde1f5;
   --tx2:  #8892c0;
-  --tx3:  #454d6e;
+  --tx3:  #7b86b8;
   --grn:  #22c55e;
   --warn: #f59e0b;
   --mono: 'JetBrains Mono','Fira Code','Cascadia Code','Courier New',monospace;
@@ -613,7 +613,7 @@ body.sidebar-collapsed .sidebar-collapse-btn svg { transform: rotate(180deg); }
 }
 .card-expand {
   flex-shrink: 0; background: none; border: none; cursor: pointer;
-  color: var(--tx3); width: 20px; height: 20px;
+  color: var(--tx3); width: 24px; height: 24px;
   display: flex; align-items: center; justify-content: center;
   border-radius: 4px; transition: color .12s, background .12s;
 }
@@ -626,7 +626,7 @@ body.sidebar-collapsed .sidebar-collapse-btn svg { transform: rotate(180deg); }
 }
 .card-title:hover { color: var(--tx); }
 .copy-btn {
-  flex-shrink: 0; padding: .2rem .6rem;
+  flex-shrink: 0; padding: .32rem .7rem;
   background: var(--bg4); border: 1px solid var(--bdr2);
   border-radius: 5px; color: var(--tx2); font-size: .68rem;
   cursor: pointer; font-weight: 600; transition: all .12s;
@@ -1044,6 +1044,10 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   .cards-grid { grid-template-columns: 1fr; }
   .ms-label { display: none; }
   .var-label { display: none; }
+  .var-panel { width: 100vw; }
+  .var-float-dropdown { width: min(320px, calc(100vw - 2rem)); }
+  .card-expand { width: 36px; height: 36px; }
+  .copy-btn { padding: .5rem .8rem; }
 }
 @media (max-width: 400px) {
   .hdr-brand { display: none; }
@@ -1527,6 +1531,10 @@ function saveProjects(list) {
   try { localStorage.setItem(LS_KEY_PROJ, JSON.stringify(list)); } catch (e) {}
 }
 
+function setActiveProjectId(id) {
+  try { localStorage.setItem(LS_KEY_ACTV, id); } catch (e) {}
+}
+
 function getActiveProject() {
   var list = loadProjects();
   if (!list || !list.length) return null;
@@ -1548,7 +1556,7 @@ function createProject(name) {
   };
   list.push(p);
   saveProjects(list);
-  localStorage.setItem(LS_KEY_ACTV, p.id);
+  setActiveProjectId(p.id);
   return p;
 }
 
@@ -1558,7 +1566,7 @@ function deleteProject(id) {
   if (!list.find(function(p) { return p.isDefault; })) list[0].isDefault = true;
   saveProjects(list);
   var active = localStorage.getItem(LS_KEY_ACTV);
-  if (active === id) localStorage.setItem(LS_KEY_ACTV, list[0].id);
+  if (active === id) setActiveProjectId(list[0].id);
 }
 
 function duplicateProject(id) {
@@ -1571,7 +1579,7 @@ function duplicateProject(id) {
   };
   list.push(copy);
   saveProjects(list);
-  localStorage.setItem(LS_KEY_ACTV, copy.id);
+  setActiveProjectId(copy.id);
   return copy;
 }
 
@@ -1588,7 +1596,7 @@ function setDefaultProject(id) {
 }
 
 function switchProject(id) {
-  localStorage.setItem(LS_KEY_ACTV, id);
+  setActiveProjectId(id);
   syncPanelToProject();
   renderProjectSelector();
   renderProjQuick();
@@ -2428,6 +2436,8 @@ function showToast(msg, type) {
   if (!container) {
     container = document.createElement('div');
     container.id = 'toast-container';
+    container.setAttribute('role', 'status');
+    container.setAttribute('aria-live', 'polite');
     document.body.appendChild(container);
   }
   var toast = document.createElement('div');
@@ -2586,15 +2596,19 @@ function copyPrompt(pid, btn) {
 
 function doCopy(text, btn) {
   var isFw = btn.classList.contains('fw-copy-btn');
-  var label = isFw ? 'Framework completo copiado' : 'Prompt copiado con éxito';
+  var lang = getCurrentLanguage();
+  var toastLabel = isFw
+    ? (lang === 'en' ? 'Complete framework copied' : 'Framework completo copiado')
+    : (lang === 'en' ? 'Prompt copied successfully' : 'Prompt copiado con éxito');
+  var flashLabel = lang === 'en' ? 'Copied' : 'Copiado';
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(text)
-      .then(function() { flash(btn); showToast(label, 'success'); })
-      .catch(function() { fbCopy(text, btn, label); });
-  } else { fbCopy(text, btn, label); }
+      .then(function() { flash(btn, flashLabel); showToast(toastLabel, 'success'); })
+      .catch(function() { fbCopy(text, btn, toastLabel, flashLabel); });
+  } else { fbCopy(text, btn, toastLabel, flashLabel); }
 }
 
-function fbCopy(text, btn, label) {
+function fbCopy(text, btn, toastLabel, flashLabel) {
   var t = document.createElement('textarea');
   t.value = text; t.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
   document.body.appendChild(t); t.focus(); t.select();
@@ -2602,16 +2616,16 @@ function fbCopy(text, btn, label) {
   try { copied = document.execCommand('copy'); } catch(e) {}
   document.body.removeChild(t);
   if (copied) {
-    flash(btn);
-    showToast(label, 'success');
+    flash(btn, flashLabel);
+    showToast(toastLabel, 'success');
   } else {
     showToast(getCurrentLanguage() === 'en' ? 'Clipboard copy failed' : 'No fue posible copiar al portapapeles', 'warn');
   }
 }
 
-function flash(btn) {
+function flash(btn, label) {
   var orig = btn.innerHTML;
-  btn.innerHTML = '<span>&#10003;</span> Copiado';
+  btn.innerHTML = '<span>&#10003;</span> ' + label;
   btn.classList.add('ok');
   setTimeout(function() { btn.innerHTML = orig; btn.classList.remove('ok'); }, 2000);
 }
@@ -3767,7 +3781,7 @@ def build():
 
         '  </div>\n'  # end var-panel-body  # end var-panel-body
         '  <div class="var-panel-footer">'
-        '<button class="var-apply-btn" id="var-apply-btn" onclick="closeVarPanel(); flash(this)"><span class="fw-lang-es">&#10003; Listo</span><span class="fw-lang-en">&#10003; Done</span></button>'
+        '<button class="var-apply-btn" id="var-apply-btn" onclick="closeVarPanel()"><span class="fw-lang-es">&#10003; Listo</span><span class="fw-lang-en">&#10003; Done</span></button>'
         '<button class="var-clear-btn" onclick="clearVars()"><span class="fw-lang-es">Limpiar</span><span class="fw-lang-en">Clear</span></button>'
         '</div>\n'
         '</div>\n'
@@ -3828,7 +3842,7 @@ def build():
         '        <p class="fw-lang-es">3 cosas clave antes de copiar tu primer prompt.</p>\n'
         '        <p class="fw-lang-en">3 key things before copying your first prompt.</p>\n'
         '      </div>\n'
-        '      <button class="ob-close" onclick="closeOnboarding(false)" title="Cerrar / Close">&#x2715;</button>\n'
+        '      <button class="ob-close" onclick="closeOnboarding(true)" title="Cerrar / Close">&#x2715;</button>\n'
         '    </div>\n'
         '    <div class="ob-steps">\n'
         '      <div class="ob-step active" id="ob-step-0">\n'
@@ -3937,7 +3951,7 @@ def build():
         '    </div>\n'
         '    <div class="var-float-actions">\n'
         '      <button class="var-float-link" onclick="openFullVarPanelFromFloat()">Más variables</button>\n'
-        '      <button class="var-float-primary" onclick="closeVarFloat(); flash(this)">Listo</button>\n'
+        '      <button class="var-float-primary" onclick="closeVarFloat()">Listo</button>\n'
         '    </div>\n'
         '  </div>\n'
         '  <button class="var-float-btn" id="var-float-btn" onclick="toggleVarFloat(event)" title="Editar variables activas">\n'
@@ -3971,7 +3985,7 @@ def build():
         '</div>\n'
         '</div>\n'
         '<!-- ═══ END BOTTOM RIGHT FLOATS ═══ -->\n'
-        '<div id="toast-container"></div>\n'
+        '<div id="toast-container" role="status" aria-live="polite"></div>\n'
         '</body>\n</html>\n'
     )
 
