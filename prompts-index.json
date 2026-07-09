@@ -1539,6 +1539,64 @@
       }
     },
     {
+      "id": "06-03-coordinacion-programa-multiagente",
+      "section": "06",
+      "title": {
+        "es": "6.3 — Coordinación de programa multiagente",
+        "en": "6.3 — Multi-Agent Program Coordination"
+      },
+      "contract": {
+        "es": {
+          "type": "operación — coordinación de programa; la aplicación de cambios queda delegada a los agentes asignados, no a este prompt",
+          "expected_risk": "medio — el riesgo técnico real lo llevan los agentes ejecutores; este prompt introduce riesgo indirecto si asigna trabajo duplicado, prioriza mal las dependencias, o marca un hito como completado sin evidencia suficiente",
+          "required_inputs": "estado real del repositorio (issues abiertos, PRs, branches activas, resultado de CI), plan de trabajo previo si existe, lista de agentes disponibles y su especialidad, criterios de aceptación del programa",
+          "allowed_tools": "lectura de issues, PRs, branches y resultados de CI/tests; redacción y actualización del plan de trabajo y de los prompts por agente — no ejecuta cambios de código, no hace commit/push/merge/despliegue por sí mismo",
+          "permitted_autonomy": "A1 — Proponer (plan, asignaciones, prompts por agente y veredictos de revisión quedan propuestos; la ejecución la realiza cada agente bajo su propio contrato de autonomía, y el merge/despliegue requiere aprobación humana)",
+          "stop_criteria": "si el estado real del repositorio no puede confirmarse (issues/PRs/CI inaccesibles), declarar el plan como desactualizado en vez de asumir avance; si dos agentes reclaman ownership del mismo archivo/módulo sin resolución, detener la asignación y escalar el conflicto antes de continuar",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada actividad marcada \"Completado\" cita el issue/PR/commit/resultado de CI que lo respalda; cada actividad asignada tiene criterios de aceptación explícitos y verificables",
+          "recommended_next_prompt": "`06-01-implementacion-multiagente` para que cada agente asignado ejecute su tarea; `12-orquestador` si una actividad individual del plan requiere clasificar su propio patrón de ejecución",
+          "type_tags": [
+            "operation"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "06-01-implementacion-multiagente",
+            "12-orquestador"
+          ]
+        },
+        "en": {
+          "type": "operation — program coordination; applying changes is delegated to the assigned agents, not to this prompt",
+          "expected_risk": "medium — the real technical risk sits with the executing agents; this prompt introduces indirect risk if it assigns duplicate work, sequences dependencies incorrectly, or marks a milestone complete without sufficient evidence",
+          "required_inputs": "real repository state (open issues, PRs, active branches, latest CI result), prior work plan if one exists, list of available agents and their specialty, program acceptance criteria",
+          "allowed_tools": "reading issues, PRs, branches, and CI/test results; drafting and updating the work plan and per-agent prompts — does not execute code changes, does not commit/push/merge/deploy on its own",
+          "permitted_autonomy": "A1 — Propose (plan, assignments, per-agent prompts, and review verdicts are all proposed; each agent executes under its own autonomy contract, and merge/deploy requires human approval)",
+          "stop_criteria": "if the real repository state cannot be confirmed (issues/PRs/CI unreachable), declare the plan stale instead of assuming progress; if two agents claim ownership of the same file/module without resolution, stop the assignment and escalate the conflict before continuing",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every activity marked \"Done\" cites the issue/PR/commit/CI result that backs it; every assigned activity has explicit, verifiable acceptance criteria",
+          "recommended_next_prompt": "`06-01-implementacion-multiagente` for each assigned agent to execute its task; `12-orquestador` if an individual activity in the plan needs to classify its own execution pattern",
+          "type_tags": [
+            "operation"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "06-01-implementacion-multiagente",
+            "12-orquestador"
+          ]
+        }
+      }
+    },
+    {
       "id": "07-00-deteccion-stack-pruebas",
       "section": "07",
       "title": {
