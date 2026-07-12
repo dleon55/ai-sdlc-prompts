@@ -157,7 +157,7 @@ Usa el prompt de SCA y adáptalo a:
 | Paquete | Versión instalada | CVE | CVSS | Descripción | Fix en versión | Acción |
 |---|---|---|---|---|---|---|
 | `lodash` | 4.17.15 | CVE-2020-8203 | 7.4 | Prototype pollution: permite añadir o modificar propiedades arbitrarias del objeto global vía `_.merge`/`_.zipObjectDeep` con input no confiable | 4.17.19 | Actualizar inmediatamente |
-| `axios` | 0.21.1 | CVE-2021-3749 | 5.3 | ReDoS por expresión regular vulnerable en el manejo de `trailing slash` de URLs | 0.21.2 | Actualizar en el próximo sprint |
+| `axios` | 0.21.1 | CVE-2021-3749 | 7.5 | ReDoS por expresión regular vulnerable en el manejo de `trailing slash` de URLs | 0.21.2 | Alto — actualizar antes del próximo release (CVSS 7.5 cae en el rango ALTO de este mismo prompt) |
 
 ### Plan de actualización
 

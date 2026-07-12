@@ -20,7 +20,7 @@ Prompt to elaborate an executable and traceable implementation plan: previous ac
 | Stop criteria | stop if there is no approved design to start from; do not leave any step without defined expected evidence, dependency, or risk; explicitly flag any step that requires a production environment |
 | Expected output | see `## Expected output` |
 | Minimum evidence | parser-friendly JSON metadata block at the start, each step (1-9) with defined expected evidence, complete PSP/TSP metrics log |
-| Recommended next prompt | `05-02-riesgos-implementacion`, in parallel, before moving to `06-01-implementacion-multiagente` |
+| Recommended next prompt | `05-02-riesgos-implementacion`, in parallel, before moving to `06-01-implementacion-multiagente`; `07-00-deteccion-stack-pruebas` to detect the active test stack before defining the tests required per step (step 4) |
 
 ---
 

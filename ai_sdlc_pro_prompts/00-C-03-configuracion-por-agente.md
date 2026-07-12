@@ -119,10 +119,13 @@ Estructura del archivo:
 - instrucción de modo plan disponible: cuando se indique "plan only"
 
 ─────────────────────────────────────
-GOOGLE ANTIGRAVITY (pruebas E2E en navegador)
+GOOGLE ANTIGRAVITY (uso acotado a pruebas E2E en navegador)
 ─────────────────────────────────────
 Mecanismo: instrucciones en el prompt de tarea + archivo de configuración
-Alcance específico: solo pruebas en navegador, no modificación de código fuente
+Alcance específico: Antigravity es una plataforma agent-first (editor, terminal y
+navegador) capaz de generar, ejecutar y probar código de forma autónoma — no está
+limitada a pruebas de navegador. En este proyecto se acota deliberadamente su uso a
+pruebas E2E en navegador; no se le asignan tareas de modificación de código fuente.
 Configuración:
 - URL base por ambiente: [DEV_URL / QA_URL / STAGING_URL]
 - credenciales de prueba: usar variables de entorno, nunca hardcodear
@@ -145,7 +148,7 @@ TABLA COMPARATIVA DE MECANISMOS
 | OpenAI Codex | AGENTS.md + prompt | AGENTS.md | Código + shell |
 | Windsurf | .windsurfrules | Sí, en repo | Código |
 | Cursor | .cursorrules | Sí, en repo | Código |
-| Antigravity | Prompt de tarea | docs/ai-agents/antigravity-config.md | Solo browser/E2E |
+| Antigravity | Prompt de tarea | docs/ai-agents/antigravity-config.md | Código + navegador (acotado a E2E en este proyecto) |
 
 Reglas que deben estar presentes en TODOS los agentes:
 - antes de proponer cambios de sintaxis o refactorizaciones, verificar la versión del runtime local (Node.js, Python, JDK) para prevenir incompatibilidades

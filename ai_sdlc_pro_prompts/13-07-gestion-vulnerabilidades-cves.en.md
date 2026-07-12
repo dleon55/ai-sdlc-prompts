@@ -172,7 +172,7 @@ Use the vulnerability and CVE management prompt and adapt it to:
 | ID | Source | Component | Description | CVSS | Severity | Triage | Fix available | SLA | Owner |
 |---|---|---|---|---|---|---|---|---|---|
 | VUL-001 | SAST-001 | `api/views.py:42` | SQL Injection in search | 9.8 | CRITICAL | True positive | Yes — parameterize query | 24h | Backend dev |
-| VUL-002 | SCA | `requests==2.25.0` | CVE-2023-32681 SSRF | 6.1 | MEDIUM | True positive | Yes — update to 2.32.3 | 30 days | DevOps |
+| VUL-002 | SCA | `requests==2.25.0` | CVE-2023-32681 — `Proxy-Authorization` header leaked on redirect to a different host (proxy credentials disclosed) | 6.1 | MEDIUM | True positive | Yes — update to 2.31.0 | 30 days | DevOps |
 
 ### Security dashboard
 
