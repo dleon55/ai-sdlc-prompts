@@ -102,6 +102,7 @@ Usa el prompt de análisis de causa raíz y adáptalo a:
 | `04-02-diagramas-mermaid.md` | 4.2 | Generación de diagramas Mermaid |
 | `04-03-casos-de-uso.md` | 4.3 | Diseño y documentación formal de casos de uso |
 | `04-04-adr-decisiones-arquitectura.md` | 4.4 | Architecture Decision Records (ADR) |
+| `04-05-versionado-deprecacion-api.md` | 4.5 | Versionado y deprecación de API |
 | `05-01-plan-implementacion.md` | 5.1 | Plan de implementación detallado y trazable |
 | `05-02-riesgos-implementacion.md` | 5.2 | Análisis de riesgos e impacto de implementación |
 | `06-01-implementacion-multiagente.md` | 6.1 | Implementación multi-agente segura y controlada |
@@ -123,10 +124,13 @@ Usa el prompt de análisis de causa raíz y adáptalo a:
 | `08-02-cumplimiento-requerimiento.md` | 8.2 | Revisión de cumplimiento contra requerimiento |
 | `08-03-remediacion-maestro.md` | 8.3 | Prompt maestro de remediación de revisión estática |
 | `08-04-sql-query-profiling.md` | 8.4 | Auditoría de planes de ejecución y profiling SQL (DBA) |
+| `08-05-revision-migracion-esquema-bd.md` | 8.5 | Revisión de migración de esquema de base de datos |
 | `09-01-integracion-ramas.md` | 9.1 | Integración controlada con ramas |
 | `09-02-monitoreo-ci.md` | 9.2 | Monitoreo de CI local y remoto |
 | `09-03-workflows-github-actions.md` | 9.3 | Revisión de workflows de GitHub Actions |
 | `09-04-promotion-checklist.md` | 9.4 | Checklist de promoción entre ambientes (dev→staging→prod) |
+| `09-05-estrategia-feature-flags.md` | 9.5 | Estrategia de feature flags / kill-switch |
+| `09-06-coordinacion-breaking-changes.md` | 9.6 | Coordinación de breaking changes con equipos externos |
 | `10-01-documentacion-tecnica.md` | 10.1 | Actualizar documentación técnica |
 | `10-02-memoria-tecnica.md` | 10.2 | Memoria técnica del cambio |
 | `10-03-release-changelog.md` | 10.3 | Documentación de release o changelog |
@@ -139,6 +143,8 @@ Usa el prompt de análisis de causa raíz y adáptalo a:
 | `11-06-gestion-parches-actualizaciones.md` | 11.6 | Gestión de parches y actualizaciones de dependencias e infraestructura |
 | `11-07-sre-postmortem-runbook.md` | 11.7 | Post-mortem blameless y generación de runbook (SRE) |
 | `11-08-finops-cloud-cost-audit.md` | 11.8 | Auditoría de FinOps y eficiencia de costos cloud |
+| `11-09-runbook-rollback.md` | 11.9 | Runbook de ejecución de rollback |
+| `11-10-capacity-planning.md` | 11.10 | Capacity planning y proyección de escalamiento |
 | `12-orquestador.md` | 12 | Prompt maestro orquestador del ciclo completo |
 
 **── SEGURIDAD Y DEVSECOPS (13)**
