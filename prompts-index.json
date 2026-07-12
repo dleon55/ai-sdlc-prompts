@@ -1319,6 +1319,64 @@
       }
     },
     {
+      "id": "04-05-versionado-deprecacion-api",
+      "section": "04",
+      "title": {
+        "es": "4.5 — Versionado y deprecación de API",
+        "en": "4.5 — API Versioning and Deprecation"
+      },
+      "contract": {
+        "es": {
+          "type": "diseño",
+          "expected_risk": "bajo-medio — el prompt solo produce un documento de estrategia, pero un plan de deprecación mal calibrado (ventana insuficiente, comunicación deficiente) puede romper integraciones reales de consumidores si se ejecuta tal cual sin revisión",
+          "required_inputs": "endpoint(s) u operación afectada, naturaleza del cambio propuesto, consumidores conocidos de la API (internos/externos, si se conocen), política de versionado existente del proyecto (si existe), SLA o acuerdos de soporte vigentes con consumidores",
+          "allowed_tools": "lectura de la especificación de API existente (OpenAPI/Swagger, GraphQL SDL, contratos), changelogs previos y documentación de consumidores; solo redacción del documento de estrategia — no modifica código ni configuración de la API",
+          "permitted_autonomy": "A1 — Proponer",
+          "stop_criteria": "detener y escalar si no se puede determinar si el cambio es breaking o no; detener si se desconoce por completo la base de consumidores y el prompt no puede señalar explícitamente ese vacío; nunca proponer eliminar una versión sin período de aviso definido",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada cambio clasificado explícitamente como breaking o no-breaking con justificación; hitos de fecha (anuncio, ventana de soporte dual, fin de soporte) definidos aunque sean estimados; nota explícita cuando los consumidores o su volumen de uso son desconocidos",
+          "recommended_next_prompt": "`09-06-coordinacion-breaking-changes` para notificar y coordinar con los equipos y consumidores afectados una vez definida la estrategia de versionado",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "low",
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "09-06-coordinacion-breaking-changes"
+          ]
+        },
+        "en": {
+          "type": "design",
+          "expected_risk": "low-medium — the prompt only produces a strategy document, but a poorly calibrated deprecation plan (insufficient window, weak communication) can break real consumer integrations if followed as-is without review",
+          "required_inputs": "affected endpoint(s) or operation, nature of the proposed change, known consumers of the API (internal/external, if known), the project's existing versioning policy (if any), current SLA or support agreements with consumers",
+          "allowed_tools": "reading the existing API specification (OpenAPI/Swagger, GraphQL SDL, contracts), previous changelogs and consumer documentation; only drafts the strategy document — does not modify API code or configuration",
+          "permitted_autonomy": "A1 — Propose",
+          "stop_criteria": "stop and escalate if it cannot be determined whether the change is breaking or not; stop if the consumer base is entirely unknown and the prompt cannot explicitly flag that gap; never propose removing a version without a defined notice period",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every change explicitly classified as breaking or non-breaking with justification; date milestones (announcement, dual-support window, end of support) defined even if estimated; explicit note when consumers or their usage volume are unknown",
+          "recommended_next_prompt": "`09-06-coordinacion-breaking-changes` to notify and coordinate with the affected teams and consumers once the versioning strategy is defined",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "low",
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "09-06-coordinacion-breaking-changes"
+          ]
+        }
+      }
+    },
+    {
       "id": "05-01-plan-implementacion",
       "section": "05",
       "title": {
@@ -2579,6 +2637,70 @@
       }
     },
     {
+      "id": "08-05-revision-migracion-esquema-bd",
+      "section": "08",
+      "title": {
+        "es": "8.5 — Revisión de migración de esquema de base de datos",
+        "en": "8.5 — Database Schema Migration Review"
+      },
+      "contract": {
+        "es": {
+          "type": "análisis / validación",
+          "expected_risk": "alto — una migración de esquema mal evaluada y aplicada a ciegas puede bloquear tablas de alto tráfico, romper el código actualmente desplegado durante un rolling deploy o causar pérdida irreversible de datos; el prompt en sí es de solo lectura, pero el costo de un diagnóstico incompleto se paga en producción",
+          "required_inputs": "script o archivo de migración (DDL exacto, up y down si existen), motor de base de datos y versión, tamaño aproximado y tráfico de la(s) tabla(s) afectada(s), fragmento relevante del código actualmente desplegado que lee o escribe esas columnas/tablas, estrategia de despliegue (rolling / blue-green / con downtime permitido)",
+          "allowed_tools": "lectura del script de migración, del esquema actual y del código proporcionado; sin acceso a la base de datos real, sin ejecutar la migración ni ningún DDL/DML contra ningún ambiente",
+          "permitted_autonomy": "A0 — Analizar (diagnóstico de riesgo); A1 — Proponer (versión corregida de la migración, plan expand-contract, script de rollback, como propuesta); nunca A2/A3 — este prompt no ejecuta ni aplica la migración bajo ninguna circunstancia",
+          "stop_criteria": "detener y escalar a aprobación humana explícita si la migración toma un lock de tabla completo sobre una tabla de alto tráfico sin plan de ventana de mantenimiento; detener si no se puede confirmar compatibilidad con el código actualmente desplegado; nunca dar por aceptable una operación con pérdida de datos irreversible solo porque quien la solicita dice que \"está bien\" — señalarla explícitamente igual",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada riesgo señalado debe citar la sentencia DDL exacta responsable (ADD COLUMN, DROP COLUMN, ALTER TYPE, CREATE INDEX, etc.) y, cuando aplique, el fragmento de código actualmente desplegado que quedaría incompatible",
+          "recommended_next_prompt": "`11-09-runbook-rollback` para documentar y preparar el procedimiento de rollback en caso de que la migración deba revertirse después de aplicada",
+          "type_tags": [
+            "analysis",
+            "validation"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1",
+            "A2",
+            "A3"
+          ],
+          "recommended_next_prompt_ids": [
+            "11-09-runbook-rollback"
+          ]
+        },
+        "en": {
+          "type": "analysis / validation",
+          "expected_risk": "high — a poorly assessed schema migration that gets applied blindly can lock high-traffic tables, break the currently deployed code during a rolling deploy, or cause irreversible data loss; the prompt itself is read-only, but the cost of an incomplete diagnosis is paid in production",
+          "required_inputs": "migration script or file (exact DDL, up and down if they exist), database engine and version, approximate size and traffic of the affected table(s), relevant fragment of the currently deployed code that reads or writes those columns/tables, deployment strategy (rolling / blue-green / maintenance window allowed)",
+          "allowed_tools": "reading the provided migration script, current schema, and code — no access to a real database, no executing the migration or any DDL/DML against any environment",
+          "permitted_autonomy": "A0 — Analyze (risk diagnosis); A1 — Propose (corrected migration version, expand-contract plan, rollback script, as a proposal); never A2/A3 — this prompt never executes or applies the migration under any circumstance",
+          "stop_criteria": "stop and escalate to explicit human approval if the migration acquires a full table lock on a high-traffic table without a maintenance-window plan; stop if compatibility with the currently deployed code cannot be confirmed; never treat an irreversible data-loss operation as acceptable just because the requester says it's fine — flag it explicitly regardless",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every flagged risk must cite the exact DDL statement responsible (ADD COLUMN, DROP COLUMN, ALTER TYPE, CREATE INDEX, etc.) and, when applicable, the fragment of currently deployed code that would become incompatible",
+          "recommended_next_prompt": "`11-09-runbook-rollback` to document and prepare the rollback procedure in case the migration needs to be reverted after being applied",
+          "type_tags": [
+            "analysis",
+            "validation"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1",
+            "A2",
+            "A3"
+          ],
+          "recommended_next_prompt_ids": [
+            "11-09-runbook-rollback"
+          ]
+        }
+      }
+    },
+    {
       "id": "09-01-integracion-ramas",
       "section": "09",
       "title": {
@@ -2800,6 +2922,124 @@
           ],
           "recommended_next_prompt_ids": [
             "09-02-monitoreo-ci"
+          ]
+        }
+      }
+    },
+    {
+      "id": "09-05-estrategia-feature-flags",
+      "section": "09",
+      "title": {
+        "es": "9.5 — Estrategia de feature flags / kill-switch",
+        "en": "9.5 — Feature Flag / Kill-Switch Strategy"
+      },
+      "contract": {
+        "es": {
+          "type": "diseño",
+          "expected_risk": "medio — un mal diseño de estrategia de flags (por ejemplo sin kill-switch, o con un flag que no puede apagarse de forma segura) incrementa el radio de impacto de un rollout fallido, pero este prompt en sí mismo solo diseña: no activa, desactiva ni modifica flags en un ambiente real",
+          "required_inputs": "feature o cambio a flaggear, tipo de flag esperado (release/ops/experiment), plataforma de feature flags, capas donde se evalúa (cliente/servidor/edge), si hay experimento A/B asociado, fecha u hito objetivo para el rollout completo",
+          "allowed_tools": "lectura de código, arquitectura y documentación de la plataforma de flags para diseñar la estrategia — sin crear, activar, desactivar ni modificar flags en la plataforma real",
+          "permitted_autonomy": "A1 — Proponer (diseño completo de la estrategia sin aplicar); la creación y activación de flags en la plataforma real requiere A2/A3 explícito por el equipo dueño de la feature",
+          "stop_criteria": "detener y escalar si el kill-switch propuesto depende del mismo pipeline de deploy que busca evitar en una emergencia; no proponer una progresión de rollout sin criterios de promoción/pausa medibles; no dejar ningún flag sin propietario ni plan de remoción",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada flag documentado con tipo, convención de nombre, punto de evaluación, anillos de rollout con % y criterio de promoción, diseño de kill-switch y plan de limpieza con fecha o disparador concreto",
+          "recommended_next_prompt": "`09-06-coordinacion-breaking-changes` si la feature flaggeada es en sí misma un breaking change que requiere coordinación con consumidores",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A1",
+            "A2",
+            "A3"
+          ],
+          "recommended_next_prompt_ids": [
+            "09-06-coordinacion-breaking-changes"
+          ]
+        },
+        "en": {
+          "type": "design",
+          "expected_risk": "medium — a poorly designed flag strategy (e.g. no kill-switch, or a flag that cannot be safely toggled off) increases the blast radius of a failed rollout, but this prompt itself only designs: it does not toggle or modify flags in a real environment",
+          "required_inputs": "feature or change to flag, expected flag type (release/ops/experiment), feature flag platform, layers where it is evaluated (client/server/edge), whether there is an associated A/B experiment, target date or milestone for full rollout",
+          "allowed_tools": "reading code, architecture, and feature flag platform documentation to design the strategy — no creating, enabling, disabling, or modifying flags on the real platform",
+          "permitted_autonomy": "A1 — Propose (complete strategy design without applying it); creating and enabling flags on the real platform requires explicit A2/A3 by the team that owns the feature",
+          "stop_criteria": "stop and escalate if the proposed kill-switch depends on the same deploy pipeline it is meant to bypass in an emergency; do not propose a rollout progression without measurable promotion/pause criteria; do not leave any flag without an owner or a removal plan",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "each flag documented with type, naming convention, evaluation point, rollout rings with % and promotion criteria, kill-switch design, and cleanup plan with a concrete date or trigger",
+          "recommended_next_prompt": "`09-06-coordinacion-breaking-changes` if the flagged feature is itself a breaking change requiring coordination with consumers",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A1",
+            "A2",
+            "A3"
+          ],
+          "recommended_next_prompt_ids": [
+            "09-06-coordinacion-breaking-changes"
+          ]
+        }
+      }
+    },
+    {
+      "id": "09-06-coordinacion-breaking-changes",
+      "section": "09",
+      "title": {
+        "es": "9.6 — Coordinación de breaking changes con equipos externos",
+        "en": "9.6 — Cross-Team Breaking Change Coordination"
+      },
+      "contract": {
+        "es": {
+          "type": "operación/coordinación — redacta la comunicación y hace seguimiento de la preparación de los consumidores; no ejecuta el breaking change en sí ni la estrategia de versionado que lo respalda",
+          "expected_risk": "medio-alto — si los consumidores no son notificados correctamente o no reciben tiempo suficiente de migración, el breaking change les provoca caídas reales cuando se despliegue; prevenir exactamente eso es el objetivo de este prompt",
+          "required_inputs": "plan de versionado/deprecación ya definido (de `04-05-versionado-deprecacion-api` u otro documento equivalente), lista conocida de equipos/servicios/consumidores que dependen del contrato, fecha objetivo del corte o release, canales de comunicación disponibles por audiencia",
+          "allowed_tools": "lectura de documentación de consumidores, contratos de API/esquemas/eventos, changelogs previos, tickets de soporte y canales de comunicación existentes; redacción de comunicados, calendario de aviso y checklist de seguimiento — no envía mensajes reales, no modifica ningún sistema consumidor ni ejecuta el corte",
+          "permitted_autonomy": "A1 — Proponer (redacta la comunicación, el calendario de aviso y el checklist de preparación; el envío real de la comunicación, la escalación directa a un consumidor y la decisión de proceder con el corte requieren aprobación humana o del equipo responsable)",
+          "stop_criteria": "detener y escalar si no puede confirmarse la lista completa de consumidores afectados — declararla incompleta en vez de tratarla como cerrada; detener si no hay fecha mínima de aviso definida por audiencia; nunca recomendar proceder con el corte si un consumidor de alto impacto no ha confirmado explícitamente su preparación",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada consumidor/equipo listado con impacto, canal usado, fecha límite y estado de confirmación citando la fuente concreta (mensaje enviado, respuesta recibida, ticket, ack en canal); nota explícita cuando la lista de consumidores es incompleta o no verificable",
+          "recommended_next_prompt": "`09-04-promotion-checklist` una vez confirmada la preparación externa, para ejecutar el checklist de despliegue real del cambio",
+          "type_tags": [
+            "operation"
+          ],
+          "expected_risk_tags": [
+            "medium",
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "09-04-promotion-checklist"
+          ]
+        },
+        "en": {
+          "type": "operation/coordination — drafts the communication and tracks consumer readiness; it does not execute the breaking change itself nor the versioning strategy behind it",
+          "expected_risk": "medium-high — if consumers aren't properly notified or given enough migration time, the breaking change causes real outages for them once it ships; preventing exactly that is this prompt's purpose",
+          "required_inputs": "an existing versioning/deprecation plan (from `04-05-versionado-deprecacion-api` or an equivalent document), the known list of teams/services/consumers that depend on the contract, the target cutover or release date, the communication channels available per audience",
+          "allowed_tools": "reading consumer documentation, API/schema/event contracts, prior changelogs, support tickets, and existing communication channels; drafting notices, a notice-period calendar, and a readiness-tracking checklist — it does not send real messages, does not modify any consumer-facing system, and does not execute the cutover",
+          "permitted_autonomy": "A1 — Propose (drafts the communication, the notice calendar, and the readiness checklist; actually sending the communication, escalating directly to a consumer, and deciding to proceed with the cutover require human or team-owner approval)",
+          "stop_criteria": "stop and escalate if the full list of affected consumers can't be confirmed — declare it incomplete rather than treating it as closed; stop if no minimum notice period per audience has been defined; never recommend proceeding with the cutover if a high-impact consumer hasn't explicitly confirmed readiness",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every consumer/team listed with impact, channel used, deadline, and confirmation status citing the concrete source (message sent, response received, ticket, channel ack); explicit note when the consumer list is incomplete or unverifiable",
+          "recommended_next_prompt": "`09-04-promotion-checklist` once external readiness is confirmed, to run the actual deployment checklist",
+          "type_tags": [
+            "operation"
+          ],
+          "expected_risk_tags": [
+            "medium",
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "09-04-promotion-checklist"
           ]
         }
       }
@@ -3514,6 +3754,129 @@
           ],
           "recommended_next_prompt_ids": [
             "09-03-workflows-github-actions"
+          ]
+        }
+      }
+    },
+    {
+      "id": "11-09-runbook-rollback",
+      "section": "11",
+      "title": {
+        "es": "11.9 — Runbook de ejecución de rollback",
+        "en": "11.9 — Rollback Execution Runbook"
+      },
+      "contract": {
+        "es": {
+          "type": "operación",
+          "expected_risk": "alto — la decisión de rollback ocurre bajo presión de tiempo durante un problema activo; un rollback mal ejecutado (que pierda datos escritos en la versión nueva, o que asuma reversible una migración de base de datos que no lo es) puede empeorar la situación en vez de resolverla",
+          "required_inputs": "síntoma que motiva el rollback, componente(s) afectados y su tipo de cambio (código / migración de BD / config o feature flag / infraestructura), versión o estado objetivo al que revertir, indicación de si hubo escrituras de datos en la versión nueva, ambiente",
+          "allowed_tools": "diseño del plan de rollback y del criterio de decisión: solo lectura de logs, métricas, historial de deploys y definición de migraciones; la ejecución real contra un ambiente vivo está limitada por la autonomía indicada abajo",
+          "permitted_autonomy": "A1 — Proponer para todo el diseño del criterio de decisión y del runbook de rollback; A2 — Ejecutar controlado solo para la ejecución en un ambiente aislado o con las precondiciones explícitas ya verificadas (versión previa confirmada desplegable, reversibilidad de la migración confirmada); ejecutar un rollback contra producción, y en particular cualquier rollback que toque una migración de base de datos o datos de producción, requiere aprobación humana explícita antes de cada acción — este prompt no se autoconcede permiso para ejecutarlo sin esa aprobación",
+          "stop_criteria": "detener y escalar si la reversibilidad de una migración de base de datos no puede confirmarse; detener si no se puede confirmar que la versión previa es desplegable (dependencias, configuración); detener si el rollback implicaría pérdida de datos no aceptada explícitamente por el responsable del sistema; no ejecutar ninguna acción contra producción sin la aprobación explícita que exige este contrato",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada componente a revertir con su reversibilidad evaluada explícitamente, pasos de ejecución en orden con comando o acción concreta, y verificación post-rollback contra el síntoma original, no solo contra el éxito técnico del despliegue",
+          "recommended_next_prompt": "`11-07-sre-postmortem-runbook` para documentar el incidente y el rollback ejecutado",
+          "type_tags": [
+            "operation"
+          ],
+          "expected_risk_tags": [
+            "low",
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A1",
+            "A2"
+          ],
+          "recommended_next_prompt_ids": [
+            "11-07-sre-postmortem-runbook"
+          ]
+        },
+        "en": {
+          "type": "operation",
+          "expected_risk": "high — rollback decisions happen under time pressure during an active problem; a poorly executed rollback (one that loses data written on the new version, or that assumes a database migration is reversible when it isn't) can make things worse instead of resolving them",
+          "required_inputs": "symptom driving the rollback, affected component(s) and their change type (code / DB migration / config or feature flag / infrastructure), target version or state to revert to, whether data was written on the new version, environment",
+          "allowed_tools": "design of the rollback plan and decision criteria: read-only access to logs, metrics, deploy history, and migration definitions; actual execution against a live environment is limited by the autonomy below",
+          "permitted_autonomy": "A1 — Propose for the entire design of the decision criteria and the rollback runbook; A2 — Execute controlled only in an isolated environment or once the explicit preconditions are already verified (previous version confirmed deployable, migration reversibility confirmed); executing a rollback against production, and in particular any rollback touching a database migration or production data, requires explicit human approval before each action — this prompt does not grant itself broader execution rights than that",
+          "stop_criteria": "stop and escalate if a database migration's reversibility cannot be confirmed; stop if it cannot be confirmed that the previous version is deployable (dependencies, configuration); stop if the rollback would imply data loss not explicitly accepted by the system's responsible party; do not execute any action against production without the explicit approval this contract requires",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "each component to revert with its reversibility explicitly assessed, execution steps in order with a concrete command or action, and post-rollback verification against the original symptom, not just against deployment technical success",
+          "recommended_next_prompt": "`11-07-sre-postmortem-runbook` to document the incident and the rollback that was executed",
+          "type_tags": [
+            "operation"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A1",
+            "A2"
+          ],
+          "recommended_next_prompt_ids": [
+            "11-07-sre-postmortem-runbook"
+          ]
+        }
+      }
+    },
+    {
+      "id": "11-10-capacity-planning",
+      "section": "11",
+      "title": {
+        "es": "11.10 — Capacity planning y proyección de escalamiento",
+        "en": "11.10 — Capacity Planning and Scaling Forecast"
+      },
+      "contract": {
+        "es": {
+          "type": "análisis/planificación",
+          "expected_risk": "medio — una proyección de capacidad equivocada puede llevar a sobre-aprovisionar (desperdicio de presupuesto) o a sub-aprovisionar (caída de servicio al alcanzar el techo), pero el prompt en sí solo analiza y recomienda, nunca aprovisiona infraestructura",
+          "required_inputs": "métricas de utilización actual por capa (cómputo, conexiones/almacenamiento de BD, cache, rate limits de APIs de terceros, profundidad de colas), hipótesis de crecimiento esperado y su fuente (proyección de negocio real o supuesto), resultados de pruebas de carga si existen (`07-06`)",
+          "allowed_tools": "lectura de métricas, dashboards, resultados de pruebas de carga y proyecciones de negocio; la salida es un documento de análisis y recomendación de texto — no ejecuta cambios de infraestructura ni configura autoscaling",
+          "permitted_autonomy": "A0 — Analizar (lectura de métricas y proyección); A1 — Proponer (plan de escalamiento y umbrales); nunca A2/A3 — este prompt no aprovisiona, redimensiona ni modifica infraestructura",
+          "stop_criteria": "detener y escalar si no hay ninguna métrica de utilización real disponible para el componente crítico — no fabricar cifras plausibles; señalar como proyección de baja confianza si la hipótesis de crecimiento es un supuesto sin respaldo de negocio",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada proyección cita la métrica base real (o indica explícitamente que es estimada), el supuesto de crecimiento usado y su fuente, y el modelo de proyección aplicado (lineal u otro, con justificación)",
+          "recommended_next_prompt": "`07-06-pruebas-performance-carga` para validar el techo proyectado con una prueba de carga real antes de comprometerse con el plan; `11-08-finops-cloud-cost-audit` para validar el impacto en costos del plan de escalamiento propuesto",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1",
+            "A2",
+            "A3"
+          ],
+          "recommended_next_prompt_ids": [
+            "07-06-pruebas-performance-carga",
+            "11-08-finops-cloud-cost-audit"
+          ]
+        },
+        "en": {
+          "type": "analysis/planning",
+          "expected_risk": "medium — a wrong capacity projection can lead to over-provisioning (wasted budget) or under-provisioning (service outage when the ceiling is hit), but the prompt itself only analyzes and recommends, it never provisions infrastructure",
+          "required_inputs": "current utilization metrics per layer (compute, DB connections/storage, cache, third-party API rate limits, queue depth), expected growth hypothesis and its source (real business projection or assumption), load-test results if available (`07-06`)",
+          "allowed_tools": "reading metrics, dashboards, load-test results and business projections; the output is a text analysis and recommendation document — it does not execute infrastructure changes or configure autoscaling",
+          "permitted_autonomy": "A0 — Analyze (metrics reading and projection); A1 — Propose (scaling plan and thresholds); never A2/A3 — this prompt does not provision, resize, or modify infrastructure",
+          "stop_criteria": "stop and escalate if no real utilization metric is available for the critical component — never fabricate plausible-looking figures; flag the projection as low-confidence if the growth hypothesis is an unsupported assumption",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "each projection cites the real baseline metric (or explicitly states it is estimated), the growth assumption used and its source, and the projection model applied (linear or otherwise, with justification)",
+          "recommended_next_prompt": "`07-06-pruebas-performance-carga` to validate the projected ceiling with an actual load test before committing to the plan; `11-08-finops-cloud-cost-audit` to validate the cost impact of the proposed scaling plan",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1",
+            "A2",
+            "A3"
+          ],
+          "recommended_next_prompt_ids": [
+            "07-06-pruebas-performance-carga",
+            "11-08-finops-cloud-cost-audit"
           ]
         }
       }

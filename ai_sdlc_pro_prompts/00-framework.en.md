@@ -99,6 +99,7 @@ Use the root cause analysis prompt and adapt it to:
 | `04-02-diagramas-mermaid.md` | 4.2 | Generate Mermaid diagrams |
 | `04-03-casos-de-uso.md` | 4.3 | Use case design |
 | `04-04-adr-decisiones-arquitectura.md` | 4.4 | Architecture Decision Records (ADR) |
+| `04-05-versionado-deprecacion-api.md` | 4.5 | API Versioning and Deprecation |
 | `05-01-plan-implementacion.md` | 5.1 | Detailed implementation plan |
 | `05-02-riesgos-implementacion.md` | 5.2 | Implementation risk and impact analysis |
 | `06-01-implementacion-multiagente.md` | 6.1 | Secure multi-agent implementation |
@@ -120,10 +121,13 @@ Use the root cause analysis prompt and adapt it to:
 | `08-02-cumplimiento-requerimiento.md` | 8.2 | Requirement compliance review |
 | `08-03-remediacion-maestro.md` | 8.3 | Static review remediation (master prompt) |
 | `08-04-sql-query-profiling.md` | 8.4 | SQL Execution Plan Audit and Profiling (DBA) |
+| `08-05-revision-migracion-esquema-bd.md` | 8.5 | Database Schema Migration Review |
 | `09-01-integracion-ramas.md` | 9.1 | Controlled integration with branches |
 | `09-02-monitoreo-ci.md` | 9.2 | Local and remote CI monitoring |
 | `09-03-workflows-github-actions.md` | 9.3 | GitHub Actions workflows review |
 | `09-04-promotion-checklist.md` | 9.4 | Promotion checklist: integration and deployment between environments |
+| `09-05-estrategia-feature-flags.md` | 9.5 | Feature Flag / Kill-Switch Strategy |
+| `09-06-coordinacion-breaking-changes.md` | 9.6 | Cross-Team Breaking Change Coordination |
 | `10-01-documentacion-tecnica.md` | 10.1 | Update technical documentation |
 | `10-02-memoria-tecnica.md` | 10.2 | Technical memory of the change |
 | `10-03-release-changelog.md` | 10.3 | Release or changelog documentation |
@@ -136,6 +140,8 @@ Use the root cause analysis prompt and adapt it to:
 | `11-06-gestion-parches-actualizaciones.md` | 11.6 | Patch and Update Management |
 | `11-07-sre-postmortem-runbook.md` | 11.7 | Blameless Post-Mortem and Runbook Generation (SRE) |
 | `11-08-finops-cloud-cost-audit.md` | 11.8 | FinOps Audit and Cloud Cost Efficiency |
+| `11-09-runbook-rollback.md` | 11.9 | Rollback Execution Runbook |
+| `11-10-capacity-planning.md` | 11.10 | Capacity Planning and Scaling Forecast |
 | `12-orquestador.md` | 12 | Master orchestrator prompt for complete cycle |
 
 **── SECURITY AND DEVSECOPS (13)**
