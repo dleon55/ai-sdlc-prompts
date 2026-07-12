@@ -1,9 +1,14 @@
+import re
+import sys
 from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).parent.parent
 BUILD_SOURCE = (PROJECT_ROOT / "build.py").read_text(encoding="utf-8")
 PROMPTS_DIR = PROJECT_ROOT / "ai_sdlc_pro_prompts"
+
+sys.path.insert(0, str(PROJECT_ROOT))
+import extract_vars  # noqa: E402
 
 CANONICAL_FIELDS = {
     "repositorio",
@@ -250,3 +255,47 @@ def test_compliance_and_methodology_support_multiple_and_custom_values():
         "GitFlow",
     ):
         assert f'value="{methodology}"' in BUILD_SOURCE
+
+
+def test_token_registry_has_no_dead_aliases():
+    """Todo alias registrado en TOKEN_REGISTRY debe usarse en algún lado --
+    como placeholder real dentro de un prompt (ai_sdlc_pro_prompts/*.md) o
+    como chip de sugerencia en el propio panel de variables (.var-tag en
+    build.py). Un alias que no aparece en ninguno de los dos es ruido que
+    quedó del contenido tal como estaba en una edición anterior, no una
+    variable real -- si esto falla, o se restauró el uso real de ese alias
+    en algún lado, o hay que podarlo de TOKEN_REGISTRY (issue: limpieza del
+    sistema de variables, ~39 alias muertos detectados por auditoría)."""
+    registry = extract_vars.parse_registry()
+    ui_tokens = extract_vars.collect_ui_tag_tokens()
+
+    prompt_text = ""
+    for path in sorted(PROMPTS_DIR.glob("*.md")):
+        prompt_text += path.read_text(encoding="utf-8") + "\n"
+
+    dead = []
+    for field, config in registry.items():
+        for alias in config["aliases"]:
+            in_prompts = f"[{alias}]" in prompt_text or f"{{{{{alias}}}}}" in prompt_text
+            in_ui = alias in ui_tokens
+            if not in_prompts and not in_ui:
+                dead.append(f"{field}: '{alias}'")
+
+    assert not dead, "Alias registrados sin ningún uso real (podar de TOKEN_REGISTRY):\n" + "\n".join(dead)
+
+
+def test_token_registry_scope_field_covers_all_fields():
+    """Cada campo de TOKEN_REGISTRY declara scope 'project' o 'task' --
+    issue: separación proyecto/tarea en el sistema de variables, para poder
+    limpiar solo los campos de tarea sin perder el contexto persistente del
+    proyecto (repo, stack, metodología...)."""
+    block = BUILD_SOURCE.split("var TOKEN_REGISTRY = {", 1)[1].split("\n};", 1)[0]
+    entries = re.split(r"\n  (?=[a-z_]+:\s*\{)", block)
+    for entry in entries:
+        field_match = re.match(r"\s*([a-z_]+):\s*\{", entry)
+        if not field_match:
+            continue
+        field = field_match.group(1)
+        assert "scope: 'project'" in entry or "scope: 'task'" in entry, (
+            f"{field} no declara scope 'project'/'task' en TOKEN_REGISTRY"
+        )

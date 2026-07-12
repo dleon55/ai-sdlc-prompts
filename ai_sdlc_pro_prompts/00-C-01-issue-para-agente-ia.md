@@ -40,7 +40,7 @@ Inputs requeridos:
 - título del issue: [TÍTULO CORTO Y PRECISO]
 - tipo: [feat / fix / refactor / chore / docs / test / security / infra]
 - descripción del problema o requerimiento: [DESCRIPCIÓN EN LENGUAJE NATURAL]
-- repositorio y rama destino: [REPO / BRANCH]
+- repositorio: [REPO] · rama destino: [RAMA OBJETIVO]
 - ambiente: [dev / qa / staging]
 - archivos o módulos involucrados (si se conocen): [LISTA]
 - criterios de aceptación: [LISTA DE CONDICIONES VERIFICABLES]
