@@ -20,7 +20,7 @@ Prompt to design and generate the base structure of a new repository: directorie
 | Stop criteria | if project type or stack are ambiguous, or an existing structure conflicts with the proposal, state the ambiguity and request confirmation before proposing a full restructuring |
 | Expected output | see `## Expected Output` |
 | Minimum evidence | the directory tree and file table are consistent with the declared project type and stack; each critical file (README, CONTRIBUTING, .gitignore, CODEOWNERS) includes base content, not just a name |
-| Recommended next prompt | `00-B-03-github-configuracion` for GitHub protections and templates; `00-B-05-stack-calidad-codigo` to configure linters, formatters, and quality gates on top of the structure just created |
+| Recommended next prompt | `00-B-03-github-configuracion` for GitHub protections and templates; `00-B-05-stack-calidad-codigo` to configure linters, formatters, and quality gates on top of the structure just created; `00-B-02-gobernanza-ia-agentes` to define AI agent governance over the structure just created; `00-B-04-metodologia-framework` to formalize the methodology and branching flow |
 
 ---
 

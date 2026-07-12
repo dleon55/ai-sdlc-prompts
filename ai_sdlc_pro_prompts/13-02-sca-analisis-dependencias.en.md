@@ -156,7 +156,7 @@ Use the SCA prompt and adapt it to:
 | Package | Installed version | CVE | CVSS | Description | Fixed in version | Action |
 |---|---|---|---|---|---|---|
 | `lodash` | 4.17.15 | CVE-2020-8203 | 7.4 | Prototype pollution: allows adding or modifying arbitrary global object properties via `_.merge`/`_.zipObjectDeep` with untrusted input | 4.17.19 | Update immediately |
-| `axios` | 0.21.1 | CVE-2021-3749 | 5.3 | ReDoS via a vulnerable regular expression in URL trailing-slash handling | 0.21.2 | Update in the next sprint |
+| `axios` | 0.21.1 | CVE-2021-3749 | 7.5 | ReDoS via a vulnerable regular expression in URL trailing-slash handling | 0.21.2 | High — update before the next release (a CVSS of 7.5 falls in this prompt's own HIGH range) |
 
 ### Update plan
 

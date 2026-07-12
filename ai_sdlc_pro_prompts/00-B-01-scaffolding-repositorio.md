@@ -20,7 +20,7 @@ Prompt para diseñar y generar la estructura base de un repositorio nuevo: direc
 | Criterios de detención | si el tipo de proyecto o el stack son ambiguos, o si ya existe una estructura en conflicto con la propuesta, declarar la ambigüedad y pedir confirmación antes de proponer una reestructuración completa |
 | Salida esperada | ver `## Salida esperada` |
 | Evidencia mínima | el árbol de directorios y la tabla de archivos son consistentes con el tipo de proyecto y stack declarados; cada archivo crítico (README, CONTRIBUTING, .gitignore, CODEOWNERS) incluye contenido base, no solo el nombre |
-| Siguiente prompt recomendado | `00-B-03-github-configuracion` para las protecciones y plantillas de GitHub; `00-B-05-stack-calidad-codigo` para configurar linters, formatters y quality gates sobre la estructura ya creada |
+| Siguiente prompt recomendado | `00-B-03-github-configuracion` para las protecciones y plantillas de GitHub; `00-B-05-stack-calidad-codigo` para configurar linters, formatters y quality gates sobre la estructura ya creada; `00-B-02-gobernanza-ia-agentes` para definir la gobernanza de agentes IA sobre la estructura creada; `00-B-04-metodologia-framework` para formalizar la metodología y el flujo de branches |
 
 ---
 

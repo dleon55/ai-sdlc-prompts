@@ -172,7 +172,7 @@ Usa el prompt de gestión de vulnerabilidades y CVEs y adáptalo a:
 | ID | Fuente | Componente | Descripción | CVSS | Severidad | Triaje | Fix disponible | SLA | Propietario |
 |---|---|---|---|---|---|---|---|---|---|
 | VUL-001 | SAST-001 | `api/views.py:42` | SQL Injection en búsqueda | 9.8 | CRÍTICO | Verdadero positivo | Sí — parametrizar query | 24h | Backend dev |
-| VUL-002 | SCA | `requests==2.25.0` | CVE-2023-32681 SSRF | 6.1 | MEDIO | Verdadero positivo | Sí — actualizar a 2.32.3 | 30 días | DevOps |
+| VUL-002 | SCA | `requests==2.25.0` | CVE-2023-32681 — fuga de la cabecera `Proxy-Authorization` al redirigir a otro host (credenciales de proxy expuestas) | 6.1 | MEDIO | Verdadero positivo | Sí — actualizar a 2.31.0 | 30 días | DevOps |
 
 ### Dashboard de seguridad
 

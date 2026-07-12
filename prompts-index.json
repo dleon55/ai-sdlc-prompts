@@ -17,7 +17,7 @@
           "stop_criteria": "si el tipo de proyecto o el stack son ambiguos, o si ya existe una estructura en conflicto con la propuesta, declarar la ambigüedad y pedir confirmación antes de proponer una reestructuración completa",
           "expected_output": "ver `## Salida esperada`",
           "minimum_evidence": "el árbol de directorios y la tabla de archivos son consistentes con el tipo de proyecto y stack declarados; cada archivo crítico (README, CONTRIBUTING, .gitignore, CODEOWNERS) incluye contenido base, no solo el nombre",
-          "recommended_next_prompt": "`00-B-03-github-configuracion` para las protecciones y plantillas de GitHub; `00-B-05-stack-calidad-codigo` para configurar linters, formatters y quality gates sobre la estructura ya creada",
+          "recommended_next_prompt": "`00-B-03-github-configuracion` para las protecciones y plantillas de GitHub; `00-B-05-stack-calidad-codigo` para configurar linters, formatters y quality gates sobre la estructura ya creada; `00-B-02-gobernanza-ia-agentes` para definir la gobernanza de agentes IA sobre la estructura creada; `00-B-04-metodologia-framework` para formalizar la metodología y el flujo de branches",
           "type_tags": [
             "design"
           ],
@@ -29,7 +29,9 @@
           ],
           "recommended_next_prompt_ids": [
             "00-B-03-github-configuracion",
-            "00-B-05-stack-calidad-codigo"
+            "00-B-05-stack-calidad-codigo",
+            "00-B-02-gobernanza-ia-agentes",
+            "00-B-04-metodologia-framework"
           ]
         },
         "en": {
@@ -41,7 +43,7 @@
           "stop_criteria": "if project type or stack are ambiguous, or an existing structure conflicts with the proposal, state the ambiguity and request confirmation before proposing a full restructuring",
           "expected_output": "see `## Expected Output`",
           "minimum_evidence": "the directory tree and file table are consistent with the declared project type and stack; each critical file (README, CONTRIBUTING, .gitignore, CODEOWNERS) includes base content, not just a name",
-          "recommended_next_prompt": "`00-B-03-github-configuracion` for GitHub protections and templates; `00-B-05-stack-calidad-codigo` to configure linters, formatters, and quality gates on top of the structure just created",
+          "recommended_next_prompt": "`00-B-03-github-configuracion` for GitHub protections and templates; `00-B-05-stack-calidad-codigo` to configure linters, formatters, and quality gates on top of the structure just created; `00-B-02-gobernanza-ia-agentes` to define AI agent governance over the structure just created; `00-B-04-metodologia-framework` to formalize the methodology and branching flow",
           "type_tags": [
             "design"
           ],
@@ -53,7 +55,9 @@
           ],
           "recommended_next_prompt_ids": [
             "00-B-03-github-configuracion",
-            "00-B-05-stack-calidad-codigo"
+            "00-B-05-stack-calidad-codigo",
+            "00-B-02-gobernanza-ia-agentes",
+            "00-B-04-metodologia-framework"
           ]
         }
       }
@@ -1101,7 +1105,7 @@
           "stop_criteria": "si no existe una estrategia de rollback viable para un componente crítico, declararlo como riesgo abierto en el diseño en vez de omitirlo",
           "expected_output": "ver `## Salida esperada`",
           "minimum_evidence": "cada cambio propuesto por componente debe estar vinculado a un riesgo y su mitigación, y a los hallazgos del análisis previo citado",
-          "recommended_next_prompt": "`05-01-plan-implementacion`",
+          "recommended_next_prompt": "`05-01-plan-implementacion`; en paralelo, `04-02-diagramas-mermaid` si el diseño requiere diagramas de arquitectura o flujo antes de continuar",
           "type_tags": [
             "design"
           ],
@@ -1112,7 +1116,8 @@
             "A1"
           ],
           "recommended_next_prompt_ids": [
-            "05-01-plan-implementacion"
+            "05-01-plan-implementacion",
+            "04-02-diagramas-mermaid"
           ]
         },
         "en": {
@@ -1124,7 +1129,7 @@
           "stop_criteria": "if there is no viable rollback strategy for a critical component, state it as an open risk in the design instead of omitting it",
           "expected_output": "see `## Expected output`",
           "minimum_evidence": "every proposed change by component must be linked to a risk and its mitigation, and to cited findings from the prior analysis",
-          "recommended_next_prompt": "`05-01-plan-implementacion`",
+          "recommended_next_prompt": "`05-01-plan-implementacion`; in parallel, `04-02-diagramas-mermaid` if the design requires architecture or flow diagrams before continuing",
           "type_tags": [
             "design"
           ],
@@ -1135,7 +1140,8 @@
             "A1"
           ],
           "recommended_next_prompt_ids": [
-            "05-01-plan-implementacion"
+            "05-01-plan-implementacion",
+            "04-02-diagramas-mermaid"
           ]
         }
       }
@@ -1329,7 +1335,7 @@
           "stop_criteria": "detener si no existe diseño aprobado del cual partir; no dejar pasos sin evidencia esperada, dependencia o riesgo declarado; señalar explícitamente si algún paso requiere ambiente de producción",
           "expected_output": "ver `## Salida esperada`",
           "minimum_evidence": "bloque JSON de metadatos parseable al inicio, cada paso (1–9) con evidencia esperada definida, registro de métricas PSP/TSP completo",
-          "recommended_next_prompt": "`05-02-riesgos-implementacion`, en paralelo, antes de pasar a `06-01-implementacion-multiagente`",
+          "recommended_next_prompt": "`05-02-riesgos-implementacion`, en paralelo, antes de pasar a `06-01-implementacion-multiagente`; `07-00-deteccion-stack-pruebas` para detectar el stack de pruebas activo antes de definir las pruebas requeridas por paso (paso 4)",
           "type_tags": [
             "design"
           ],
@@ -1341,7 +1347,8 @@
           ],
           "recommended_next_prompt_ids": [
             "05-02-riesgos-implementacion",
-            "06-01-implementacion-multiagente"
+            "06-01-implementacion-multiagente",
+            "07-00-deteccion-stack-pruebas"
           ]
         },
         "en": {
@@ -1353,7 +1360,7 @@
           "stop_criteria": "stop if there is no approved design to start from; do not leave any step without defined expected evidence, dependency, or risk; explicitly flag any step that requires a production environment",
           "expected_output": "see `## Expected output`",
           "minimum_evidence": "parser-friendly JSON metadata block at the start, each step (1-9) with defined expected evidence, complete PSP/TSP metrics log",
-          "recommended_next_prompt": "`05-02-riesgos-implementacion`, in parallel, before moving to `06-01-implementacion-multiagente`",
+          "recommended_next_prompt": "`05-02-riesgos-implementacion`, in parallel, before moving to `06-01-implementacion-multiagente`; `07-00-deteccion-stack-pruebas` to detect the active test stack before defining the tests required per step (step 4)",
           "type_tags": [
             "design"
           ],
@@ -1365,7 +1372,8 @@
           ],
           "recommended_next_prompt_ids": [
             "05-02-riesgos-implementacion",
-            "06-01-implementacion-multiagente"
+            "06-01-implementacion-multiagente",
+            "07-00-deteccion-stack-pruebas"
           ]
         }
       }
@@ -1503,7 +1511,7 @@
           "stop_criteria": "si el cambio descrito mezcla intenciones no relacionadas, detener y recomendar dividir en commits separados antes de proponer el mensaje final",
           "expected_output": "ver `## Salida esperada`",
           "minimum_evidence": "mensaje de commit válido bajo Conventional Commits (ver `CONTRIBUTING.md`)",
-          "recommended_next_prompt": "ninguno — es el último paso antes de `git push`",
+          "recommended_next_prompt": "ninguno para el commit en sí — es el último paso antes de `git push`; antes de abrir el PR, ejecutar `08-02-cumplimiento-requerimiento` como gate de calidad final",
           "type_tags": [
             "documentation"
           ],
@@ -1513,7 +1521,9 @@
           "permitted_autonomy_tags": [
             "A1"
           ],
-          "recommended_next_prompt_ids": []
+          "recommended_next_prompt_ids": [
+            "08-02-cumplimiento-requerimiento"
+          ]
         },
         "en": {
           "type": "documentation",
@@ -1524,7 +1534,7 @@
           "stop_criteria": "if the described change mixes unrelated intentions, stop and recommend splitting into separate commits before proposing the final message",
           "expected_output": "see `## Expected output`",
           "minimum_evidence": "commit message valid under Conventional Commits (see `CONTRIBUTING.md`)",
-          "recommended_next_prompt": "none — this is the last step before `git push`",
+          "recommended_next_prompt": "none for the commit itself — this is the last step before `git push`; before opening the PR, run `08-02-cumplimiento-requerimiento` as a final quality gate",
           "type_tags": [
             "documentation"
           ],
@@ -1534,7 +1544,9 @@
           "permitted_autonomy_tags": [
             "A1"
           ],
-          "recommended_next_prompt_ids": []
+          "recommended_next_prompt_ids": [
+            "08-02-cumplimiento-requerimiento"
+          ]
         }
       }
     },
@@ -3340,7 +3352,7 @@
           "required_inputs": "stack tecnológico, ambientes disponibles, contexto de vulnerabilidades (resultado de `13-02` SCA si existe), herramientas de CI/CD, automatización existente, última fecha de parches, SLAs de seguridad comprometidos",
           "allowed_tools": "entorno dev: lectura y ejecución de gestores de paquetes y tests en rama dedicada; entorno staging: despliegue y ejecución de smoke/performance tests; entorno producción: despliegue solo en ventana de mantenimiento definida, con criterio de rollback ya establecido",
           "permitted_autonomy": "A0 — Analizar en inventario y clasificación; A1 — Proponer en el plan de aplicación agrupado; A2 — Ejecutar controlado en dev/staging; A3 — Publicar únicamente para el despliegue a producción, y solo con aprobación explícita del responsable de rollback",
-          "stop_criteria": "si una actualización MAJOR con breaking changes no ha permanecido estable en staging al menos 24h, o si el criterio de rollback (tasa de error/P95) no está definido antes de desplegar a producción, debe detenerse antes de avanzar de entorno",
+          "stop_criteria": "si una actualización MAJOR con breaking changes no ha permanecido estable en staging al menos 24h, si el criterio de rollback (tasa de error/P95) no está definido antes de desplegar a producción, o si no existe aprobación explícita y documentada del responsable de rollback antes de ejecutar el despliegue a producción, debe detenerse antes de avanzar de entorno o de ejecutar el despliegue",
           "expected_output": "ver `## Resultado esperado`",
           "minimum_evidence": "cada componente parcheado registra versión anterior, versión nueva, resultado de tests por entorno y responsable de la aprobación",
           "recommended_next_prompt": "`13-02-sca-analisis-dependencias` para reescanear tras aplicar los parches; `11-07-sre-postmortem-runbook` si un parche provoca un incidente y se requiere post-mortem",
@@ -3367,7 +3379,7 @@
           "required_inputs": "technology stack, available environments, vulnerability context (result from `13-02` SCA if available), CI/CD tools, existing automation, last patch date, committed security SLAs",
           "allowed_tools": "dev environment: read access and execution of package managers/tests on a dedicated branch; staging environment: deployment and execution of smoke/performance tests; production environment: deployment only within a defined maintenance window, with a rollback criterion already established",
           "permitted_autonomy": "A0 — Analyze in inventory and classification; A1 — Propose in the grouped application plan; A2 — Execute controlled in dev/staging; A3 — Publish only for the production deployment, and only with explicit approval from the rollback owner",
-          "stop_criteria": "if a MAJOR update with breaking changes has not remained stable on staging for at least 24h, or if the rollback criterion (error rate/P95) is not defined before deploying to production, it must stop before advancing to the next environment",
+          "stop_criteria": "if a MAJOR update with breaking changes has not remained stable on staging for at least 24h, if the rollback criterion (error rate/P95) is not defined before deploying to production, or if explicit, documented approval from the rollback owner has not been obtained before executing the production deployment, it must stop before advancing to the next environment or executing the deployment",
           "expected_output": "see `## Expected output`",
           "minimum_evidence": "each patched component records previous version, new version, per-environment test results, and the approval owner",
           "recommended_next_prompt": "`13-02-sca-analisis-dependencias` to rescan after applying patches; `11-07-sre-postmortem-runbook` if a patch causes an incident requiring a post-mortem",
@@ -3519,8 +3531,8 @@
           "expected_risk": "variable — depende de la asignación que enrute; el propio prompt exige declarar riesgo y reversibilidad como parte de la clasificación",
           "required_inputs": "issue/requerimiento, rama objetivo, ambiente, componentes, nivel de autonomía permitido, herramientas disponibles, presupuesto",
           "allowed_tools": "las que declare el contrato de ejecución generado en el Paso 3 — no asume herramientas por defecto",
-          "permitted_autonomy": "definida dinámicamente por el propio prompt (Paso 3, \"Crear contrato\"); nunca debe exceder el nivel de autonomía de entrada declarado",
-          "stop_criteria": "\"No ejecutes todas las fases por defecto\"; escalar a humano cuando el riesgo o permiso exceda el contrato generado",
+          "permitted_autonomy": "definida dinámicamente por el propio prompt (Paso 3, \"Crear contrato\"); nunca debe exceder el nivel de autonomía de entrada declarado ni el techo de autonomía propio del prompt destino de la delegación — se otorga el mínimo de ambos",
+          "stop_criteria": "\"No ejecutes todas las fases por defecto\"; escalar a humano cuando el riesgo o permiso exceda el contrato generado, o cuando la autonomía de entrada supere el techo de autonomía propio del prompt destino de una delegación",
           "expected_output": "ver `## Fases y entregables esperados` y el formato de salida obligatorio de 8 puntos del prompt",
           "minimum_evidence": "contrato de ejecución explícito (alcance, herramientas, checkpoints, condición de detención) antes de delegar cualquier subtarea",
           "recommended_next_prompt": "el que determine el propio contrato de ejecución — este prompt es el punto de entrada, no de salida",
@@ -3538,8 +3550,8 @@
           "expected_risk": "variable — depends on the assignment being routed; the prompt itself requires declaring risk and reversibility as part of classification",
           "required_inputs": "issue/requirement, target branch, environment, components, permitted autonomy level, available tools, budget",
           "allowed_tools": "whatever the execution contract generated in Step 3 declares — assumes no tools by default",
-          "permitted_autonomy": "dynamically defined by the prompt itself (Step 3, \"Create contract\"); must never exceed the declared input autonomy level",
-          "stop_criteria": "\"Do not execute all phases by default\"; escalate to a human when risk or permission exceeds the generated contract",
+          "permitted_autonomy": "dynamically defined by the prompt itself (Step 3, \"Create contract\"); must never exceed the declared input autonomy level nor the target prompt's own autonomy ceiling — whichever of the two is lower is granted",
+          "stop_criteria": "\"Do not execute all phases by default\"; escalate to a human when risk or permission exceeds the generated contract, or when the input autonomy exceeds the target prompt's own autonomy ceiling for a delegation",
           "expected_output": "see `## Patterns and expected deliverables` and the prompt's mandatory 8-point output format",
           "minimum_evidence": "explicit execution contract (scope, tools, checkpoints, stop condition) before delegating any subtask",
           "recommended_next_prompt": "whatever the execution contract itself determines — this prompt is the entry point, not the exit",

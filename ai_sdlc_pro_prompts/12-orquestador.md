@@ -16,8 +16,8 @@ Prompt que clasifica una asignación y selecciona el flujo mínimo suficiente pa
 | Riesgo esperado | variable — depende de la asignación que enrute; el propio prompt exige declarar riesgo y reversibilidad como parte de la clasificación |
 | Entradas requeridas | issue/requerimiento, rama objetivo, ambiente, componentes, nivel de autonomía permitido, herramientas disponibles, presupuesto |
 | Herramientas permitidas | las que declare el contrato de ejecución generado en el Paso 3 — no asume herramientas por defecto |
-| Autonomía permitida | definida dinámicamente por el propio prompt (Paso 3, "Crear contrato"); nunca debe exceder el nivel de autonomía de entrada declarado |
-| Criterios de detención | "No ejecutes todas las fases por defecto"; escalar a humano cuando el riesgo o permiso exceda el contrato generado |
+| Autonomía permitida | definida dinámicamente por el propio prompt (Paso 3, "Crear contrato"); nunca debe exceder el nivel de autonomía de entrada declarado ni el techo de autonomía propio del prompt destino de la delegación — se otorga el mínimo de ambos |
+| Criterios de detención | "No ejecutes todas las fases por defecto"; escalar a humano cuando el riesgo o permiso exceda el contrato generado, o cuando la autonomía de entrada supere el techo de autonomía propio del prompt destino de una delegación |
 | Salida esperada | ver `## Fases y entregables esperados` y el formato de salida obligatorio de 8 puntos del prompt |
 | Evidencia mínima | contrato de ejecución explícito (alcance, herramientas, checkpoints, condición de detención) antes de delegar cualquier subtarea |
 | Siguiente prompt recomendado | el que determine el propio contrato de ejecución — este prompt es el punto de entrada, no de salida |
@@ -64,6 +64,7 @@ No ejecutes todas las fases por defecto.
 Paso 3. CREAR CONTRATO
 - alcance y exclusiones
 - herramientas y permisos
+- autonomía delegada por subtarea: identifica el/los prompt(s) específico(s) al que delegas, comprueba el techo de "Autonomía permitida" que ese prompt declara para sí mismo, y otorga como techo el MÍNIMO entre la autonomía de entrada y esa autonomía máxima propia del prompt destino — nunca la autonomía de entrada por sí sola
 - acciones que requieren aprobación
 - estados y checkpoints
 - presupuesto y condición de detención
@@ -91,6 +92,7 @@ Paso 6. CERRAR O ESCALAR
 - marca `blocked` cuando exista un impedimento real y documentado
 - usa `rolled_back` si la ejecución fue revertida
 - solicita decisión humana cuando el riesgo o permiso exceda el contrato
+- escala cuando la autonomía de entrada supere el techo de autonomía propio de un prompt destino necesario para completar la subtarea
 
 Formato de salida obligatorio:
 1. Clasificación y patrón seleccionado

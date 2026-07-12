@@ -17,7 +17,7 @@ Prompt para planificar y ejecutar el ciclo completo de gestión de parches: inve
 | Entradas requeridas | stack tecnológico, ambientes disponibles, contexto de vulnerabilidades (resultado de `13-02` SCA si existe), herramientas de CI/CD, automatización existente, última fecha de parches, SLAs de seguridad comprometidos |
 | Herramientas permitidas | entorno dev: lectura y ejecución de gestores de paquetes y tests en rama dedicada; entorno staging: despliegue y ejecución de smoke/performance tests; entorno producción: despliegue solo en ventana de mantenimiento definida, con criterio de rollback ya establecido |
 | Autonomía permitida | A0 — Analizar en inventario y clasificación; A1 — Proponer en el plan de aplicación agrupado; A2 — Ejecutar controlado en dev/staging; A3 — Publicar únicamente para el despliegue a producción, y solo con aprobación explícita del responsable de rollback |
-| Criterios de detención | si una actualización MAJOR con breaking changes no ha permanecido estable en staging al menos 24h, o si el criterio de rollback (tasa de error/P95) no está definido antes de desplegar a producción, debe detenerse antes de avanzar de entorno |
+| Criterios de detención | si una actualización MAJOR con breaking changes no ha permanecido estable en staging al menos 24h, si el criterio de rollback (tasa de error/P95) no está definido antes de desplegar a producción, o si no existe aprobación explícita y documentada del responsable de rollback antes de ejecutar el despliegue a producción, debe detenerse antes de avanzar de entorno o de ejecutar el despliegue |
 | Salida esperada | ver `## Resultado esperado` |
 | Evidencia mínima | cada componente parcheado registra versión anterior, versión nueva, resultado de tests por entorno y responsable de la aprobación |
 | Siguiente prompt recomendado | `13-02-sca-analisis-dependencias` para reescanear tras aplicar los parches; `11-07-sre-postmortem-runbook` si un parche provoca un incidente y se requiere post-mortem |
@@ -127,6 +127,9 @@ Pasos:
    - dejar activo en staging mínimo 24 horas antes de promover a producción
    
    Entorno 3 — Producción:
+   - criterio de detención obligatorio: antes de ejecutar el despliegue a producción, obtener la aprobación
+     explícita del responsable de rollback (el mismo rol registrado en el plan de rollback) y citarla en el
+     registro de auditoría; sin esa aprobación documentada, no se ejecuta el despliegue
    - desplegar en ventana de mantenimiento de bajo tráfico (si el cambio tiene riesgo MEDIO o ALTO)
    - despliegue canary o blue-green si está disponible
    - monitor activo durante 1 hora post-despliegue: métricas, tasa de error, logs

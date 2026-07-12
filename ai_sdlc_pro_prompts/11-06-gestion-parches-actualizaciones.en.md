@@ -17,7 +17,7 @@ Prompt to plan and execute the complete patch management cycle: dependency and c
 | Required inputs | technology stack, available environments, vulnerability context (result from `13-02` SCA if available), CI/CD tools, existing automation, last patch date, committed security SLAs |
 | Allowed tools | dev environment: read access and execution of package managers/tests on a dedicated branch; staging environment: deployment and execution of smoke/performance tests; production environment: deployment only within a defined maintenance window, with a rollback criterion already established |
 | Permitted autonomy | A0 — Analyze in inventory and classification; A1 — Propose in the grouped application plan; A2 — Execute controlled in dev/staging; A3 — Publish only for the production deployment, and only with explicit approval from the rollback owner |
-| Stop criteria | if a MAJOR update with breaking changes has not remained stable on staging for at least 24h, or if the rollback criterion (error rate/P95) is not defined before deploying to production, it must stop before advancing to the next environment |
+| Stop criteria | if a MAJOR update with breaking changes has not remained stable on staging for at least 24h, if the rollback criterion (error rate/P95) is not defined before deploying to production, or if explicit, documented approval from the rollback owner has not been obtained before executing the production deployment, it must stop before advancing to the next environment or executing the deployment |
 | Expected output | see `## Expected output` |
 | Minimum evidence | each patched component records previous version, new version, per-environment test results, and the approval owner |
 | Recommended next prompt | `13-02-sca-analisis-dependencias` to rescan after applying patches; `11-07-sre-postmortem-runbook` if a patch causes an incident requiring a post-mortem |
@@ -127,6 +127,9 @@ Steps:
    - keep active in staging for at least 24 hours before promoting to production
    
    Environment 3 — Production:
+   - mandatory stop condition: before executing the production deployment, obtain explicit approval from the
+     rollback owner (the same role recorded in the rollback plan) and cite it in the audit record; without
+     that documented approval, the deployment must not be executed
    - deploy during low-traffic maintenance window (if the change has MEDIUM or HIGH risk)
    - canary or blue-green deployment if available
    - active monitoring for 1 hour post-deployment: metrics, error rate, logs

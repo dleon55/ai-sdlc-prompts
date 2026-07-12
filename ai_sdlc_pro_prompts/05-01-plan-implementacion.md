@@ -20,7 +20,7 @@ Prompt para elaborar un plan de implementación ejecutable y trazable: actividad
 | Criterios de detención | detener si no existe diseño aprobado del cual partir; no dejar pasos sin evidencia esperada, dependencia o riesgo declarado; señalar explícitamente si algún paso requiere ambiente de producción |
 | Salida esperada | ver `## Salida esperada` |
 | Evidencia mínima | bloque JSON de metadatos parseable al inicio, cada paso (1–9) con evidencia esperada definida, registro de métricas PSP/TSP completo |
-| Siguiente prompt recomendado | `05-02-riesgos-implementacion`, en paralelo, antes de pasar a `06-01-implementacion-multiagente` |
+| Siguiente prompt recomendado | `05-02-riesgos-implementacion`, en paralelo, antes de pasar a `06-01-implementacion-multiagente`; `07-00-deteccion-stack-pruebas` para detectar el stack de pruebas activo antes de definir las pruebas requeridas por paso (paso 4) |
 
 ---
 

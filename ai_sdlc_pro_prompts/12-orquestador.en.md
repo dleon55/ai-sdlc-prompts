@@ -16,8 +16,8 @@ Prompt that classifies an assignment and selects the minimum sufficient flow to 
 | Expected risk | variable — depends on the assignment being routed; the prompt itself requires declaring risk and reversibility as part of classification |
 | Required inputs | issue/requirement, target branch, environment, components, permitted autonomy level, available tools, budget |
 | Allowed tools | whatever the execution contract generated in Step 3 declares — assumes no tools by default |
-| Permitted autonomy | dynamically defined by the prompt itself (Step 3, "Create contract"); must never exceed the declared input autonomy level |
-| Stop criteria | "Do not execute all phases by default"; escalate to a human when risk or permission exceeds the generated contract |
+| Permitted autonomy | dynamically defined by the prompt itself (Step 3, "Create contract"); must never exceed the declared input autonomy level nor the target prompt's own autonomy ceiling — whichever of the two is lower is granted |
+| Stop criteria | "Do not execute all phases by default"; escalate to a human when risk or permission exceeds the generated contract, or when the input autonomy exceeds the target prompt's own autonomy ceiling for a delegation |
 | Expected output | see `## Patterns and expected deliverables` and the prompt's mandatory 8-point output format |
 | Minimum evidence | explicit execution contract (scope, tools, checkpoints, stop condition) before delegating any subtask |
 | Recommended next prompt | whatever the execution contract itself determines — this prompt is the entry point, not the exit |
@@ -64,6 +64,7 @@ Do not execute every phase by default.
 Step 3. CREATE THE CONTRACT
 - scope and exclusions
 - tools and permissions
+- autonomy delegated per subtask: identify the specific target prompt(s) you're delegating to, check the "Permitted autonomy" ceiling that prompt declares for itself, and grant as the ceiling the MINIMUM of the input autonomy and that target prompt's own maximum autonomy — never the input autonomy alone
 - actions requiring approval
 - states and checkpoints
 - budget and stop condition
@@ -91,6 +92,7 @@ Step 6. CLOSE OR ESCALATE
 - block only for a real documented impediment
 - use rolled_back when execution was reverted
 - request human decisions when risk or permissions exceed the contract
+- escalate when the input autonomy exceeds the target prompt's own autonomy ceiling for a prompt needed to complete the subtask
 
 Mandatory output format:
 1. Classification and selected pattern
