@@ -2112,7 +2112,7 @@ Inputs requeridos:
 - título del issue: [TÍTULO CORTO Y PRECISO]
 - tipo: [feat / fix / refactor / chore / docs / test / security / infra]
 - descripción del problema o requerimiento: [DESCRIPCIÓN EN LENGUAJE NATURAL]
-- repositorio y rama destino: [REPO / BRANCH]
+- repositorio: [REPO] · rama destino: [RAMA OBJETIVO]
 - ambiente: [dev / qa / staging]
 - archivos o módulos involucrados (si se conocen): [LISTA]
 - criterios de aceptación: [LISTA DE CONDICIONES VERIFICABLES]
@@ -2214,7 +2214,7 @@ Required inputs:
 - issue title: [SHORT AND PRECISE TITLE]
 - type: [feat / fix / refactor / chore / docs / test / security / infra]
 - description of problem or requirement: [DESCRIPTION IN NATURAL LANGUAGE]
-- repository and target branch: [REPO / BRANCH]
+- repository: [REPO] · target branch: [TARGET BRANCH]
 - environment: [dev / qa / staging]
 - files or modules involved (if known): [LIST]
 - acceptance criteria: [LIST OF VERIFIABLE CONDITIONS]
@@ -9868,7 +9868,7 @@ Generate a structured defect report form with the following sections:
     <div class="var-group" data-field="agentes"><label for="vf-agentes"><span class="fw-lang-es">Agentes IA activos</span><span class="fw-lang-en">Active AI agents</span></label><input id="vf-agentes" type="text" placeholder="" oninput="syncProjectFromPanel();updateVarsBadge();"><div class="var-tags"><span class="var-tag"><span class="fw-lang-es">[LISTA DE AGENTES]</span><span class="fw-lang-en">[AGENT LIST]</span></span><span class="var-tag"><span class="fw-lang-es">[AGENTES A CONFIGURAR]</span><span class="fw-lang-en">[AGENTS TO CONFIGURE]</span></span></div></div>
     <div class="var-group" data-field="autonomia"><label for="vf-autonomia"><span class="fw-lang-es">Nivel de autonomía IA</span><span class="fw-lang-en">AI autonomy level</span></label><select id="vf-autonomia" onchange="syncProjectFromPanel();updateVarsBadge();"><option value="">-- seleccionar --</option><option>solo análisis</option><option>análisis + propuesta</option><option>ejecución controlada</option><option>ejecución autónoma</option></select><div class="var-tags"><span class="var-tag"><span class="fw-lang-es">[NIVEL DE AUTONOMÍA]</span><span class="fw-lang-en">[AUTONOMY LEVEL]</span></span></div></div>
   </div>
-  <div class="var-panel-footer"><button class="var-apply-btn" id="var-apply-btn" onclick="closeVarPanel()"><span class="fw-lang-es">&#10003; Listo</span><span class="fw-lang-en">&#10003; Done</span></button><button class="var-clear-btn" onclick="clearVars()"><span class="fw-lang-es">Limpiar</span><span class="fw-lang-en">Clear</span></button></div>
+  <div class="var-panel-footer"><button class="var-apply-btn" id="var-apply-btn" onclick="closeVarPanel()"><span class="fw-lang-es">&#10003; Listo</span><span class="fw-lang-en">&#10003; Done</span></button><button class="var-clear-btn" onclick="clearTaskVars()" title="Limpia solo issue, rama, ambiente y otros campos de esta tarea -- conserva repositorio, stack y demás datos del proyecto / Clears only issue, branch, environment and other task fields -- keeps repository, stack and other project-level data"><span class="fw-lang-es">Limpiar tarea</span><span class="fw-lang-en">Clear task</span></button><button class="var-clear-btn" onclick="clearVars()" title="Limpia TODOS los campos, incluidos los de proyecto (repositorio, stack, metodología...) / Clears ALL fields, including project-level ones (repository, stack, methodology...)"><span class="fw-lang-es">Limpiar todo</span><span class="fw-lang-en">Clear all</span></button></div>
 </div>
 <div class="ms-bar" id="ms-bar">
   <span class="ms-count"><strong id="ms-sel-count">0</strong> <span class="fw-lang-es">seleccionados</span><span class="fw-lang-en">selected</span></span>
@@ -10378,61 +10378,61 @@ function toggleSidebar() {
 /* ═══════════════════  VARIABLES  ═══════════════════════════════ */
 
 // Registro único de variables: campo persistente, aliases y obligatoriedad.
+// scope: 'project' -- persiste entre prompts dentro del mismo proyecto
+// (repo, stack, metodología...); 'task' -- específico de la tarea puntual
+// que se está copiando (issue, rama, ambiente...) y se limpia con
+// "Limpiar campos de tarea" para no auto-rellenar en prompts no
+// relacionados con datos de una tarea anterior (issue: separación
+// proyecto/tarea en el sistema de variables).
 var TOKEN_REGISTRY = {
-  repositorio: { required: true, aliases: ['NOMBRE O URL', 'ORG/REPO', 'NOMBRE O URL DEL REPOSITORIO', 'NAME OR URL', 'REPO', 'ORG/USER', 'NOMBRE DEL PROYECTO', 'PROJECT NAME'] },
-  referencia:  { required: true, aliases: ['REFERENCIA', 'REFERENCE', 'PEGAR TEXTO O REFERENCIA', 'PEGAR TEXTO COMPLETO',
+  repositorio: { required: true, scope: 'project', aliases: ['NOMBRE O URL', 'ORG/REPO', 'NAME OR URL', 'REPO', 'ORG/USER', 'NOMBRE DEL PROYECTO', 'PROJECT NAME'] },
+  referencia:  { required: true, scope: 'task', aliases: ['REFERENCIA', 'REFERENCE', 'PEGAR TEXTO O REFERENCIA', 'PEGAR TEXTO COMPLETO',
                  'PEGAR LISTA DE INCIDENTES', 'PEGAR REPORTE', 'PEGAR', 'REFERENCE TO ISSUE OR PR',
-                 'REFERENCIA AL ISSUE O PR', 'PASTE', 'PEGAR TEXTO...', 'PASTE TEXT OR REFERENCE', 'NUMBER OR REFERENCE', 'PROBLEM DESCRIPTION', 'INCIDENT DESCRIPTION'] },
-  rama_actual: { required: false, aliases: ['RAMA ACTUAL', 'CURRENT BRANCH', 'RAMA CON LOS CAMBIOS', 'RAMA EN PRUEBAS',
+                 'REFERENCIA AL ISSUE O PR', 'PASTE', 'PASTE TEXT OR REFERENCE', 'NUMBER OR REFERENCE', 'NÚMERO O REFERENCIA',
+                 'REFERENCIA Y DESCRIPCIÓN', 'REFERENCIA O DESCRIPCIÓN', 'PROBLEM DESCRIPTION', 'INCIDENT DESCRIPTION'] },
+  rama_actual: { required: false, scope: 'task', aliases: ['RAMA ACTUAL', 'CURRENT BRANCH', 'RAMA CON LOS CAMBIOS', 'RAMA EN PRUEBAS',
                  'RAMA AFECTADA', 'RAMA DE TRABAJO', 'RAMA DE PRUEBAS', 'BRANCH WITH CHANGES',
-                 'BRANCH IN TESTING', 'WORKING BRANCH', 'BRANCH', 'BRANCH TO ANALYZE', 'RAMA A ANALIZAR', 'AFFECTED BRANCH',
-                 'RAMA', 'TEST BRANCH', 'BRANCH IN TEST'] },
-  rama_destino:{ required: false, aliases: ['RAMA OBJETIVO', 'TARGET BRANCH', 'RAMA PRINCIPAL', 'RAMA INTEGRADA',
+                 'BRANCH IN TESTING', 'BRANCH IN TEST', 'WORKING BRANCH', 'BRANCH', 'BRANCH TO ANALYZE', 'RAMA A ANALIZAR', 'AFFECTED BRANCH',
+                 'RAMA', 'TEST BRANCH'] },
+  rama_destino:{ required: false, scope: 'task', aliases: ['RAMA OBJETIVO', 'TARGET BRANCH', 'RAMA PRINCIPAL', 'RAMA INTEGRADA',
                  'RAMA DESTINO', 'RAMA DE RELEASE', 'DEVELOP / MAIN / RELEASE', 'RELEASE BRANCH',
-                 'INTEGRATED BRANCH', 'MAIN BRANCH', 'MAIN/DEVELOP', 'PR OR INTEGRATION BRANCH'] },
-  ambiente:    { required: false, aliases: ['DEV / QA / PROD', 'ENVIRONMENT', 'QA / STAGING', 'QA / STAGING / PROD',
+                 'INTEGRATED BRANCH', 'MAIN BRANCH', 'PR OR INTEGRATION BRANCH'] },
+  ambiente:    { required: false, scope: 'task', aliases: ['DEV / QA / PROD', 'ENVIRONMENT', 'QA / STAGING', 'QA / STAGING / PROD',
                  'DEV / QA / STAGING / PROD', 'PROD / STAGING', 'DEV / QA',
                  'URL DEL AMBIENTE', 'ENVIRONMENT URL', 'URL DE QA O STAGING', 'DEV / QA / STAGING',
                  'QA OR STAGING URL', 'DEV / STAGING / PROD', 'AMBIENTE', 'LOCAL / DEV / QA / PROD'] },
-  componentes: { required: false, aliases: ['COMPONENTES INVOLUCRADOS', 'INVOLVED COMPONENTS', 'COMPONENTES MODIFICADOS',
+  componentes: { required: false, scope: 'task', aliases: ['COMPONENTES INVOLUCRADOS', 'INVOLVED COMPONENTS', 'COMPONENTES MODIFICADOS',
                  'COMPONENTES A MODIFICAR', 'COMPONENTES REVISADOS',
                  'RUTAS DE ARCHIVOS MODIFICADOS', 'FUNCIONES O UNIDADES A PROBAR',
                  'SI YA CONOCES ALGUNO', 'REVIEWED COMPONENTS', 'COMPONENTS TO MODIFY',
                  'MODIFIED COMPONENTS', 'FILES AND MODULES TO MODIFY', 'AFFECTED MODULE OR FILE', 'DIRECTORY/PACKAGE', 'DIRECTORIO/PAQUETE'] },
-  modulo:      { required: false, aliases: ['NOMBRE DEL PROCESO', 'PROCESS NAME', 'MODULE OR FUNCTIONALITY',
-                 'MÓDULO O FUNCIONALIDAD', 'MODULO O FUNCIONALIDAD', 'MODULO', 'MODULE'] },
-  stack:       { required: false, aliases: ['STACK', 'STACK TECNOLÓGICO', 'STACK PRINCIPAL', 'TECH STACK',
-                 'ej. Python + FastAPI + PostgreSQL / Node + React + MongoDB / etc.',
-                 'ej: Python 3.11 + FastAPI + PostgreSQL + Docker'] },
-  tipo_proyecto: { required: false, aliases: ['TIPO DE PROYECTO', 'PROJECT TYPE',
+  modulo:      { required: false, scope: 'task', aliases: ['NOMBRE DEL PROCESO', 'PROCESS NAME', 'MODULE OR FUNCTIONALITY',
+                 'MÓDULO O FUNCIONALIDAD', 'MODULO', 'MODULE'] },
+  stack:       { required: false, scope: 'project', aliases: ['STACK', 'STACK TECNOLÓGICO', 'TECH STACK'] },
+  tipo_proyecto: { required: false, scope: 'project', aliases: ['TIPO DE PROYECTO', 'PROJECT TYPE',
                    'frontend SPA / API REST / full-stack / microservicio / monorepo / librería / data science / IaC / otro',
                    'NEW / INCREMENTAL CHANGE / MAINTENANCE', 'NUEVO / CAMBIO INCREMENTAL / MANTENIMIENTO',
                    'COMMERCIAL / OPEN SOURCE / INTERNAL', 'COMERCIAL / OPEN SOURCE / INTERNO'] },
-  metodologia: { required: false, aliases: ['METODOLOGÍA', 'METHODOLOGY', 'METODOLOGÍA DE TRABAJO', 'METODOLOGÍA O "ninguna"',
+  metodologia: { required: false, scope: 'project', aliases: ['METODOLOGÍA', 'METHODOLOGY', 'METODOLOGÍA O "ninguna"',
                  'SCRUM / Kanban / Trunk-Based / GitFlow / GitHub Flow / RUP / otro',
                  'BRANCHING STRATEGY'] },
-  agentes:     { required: false, aliases: ['LISTA DE AGENTES', 'AI AGENTS', 'AGENTES A CONFIGURAR', 'AGENTES ACTIVOS',
+  agentes:     { required: false, scope: 'project', aliases: ['LISTA DE AGENTES', 'AGENT LIST', 'AGENTES A CONFIGURAR', 'AGENTS TO CONFIGURE',
                  'Copilot / Claude / Codex / Windsurf / Cursor / Antigravity',
-                 'GitHub Copilot / Claude / Windsurf / Cursor / Codex / Antigravity / combinación', 'LIST OF AGENTS',
-                 'AGENT LIST', 'AGENTS TO CONFIGURE'] },
-  autonomia:   { required: false, aliases: ['NIVEL DE AUTONOMÍA', 'AUTONOMY LEVEL',
+                 'GitHub Copilot / Claude / Windsurf / Cursor / Codex / Antigravity / combinación', 'LIST OF AGENTS'] },
+  autonomia:   { required: false, scope: 'project', aliases: ['NIVEL DE AUTONOMÍA', 'AUTONOMY LEVEL',
                   'solo análisis / análisis + propuesta / ejecución controlada / ejecución autónoma',
                   'BAJO / MEDIO / ALTO', 'LOW / MEDIUM / HIGH', 'A0 / A1 / A2 / A3'] },
-  entrada:     { required: true, aliases: ['ENTRADA PRINCIPAL', 'PRIMARY INPUT', 'PEGAR REQUERIMIENTO', 'PASTE REQUIREMENT',
-                 'FUENTE DE ISSUES', 'ISSUE SOURCE', 'REQUERIMIENTO_USUARIO', 'USER REQUIREMENT'] },
-  objetivo:    { required: false, aliases: ['OBJETIVO ESPECÍFICO', 'SPECIFIC OBJECTIVE', 'OBJETIVO PUNTUAL DE SALIDA',
-                 'SPECIFIC OUTPUT OBJECTIVE'] },
-  responsable: { required: false, aliases: ['RESPONSABLE', 'RESPONSIBLE PERSON', 'USUARIO RESPONSABLE', 'RESPONSIBLE USER',
-                 'ASSIGNEE'] },
-  workspace:   { required: false, aliases: ['WORKSPACE/SUBPROYECTO', 'WORKSPACE/SUBPROJECT', 'RUTA O NO APLICA',
-                 'PATH OR NOT APPLICABLE', 'SI ES ENTORNO MONOREPO', 'IF MONOREPO WORKSPACE',
-                 'SI MONOREPO WORKSPACE'] },
-  compliance:  { required: false, aliases: ['ESTÁNDAR/COMPLIANCE', 'ESTANDAR/COMPLIANCE', 'STANDARD/COMPLIANCE',
-                 'PSP / TSP / ISO 29110 / MOPROSOFT / MAAGTICSI / NINGUNO',
-                 'PSP / TSP / ISO 29110 / MOPROSOFT / MAAGTICSI / NONE'] },
-  documentos:  { required: false, aliases: ['DOCUMENTOS A REVISAR', 'DOCUMENTS TO REVIEW', 'RUTAS DE ARCHIVOS...',
-                 'FILE PATHS...', 'RUTAS O DESCONOCIDO', 'PATHS OR UNKNOWN'] },
-  profundidad: { required: false, aliases: ['NIVEL DE PROFUNDIDAD', 'DEPTH LEVEL', 'MEDIO / ALTO / FORENSE',
+  entrada:     { required: true, scope: 'task', aliases: ['ENTRADA PRINCIPAL', 'PRIMARY INPUT'] },
+  objetivo:    { required: false, scope: 'task', aliases: ['OBJETIVO ESPECÍFICO', 'SPECIFIC OBJECTIVE'] },
+  responsable: { required: false, scope: 'project', aliases: ['RESPONSABLE', 'RESPONSIBLE PERSON', 'ASSIGNEE',
+                 'NOMBRE O AGENTE', 'NAME OR AGENT', 'ROL O NOMBRE', 'ROLE OR NAME',
+                 'ROL', 'ROLE', 'ROL / PERSONA', 'ROLE / PERSON'] },
+  workspace:   { required: false, scope: 'project', aliases: ['WORKSPACE/SUBPROYECTO', 'WORKSPACE/SUBPROJECT', 'RUTA O NO APLICA',
+                 'PATH OR NOT APPLICABLE'] },
+  compliance:  { required: false, scope: 'project', aliases: ['ESTÁNDAR/COMPLIANCE', 'STANDARD/COMPLIANCE'] },
+  documentos:  { required: false, scope: 'task', aliases: ['DOCUMENTOS A REVISAR', 'DOCUMENTS TO REVIEW',
+                 'RUTAS DE ARCHIVOS...', 'FILE PATHS...', 'RUTAS O DESCONOCIDO', 'PATHS OR UNKNOWN'] },
+  profundidad: { required: false, scope: 'task', aliases: ['NIVEL DE PROFUNDIDAD', 'DEPTH LEVEL', 'MEDIO / ALTO / FORENSE',
                  'MEDIUM / HIGH / FORENSIC'] },
 };
 
@@ -10628,6 +10628,30 @@ function clearVars() {
     var actId = localStorage.getItem(LS_KEY_ACTV);
     var p = list.find(function(x) { return x.id === actId; });
     if (p) { p.vars = Object.assign({}, EMPTY_VARS); saveProjects(list); }
+  }
+  syncPanelToProject();
+}
+
+// Limpia solo los campos de scope 'task' (issue, rama, ambiente, entrada...),
+// preservando los de scope 'project' (repositorio, stack, metodología...).
+// Antes solo existía clearVars(), que borra todo -- un valor de tarea
+// obsoleto (ej. la referencia de un issue ya cerrado) podía persistir y
+// auto-rellenarse silenciosamente en un prompt nuevo sin relación, o el
+// usuario tenía que re-teclear todo el contexto del proyecto solo para
+// limpiar un campo de tarea puntual (issue: separación proyecto/tarea en
+// el sistema de variables).
+function clearTaskVars() {
+  var list = loadProjects();
+  if (list) {
+    var actId = localStorage.getItem(LS_KEY_ACTV);
+    var p = list.find(function(x) { return x.id === actId; });
+    if (p) {
+      Object.keys(TOKEN_REGISTRY).forEach(function(field) {
+        if (TOKEN_REGISTRY[field].scope === 'task') p.vars[field] = '';
+      });
+      p.vars.adicionales = '';
+      saveProjects(list);
+    }
   }
   syncPanelToProject();
 }

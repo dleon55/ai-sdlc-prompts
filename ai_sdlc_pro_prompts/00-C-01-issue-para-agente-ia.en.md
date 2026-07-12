@@ -40,7 +40,7 @@ Required inputs:
 - issue title: [SHORT AND PRECISE TITLE]
 - type: [feat / fix / refactor / chore / docs / test / security / infra]
 - description of problem or requirement: [DESCRIPTION IN NATURAL LANGUAGE]
-- repository and target branch: [REPO / BRANCH]
+- repository: [REPO] · target branch: [TARGET BRANCH]
 - environment: [dev / qa / staging]
 - files or modules involved (if known): [LIST]
 - acceptance criteria: [LIST OF VERIFIABLE CONDITIONS]
