@@ -341,6 +341,44 @@ def h(text):
     )
 
 
+_RISK_LABEL = {
+    "low": {"es": "Bajo", "en": "Low"},
+    "medium": {"es": "Medio", "en": "Medium"},
+    "high": {"es": "Alto", "en": "High"},
+    "variable": {"es": "Variable", "en": "Variable"},
+}
+
+
+def _contract_badges_html(contract, lang):
+    """Badges visuales de riesgo/autonomía para una card, a partir de los
+    tags ya normalizados del contrato editorial (issue: conectar
+    prompts-index.json a la UI, hasta ahora esta data se extraía pero
+    nunca llegaba al front-end)."""
+    if not contract:
+        return ""
+    risk_tags = contract.get("expected_risk_tags") or []
+    autonomy_tags = contract.get("permitted_autonomy_tags") or []
+    parts = []
+    if risk_tags:
+        tag = risk_tags[0]
+        label = _RISK_LABEL.get(tag, {}).get(lang, tag)
+        risk_word = "Riesgo esperado" if lang == "es" else "Expected risk"
+        parts.append(
+            '<span class="badge-risk badge-risk-' + h(tag) + '" title="'
+            + risk_word + ": " + h(label) + '">' + h(label) + "</span>"
+        )
+    if autonomy_tags:
+        auton_text = " · ".join(autonomy_tags)
+        auton_word = "Autonomía permitida" if lang == "es" else "Permitted autonomy"
+        parts.append(
+            '<span class="badge-autonomy" title="' + auton_word + ": " + h(auton_text) + '">'
+            + h(auton_text) + "</span>"
+        )
+    if not parts:
+        return ""
+    return '<div class="card-badges">' + "".join(parts) + "</div>"
+
+
 CSS = """
 :root {
   --hdr:  58px;
@@ -1257,6 +1295,52 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   color: #fff;
   box-shadow: 0 2px 8px var(--shadow-color, rgba(99, 102, 241, 0.3));
 }
+
+/* ────── Contract badges (riesgo / autonomía por card) ────── */
+.card-badges {
+  display: flex; gap: .35rem; flex-wrap: wrap;
+  padding: 0 .75rem .5rem;
+}
+.badge-risk, .badge-autonomy {
+  font-size: .6rem; font-weight: 700; line-height: 1;
+  padding: .2rem .5rem; border-radius: 999px;
+  border: 1px solid transparent; letter-spacing: .02em;
+}
+.badge-risk-low { background: rgba(16,185,129,.12); color: #34d399; border-color: rgba(16,185,129,.3); }
+.badge-risk-medium { background: rgba(245,158,11,.12); color: #fbbf24; border-color: rgba(245,158,11,.3); }
+.badge-risk-high { background: rgba(239,68,68,.12); color: #f87171; border-color: rgba(239,68,68,.3); }
+.badge-risk-variable { background: rgba(148,163,184,.12); color: #94a3b8; border-color: rgba(148,163,184,.3); }
+.badge-autonomy { background: rgba(99,102,241,.12); color: #a5b4fc; border-color: rgba(99,102,241,.3); }
+
+/* ────── Facet chips (filtro por riesgo / autonomía) ────── */
+.facet-chips-container {
+  display: flex; align-items: center; gap: .3rem; flex-wrap: wrap;
+  padding: .35rem .9rem; border-bottom: 1px solid var(--bdr);
+}
+.facet-chips-label {
+  font-size: .64rem; font-weight: 700; color: var(--tx3);
+  text-transform: uppercase; letter-spacing: .03em; margin-right: .2rem;
+}
+.facet-chip {
+  background: var(--bg3); border: 1px solid var(--bdr2); color: var(--tx2);
+  font-size: .64rem; font-weight: 700; padding: .18rem .55rem;
+  border-radius: 999px; cursor: pointer; white-space: nowrap; transition: all .15s;
+}
+.facet-chip:hover { background: var(--bg4); color: #fff; }
+.facet-chip.active {
+  background: #6366f1; border-color: #6366f1; color: #fff;
+  box-shadow: 0 2px 8px rgba(99,102,241,.3);
+}
+
+/* ────── Toast con acción (validación bloqueante de placeholders) ────── */
+.toast-action {
+  flex-shrink: 0; margin-left: .5rem; padding: .25rem .6rem;
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25);
+  border-radius: 4px; color: #fff; font-size: .68rem; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+}
+.toast-action:hover { background: rgba(255,255,255,.22); }
+
 /* ═════════════════ LANDING PAGE ════════════════════════════════ */
 .landing {
   min-height: 100vh; background: var(--bg);
@@ -2431,7 +2515,32 @@ function showUnresolvedWarning(result) {
   showToast(warning + unresolved.slice(0, 3).join(', ') + (unresolved.length > 3 ? '...' : ''), 'warn');
 }
 
-function showToast(msg, type) {
+// Punto único de copiado con validación de placeholders obligatorios (FR-VAR-04).
+// Antes, showUnresolvedWarning() era un toast informativo que se desvanecía
+// solo 3s DESPUÉS de que doCopy() ya había copiado el texto -- el copiado
+// "tenía éxito" aunque quedaran [CORCHETES] sin resolver. Ahora, si hay
+// placeholders OBLIGATORIOS sin resolver, el copiado se detiene y requiere
+// confirmación explícita ("Copiar de todas formas") en vez de copiar solo.
+// Los placeholders opcionales sin resolver siguen mostrando el aviso suave
+// existente, sin bloquear.
+function copyResolvedText(resolved, btn) {
+  if (resolved.unresolvedRequired && resolved.unresolvedRequired.length) {
+    var lang = getCurrentLanguage();
+    var list = resolved.unresolvedRequired;
+    var msg = lang === 'en'
+      ? list.length + ' required placeholder(s) still unfilled: ' + list.slice(0, 3).join(', ') + (list.length > 3 ? '…' : '')
+      : list.length + ' placeholder(s) obligatorios sin llenar: ' + list.slice(0, 3).join(', ') + (list.length > 3 ? '…' : '');
+    var actionLabel = lang === 'en' ? 'Copy anyway' : 'Copiar de todas formas';
+    showToast(msg, 'warn', actionLabel, function() { doCopy(resolved.text, btn); });
+    return;
+  }
+  if (resolved.unresolvedOptional && resolved.unresolvedOptional.length) {
+    showUnresolvedWarning(resolved);
+  }
+  doCopy(resolved.text, btn);
+}
+
+function showToast(msg, type, actionLabel, actionFn) {
   var container = document.getElementById('toast-container');
   if (!container) {
     container = document.createElement('div');
@@ -2442,18 +2551,34 @@ function showToast(msg, type) {
   }
   var toast = document.createElement('div');
   toast.className = 'toast' + (type ? ' ' + type : '');
-  
+
   var icon = '&#10004;';
   if (type === 'info') icon = '&#8505;';
   if (type === 'warn') icon = '&#9888;';
-  
-  toast.innerHTML = '<span>' + icon + '</span> ' + msg;
-  container.appendChild(toast);
-  
-  setTimeout(function() {
+
+  var msgSpan = document.createElement('span');
+  msgSpan.innerHTML = '<span>' + icon + '</span> ' + msg;
+  toast.appendChild(msgSpan);
+
+  var dismissMs = 3000;
+  var dismiss = function() {
+    clearTimeout(timer);
     toast.classList.add('fade-out');
     setTimeout(function() { if (toast.parentNode) container.removeChild(toast); }, 200);
-  }, 3000);
+  };
+
+  if (actionLabel && actionFn) {
+    dismissMs = 8000;
+    var actionBtn = document.createElement('button');
+    actionBtn.className = 'toast-action';
+    actionBtn.type = 'button';
+    actionBtn.textContent = actionLabel;
+    actionBtn.onclick = function() { actionFn(); dismiss(); };
+    toast.appendChild(actionBtn);
+  }
+
+  container.appendChild(toast);
+  var timer = setTimeout(dismiss, dismissMs);
 }
 
 function initChips() {
@@ -2518,8 +2643,7 @@ function copyPromptLang(pid, lang, btn) {
       resolved.unresolvedOptional = fwResolved.unresolvedOptional.concat(resolved.unresolvedOptional);
     }
   }
-  showUnresolvedWarning(resolved);
-  doCopy(text, btn);
+  copyResolvedText({ text: text, unresolvedRequired: resolved.unresolvedRequired, unresolvedOptional: resolved.unresolvedOptional }, btn);
 }
 
 function openInfoLang(pid, lang) {
@@ -2566,8 +2690,7 @@ function openInfoLang(pid, lang) {
         (function(formula, b) {
           b.addEventListener('click', function() {
             var result = resolvePrompt(formula);
-            showUnresolvedWarning(result);
-            doCopy(result.text, b);
+            copyResolvedText(result, b);
           });
         })(f, btn);
         wrap.appendChild(box);
@@ -2757,14 +2880,39 @@ function copySelected(btn) {
   aggregate.unresolvedRequired = aggregate.unresolvedRequired.concat(fwResult.unresolvedRequired);
   aggregate.unresolvedOptional = aggregate.unresolvedOptional.concat(fwResult.unresolvedOptional);
   var text = (fwResult.text ? fwResult.text + '\\n\\n---\\n\\n' : '') + parts.join('\\n\\n---\\n\\n');
-  showUnresolvedWarning(aggregate);
-  doCopy(text, btn);
+  copyResolvedText({ text: text, unresolvedRequired: aggregate.unresolvedRequired, unresolvedOptional: aggregate.unresolvedOptional }, btn);
 }
 
 /* ═══════════════════  SEARCH / FILTER  ═════════════════════════ */
 
+var _lastSearchQuery = '';
+var _activeFacet = null; // { kind: 'risk'|'autonomy', value: string }
+
 function filterPrompts(q) {
-  q = q.toLowerCase().trim();
+  _lastSearchQuery = q || '';
+  applyFilters();
+}
+
+// Facetas por riesgo/autonomía, leídas de CONTRACT_TAGS (embebido en build
+// time desde el contrato editorial de cada prompt — antes esta data se
+// extraía a prompts-index.json pero nunca llegaba a la UI). Los tags son
+// independientes de idioma (siempre en inglés canónico: low/medium/high/
+// variable, A0-A3), así que no hace falta distinguir ES/EN aquí.
+function filterByFacetChip(kind, value) {
+  if (_activeFacet && _activeFacet.kind === kind && _activeFacet.value === value) {
+    _activeFacet = null;
+  } else {
+    _activeFacet = { kind: kind, value: value };
+  }
+  document.querySelectorAll('.facet-chip').forEach(function(c) {
+    var active = !!(_activeFacet && c.getAttribute('data-kind') === _activeFacet.kind && c.getAttribute('data-value') === _activeFacet.value);
+    c.classList.toggle('active', active);
+  });
+  applyFilters();
+}
+
+function applyFilters() {
+  var q = (_lastSearchQuery || '').toLowerCase().trim();
   var groups = document.querySelectorAll('.section-group');
   var total = 0;
   groups.forEach(function(g) {
@@ -2774,7 +2922,16 @@ function filterPrompts(q) {
       var title = (card.querySelector('.card-title') || {}).textContent || '';
       var codeEl = card.querySelector('code');
       var code = codeEl ? codeEl.textContent : '';
-      var match = !q || title.toLowerCase().includes(q) || code.toLowerCase().includes(q);
+      var textMatch = !q || title.toLowerCase().includes(q) || code.toLowerCase().includes(q);
+      var facetMatch = true;
+      if (_activeFacet) {
+        var checkEl = card.querySelector('.card-check');
+        var pid = checkEl ? checkEl.getAttribute('data-pid') : null;
+        var tags = (pid && typeof CONTRACT_TAGS !== 'undefined') ? CONTRACT_TAGS[pid] : null;
+        var list = tags ? tags[_activeFacet.kind] : null;
+        facetMatch = !!(list && list.indexOf(_activeFacet.value) !== -1);
+      }
+      var match = textMatch && facetMatch;
       card.style.display = match ? '' : 'none';
       if (match) vis++;
     });
@@ -2786,7 +2943,17 @@ function filterPrompts(q) {
   var empty = document.getElementById('glbl-empty');
   if (empty) empty.style.display = total === 0 ? '' : 'none';
   var countEl = document.getElementById('vis-count');
-  if (countEl) countEl.textContent = total + (q ? ' coincidencia' + (total!==1?'s':'') : ' prompts en total');
+  var hasFilter = q || _activeFacet;
+  if (countEl) {
+    var lang = getCurrentLanguage();
+    var suffix;
+    if (hasFilter) {
+      suffix = lang === 'en' ? ' match' + (total !== 1 ? 'es' : '') : ' coincidencia' + (total !== 1 ? 's' : '');
+    } else {
+      suffix = lang === 'en' ? ' prompts total' : ' prompts en total';
+    }
+    countEl.textContent = total + suffix;
+  }
 }
 
 /* ═══════════════════  INFO MODAL  ══════════════════════════════ */
@@ -2824,7 +2991,7 @@ function dismissWelcomeBanner() {
 
 /* ═══════════════════  ONBOARDING  ══════════════════════════════ */
 var _obStep = 0;
-var _obTotal = 4;
+var _obTotal = 5;
 
 function initOnboarding() {
   try {
@@ -3145,6 +3312,23 @@ def build():
         encoding="utf-8",
     )
 
+    # ── contrato editorial por id, para badges + filtro por facetas en la UI
+    # (issue: prompts-index.json se extraía en build time pero nunca llegaba
+    # al front-end -- esto lo conecta) ──
+    contract_by_id = {e["id"]: e["contract"] for e in index_prompts}
+    # Solo risk/autonomy: son las únicas facetas con chip de filtro en la UI
+    # hoy. type_tags queda disponible en prompts-index.json si se necesita
+    # un filtro por tipo más adelante, pero no se embebe en el HTML para no
+    # inflar el payload con data que la UI todavía no consume.
+    contract_tags_by_id = {
+        pid: {
+            "risk": c["es"].get("expected_risk_tags", []),
+            "autonomy": c["es"].get("permitted_autonomy_tags", []),
+        }
+        for pid, c in contract_by_id.items()
+    }
+    contract_tags_js = "var CONTRACT_TAGS = " + json.dumps(contract_tags_by_id, ensure_ascii=False) + ";"
+
     # ── PROMPT_INFO para el modal de ⓘ ──
     info_data = {}
     for sk, items in sections.items():
@@ -3293,6 +3477,11 @@ def build():
             t_es_attr = clean_t_es.replace('"', '&quot;')
             t_en_attr = clean_t_en.replace('"', '&quot;')
 
+            contract_es_tags = contract_by_id.get(pid, {}).get("es", {})
+            contract_en_tags = contract_by_id.get(pid, {}).get("en", {})
+            badges_es_html = _contract_badges_html(contract_es_tags, "es")
+            badges_en_html = _contract_badges_html(contract_en_tags, "en")
+
             # Card en Español
             groups_html += (
                 '<div class="card" data-lang="es">'
@@ -3300,7 +3489,7 @@ def build():
                 '<input type="checkbox" class="card-check" data-pid="' + pid + '"'
                 ' onchange="onCardCheck(this)" title="Seleccionar prompt">'
                 '<button class="card-expand" id="ce-' + pid + '-es"'
-                ' onclick="toggleCard(\'' + pid + '-es\')" title="Ver / ocultar prompt">'
+                ' onclick="toggleCard(\'' + pid + '-es\')" title="Ver / ocultar prompt" aria-label="Ver / ocultar prompt ' + t_es_attr + '">'
                 + chevron +
                 '</button>'
                 '<span class="card-title" onclick="toggleCard(\'' + pid + '-es\')">'
@@ -3310,13 +3499,14 @@ def build():
             if has_info_es:
                 groups_html += (
                     '<button class="info-btn" onclick="openInfoLang(\'' + pid + '\', \'es\')"'
-                    ' title="Cuándo usar · Fórmula de uso estándar">&#9432;</button>'
+                    ' title="Cuándo usar · Fórmula de uso estándar" aria-label="Cuándo usar y fórmula de uso de ' + t_es_attr + '">&#9432;</button>'
                 )
             groups_html += (
                 '<button class="copy-btn" data-title="' + t_es_attr + '" onclick="copyPromptLang(\'' + pid + '\', \'es\', this)">'
                 + COPY_ICO + ' Copiar'
                 '</button>'
                 '</div>'
+                + badges_es_html +
                 '<div class="card-body" id="cb-' + pid + '-es">'
                 '<pre><code id="code-' + pid + '-es">' + h(p["prompt_es"]) + '</code></pre>'
                 '</div>'
@@ -3330,7 +3520,7 @@ def build():
                 '<input type="checkbox" class="card-check" data-pid="' + pid + '"'
                 ' onchange="onCardCheck(this)" title="Select prompt">'
                 '<button class="card-expand" id="ce-' + pid + '-en"'
-                ' onclick="toggleCard(\'' + pid + '-en\')" title="Show / hide prompt">'
+                ' onclick="toggleCard(\'' + pid + '-en\')" title="Show / hide prompt" aria-label="Show / hide prompt ' + t_en_attr + '">'
                 + chevron +
                 '</button>'
                 '<span class="card-title" onclick="toggleCard(\'' + pid + '-en\')">'
@@ -3340,13 +3530,14 @@ def build():
             if has_info_en:
                 groups_html += (
                     '<button class="info-btn" onclick="openInfoLang(\'' + pid + '\', \'en\')"'
-                    ' title="When to use · Standard usage formula">&#9432;</button>'
+                    ' title="When to use · Standard usage formula" aria-label="When to use and usage formula for ' + t_en_attr + '">&#9432;</button>'
                 )
             groups_html += (
                 '<button class="copy-btn" data-title="' + t_en_attr + '" onclick="copyPromptLang(\'' + pid + '\', \'en\', this)">'
                 + COPY_ICO + ' Copy'
                 '</button>'
                 '</div>'
+                + badges_en_html +
                 '<div class="card-body" id="cb-' + pid + '-en">'
                 '<pre><code id="code-' + pid + '-en">' + h(p["prompt_en"]) + '</code></pre>'
                 '</div>'
@@ -3467,6 +3658,25 @@ def build():
         '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
         '<path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>'
         '</svg><span class="var-label"> Variables</span></button>\n'
+        '</div>\n'
+
+        # facet filters (riesgo / autonomía) — issue: conectar prompts-index.json a la UI
+        '<div class="facet-chips-container">\n'
+        '  <span class="facet-chips-label fw-lang-es">Filtrar por riesgo</span>'
+        '<span class="facet-chips-label fw-lang-en">Filter by risk</span>\n'
+        '  <button class="facet-chip" data-kind="risk" data-value="low" onclick="filterByFacetChip(\'risk\',\'low\')">'
+        '<span class="fw-lang-es">Bajo</span><span class="fw-lang-en">Low</span></button>\n'
+        '  <button class="facet-chip" data-kind="risk" data-value="medium" onclick="filterByFacetChip(\'risk\',\'medium\')">'
+        '<span class="fw-lang-es">Medio</span><span class="fw-lang-en">Medium</span></button>\n'
+        '  <button class="facet-chip" data-kind="risk" data-value="high" onclick="filterByFacetChip(\'risk\',\'high\')">'
+        '<span class="fw-lang-es">Alto</span><span class="fw-lang-en">High</span></button>\n'
+        '  <button class="facet-chip" data-kind="risk" data-value="variable" onclick="filterByFacetChip(\'risk\',\'variable\')">Variable</button>\n'
+        '  <span class="facet-chips-label fw-lang-es" style="margin-left:.5rem">Autonomía</span>'
+        '<span class="facet-chips-label fw-lang-en" style="margin-left:.5rem">Autonomy</span>\n'
+        '  <button class="facet-chip" data-kind="autonomy" data-value="A0" onclick="filterByFacetChip(\'autonomy\',\'A0\')">A0</button>\n'
+        '  <button class="facet-chip" data-kind="autonomy" data-value="A1" onclick="filterByFacetChip(\'autonomy\',\'A1\')">A1</button>\n'
+        '  <button class="facet-chip" data-kind="autonomy" data-value="A2" onclick="filterByFacetChip(\'autonomy\',\'A2\')">A2</button>\n'
+        '  <button class="facet-chip" data-kind="autonomy" data-value="A3" onclick="filterByFacetChip(\'autonomy\',\'A3\')">A3</button>\n'
         '</div>\n'
 
         # layout
@@ -3839,8 +4049,8 @@ def build():
         '      <div class="ob-header-text">\n'
         '        <h2 class="fw-lang-es">Bienvenido a AI-SDLC Pro</h2>\n'
         '        <h2 class="fw-lang-en">Welcome to AI-SDLC Pro</h2>\n'
-        '        <p class="fw-lang-es">3 cosas clave antes de copiar tu primer prompt.</p>\n'
-        '        <p class="fw-lang-en">3 key things before copying your first prompt.</p>\n'
+        '        <p class="fw-lang-es">Lo esencial antes de copiar tu primer prompt.</p>\n'
+        '        <p class="fw-lang-en">The essentials before copying your first prompt.</p>\n'
         '      </div>\n'
         '      <button class="ob-close" onclick="closeOnboarding(true)" title="Cerrar / Close">&#x2715;</button>\n'
         '    </div>\n'
@@ -3870,18 +4080,43 @@ def build():
         ' autom\u00e1ticamente en cada prompt copiado \u2014 sin edici\u00f3n manual.</p>\n'
         '      </div>\n'
         '      <div class="ob-step" id="ob-step-2">\n'
-        '        <div class="ob-step-badge"><span class="ob-step-badge-dot">3</span>\u00a0Sigue el orden del ciclo</div>\n'
-        '        <h3>Los prompts siguen el ciclo de ingenier\u00eda de software</h3>\n'
-        '        <p>El sidebar izquierdo lista las secciones en orden:\n'
+        '        <div class="ob-step-badge"><span class="ob-step-badge-dot">3</span>\u00a0<span class="fw-lang-es">Entiende el nivel de autonom\u00eda</span><span class="fw-lang-en">Understand the autonomy level</span></div>\n'
+        '        <h3 class="fw-lang-es">Cada prompt declara qu\u00e9 puede hacer el agente por s\u00ed solo</h3>\n'
+        '        <h3 class="fw-lang-en">Every prompt declares what the agent may do on its own</h3>\n'
+        '        <p class="fw-lang-es">El <span class="ob-highlight">Contrato editorial</span> de cada prompt fija un techo de autonom\u00eda que el agente nunca debe exceder:'
+        '<br><br><strong>A0</strong> Analizar \u2014 solo lectura, sin cambios'
+        '<br><strong>A1</strong> Proponer \u2014 plan o diff, sin aplicarlo'
+        '<br><strong>A2</strong> Ejecutar controlado \u2014 editar y validar en rama aislada'
+        '<br><strong>A3</strong> Publicar \u2014 commit, push, PR o despliegue'
+        '<br><br>El selector <span class="ob-highlight">Nivel de autonom\u00eda IA</span> del panel de variables es lo que t\u00fa autorizas \u2014 nunca puede ser mayor que el techo que el propio prompt declara.</p>\n'
+        '        <p class="fw-lang-en">Every prompt\'s <span class="ob-highlight">Editorial Contract</span> sets an autonomy ceiling the agent must never exceed:'
+        '<br><br><strong>A0</strong> Analyze \u2014 read-only, no changes'
+        '<br><strong>A1</strong> Propose \u2014 plan or diff, not applied'
+        '<br><strong>A2</strong> Execute controlled \u2014 edit and validate on an isolated branch'
+        '<br><strong>A3</strong> Publish \u2014 commit, push, PR, or deploy'
+        '<br><br>The <span class="ob-highlight">AI autonomy level</span> selector in the variables panel is what YOU authorize \u2014 it can never exceed the ceiling the prompt itself declares.</p>\n'
+        '      </div>\n'
+        '      <div class="ob-step" id="ob-step-3">\n'
+        '        <div class="ob-step-badge"><span class="ob-step-badge-dot">4</span>\u00a0<span class="fw-lang-es">Sigue el orden del ciclo</span><span class="fw-lang-en">Follow the cycle order</span></div>\n'
+        '        <h3 class="fw-lang-es">Los prompts siguen el ciclo de ingenier\u00eda de software</h3>\n'
+        '        <h3 class="fw-lang-en">Prompts follow the software engineering cycle</h3>\n'
+        '        <p class="fw-lang-es">El sidebar izquierdo lista las secciones en orden:\n'
         '<br><br><strong>01</strong> Comprensi\u00f3n \u2192 <strong>02</strong> An\u00e1lisis'
         ' \u2192 <strong>04</strong> Dise\u00f1o \u2192 <strong>05</strong> Plan'
         ' \u2192 <strong>06</strong> Ejecuci\u00f3n \u2192 <strong>07</strong> Pruebas'
         ' \u2192 <strong>09</strong> CI/CD \u2192 <strong>10</strong> Documentaci\u00f3n'
         '<br><br>El bot\u00f3n <span class="ob-highlight">&#9432;</span>'
         ' en cada card explica cu\u00e1ndo y c\u00f3mo usar ese prompt.</p>\n'
+        '        <p class="fw-lang-en">The left sidebar lists sections in order:\n'
+        '<br><br><strong>01</strong> Comprehension \u2192 <strong>02</strong> Analysis'
+        ' \u2192 <strong>04</strong> Design \u2192 <strong>05</strong> Plan'
+        ' \u2192 <strong>06</strong> Execution \u2192 <strong>07</strong> Testing'
+        ' \u2192 <strong>09</strong> CI/CD \u2192 <strong>10</strong> Documentation'
+        '<br><br>The <span class="ob-highlight">&#9432;</span> button'
+        ' on each card explains when and how to use that prompt.</p>\n'
         '      </div>\n'
-        '      <div class="ob-step" id="ob-step-3">\n'
-        '        <div class="ob-step-badge"><span class="ob-step-badge-dot">4</span>\u00a0Rec\u00edbe nuevos prompts gratis</div>\n'
+        '      <div class="ob-step" id="ob-step-4">\n'
+        '        <div class="ob-step-badge"><span class="ob-step-badge-dot">5</span>\u00a0Rec\u00edbe nuevos prompts gratis</div>\n'
         '        <h3>Mantente al tanto de cada actualizaci\u00f3n</h3>\n'
         '        <p>Cada mes publicamos nuevos prompts y mejoras al framework.\n'
         'D\u00e9janos tu email y ser\u00e1s el primero en saber.</p>\n'
@@ -3901,11 +4136,14 @@ def build():
         '      <div class="ob-dot" id="ob-dot-1"></div>\n'
         '      <div class="ob-dot" id="ob-dot-2"></div>\n'
         '      <div class="ob-dot" id="ob-dot-3"></div>\n'
+        '      <div class="ob-dot" id="ob-dot-4"></div>\n'
         '    </div>\n'
         '    <div class="ob-footer">\n'
-        '      <button class="ob-skip" onclick="closeOnboarding(true)">No volver a mostrar</button>\n'
+        '      <button class="ob-skip" onclick="closeOnboarding(true)">'
+        '<span class="fw-lang-es">No volver a mostrar</span><span class="fw-lang-en">Don\'t show again</span></button>\n'
         '      <div class="ob-nav">\n'
-        '        <button class="ob-prev" id="ob-prev-btn" onclick="obPrev()" style="display:none">&#8249; Anterior</button>\n'
+        '        <button class="ob-prev" id="ob-prev-btn" onclick="obPrev()" style="display:none">'
+        '<span class="fw-lang-es">&#8249; Anterior</span><span class="fw-lang-en">&#8249; Previous</span></button>\n'
         '        <button class="ob-next" id="ob-next-btn" onclick="obNext()">Siguiente &#8250;</button>\n'
         '      </div>\n'
         '    </div>\n'
@@ -3914,7 +4152,7 @@ def build():
 
         '</div>\n'  # close #app-root
 
-        '<script>' + prompt_info_js + '\n' + JS + LANDING_JS + '</script>\n'
+        '<script>' + prompt_info_js + '\n' + contract_tags_js + '\n' + JS + LANDING_JS + '</script>\n'
         '<!-- ═══ BOTTOM RIGHT FLOATING CONTROLS ═══ -->\n'
         '<div class="bottom-right-floats">\n'
         '<!-- ═══ FLOATING VARIABLES QUICK ACCESS ═══ -->\n'

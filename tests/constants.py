@@ -5,7 +5,11 @@ Extrae magic numbers del código de pruebas para mantenibilidad.
 """
 
 # Límites de tamaño para index.html
-MAX_INDEX_SIZE_KB = 1024  # 1MB límite según plan de implementación
+# Elevado de 1024 a 1200 KB al conectar prompts-index.json a la UI (badges de
+# riesgo/autonomía en 152 cards, chips de filtro por faceta, CONTRACT_TAGS
+# embebido, y un paso nuevo de onboarding bilingüe) -- crecimiento de
+# funcionalidad real, no bloat; con margen para crecimiento futuro moderado.
+MAX_INDEX_SIZE_KB = 1200
 MIN_INDEX_SIZE_KB = 100   # Mínimo esperado para contenido válido
 
 # Cobertura de prompts
