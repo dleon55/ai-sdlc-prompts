@@ -69,9 +69,19 @@ def _set_variable(page, field_id, value):
 
 
 def _copy_and_read_clipboard(page, pid, lang="es"):
+    """Copia un prompt y lee el portapapeles resultante. Si el prompt tiene
+    placeholders OBLIGATORIOS sin resolver, el copiado ahora queda
+    bloqueado por un toast de confirmación ("Copiar de todas formas") en
+    vez de copiar directamente (fix: validación bloqueante de placeholders,
+    antes el copiado siempre 'tenía éxito' aunque quedaran [CORCHETES] sin
+    llenar) -- si aparece, lo confirmamos para completar el copiado real."""
     btn = page.locator(f'.copy-btn[onclick*="{pid}\', \'{lang}\'"]').first
     btn.click()
     page.wait_for_timeout(250)
+    action = page.locator(".toast-action").first
+    if action.count() and action.is_visible():
+        action.click()
+        page.wait_for_timeout(250)
     return page.evaluate("navigator.clipboard.readText()")
 
 
@@ -169,10 +179,18 @@ def test_copy_confirmation_toast_matches_active_language(app_page):
     app_page.click('.lang-option[data-lang="en"]')
     app_page.wait_for_timeout(200)
 
-    _copy_and_read_clipboard(app_page, "00-B-01-scaffolding-repositorio", "en")
-    # Este prompt también dispara un toast .warn por placeholders sin
-    # resolver (no relacionado con este fix); filtramos por .success para
-    # aislar el toast de confirmación de copiado que sí nos interesa.
+    # Este prompt tiene placeholders obligatorios sin resolver -> el copiado
+    # queda bloqueado por un toast .warn con acción "Copy anyway" en vez de
+    # copiar directamente (validación bloqueante de placeholders, FR-VAR-04).
+    # Confirmar esa acción dispara el copiado real y su propio toast .success,
+    # que es el que nos interesa verificar aquí.
+    btn = app_page.locator('.copy-btn[onclick*="00-B-01-scaffolding-repositorio\', \'en\'"]').first
+    btn.click()
+    app_page.wait_for_timeout(250)
+    action = app_page.locator(".toast-action").first
+    assert action.count() > 0, "se esperaba el toast bloqueante de confirmación de placeholders"
+    action.click()
+
     toast_text = app_page.locator("#toast-container .toast.success").first.inner_text()
     assert "copied" in toast_text.lower()
     assert "copiado" not in toast_text.lower()

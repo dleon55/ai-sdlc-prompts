@@ -167,7 +167,13 @@ def test_variable_engine_has_single_registry_and_resolver():
     assert "var VAR_MAP = {};" in BUILD_SOURCE
     assert "TOKEN_REGISTRY[field].aliases.slice()" in BUILD_SOURCE
     assert "RAW_PROMPTS[codeId] || el.textContent" in BUILD_SOURCE
-    assert "showUnresolvedWarning(aggregate)" in BUILD_SOURCE
+    # copySelected() valida los placeholders sin resolver del agregado antes
+    # de copiar -- desde la conexión de prompts-index.json a la UI, ese
+    # chequeo (antes showUnresolvedWarning(aggregate), un toast que no
+    # bloqueaba el copiado) pasa por copyResolvedText(), que además bloquea
+    # el copiado si hay placeholders OBLIGATORIOS sin resolver (FR-VAR-04).
+    assert "function copyResolvedText(resolved, btn)" in BUILD_SOURCE
+    assert "unresolvedRequired: aggregate.unresolvedRequired" in BUILD_SOURCE
 
 
 def test_no_ambiguous_indicate_tokens_remain():
