@@ -122,7 +122,7 @@ header {
   padding: 0.5rem 1.25rem 0.5rem calc(var(--side) + 1.25rem);
   gap: .65rem; z-index: 299;
 }
-.search-wrap { position: relative; flex: 1; max-width: 560px; }
+.search-wrap { position: relative; flex: 1 1 200px; max-width: 560px; }
 .search-ico {
   position: absolute; left: .65rem; top: 50%; transform: translateY(-50%);
   color: var(--tx3); pointer-events: none;
@@ -911,12 +911,19 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   gap: 0.4rem;
   overflow-x: auto;
   padding: 0.2rem 0;
-  max-width: 480px;
-  /* Con 15 secciones en una tira de 480px con scrollbar nativa oculta
-     (regla siguiente), sin esta máscara no hay NINGUNA señal visual de
-     que hay más contenido -- se ve como texto cortado/roto en vez de
-     "desliza para ver más" (bug reportado por el usuario). El degradado
-     en ambos bordes es la señal universal de contenido scrolleable. */
+  /* Antes max-width:480px fijo -- en pantallas anchas eso deja ~240px
+     libres sin usar al final de la fila mientras 10 de 15 chips quedan
+     ocultos tras scroll (issue #87). flex-grow reclama el espacio libre
+     de .search-bar; flex-shrink permite ceder espacio a .search-wrap en
+     viewports angostos, cayendo al scroll+máscara de abajo como fallback. */
+  flex: 3 1 320px;
+  min-width: 0;
+  max-width: 100%;
+  /* Con 15 secciones y scrollbar nativa oculta (regla siguiente), sin esta
+     máscara no hay NINGUNA señal visual de que hay más contenido cuando el
+     viewport sí obliga a scroll -- se ve como texto cortado/roto en vez de
+     "desliza para ver más" (bug reportado por el usuario). El degradado en
+     ambos bordes es la señal universal de contenido scrolleable. */
   -webkit-mask-image: linear-gradient(to right, transparent, black 14px, black calc(100% - 14px), transparent);
   mask-image: linear-gradient(to right, transparent, black 14px, black calc(100% - 14px), transparent);
 }
@@ -1157,6 +1164,11 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   background: rgba(6,182,212,.12); color: #67e8f9; flex-shrink: 0;
 }
 .var-float-label { font-weight: 700; color: #d7f9ff; }
+/* .ms-float-label y .proj-float-name ya colapsan a solo-icono en móvil;
+   a esta le faltaba la regla equivalente (issue #87) -- por eso "Vars N/20"
+   se quedaba a ancho completo y era el único de los 3 flotantes que tapaba
+   contenido de las tarjetas en viewports angostos. */
+@media (max-width: 560px) { .var-float-label { display: none; } }
 .var-float-count {
   font-size: .66rem; font-weight: 700; border-radius: 999px;
   background: #0f3a46; color: #7dd3fc; padding: .1rem .42rem;
