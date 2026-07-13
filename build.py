@@ -2682,6 +2682,7 @@ function openInfoLang(pid, lang) {
   if (!info) return;
   var modal = document.getElementById('info-modal');
   if (!modal) return;
+  _lastFocusedBeforeModal = document.activeElement;
 
   var titleEl = document.getElementById('modal-title');
   if (titleEl) {
@@ -2741,6 +2742,8 @@ function openInfoLang(pid, lang) {
   }
 
   modal.classList.add('open');
+  var closeBtn = modal.querySelector('.modal-close-btn');
+  if (closeBtn) closeBtn.focus();
 }
 
 function copyPrompt(pid, btn) {
@@ -2994,9 +2997,42 @@ function openInfo(pid) {
   openInfoLang(pid, lang);
 }
 
+// Sin trampa de foco, Tab desde el modal seguía navegando el contenido de
+// la página detrás de él en vez de ciclar dentro del modal -- un usuario
+// de teclado/lector de pantalla perdía de vista dónde estaba el foco
+// (bug de accesibilidad reportado tras revisión visual del sitio).
+var _lastFocusedBeforeModal = null;
+
+function getFocusableIn(container) {
+  return Array.prototype.slice.call(
+    container.querySelectorAll('a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])')
+  ).filter(function(el) { return el.offsetParent !== null; });
+}
+
+function trapFocusInModal(e) {
+  if (e.key !== 'Tab') return;
+  var modal = document.getElementById('info-modal');
+  if (!modal || !modal.classList.contains('open')) return;
+  var focusable = getFocusableIn(modal);
+  if (!focusable.length) return;
+  var first = focusable[0];
+  var last = focusable[focusable.length - 1];
+  if (e.shiftKey && document.activeElement === first) {
+    e.preventDefault();
+    last.focus();
+  } else if (!e.shiftKey && document.activeElement === last) {
+    e.preventDefault();
+    first.focus();
+  }
+}
+
 function closeInfo() {
   var modal = document.getElementById('info-modal');
   if (modal) modal.classList.remove('open');
+  if (_lastFocusedBeforeModal && typeof _lastFocusedBeforeModal.focus === 'function') {
+    _lastFocusedBeforeModal.focus();
+  }
+  _lastFocusedBeforeModal = null;
 }
 
 /* ═══════════════════  WELCOME BANNER  ═════════════════════════ */
@@ -3164,10 +3200,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') { 
-      closeInfo(); closeVarPanel(); closeVarFloat(); closeProjectsModal(); 
+    if (e.key === 'Escape') {
+      closeInfo(); closeVarPanel(); closeVarFloat(); closeProjectsModal();
       closeProjQuick(); skipOnboarding(); closeMenu(); closeLanguageDropdown();
     }
+    trapFocusInModal(e);
   });
 
   var content = document.querySelector('.content');
@@ -4045,7 +4082,7 @@ def build():
         '</div>\n'
 
         # ── Modal de información ⓘ ──
-        '<div class="modal-overlay" id="info-modal">\n'
+        '<div class="modal-overlay" id="info-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">\n'
         '  <div class="modal-box">\n'
         '    <div class="modal-hdr">\n'
         '      <span class="modal-hdr-icon">'
@@ -4054,7 +4091,7 @@ def build():
         '<path stroke-linecap="round" d="M12 16v-4m0-4h.01"/>'
         '</svg></span>\n'
         '      <h2 id="modal-title"></h2>\n'
-        '      <button class="modal-close-btn" onclick="closeInfo()">&#x2715;</button>\n'
+        '      <button class="modal-close-btn" onclick="closeInfo()" aria-label="Cerrar / Close">&#x2715;</button>\n'
         '    </div>\n'
         '    <div class="modal-body">\n'
         '      <div class="modal-section" id="modal-desc-section">'
