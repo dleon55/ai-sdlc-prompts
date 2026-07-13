@@ -1953,12 +1953,16 @@ function toggleProjQuick(e) {
   var wrap = document.getElementById('proj-quick');
   if (!wrap) return;
   var isOpen = wrap.classList.toggle('open');
+  var btn = document.getElementById('proj-quick-btn');
+  if (btn) btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
   if (isOpen) renderProjQuick();
 }
 
 function closeProjQuick() {
   var wrap = document.getElementById('proj-quick');
   if (wrap) wrap.classList.remove('open');
+  var btn = document.getElementById('proj-quick-btn');
+  if (btn) btn.setAttribute('aria-expanded', 'false');
 }
 
 /* ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  PROYECTO FLOTANTE — issue #30  ▀▀▀▀▀▀▀▀▀▀▀▀ */
@@ -2480,7 +2484,10 @@ function initLanguageDetection() {
 
 function toggleLanguageDropdown() {
   var dd = document.getElementById('lang-dropdown');
-  if (dd) dd.classList.toggle('open');
+  if (!dd) return;
+  var isOpen = dd.classList.toggle('open');
+  var btn = document.getElementById('lang-btn');
+  if (btn) btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
 }
 
 function onLanguageSelect(lang) {
@@ -2491,6 +2498,8 @@ function onLanguageSelect(lang) {
 function closeLanguageDropdown() {
   var dd = document.getElementById('lang-dropdown');
   if (dd) dd.classList.remove('open');
+  var btn = document.getElementById('lang-btn');
+  if (btn) btn.setAttribute('aria-expanded', 'false');
 }
 
 function getFwText() {
@@ -3703,7 +3712,7 @@ def build():
         '  <div class="hdr-tags">'
         '    <div class="tag">v1.2.0</div>'
         '    <div class="lang-wrap">'
-        '      <button class="lang-btn" id="lang-btn" onclick="toggleLanguageDropdown()" title="Cambiar idioma / Change language">'
+        '      <button class="lang-btn" id="lang-btn" onclick="toggleLanguageDropdown()" title="Cambiar idioma / Change language" aria-haspopup="true" aria-expanded="false">'
         '        <span class="flag">&#127760;</span><span class="lang-label" id="current-lang-label">ES</span>'
         '      </button>'
         '      <div class="lang-dropdown" id="lang-dropdown">'
@@ -3739,7 +3748,7 @@ def build():
         # search bar
         '<div class="search-bar">\n'
         '  <div class="proj-quick" id="proj-quick">'
-        '<button class="proj-quick-btn" id="proj-quick-btn" onclick="toggleProjQuick(event)" title="Cambiar proyecto activo / Change active project">'
+        '<button class="proj-quick-btn" id="proj-quick-btn" onclick="toggleProjQuick(event)" title="Cambiar proyecto activo / Change active project" aria-haspopup="true" aria-expanded="false">'
         '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M3 12h18M3 17h18"/></svg>'
         '<span class="proj-quick-name" id="proj-quick-name">Proyecto</span>'
         '<span class="proj-quick-chevron"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'
