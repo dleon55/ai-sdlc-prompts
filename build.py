@@ -1271,6 +1271,13 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   overflow-x: auto;
   padding: 0.2rem 0;
   max-width: 480px;
+  /* Con 15 secciones en una tira de 480px con scrollbar nativa oculta
+     (regla siguiente), sin esta máscara no hay NINGUNA señal visual de
+     que hay más contenido -- se ve como texto cortado/roto en vez de
+     "desliza para ver más" (bug reportado por el usuario). El degradado
+     en ambos bordes es la señal universal de contenido scrolleable. */
+  -webkit-mask-image: linear-gradient(to right, transparent, black 14px, black calc(100% - 14px), transparent);
+  mask-image: linear-gradient(to right, transparent, black 14px, black calc(100% - 14px), transparent);
 }
 .chips-container::-webkit-scrollbar { display: none; }
 .chip {
