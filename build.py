@@ -1881,7 +1881,7 @@ function renderProjectsModal() {
     var isActive = p.id === activeId;
     var defBadge = p.isDefault ? '<span class="proj-def-badge">default</span>' : '';
     var delBtn = list.length > 1
-      ? '<button class="proj-action-btn" title="Eliminar"'
+      ? '<button class="proj-action-btn" title="Eliminar / Delete"'
         + ' onclick="deleteProject(\\'' + p.id + '\\');renderProjectsModal();renderProjectSelector();">'
         + '\u2715</button>'
       : '';
@@ -1902,14 +1902,21 @@ function renderProjectsModal() {
 }
 
 function openProjectsModal() {
+  _lastFocusedBeforeModal = document.activeElement;
   renderProjectsModal();
   var m = document.getElementById('proj-modal');
   if (m) m.style.display = 'flex';
+  var closeBtn = m ? m.querySelector('.modal-close-btn') : null;
+  if (closeBtn) closeBtn.focus();
 }
 
 function closeProjectsModal() {
   var m = document.getElementById('proj-modal');
   if (m) m.style.display = 'none';
+  if (_lastFocusedBeforeModal && typeof _lastFocusedBeforeModal.focus === 'function') {
+    _lastFocusedBeforeModal.focus();
+  }
+  _lastFocusedBeforeModal = null;
 }
 
 /* ════════════════════  PROYECTO QUICK-SWITCHER  ══════════════════ */
@@ -1988,12 +1995,16 @@ function toggleProjFloat(e) {
   var wrap = document.getElementById('proj-float');
   if (!wrap) return;
   var isOpen = wrap.classList.toggle('open');
+  var btn = document.getElementById('proj-float-btn');
+  if (btn) btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
   if (isOpen) renderProjFloat();
 }
 
 function closeProjFloat() {
   var wrap = document.getElementById('proj-float');
   if (wrap) wrap.classList.remove('open');
+  var btn = document.getElementById('proj-float-btn');
+  if (btn) btn.setAttribute('aria-expanded', 'false');
 }
 
 /* ════════════════════  SIDEBAR  ════════════════════════════════ */
@@ -2229,11 +2240,15 @@ function openVarFloat() {
   updateVarFloatSummary();
   var wrap = document.getElementById('var-float');
   if (wrap) wrap.classList.add('open');
+  var btn = document.getElementById('var-float-btn');
+  if (btn) btn.setAttribute('aria-expanded', 'true');
 }
 
 function closeVarFloat() {
   var wrap = document.getElementById('var-float');
   if (wrap) wrap.classList.remove('open');
+  var btn = document.getElementById('var-float-btn');
+  if (btn) btn.setAttribute('aria-expanded', 'false');
 }
 
 function toggleVarFloat(e) {
@@ -3021,10 +3036,23 @@ function getFocusableIn(container) {
   ).filter(function(el) { return el.offsetParent !== null; });
 }
 
+function getOpenModal() {
+  // Ambos diálogos (info-modal, proj-modal) usan role="dialog" pero alternan
+  // visibilidad con mecanismos distintos (clase .open vs style.display).
+  // offsetParent no sirve aquí: ambos overlays son position:fixed, y los
+  // elementos fixed siempre devuelven offsetParent=null aunque sean
+  // visibles -- se usa getComputedStyle().display en su lugar.
+  var dialogs = document.querySelectorAll('[role="dialog"]');
+  for (var i = 0; i < dialogs.length; i++) {
+    if (getComputedStyle(dialogs[i]).display !== 'none') return dialogs[i];
+  }
+  return null;
+}
+
 function trapFocusInModal(e) {
   if (e.key !== 'Tab') return;
-  var modal = document.getElementById('info-modal');
-  if (!modal || !modal.classList.contains('open')) return;
+  var modal = getOpenModal();
+  if (!modal) return;
   var focusable = getFocusableIn(modal);
   if (!focusable.length) return;
   var first = focusable[0];
@@ -3535,7 +3563,7 @@ def build():
         groups_html += (
             '<div class="section-group" id="' + gid + '" data-observe>'
             '<div class="section-header-row">'
-            '<input type="checkbox" class="sec-check" title="Seleccionar toda la sección" onchange="onSecCheck(this)">'
+            '<input type="checkbox" class="sec-check" title="Seleccionar toda la sección / Select entire section" onchange="onSecCheck(this)">'
             '<span class="sec-num" style="color:' + color + ';border-color:' + color + '22;background:' + color + '11">'
             + sk + '</span>'
             + icon_svg(icon_key, color, 16) +
@@ -3657,7 +3685,7 @@ def build():
 
         '<header>\n'
         '  <div class="hdr-logo">'
-        '    <button class="menu-toggle-btn" onclick="toggleMenu()" title="Menú">'
+        '    <button class="menu-toggle-btn" onclick="toggleMenu()" title="Menú / Menu">'
         '      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
         '        <line x1="3" y1="12" x2="21" y2="12"></line>'
         '        <line x1="3" y1="6" x2="21" y2="6"></line>'
@@ -3730,11 +3758,11 @@ def build():
         '  <div class="chips-container" id="category-chips"></div>\n'
         '  <span class="search-count" id="vis-count">prompts</span>\n'
         '  <span class="vars-active-badge" id="vars-badge">■ Vars activas</span>\n'
-        '  <button class="ms-toggle-btn" id="ms-toggle-btn" onclick="toggleMsMode()" title="Activar selección múltiple">'
+        '  <button class="ms-toggle-btn" id="ms-toggle-btn" onclick="toggleMsMode()" title="Activar selección múltiple / Enable multi-select">'
         '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
         '<rect x="3" y="5" width="13" height="13" rx="2"/><path d="M8 10l3 3 5-5"/>'
-        '</svg><span class="ms-label"> Multi-select</span></button>\n'
-        '  <button class="var-toggle-btn" id="var-toggle-btn" onclick="toggleVarPanel()" title="Panel de variables">'
+        '</svg><span class="ms-label"> <span class="fw-lang-es">Selección múltiple</span><span class="fw-lang-en">Multi-select</span></span></button>\n'
+        '  <button class="var-toggle-btn" id="var-toggle-btn" onclick="toggleVarPanel()" title="Panel de variables / Variables panel">'
         '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
         '<path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/>'
         '</svg><span class="var-label"> Variables</span></button>\n'
@@ -4116,11 +4144,11 @@ def build():
         '</div>\n'
 
         # ── Modal de proyectos ──
-        '<div id="proj-modal" onclick="if(event.target===this)closeProjectsModal()">\n'
+        '<div id="proj-modal" role="dialog" aria-modal="true" aria-labelledby="proj-modal-title" onclick="if(event.target===this)closeProjectsModal()">\n'
         '  <div class="proj-modal-box">\n'
         '    <div class="modal-hdr">\n'
-        '      <h2><span class="fw-lang-es">Gesti\u00f3n de Proyectos</span><span class="fw-lang-en">Project Management</span></h2>\n'
-        '      <button class="modal-close-btn" onclick="closeProjectsModal()">&#x2715;</button>\n'
+        '      <h2 id="proj-modal-title"><span class="fw-lang-es">Gesti\u00f3n de Proyectos</span><span class="fw-lang-en">Project Management</span></h2>\n'
+        '      <button class="modal-close-btn" onclick="closeProjectsModal()" title="Cerrar / Close">&#x2715;</button>\n'
         '    </div>\n'
         '    <ul class="proj-list" id="proj-modal-list"></ul>\n'
         '    <button class="proj-add-btn"'
@@ -4247,39 +4275,39 @@ def build():
         '  <div class="var-float-dropdown" id="var-float-dropdown">\n'
         '    <div class="var-float-hdr">\n'
         '      <div>\n'
-        '        <div class="var-float-title">Variables rápidas</div>\n'
-        '        <div class="var-float-sub">Edita el contexto más usado sin perder el scroll.</div>\n'
+        '        <div class="var-float-title"><span class="fw-lang-es">Variables rápidas</span><span class="fw-lang-en">Quick variables</span></div>\n'
+        '        <div class="var-float-sub"><span class="fw-lang-es">Edita el contexto más usado sin perder el scroll.</span><span class="fw-lang-en">Edit the most-used context without losing your scroll position.</span></div>\n'
         '      </div>\n'
-        '      <button class="var-float-close" onclick="closeVarFloat()" title="Cerrar">&#x2715;</button>\n'
+        '      <button class="var-float-close" onclick="closeVarFloat()" title="Cerrar / Close">&#x2715;</button>\n'
         '    </div>\n'
         '    <div class="var-float-form">\n'
         '      <div class="var-group">\n'
-        '        <label for="qv-repositorio">Repositorio</label>\n'
+        '        <label for="qv-repositorio"><span class="fw-lang-es">Repositorio</span><span class="fw-lang-en">Repository</span></label>\n'
         '        <input id="qv-repositorio" type="text" placeholder="org/nombre-repo o URL" oninput="syncProjectFromQuickFloat()">\n'
         '      </div>\n'
         '      <div class="var-group">\n'
-        '        <label for="qv-referencia">Issue / Referencia</label>\n'
+        '        <label for="qv-referencia"><span class="fw-lang-es">Issue / Referencia</span><span class="fw-lang-en">Issue / Reference</span></label>\n'
         '        <textarea id="qv-referencia" placeholder="Número, URL o resumen corto" oninput="syncProjectFromQuickFloat()"></textarea>\n'
         '      </div>\n'
         '      <div class="var-group">\n'
-        '        <label for="qv-rama-actual">Rama actual</label>\n'
+        '        <label for="qv-rama-actual"><span class="fw-lang-es">Rama actual</span><span class="fw-lang-en">Current branch</span></label>\n'
         '        <input id="qv-rama-actual" type="text" placeholder="feature/mi-rama" oninput="syncProjectFromQuickFloat()">\n'
         '      </div>\n'
         '      <div class="var-group">\n'
-        '        <label for="qv-rama-destino">Rama destino</label>\n'
+        '        <label for="qv-rama-destino"><span class="fw-lang-es">Rama destino</span><span class="fw-lang-en">Target branch</span></label>\n'
         '        <input id="qv-rama-destino" type="text" placeholder="main / develop" oninput="syncProjectFromQuickFloat()">\n'
         '      </div>\n'
         '      <div class="var-group">\n'
-        '        <label for="qv-modulo">Módulo / proceso</label>\n'
+        '        <label for="qv-modulo"><span class="fw-lang-es">Módulo / proceso</span><span class="fw-lang-en">Module / process</span></label>\n'
         '        <input id="qv-modulo" type="text" placeholder="Nombre del módulo o funcionalidad" oninput="syncProjectFromQuickFloat()">\n'
         '      </div>\n'
         '    </div>\n'
         '    <div class="var-float-actions">\n'
-        '      <button class="var-float-link" onclick="openFullVarPanelFromFloat()">Más variables</button>\n'
-        '      <button class="var-float-primary" onclick="closeVarFloat()">Listo</button>\n'
+        '      <button class="var-float-link" onclick="openFullVarPanelFromFloat()"><span class="fw-lang-es">Más variables</span><span class="fw-lang-en">More variables</span></button>\n'
+        '      <button class="var-float-primary" onclick="closeVarFloat()"><span class="fw-lang-es">Listo</span><span class="fw-lang-en">Done</span></button>\n'
         '    </div>\n'
         '  </div>\n'
-        '  <button class="var-float-btn" id="var-float-btn" onclick="toggleVarFloat(event)" title="Editar variables activas">\n'
+        '  <button class="var-float-btn" id="var-float-btn" onclick="toggleVarFloat(event)" title="Editar variables activas" aria-haspopup="true" aria-expanded="false">\n'
         '    <span class="var-float-icon">\n'
         '      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>\n'
         '    </span>\n'
@@ -4290,19 +4318,19 @@ def build():
         '</div>\n'
         '<!-- ═══ FLOATING MULTI-SELECT TOGGLE ═══ -->\n'
         '<div class="ms-float" id="ms-float">\n'
-        '  <button class="ms-float-btn" id="ms-float-btn" onclick="toggleMsMode()" title="Activar selección múltiple">\n'
+        '  <button class="ms-float-btn" id="ms-float-btn" onclick="toggleMsMode()" title="Activar selección múltiple / Enable multi-select">\n'
         '    <span class="ms-float-icon">\n'
         '      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">\n'
         '        <rect x="3" y="5" width="13" height="13" rx="2"/><path d="M8 10l3 3 5-5"/>\n'
         '      </svg>\n'
         '    </span>\n'
-        '    <span class="ms-float-label">Multi-select</span>\n'
+        '    <span class="ms-float-label"><span class="fw-lang-es">Selección múltiple</span><span class="fw-lang-en">Multi-select</span></span>\n'
         '  </button>\n'
         '</div>\n'
         '<!-- \u2550\u2550 FLOATING PROJECT SELECTOR \u2014 issue #30 \u2550\u2550 -->\n'
         '<div class="proj-float" id="proj-float">\n'
         '  <div class="proj-float-dropdown" id="proj-float-dropdown"></div>\n'
-        '  <button class="proj-float-btn" id="proj-float-btn" onclick="toggleProjFloat(event)" title="Cambiar proyecto activo">\n'
+        '  <button class="proj-float-btn" id="proj-float-btn" onclick="toggleProjFloat(event)" title="Cambiar proyecto activo" aria-haspopup="true" aria-expanded="false">\n'
         '    <span class="proj-float-dot"></span>\n'
         '    <span class="proj-float-name" id="proj-float-name">Proyecto</span>\n'
         '    <span class="proj-float-chevron"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>\n'
