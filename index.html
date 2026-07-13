@@ -10649,12 +10649,12 @@ Generate a structured defect report form with the following sections:
   <button class="ms-copy-btn" onclick="copySelected(this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> <span class="fw-lang-es">Copiar seleccionados</span><span class="fw-lang-en">Copy selected</span></button>
   <button class="ms-clear-btn" onclick="clearSelection()"><span class="fw-lang-es">Limpiar selección</span><span class="fw-lang-en">Clear selection</span></button>
 </div>
-<div class="modal-overlay" id="info-modal">
+<div class="modal-overlay" id="info-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
   <div class="modal-box">
     <div class="modal-hdr">
       <span class="modal-hdr-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" d="M12 16v-4m0-4h.01"/></svg></span>
       <h2 id="modal-title"></h2>
-      <button class="modal-close-btn" onclick="closeInfo()">&#x2715;</button>
+      <button class="modal-close-btn" onclick="closeInfo()" aria-label="Cerrar / Close">&#x2715;</button>
     </div>
     <div class="modal-body">
       <div class="modal-section" id="modal-desc-section"><h3>Descripción y cuándo usarlo</h3><p class="modal-desc" id="modal-desc"></p></div>
@@ -11841,6 +11841,7 @@ function openInfoLang(pid, lang) {
   if (!info) return;
   var modal = document.getElementById('info-modal');
   if (!modal) return;
+  _lastFocusedBeforeModal = document.activeElement;
 
   var titleEl = document.getElementById('modal-title');
   if (titleEl) {
@@ -11900,6 +11901,8 @@ function openInfoLang(pid, lang) {
   }
 
   modal.classList.add('open');
+  var closeBtn = modal.querySelector('.modal-close-btn');
+  if (closeBtn) closeBtn.focus();
 }
 
 function copyPrompt(pid, btn) {
@@ -12153,9 +12156,42 @@ function openInfo(pid) {
   openInfoLang(pid, lang);
 }
 
+// Sin trampa de foco, Tab desde el modal seguía navegando el contenido de
+// la página detrás de él en vez de ciclar dentro del modal -- un usuario
+// de teclado/lector de pantalla perdía de vista dónde estaba el foco
+// (bug de accesibilidad reportado tras revisión visual del sitio).
+var _lastFocusedBeforeModal = null;
+
+function getFocusableIn(container) {
+  return Array.prototype.slice.call(
+    container.querySelectorAll('a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])')
+  ).filter(function(el) { return el.offsetParent !== null; });
+}
+
+function trapFocusInModal(e) {
+  if (e.key !== 'Tab') return;
+  var modal = document.getElementById('info-modal');
+  if (!modal || !modal.classList.contains('open')) return;
+  var focusable = getFocusableIn(modal);
+  if (!focusable.length) return;
+  var first = focusable[0];
+  var last = focusable[focusable.length - 1];
+  if (e.shiftKey && document.activeElement === first) {
+    e.preventDefault();
+    last.focus();
+  } else if (!e.shiftKey && document.activeElement === last) {
+    e.preventDefault();
+    first.focus();
+  }
+}
+
 function closeInfo() {
   var modal = document.getElementById('info-modal');
   if (modal) modal.classList.remove('open');
+  if (_lastFocusedBeforeModal && typeof _lastFocusedBeforeModal.focus === 'function') {
+    _lastFocusedBeforeModal.focus();
+  }
+  _lastFocusedBeforeModal = null;
 }
 
 /* ═══════════════════  WELCOME BANNER  ═════════════════════════ */
@@ -12323,10 +12359,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') { 
-      closeInfo(); closeVarPanel(); closeVarFloat(); closeProjectsModal(); 
+    if (e.key === 'Escape') {
+      closeInfo(); closeVarPanel(); closeVarFloat(); closeProjectsModal();
       closeProjQuick(); skipOnboarding(); closeMenu(); closeLanguageDropdown();
     }
+    trapFocusInModal(e);
   });
 
   var content = document.querySelector('.content');
