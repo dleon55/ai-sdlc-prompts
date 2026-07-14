@@ -933,6 +933,25 @@ body.ms-mode .sec-check { display: block; }
   background: var(--bg3); border: 1px solid var(--bdr); border-radius: 6px;
   border-left: 3px solid #6366f1; line-height: 1.5;
 }
+.modal-next-list { display: flex; flex-direction: column; gap: .4rem; }
+.modal-next-link {
+  display: flex; align-items: center; gap: .4rem; width: 100%; text-align: left;
+  padding: .5rem .7rem; background: var(--bg3); border: 1px solid var(--bdr);
+  border-radius: 6px; color: var(--tx); font-size: .76rem; font-weight: 600;
+  cursor: pointer; font-family: inherit; transition: all .12s;
+}
+.modal-next-link:hover { background: #0f172a; border-color: #6366f1; color: #a5b4fc; }
+.modal-next-link::after { content: '\\2192'; margin-left: auto; opacity: .6; }
+
+/* Resalta brevemente la tarjeta destino al navegar desde "siguiente
+   prompt recomendado" (issue #94) -- sin esto, el scrollIntoView por sí
+   solo no deja claro cuál tarjeta es la que se acaba de abrir entre
+   decenas visibles en pantalla. */
+@keyframes cardFlash {
+  0%, 100% { box-shadow: none; }
+  25%, 75% { box-shadow: 0 0 0 2px #6366f1, 0 0 24px rgba(99,102,241,.35); }
+}
+.card-flash { animation: cardFlash 1.6s ease; }
 
 /* ════════════════════  PROYECTOS  ══════════════════════════════ */
 .proj-selector-row {
@@ -2777,9 +2796,56 @@ function openInfoLang(pid, lang) {
     }
   }
 
+  var nextEl = document.getElementById('modal-next-section');
+  if (nextEl) {
+    nextEl.innerHTML = '';
+    var nextIds = info.next_ids || [];
+    if (nextIds.length) {
+      var nsec = document.createElement('div');
+      nsec.className = 'modal-section';
+      var nh = document.createElement('h3');
+      nh.textContent = lang === 'en' ? 'Recommended next prompt' : 'Siguiente prompt recomendado';
+      nsec.appendChild(nh);
+      var list = document.createElement('div');
+      list.className = 'modal-next-list';
+      nextIds.forEach(function(nid) {
+        var nInfo = (typeof PROMPT_INFO !== 'undefined') ? PROMPT_INFO[nid] : null;
+        if (!nInfo) return;
+        var link = document.createElement('button');
+        link.className = 'modal-next-link';
+        link.textContent = (lang === 'en' ? nInfo.title_en : nInfo.title_es) || nid;
+        link.addEventListener('click', function() { goToPrompt(nid, lang); });
+        list.appendChild(link);
+      });
+      if (list.children.length) {
+        nsec.appendChild(list);
+        nextEl.appendChild(nsec);
+      }
+    }
+  }
+
   modal.classList.add('open');
   var closeBtn = modal.querySelector('.modal-close-btn');
   if (closeBtn) closeBtn.focus();
+}
+
+function goToPrompt(pid, lang) {
+  closeInfo();
+  _lastSearchQuery = '';
+  var searchInput = document.querySelector('.search-bar input');
+  if (searchInput) searchInput.value = '';
+  _activeFacet = null;
+  document.querySelectorAll('.facet-chip').forEach(function(c) { c.classList.remove('active'); });
+  applyFilters();
+  var combined = pid + '-' + lang;
+  var body = document.getElementById('cb-' + combined);
+  if (!body) return;
+  if (!body.classList.contains('open')) toggleCard(combined);
+  var card = body.closest('.card');
+  if (!card) return;
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  card.classList.add('card-flash');
+  setTimeout(function() { card.classList.remove('card-flash'); }, 1600);
 }
 
 function copyPrompt(pid, btn) {
@@ -3447,13 +3513,25 @@ def build():
     contract_tags_js = "var CONTRACT_TAGS = " + json.dumps(contract_tags_by_id, ensure_ascii=False) + ";"
 
     # ── PROMPT_INFO para el modal de ⓘ ──
+    # next_ids: recommended_next_prompt_ids ya se calculaba para
+    # prompts-index.json (issue #63) pero nunca llegaba al front-end
+    # (issue #94, mismo patrón que #78 con los badges de riesgo/autonomía).
+    # Se unen es/en por si el texto editorial difiere entre idiomas.
     info_data = {}
     for sk, items in sections.items():
         for p in items:
-            info_data[p["id"]] = {
+            pid = p["id"]
+            contract = contract_by_id.get(pid, {})
+            next_ids = []
+            for lang_key in ("es", "en"):
+                for nid in contract.get(lang_key, {}).get("recommended_next_prompt_ids", []):
+                    if nid != pid and nid not in next_ids:
+                        next_ids.append(nid)
+            info_data[pid] = {
                 "title_es": p["title_es"], "title_en": p["title_en"],
                 "desc_es":  p.get("description_es", ""), "desc_en": p.get("description_en", ""),
                 "formulas_es": p.get("formulas_es", []), "formulas_en": p.get("formulas_en", []),
+                "next_ids": next_ids,
             }
     prompt_info_js = "var PROMPT_INFO = " + json.dumps(info_data, ensure_ascii=False) + ";"
 
@@ -4148,6 +4226,7 @@ def build():
         '<p class="modal-desc" id="modal-desc"></p>'
         '</div>\n'
         '      <div id="modal-formulas"></div>\n'
+        '      <div id="modal-next-section"></div>\n'
         '    </div>\n'
         '  </div>\n'
         '</div>\n'
