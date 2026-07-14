@@ -1083,6 +1083,17 @@ body.sidebar-collapsed .sid-link { padding: .38rem; justify-content: center; gap
 body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem .25rem; }
 
 /* ════════════════════  RESPONSIVE  ════════════════════════════════ */
+/* .ms-label/.var-label antes solo colapsaban a solo-ícono en el
+   breakpoint móvil (560px) -- en anchos de laptop comunes (~1300px) la
+   fila de la barra superior se rompía a 2 líneas porque no había un
+   colapso intermedio, agravado por que "Selección múltiple" (ES) es más
+   largo que el "Multi-select" (EN) que se mostraba antes de corregir la
+   traducción en #90 (issue #98). El tooltip bilingüe (title) ya
+   presente en ambos botones cubre la pérdida de la etiqueta visible,
+   igual que en sus equivalentes flotantes. */
+@media (max-width: 1400px) {
+  .ms-label, .var-label { display: none; }
+}
 @media (max-width: 900px) {
   .hdr-logo p { display: none; }
   .tag-warn { font-size: .58rem; padding: .12rem .35rem; }
