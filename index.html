@@ -11654,6 +11654,12 @@ function setLanguage(lang) {
   renderProjectSelector();
 
   if (typeof initChips === 'function') initChips();
+
+  // Recalcula el contador de resultados y la visibilidad de secciones para
+  // el nuevo idioma activo -- sin esto, con una búsqueda/faceta activa, el
+  // contador se quedaba con el texto y el conteo del idioma anterior hasta
+  // la siguiente interacción con la búsqueda (issue #96).
+  if (typeof applyFilters === 'function') applyFilters();
 }
 
 function initLanguageDetection() {
@@ -12209,6 +12215,7 @@ function filterByFacetChip(kind, value) {
 
 function applyFilters() {
   var q = (_lastSearchQuery || '').toLowerCase().trim();
+  var activeLang = getCurrentLanguage();
   var groups = document.querySelectorAll('.section-group');
   var total = 0;
   groups.forEach(function(g) {
@@ -12229,7 +12236,12 @@ function applyFilters() {
       }
       var match = textMatch && facetMatch;
       card.style.display = match ? '' : 'none';
-      if (match) vis++;
+      // Cada prompt tiene siempre 2 tarjetas en el DOM (es/en, la inactiva
+      // oculta solo por CSS !important) -- contar ambas duplicaba el total
+      // ("164 prompts" en vez de 82) y podía dejar visible el header de una
+      // sección cuyo único match era el de la tarjeta del idioma inactivo
+      // (issue #96).
+      if (match && card.getAttribute('data-lang') === activeLang) vis++;
     });
     g.style.display = vis ? '' : 'none';
     total += vis;
