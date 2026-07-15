@@ -560,6 +560,12 @@ header {
   display: flex; flex-direction: column;
   transition: transform .25s ease;
 }
+/* Fuera del breakpoint móvil, sin esto .sidebar-overlay queda como ítem
+   flex fantasma dentro de .layout (ancho 0 por no tener contenido, pero
+   alto completo por el align-items:stretch por defecto de flexbox) --
+   sin impacto visual/funcional real (ancho 0 = sin área clicable), pero
+   display:none aquí lo saca del flujo flex por completo, más prolijo. */
+.sidebar-overlay { display: none; }
 /* Estilo unificado de menú hamburguesa (Overlay) */
 @media (max-width: 1024px) {
   .sidebar { 
@@ -2491,11 +2497,25 @@ function clearTaskVars() {
 /* ═══════════════════  TOGGLE CARD / COPY  ══════════════════════ */
 
 function toggleMenu() {
-  document.body.classList.toggle('menu-open');
+  var isOpen = document.body.classList.toggle('menu-open');
+  var btn = document.querySelector('.menu-toggle-btn');
+  if (btn) btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  // El drawer de navegación móvil no tenía foco inicial ni trampa de foco
+  // -- mismo patrón ya corregido en info-modal/proj-modal/onboarding
+  // (issue: revisión de UI/UX). getOpenModal() sigue sin cubrirlo (no es
+  // semánticamente un [role="dialog"], es una navegación), así que
+  // trapFocusInModal() lo trata como caso aparte -- ver ese archivo.
+  if (isOpen) {
+    var sidebar = document.getElementById('app-sidebar');
+    var firstFocusable = sidebar ? sidebar.querySelector('a, button') : null;
+    if (firstFocusable) firstFocusable.focus();
+  }
 }
 
 function closeMenu() {
   document.body.classList.remove('menu-open');
+  var btn = document.querySelector('.menu-toggle-btn');
+  if (btn) btn.setAttribute('aria-expanded', 'false');
 }
 
 /* ═══════════════════  TOGGLE CARD / COPY  ══════════════════════ */
@@ -3303,11 +3323,8 @@ function getOpenModal() {
   return null;
 }
 
-function trapFocusInModal(e) {
-  if (e.key !== 'Tab') return;
-  var modal = getOpenModal();
-  if (!modal) return;
-  var focusable = getFocusableIn(modal);
+function trapTabWithin(container, e) {
+  var focusable = getFocusableIn(container);
   if (!focusable.length) return;
   var first = focusable[0];
   var last = focusable[focusable.length - 1];
@@ -3317,6 +3334,21 @@ function trapFocusInModal(e) {
   } else if (!e.shiftKey && document.activeElement === last) {
     e.preventDefault();
     first.focus();
+  }
+}
+
+function trapFocusInModal(e) {
+  if (e.key !== 'Tab') return;
+  var modal = getOpenModal();
+  if (modal) { trapTabWithin(modal, e); return; }
+  // El drawer de navegación móvil (menú hamburguesa) no es un
+  // [role="dialog"] -- es una navegación que solo se comporta como
+  // overlay modal en mobile (ver CSS @media max-width:1024px) -- se
+  // trata como caso aparte de getOpenModal() (issue: revisión de UI/UX,
+  // Tab escapaba al contenido de la página detrás del drawer).
+  if (document.body.classList.contains('menu-open')) {
+    var sidebar = document.getElementById('app-sidebar');
+    if (sidebar) trapTabWithin(sidebar, e);
   }
 }
 
@@ -4002,7 +4034,8 @@ def build():
 
         '<header>\n'
         '  <div class="hdr-logo">'
-        '    <button class="menu-toggle-btn" onclick="toggleMenu()" title="Menú / Menu">'
+        '    <button class="menu-toggle-btn" onclick="toggleMenu()" title="Menú / Menu"'
+        ' aria-haspopup="true" aria-expanded="false" aria-controls="app-sidebar">'
         '      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
         '        <line x1="3" y1="12" x2="21" y2="12"></line>'
         '        <line x1="3" y1="6" x2="21" y2="6"></line>'
@@ -4106,7 +4139,8 @@ def build():
 
         # layout
         '<div class="layout">\n'
-        '  <nav class="sidebar">\n'
+        '  <div class="sidebar-overlay" onclick="closeMenu()"></div>\n'
+        '  <nav class="sidebar" id="app-sidebar">\n'
         '<div class="sidebar-header">'
         '<span class="sidebar-label-text">Nav</span>'
         '<button class="sidebar-collapse-btn" onclick="toggleSidebar()" title="Colapsar / expandir menú">'
