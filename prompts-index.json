@@ -1519,8 +1519,7 @@
             "high"
           ],
           "permitted_autonomy_tags": [
-            "A2",
-            "A3"
+            "A2"
           ],
           "recommended_next_prompt_ids": [
             "06-02-commits"
@@ -1543,8 +1542,7 @@
             "high"
           ],
           "permitted_autonomy_tags": [
-            "A2",
-            "A3"
+            "A2"
           ],
           "recommended_next_prompt_ids": [
             "06-02-commits"
@@ -2029,8 +2027,7 @@
           ],
           "permitted_autonomy_tags": [
             "A1",
-            "A2",
-            "A3"
+            "A2"
           ],
           "recommended_next_prompt_ids": [
             "07-11-implementacion-pruebas-performance"
@@ -2055,8 +2052,7 @@
           ],
           "permitted_autonomy_tags": [
             "A1",
-            "A2",
-            "A3"
+            "A2"
           ],
           "recommended_next_prompt_ids": [
             "07-11-implementacion-pruebas-performance"
@@ -2663,9 +2659,7 @@
           ],
           "permitted_autonomy_tags": [
             "A0",
-            "A1",
-            "A2",
-            "A3"
+            "A1"
           ],
           "recommended_next_prompt_ids": [
             "11-09-runbook-rollback"
@@ -2690,9 +2684,7 @@
           ],
           "permitted_autonomy_tags": [
             "A0",
-            "A1",
-            "A2",
-            "A3"
+            "A1"
           ],
           "recommended_next_prompt_ids": [
             "11-09-runbook-rollback"
@@ -3843,9 +3835,7 @@
           ],
           "permitted_autonomy_tags": [
             "A0",
-            "A1",
-            "A2",
-            "A3"
+            "A1"
           ],
           "recommended_next_prompt_ids": [
             "07-06-pruebas-performance-carga",
@@ -3870,9 +3860,7 @@
           ],
           "permitted_autonomy_tags": [
             "A0",
-            "A1",
-            "A2",
-            "A3"
+            "A1"
           ],
           "recommended_next_prompt_ids": [
             "07-06-pruebas-performance-carga",
@@ -4357,9 +4345,7 @@
           ],
           "permitted_autonomy_tags": [
             "A0",
-            "A1",
-            "A2",
-            "A3"
+            "A1"
           ],
           "recommended_next_prompt_ids": [
             "13-03-secure-sdlc-revision"
@@ -4383,9 +4369,7 @@
           ],
           "permitted_autonomy_tags": [
             "A0",
-            "A1",
-            "A2",
-            "A3"
+            "A1"
           ],
           "recommended_next_prompt_ids": [
             "13-03-secure-sdlc-revision"
@@ -4767,9 +4751,7 @@
           ],
           "permitted_autonomy_tags": [
             "A0",
-            "A1",
-            "A2",
-            "A3"
+            "A1"
           ],
           "recommended_next_prompt_ids": [
             "16-02-diagnostico-respuesta-incidente-soporte",
@@ -4794,9 +4776,7 @@
           ],
           "permitted_autonomy_tags": [
             "A0",
-            "A1",
-            "A2",
-            "A3"
+            "A1"
           ],
           "recommended_next_prompt_ids": [
             "16-02-diagnostico-respuesta-incidente-soporte",
@@ -4831,9 +4811,7 @@
           ],
           "permitted_autonomy_tags": [
             "A0",
-            "A1",
-            "A2",
-            "A3"
+            "A1"
           ],
           "recommended_next_prompt_ids": [
             "16-01-triage-tickets-soporte",
@@ -4860,9 +4838,7 @@
           ],
           "permitted_autonomy_tags": [
             "A0",
-            "A1",
-            "A2",
-            "A3"
+            "A1"
           ],
           "recommended_next_prompt_ids": [
             "16-01-triage-tickets-soporte",
@@ -4898,9 +4874,7 @@
             "low"
           ],
           "permitted_autonomy_tags": [
-            "A1",
-            "A2",
-            "A3"
+            "A1"
           ],
           "recommended_next_prompt_ids": [
             "16-02-diagnostico-respuesta-incidente-soporte"
@@ -4923,9 +4897,7 @@
             "low"
           ],
           "permitted_autonomy_tags": [
-            "A1",
-            "A2",
-            "A3"
+            "A1"
           ],
           "recommended_next_prompt_ids": [
             "16-02-diagnostico-respuesta-incidente-soporte"
@@ -4959,9 +4931,7 @@
           ],
           "permitted_autonomy_tags": [
             "A0",
-            "A1",
-            "A2",
-            "A3"
+            "A1"
           ],
           "recommended_next_prompt_ids": [
             "16-01-triage-tickets-soporte"
@@ -4985,9 +4955,7 @@
           ],
           "permitted_autonomy_tags": [
             "A0",
-            "A1",
-            "A2",
-            "A3"
+            "A1"
           ],
           "recommended_next_prompt_ids": [
             "16-01-triage-tickets-soporte"
@@ -5021,9 +4989,7 @@
           ],
           "permitted_autonomy_tags": [
             "A0",
-            "A1",
-            "A2",
-            "A3"
+            "A1"
           ],
           "recommended_next_prompt_ids": [
             "02-04-triage-backlog-github",
@@ -5048,9 +5014,7 @@
           ],
           "permitted_autonomy_tags": [
             "A0",
-            "A1",
-            "A2",
-            "A3"
+            "A1"
           ],
           "recommended_next_prompt_ids": [
             "02-04-triage-backlog-github",
@@ -5085,9 +5049,7 @@
           ],
           "permitted_autonomy_tags": [
             "A0",
-            "A1",
-            "A2",
-            "A3"
+            "A1"
           ],
           "recommended_next_prompt_ids": [
             "17-02-offboarding-tecnico"
@@ -5111,9 +5073,7 @@
           ],
           "permitted_autonomy_tags": [
             "A0",
-            "A1",
-            "A2",
-            "A3"
+            "A1"
           ],
           "recommended_next_prompt_ids": [
             "17-02-offboarding-tecnico"
@@ -5146,9 +5106,7 @@
             "high"
           ],
           "permitted_autonomy_tags": [
-            "A1",
-            "A2",
-            "A3"
+            "A1"
           ],
           "recommended_next_prompt_ids": [
             "17-01-onboarding-tecnico"
@@ -5171,9 +5129,7 @@
             "high"
           ],
           "permitted_autonomy_tags": [
-            "A1",
-            "A2",
-            "A3"
+            "A1"
           ],
           "recommended_next_prompt_ids": [
             "17-01-onboarding-tecnico"
@@ -5207,9 +5163,7 @@
             "medium"
           ],
           "permitted_autonomy_tags": [
-            "A1",
-            "A2",
-            "A3"
+            "A1"
           ],
           "recommended_next_prompt_ids": [
             "11-08-finops-cloud-cost-audit"
@@ -5233,9 +5187,7 @@
             "medium"
           ],
           "permitted_autonomy_tags": [
-            "A1",
-            "A2",
-            "A3"
+            "A1"
           ],
           "recommended_next_prompt_ids": [
             "11-08-finops-cloud-cost-audit"
@@ -5269,9 +5221,7 @@
           ],
           "permitted_autonomy_tags": [
             "A0",
-            "A1",
-            "A2",
-            "A3"
+            "A1"
           ],
           "recommended_next_prompt_ids": [
             "11-10-capacity-planning",
@@ -5296,9 +5246,7 @@
           ],
           "permitted_autonomy_tags": [
             "A0",
-            "A1",
-            "A2",
-            "A3"
+            "A1"
           ],
           "recommended_next_prompt_ids": [
             "11-10-capacity-planning",
@@ -5334,9 +5282,7 @@
           ],
           "permitted_autonomy_tags": [
             "A0",
-            "A1",
-            "A2",
-            "A3"
+            "A1"
           ],
           "recommended_next_prompt_ids": [
             "17-03-evaluacion-herramienta-licencia"
@@ -5361,9 +5307,7 @@
           ],
           "permitted_autonomy_tags": [
             "A0",
-            "A1",
-            "A2",
-            "A3"
+            "A1"
           ],
           "recommended_next_prompt_ids": [
             "17-03-evaluacion-herramienta-licencia"
