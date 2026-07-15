@@ -13,6 +13,7 @@ import i18n_strings
 PROMPTS_DIR = Path(__file__).parent / "ai_sdlc_pro_prompts"
 OUTPUT_FILE = Path(__file__).parent / "index.html"
 INDEX_OUTPUT_FILE = Path(__file__).parent / "prompts-index.json"
+MCP_DATA_OUTPUT_FILE = Path(__file__).parent / "mcp-server" / "data" / "prompts-full.json"
 
 def _is_deprecated_or_empty(content):
     """Contenido vacío/insuficiente o marcado DEPRECATED: no debe contarse
@@ -331,6 +332,42 @@ def _extract_next_prompt_ids(value, known_ids):
         if base in known_ids and base not in ids:
             ids.append(base)
     return ids
+
+
+def _parse_token_registry_for_export(js_source):
+    """Extrae TOKEN_REGISTRY (campo -> aliases/required/scope) del bloque JS
+    embebido para publicarlo en mcp-server/data/prompts-full.json (issue
+    #106) -- mismo mecanismo que extract_vars.parse_registry(), pero
+    operando sobre el string JS ya en memoria durante generate() en vez de
+    releer build.py desde disco (evita el import circular: extract_vars.py
+    ya importa build.py).
+
+    El delimitador se arma por concatenacion (no como literal contiguo) a
+    proposito: extract_vars.parse_registry() ubica el bloque real
+    buscando esa misma subcadena en el codigo fuente de build.py, y si
+    apareciera aqui tal cual, esta funcion (definida antes del bloque JS
+    real) se convertiria en el primer match y romperia ese parser."""
+    marker = "var TOKEN_REGISTRY" + " = {"
+    block = js_source.split(marker, 1)[1].split("\n};", 1)[0]
+    registry = {}
+    entries = re.split(r"\n  (?=[a-z_]+:\s*\{)", block)
+    for entry in entries:
+        field_match = re.match(r"\s*([a-z_]+):\s*\{", entry)
+        aliases_match = re.search(r"aliases:\s*\[(.*?)\]\s*\}", entry, re.DOTALL)
+        required_match = re.search(r"required:\s*(true|false)", entry)
+        scope_match = re.search(r"scope:\s*'(\w+)'", entry)
+        if not (field_match and aliases_match and required_match):
+            continue
+        aliases = [
+            left or right
+            for left, right in re.findall(r"'([^']*)'|\"([^\"]*)\"", aliases_match.group(1))
+        ]
+        registry[field_match.group(1)] = {
+            "required": required_match.group(1) == "true",
+            "scope": scope_match.group(1) if scope_match else None,
+            "aliases": aliases,
+        }
+    return registry
 
 
 def _enrich_contract_fields(fields, known_ids):
@@ -3677,6 +3714,41 @@ def build():
             }
     prompt_info_js = "var PROMPT_INFO = " + json.dumps(info_data, ensure_ascii=False) + ";"
 
+    # ── mcp-server/data/prompts-full.json (issue #106) ──
+    # prompts-index.json solo tiene metadata + contrato editorial, nunca el
+    # texto ejecutable del prompt -- un agente de IA no puede consumir la
+    # biblioteca programáticamente con eso, solo copiar/pegar desde el
+    # navegador. Este export agrega el texto crudo (placeholders intactos),
+    # el preámbulo del framework y TOKEN_REGISTRY para que el servidor MCP
+    # (ronda 2, paquete Node separado) no necesite reimplementar el parser
+    # de Markdown -- la única fuente de verdad de parseo sigue siendo esta
+    # función.
+    mcp_prompts = []
+    for sk, items in sections.items():
+        for p in items:
+            pid = p["id"]
+            mcp_prompts.append({
+                "id": pid,
+                "section": sk,
+                "title": {"es": p["title_es"], "en": p["title_en"]},
+                "description": {"es": p.get("description_es", ""), "en": p.get("description_en", "")},
+                "template": {"es": p["prompt_es"], "en": p["prompt_en"]},
+                "formulas": {"es": p.get("formulas_es", []), "en": p.get("formulas_en", [])},
+                "contract": contract_by_id.get(pid, {}),
+                "recommended_next_prompt_ids": info_data[pid]["next_ids"],
+            })
+    mcp_prompts.sort(key=lambda e: e["id"])
+    mcp_data = {
+        "framework": {"preamble": {"es": fw_prompt_es, "en": fw_prompt_en}},
+        "token_registry": _parse_token_registry_for_export(JS),
+        "prompts": mcp_prompts,
+    }
+    MCP_DATA_OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
+    MCP_DATA_OUTPUT_FILE.write_text(
+        json.dumps(mcp_data, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
     # ── sidebar ──
     COPY_ICO = (
         '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"'
@@ -4588,6 +4660,7 @@ def build():
     print(f"Framework : incluido")
     print(f"Tamano    : {size_kb:.1f} KB")
     print(f"Indice    : {INDEX_OUTPUT_FILE.name} ({contracted}/{total} con contrato editorial)")
+    print(f"MCP data  : mcp-server/data/{MCP_DATA_OUTPUT_FILE.name} ({len(mcp_prompts)} prompts)")
 
 
 if __name__ == "__main__":
