@@ -11619,12 +11619,14 @@ Constraints:
     </div>
   </div>
 </div>
-<div class="ob-overlay hidden" id="ob-overlay">
+<div class="ob-overlay hidden" id="ob-overlay" role="dialog" aria-modal="true" aria-labelledby="ob-title">
   <div class="ob-box">
     <div class="ob-header">
       <div class="ob-header-text">
+        <div id="ob-title">
         <h2 class="fw-lang-es">Bienvenido a AI-SDLC Pro</h2>
         <h2 class="fw-lang-en">Welcome to AI-SDLC Pro</h2>
+        </div>
         <p class="fw-lang-es">Lo esencial antes de copiar tu primer prompt.</p>
         <p class="fw-lang-en">The essentials before copying your first prompt.</p>
       </div>
@@ -13364,6 +13366,22 @@ function initOnboarding() {
     if (overlay) overlay.classList.remove('hidden');
     _obStep = 0;
     renderObStep();
+    // El wizard de onboarding es el tercer diálogo modal sin foco inicial
+    // ni trampa de foco encontrado en esta revisión (mismo bug ya
+    // corregido en info-modal y proj-modal) -- se apoya en el mismo
+    // trapFocusInModal()/getOpenModal() genéricos, que ya cubren
+    // cualquier [role="dialog"] visible; solo falta moverle el foco al
+    // abrir, ya que aparece automáticamente al cargar la página, no por
+    // un click que ya tenga foco propio que restaurar al cerrar.
+    // setTimeout diferido a propósito: initOnboarding() corre durante la
+    // carga inicial de la página (antes de que termine el evento load),
+    // y un focus() síncrono ahí se perdía -- el navegador lo resetea a
+    // <body> una vez termina de cargar la página. Diferirlo a la
+    // siguiente vuelta del event loop evita la carrera.
+    setTimeout(function() {
+      var closeBtn = overlay ? overlay.querySelector('.ob-close') : null;
+      if (closeBtn) closeBtn.focus();
+    }, 0);
   } catch(e) {}
 }
 
