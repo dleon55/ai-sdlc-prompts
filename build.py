@@ -309,8 +309,19 @@ def _extract_tags(value, tag_table):
     return tags
 
 
+_AUTONOMY_NEGATION_RX = re.compile(r"(?:nunca|never)\b[^.;]*", re.IGNORECASE)
+
+
 def _extract_autonomy_tags(value):
-    return sorted(set(re.findall(r"\bA[0-3]\b", value)))
+    # Sin esto, un campo redactado como "A0 -- Analizar; A1 -- Proponer;
+    # nunca A2/A3 -- este prompt no ejecuta cambios" extraía los 4 niveles
+    # literalmente presentes en el texto, incluyendo los que la propia
+    # redacción excluye explícitamente -- el badge/filtro de autonomía
+    # terminaba mostrando el prompt como si permitiera A2/A3 (issue #101).
+    # Se descarta la cláusula de negación (desde "nunca"/"never" hasta el
+    # siguiente separador de cláusula) antes de extraer los niveles.
+    positive_text = _AUTONOMY_NEGATION_RX.sub(" ", value)
+    return sorted(set(re.findall(r"\bA[0-3]\b", positive_text)))
 
 
 def _extract_next_prompt_ids(value, known_ids):
