@@ -1,0 +1,23 @@
+{
+  "name": "ai-sdlc-prompts-mcp",
+  "version": "1.0.0",
+  "description": "Servidor MCP que expone la biblioteca de prompts AI-SDLC Pro (92 prompts, ES/EN) a agentes de IA vía stdio.",
+  "type": "module",
+  "private": true,
+  "main": "index.js",
+  "bin": {
+    "ai-sdlc-prompts-mcp": "index.js"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^4.4.3"
+  },
+  "license": "UNLICENSED"
+}

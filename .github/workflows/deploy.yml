@@ -147,6 +147,35 @@ jobs:
         run: python -m pytest tests/e2e/test_browser_e2e.py -v
 
 # ============================================================
+#  JOB 1C - SERVIDOR MCP (mcp-server/) - NO BLOQUEANTE
+#  El servidor MCP no forma parte del sitio desplegado (index.html), asi
+#  que igual que `e2e` no bloquea deploy-pages/deploy-gcp (solo declaran
+#  `needs: build`) -- pero corre en cada PR para no dejar que se rompa
+#  en silencio.
+# ============================================================
+  mcp-server-test:
+    needs: build
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mcp-server
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+# ============================================================
 #  JOB 2 - GITHUB PAGES  (staging / ambiente de pruebas)
 #  Solo en push a main; los PR no despliegan.
 # ============================================================

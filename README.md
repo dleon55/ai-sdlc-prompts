@@ -13,7 +13,7 @@ Biblioteca interactiva de prompts estructurados bajo el **AI-SDLC Enterprise Fra
 
 ## Funcionalidades del sitio
 
-- **Proyectos con variables por entorno** — múltiples proyectos, cada uno con **19 variables** configurables (`repositorio`, `referencia/entrada`, `rama actual/destino`, `ambiente`, `componentes`, `módulo`, `stack`, `tipo de proyecto`, `metodología`, `agentes IA`, `nivel de autonomía`, `objetivo`, `responsable`, `workspace`, `estándar/compliance`, `documentos`, `profundidad`), más asignaciones adicionales `TOKEN=valor`. Variables persisten en `localStorage`, con acceso rápido desde un panel flotante además del panel completo.
+- **Proyectos con variables por entorno** — múltiples proyectos, cada uno con **19 variables** configurables (`repositorio`, `referencia/entrada`, `rama actual/destino`, `ambiente`, `componentes`, `módulo`, `stack`, `tipo de proyecto`, `metodología`, `agentes IA`, `nivel de autonomía`, `objetivo`, `responsable`, `workspace`, `estándar/compliance`, `documentos`, `profundidad`), más asignaciones adicionales `TOKEN=valor`. Variables persisten en `localStorage`, con acceso rápido desde un panel flotante además del panel completo. Exportables/importables como JSON para llevarlas a otra máquina o compartirlas con el equipo.
 - **Framework auto-prepend** — el bloque de contexto del framework se antepone automáticamente a cada prompt copiado, con validación bloqueante de placeholders obligatorios sin resolver antes de copiar.
 - **Contrato editorial por prompt** — cada uno de los 92 prompts declara tipo, riesgo esperado, autonomía permitida y siguiente prompt recomendado, expuestos como badges filtrables y publicados en `prompts-index.json` para consumo por agentes de IA.
 - **Filtros por riesgo y autonomía** — chips de faceta (`Bajo/Medio/Alto/Variable`, `A0-A3`) combinables con la búsqueda de texto y los filtros por sección.
@@ -23,6 +23,12 @@ Biblioteca interactiva de prompts estructurados bajo el **AI-SDLC Enterprise Fra
 - **Modal de información ⓘ** — descripción y fórmulas de uso de cada prompt sin contaminar el contenido del prompt, con trampa de foco y atributos ARIA.
 - **Sidebar colapsable** — navegación por sección.
 - **Diseño oscuro responsive, bilingüe (ES/EN)** (self-contained, sin CDN).
+
+---
+
+## Servidor MCP
+
+El catálogo también se expone a agentes de IA (Claude Code, Claude Desktop, Cursor) vía [Model Context Protocol](https://modelcontextprotocol.io), sin necesidad de copiar/pegar desde el navegador: `list_prompts`, `get_prompt`, `resolve_prompt` (sustituye variables), `get_framework` y `recommend_next`. Ver [mcp-server/README.md](mcp-server/README.md) para instalación y configuración.
 
 ---
 
@@ -37,6 +43,7 @@ nginx_prompts.conf      # Config Nginx para producción GCP
 deploy-to-gcp.sh        # Script de re-deploy manual a GCP
 index.html              # Artefacto generado (~1.32 MB, no editar manualmente)
 prompts-index.json      # Índice machine-readable (contrato editorial por prompt), no editar manualmente
+mcp-server/             # Servidor MCP (Node) que expone el catálogo a agentes de IA vía stdio — ver mcp-server/README.md
 docs/                   # Memorias técnicas (MT-001, MT-002)
 .github/workflows/      # CI/CD — build + QA gate + deploy GitHub Pages + GCP
 CONTRIBUTING.md         # Guía de contribución y convenciones
