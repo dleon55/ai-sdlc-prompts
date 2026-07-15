@@ -4740,6 +4740,636 @@
           ]
         }
       }
+    },
+    {
+      "id": "16-01-triage-tickets-soporte",
+      "section": "16",
+      "title": {
+        "es": "16.1 — Triage y clasificación de tickets de soporte",
+        "en": "16.1 — Support Ticket Triage and Classification"
+      },
+      "contract": {
+        "es": {
+          "type": "análisis/clasificación",
+          "expected_risk": "medio — una severidad o SLA mal calculados pueden retrasar la atención de un ticket crítico o saturar al equipo equivocado con falsos positivos, pero el triage no aplica cambios al sistema, solo clasifica y enruta; el riesgo se materializa únicamente si la clasificación propuesta se usa sin revisión humana para decidir la atención real",
+          "required_inputs": "texto y metadatos del ticket o lote de tickets (título, descripción, reportante, timestamp, entorno, adjuntos/logs si existen), tabla o política de SLA vigente por severidad, acceso de lectura al historial de tickets o base de conocimiento para detectar duplicados/problemas conocidos, reglas de enrutamiento o estructura de equipos de soporte",
+          "allowed_tools": "lectura y búsqueda en el sistema de tickets, base de conocimiento e historial de incidentes previos; la salida es una clasificación y propuesta de enrutamiento en texto/tabla — no cambia el estado del ticket, no lo asigna, no lo cierra ni envía comunicaciones al cliente o al equipo",
+          "permitted_autonomy": "A0 — Analizar (lectura del ticket, búsqueda de duplicados/conocidos); A1 — Proponer (severidad, SLA y equipo propuestos); nunca A2/A3 — este prompt no asigna el ticket, no cambia su estado ni ejecuta ninguna acción sobre el sistema de tickets",
+          "stop_criteria": "detener y pedir más información si el ticket no tiene datos suficientes para determinar severidad (sin descripción, sin impacto ni entorno indicado) — no inventar una severidad plausible; marcar como \"posible duplicado, no confirmado\" si la coincidencia con un ticket previo no es clara, en vez de darlo por cerrado; si el ticket contiene indicios de incidente de seguridad o fuga de datos, detener el triage rutinario y escalar de inmediato según el protocolo de seguridad vigente en vez de continuar clasificando como ticket ordinario",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada severidad/prioridad cita el/los campo(s) del ticket o criterio de la matriz de impacto/urgencia que la sustenta; cada SLA citado referencia la política o tabla de SLA usada; cada marca de duplicado/conocido cita el ID del ticket o entrada de base de conocimiento coincidente y el criterio de coincidencia (mismo error, mismo componente, mismo usuario/entorno, etc.)",
+          "recommended_next_prompt": "`16-02-diagnostico-respuesta-incidente-soporte` para diagnosticar la causa y responder/resolver el ticket ya clasificado; `11-04-incident-response` si el triage revela un incidente de producción de alcance mayor al de un ticket individual",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1",
+            "A2",
+            "A3"
+          ],
+          "recommended_next_prompt_ids": [
+            "16-02-diagnostico-respuesta-incidente-soporte",
+            "11-04-incident-response"
+          ]
+        },
+        "en": {
+          "type": "analysis/classification",
+          "expected_risk": "medium — a miscalculated severity or SLA can delay attention to a critical ticket or overload the wrong team with false positives, but the triage does not apply any change to the system, it only classifies and routes; the risk only materializes if the proposed classification is used without human review to decide the actual response",
+          "required_inputs": "text and metadata of the ticket or batch of tickets (title, description, reporter, timestamp, environment, attachments/logs if any), current SLA table or policy by severity, read access to ticket history or a knowledge base to detect duplicates/known issues, routing rules or support team structure",
+          "allowed_tools": "reading and searching the ticket system, knowledge base, and prior incident history; the output is a classification and routing proposal in text/table form — it does not change the ticket's status, does not assign it, does not close it, and does not send communications to the customer or the team",
+          "permitted_autonomy": "A0 — Analyze (reading the ticket, searching for duplicates/known issues); A1 — Propose (proposed severity, SLA, and team); never A2/A3 — this prompt does not assign the ticket, change its status, or execute any action on the ticket system",
+          "stop_criteria": "stop and request more information if the ticket lacks enough data to determine severity (no description, no stated impact or environment) — never invent a plausible-looking severity; mark as \"possible duplicate, unconfirmed\" if the match with a prior ticket is unclear, instead of treating it as settled; if the ticket shows signs of a security incident or data leak, stop the routine triage and escalate immediately per the current security protocol instead of continuing to classify it as an ordinary ticket",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every severity/priority cites the ticket field(s) or impact/urgency matrix criterion that supports it; every cited SLA references the SLA policy or table used; every duplicate/known match cites the matching ticket ID or knowledge base entry and the matching criterion (same error, same component, same user/environment, etc.)",
+          "recommended_next_prompt": "`16-02-diagnostico-respuesta-incidente-soporte` to diagnose the cause and respond to/resolve the already-classified ticket; `11-04-incident-response` if the triage reveals a production incident broader in scope than a single ticket",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1",
+            "A2",
+            "A3"
+          ],
+          "recommended_next_prompt_ids": [
+            "16-02-diagnostico-respuesta-incidente-soporte",
+            "11-04-incident-response"
+          ]
+        }
+      }
+    },
+    {
+      "id": "16-02-diagnostico-respuesta-incidente-soporte",
+      "section": "16",
+      "title": {
+        "es": "16.2 — Diagnóstico y primera respuesta a incidente de soporte",
+        "en": "16.2 — Support Incident Diagnosis and First Response"
+      },
+      "contract": {
+        "es": {
+          "type": "análisis/comunicación",
+          "expected_risk": "medio — un diagnóstico apresurado o una respuesta al cliente mal calibrada (promesa de tiempo no realista, tono inadecuado, causa mal comunicada) puede dañar la relación con el cliente o comprometer una expectativa de SLA, aunque el prompt en sí no aplica cambios al sistema",
+          "required_inputs": "ticket ya triado con prioridad y severidad asignadas (salida de `16-01`), pasos de reproducción reportados por el usuario, entorno afectado, evidencia disponible (logs, capturas, mensajes de error), acceso de lectura a incidentes conocidos y artículos de KB, SLA o tiempo de respuesta acordado con el cliente",
+          "allowed_tools": "lectura de logs, dashboards de monitoreo, historial de incidentes y base de conocimiento; redacción de la respuesta al usuario — prohibido aplicar cambios de código, configuración, despliegues, rollbacks o cualquier modificación en el sistema o en producción",
+          "permitted_autonomy": "A0 — Analizar (diagnóstico: reproducir, aislar causa probable, revisar KB); A1 — Proponer (redactar la primera respuesta al usuario); nunca A2/A3 — este prompt no ejecuta ni publica cambios en el sistema",
+          "stop_criteria": "detener y escalar a un prompt de ejecución/ingeniería (`03-01-incidentes-github` o `11-01-troubleshooting`) si el diagnóstico confirma un bug de código que requiere cambio; detener y escalar a `11-04-incident-response` si se trata de un incidente de producción con impacto significativo; si el problema no es reproducible con la evidencia disponible, no prometer causa ni fecha de resolución — marcar el diagnóstico como de baja confianza y pedir más evidencia al usuario",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada hipótesis de causa cita la evidencia real que la respalda (log, paso de reproducción, artículo de KB o incidente previo referenciado); la primera respuesta al usuario nunca promete una fecha de resolución que no esté respaldada por el SLA acordado o por una estimación explícita marcada como tal",
+          "recommended_next_prompt": "`16-01-triage-tickets-soporte` (paso previo, si aún no se ha triado el ticket); `03-01-incidentes-github` u `11-01-troubleshooting` si el diagnóstico confirma un bug real que requiere cambio de código; `11-04-incident-response` si escala a incidente de producción con impacto significativo",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1",
+            "A2",
+            "A3"
+          ],
+          "recommended_next_prompt_ids": [
+            "16-01-triage-tickets-soporte",
+            "03-01-incidentes-github",
+            "11-01-troubleshooting",
+            "11-04-incident-response"
+          ]
+        },
+        "en": {
+          "type": "analysis/communication",
+          "expected_risk": "medium — a rushed diagnosis or a poorly calibrated client response (an unrealistic time promise, an inappropriate tone, a miscommunicated cause) can damage the client relationship or compromise an SLA expectation, even though the prompt itself does not apply any change to the system",
+          "required_inputs": "ticket already triaged with priority and severity assigned (output of `16-01`), reproduction steps reported by the user, affected environment, available evidence (logs, screenshots, error messages), read access to known incidents and the knowledge base, SLA or response-time commitment agreed with the client",
+          "allowed_tools": "reading logs, monitoring dashboards, incident history and knowledge base; drafting the user response — applying code changes, configuration changes, deployments, rollbacks, or any modification to the system or to production is explicitly forbidden",
+          "permitted_autonomy": "A0 — Analyze (diagnosis: reproduce, isolate probable cause, review KB); A1 — Propose (draft the first user response); never A2/A3 — this prompt does not execute or publish changes to the system",
+          "stop_criteria": "stop and escalate to an execution/engineering prompt (`03-01-incidentes-github` or `11-01-troubleshooting`) if the diagnosis confirms a code bug that requires a change; stop and escalate to `11-04-incident-response` if it is a production incident with significant impact; if the problem is not reproducible with the available evidence, do not promise a cause or a resolution date — flag the diagnosis as low-confidence and ask the user for more evidence",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every cause hypothesis cites the real evidence backing it (a log, a reproduction step, a referenced KB article or prior incident); the first response to the user never promises a resolution date that is not backed by the agreed SLA or by an estimate explicitly labeled as such",
+          "recommended_next_prompt": "`16-01-triage-tickets-soporte` (previous step, if the ticket has not been triaged yet); `03-01-incidentes-github` or `11-01-troubleshooting` if the diagnosis confirms a real bug requiring a code change; `11-04-incident-response` if it escalates to a production incident with significant impact",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1",
+            "A2",
+            "A3"
+          ],
+          "recommended_next_prompt_ids": [
+            "16-01-triage-tickets-soporte",
+            "03-01-incidentes-github",
+            "11-01-troubleshooting",
+            "11-04-incident-response"
+          ]
+        }
+      }
+    },
+    {
+      "id": "16-03-articulo-base-conocimiento",
+      "section": "16",
+      "title": {
+        "es": "16.3 — Artículo de base de conocimiento desde ticket resuelto",
+        "en": "16.3 — Knowledge base article from a resolved ticket"
+      },
+      "contract": {
+        "es": {
+          "type": "documentación",
+          "expected_risk": "bajo — el prompt solo redacta un borrador de texto para revisión humana; no publica ni modifica el sistema de KB en producción. El riesgo real (una solución incorrecta publicada y aplicada por otro agente de soporte) queda contenido por el paso de revisión humana obligatorio antes de publicar",
+          "required_inputs": "ticket resuelto con síntoma reportado, causa raíz confirmada (propia o proveniente del diagnóstico de `16-02`), pasos de solución aplicada y validada, sistema/producto/versión afectado, audiencia destino del artículo",
+          "allowed_tools": "lectura del ticket resuelto y de artículos de KB existentes relacionados (para evitar duplicados y mantener convenciones de estilo); no accede a sistemas en producción, no publica ni modifica el sistema de KB — la salida es un documento de texto en borrador",
+          "permitted_autonomy": "A1 — Proponer (redactar el artículo de KB como borrador); nunca A2/A3 — publicar el artículo en el sistema de KB de producción requiere revisión y aprobación humana explícita fuera de este prompt",
+          "stop_criteria": "detener y escalar si el ticket no tiene causa raíz confirmada (solo síntoma resuelto sin diagnóstico) — no inventar una causa plausible; si la solución aplicada no fue validada como efectiva (ticket cerrado sin confirmación del usuario o de QA), marcar el artículo completo como borrador de baja confianza en vez de presentarlo como listo para publicar",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "el artículo cita el ticket de origen (id/link), distingue explícitamente causa raíz confirmada de causa hipotética, e incluye siempre la sección \"cuándo NO aplica esta solución\"",
+          "recommended_next_prompt": "`16-02-diagnostico-respuesta-incidente-soporte` como fuente típica de este artículo cuando el ticket resuelto proviene de un diagnóstico previo; el artículo generado aquí requiere revisión y publicación humana en el sistema de KB antes de considerarse activo",
+          "type_tags": [
+            "documentation"
+          ],
+          "expected_risk_tags": [
+            "low"
+          ],
+          "permitted_autonomy_tags": [
+            "A1",
+            "A2",
+            "A3"
+          ],
+          "recommended_next_prompt_ids": [
+            "16-02-diagnostico-respuesta-incidente-soporte"
+          ]
+        },
+        "en": {
+          "type": "documentation",
+          "expected_risk": "low — the prompt only drafts text for human review; it does not publish or modify the production KB system. The real risk (an incorrect fix published and applied by another support agent) stays contained by the mandatory human review step before publishing",
+          "required_inputs": "resolved ticket with reported symptom, confirmed root cause (own or coming from the `16-02` diagnosis), applied and validated solution steps, affected system/product/version, target audience for the article",
+          "allowed_tools": "reading the resolved ticket and related existing KB articles (to avoid duplicates and keep style conventions); no access to production systems, no publishing or modifying the KB system — the output is a draft text document",
+          "permitted_autonomy": "A1 — Propose (draft the KB article); never A2/A3 — publishing the article in the production KB system requires explicit human review and approval outside this prompt",
+          "stop_criteria": "stop and escalate if the ticket has no confirmed root cause (only a resolved symptom without diagnosis) — never invent a plausible-looking cause; if the applied solution was not validated as effective (ticket closed without user or QA confirmation), mark the whole article as a low-confidence draft instead of presenting it as ready to publish",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "the article cites the source ticket (id/link), explicitly distinguishes confirmed root cause from hypothetical cause, and always includes the \"when this solution does NOT apply\" section",
+          "recommended_next_prompt": "`16-02-diagnostico-respuesta-incidente-soporte` as the typical source for this article when the resolved ticket comes from a prior diagnosis; the article produced here requires human review and publication in the KB system before it can be considered active",
+          "type_tags": [
+            "documentation"
+          ],
+          "expected_risk_tags": [
+            "low"
+          ],
+          "permitted_autonomy_tags": [
+            "A1",
+            "A2",
+            "A3"
+          ],
+          "recommended_next_prompt_ids": [
+            "16-02-diagnostico-respuesta-incidente-soporte"
+          ]
+        }
+      }
+    },
+    {
+      "id": "16-04-matriz-escalamiento-sla",
+      "section": "16",
+      "title": {
+        "es": "16.4 — Matriz de escalamiento y SLA por severidad",
+        "en": "16.4 — Severity-Based Escalation and SLA Matrix"
+      },
+      "contract": {
+        "es": {
+          "type": "diseño de política/proceso",
+          "expected_risk": "medio — una matriz de SLA mal calibrada genera expectativas incumplibles frente a clientes/usuarios y compromete al equipo de soporte con plazos que no puede sostener con su capacidad real, pero el prompt en sí solo redacta una propuesta de política, nunca la publica ni la aplica a un ticket real",
+          "required_inputs": "catálogo de tipos de incidentes/tickets conocidos (si existe), capacidad real del equipo de soporte (headcount, horario de cobertura, existencia de on-call), SLAs contractuales ya vigentes con clientes (si aplica), definiciones de severidad usadas actualmente (aunque sean informales), canales de escalamiento disponibles",
+          "allowed_tools": "lectura de documentación de soporte existente, contratos/SLAs con clientes, organigrama del equipo y esquemas de guardia (on-call); la salida es un documento de política en texto — no configura herramientas de alertas/paging ni modifica el sistema de ticketing",
+          "permitted_autonomy": "A0 — Analizar (relevar SLAs y capacidad existentes); A1 — Proponer (la matriz de severidad, SLA y cadena de escalamiento); nunca A2/A3 — la matriz requiere aprobación humana explícita antes de adoptarse como política oficial de soporte",
+          "stop_criteria": "detener y escalar a un humano si no hay información real de capacidad del equipo (headcount, horario de cobertura) — no fabricar una matriz de SLA sin verificar que el equipo puede sostenerla; señalar como propuesta de baja confianza si existen SLAs contractuales con clientes que no pudieron confirmarse",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada nivel de severidad incluye un ejemplo concreto del tipo de incidente que lo dispara, el SLA de primera respuesta y de resolución correspondiente, y el punto exacto de la cadena de escalamiento (a quién y después de cuánto tiempo sin cumplirse el SLA) queda explícito por nivel",
+          "recommended_next_prompt": "`16-01-triage-tickets-soporte` para aplicar esta matriz clasificando tickets entrantes en la operación día a día",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1",
+            "A2",
+            "A3"
+          ],
+          "recommended_next_prompt_ids": [
+            "16-01-triage-tickets-soporte"
+          ]
+        },
+        "en": {
+          "type": "policy/process design",
+          "expected_risk": "medium — a miscalibrated SLA matrix creates unmeetable expectations for clients/users and commits the support team to deadlines it cannot sustain with its real capacity, but the prompt itself only drafts a policy proposal, it never publishes it or applies it to a real ticket",
+          "required_inputs": "catalog of known incident/ticket types (if available), the support team's real capacity (headcount, coverage hours, existence of on-call), existing contractual SLAs with clients (if any), severity definitions currently in use (even if informal), available escalation channels",
+          "allowed_tools": "reading existing support documentation, client contracts/SLAs, the team's org chart and on-call schemes; the output is a text policy document — it does not configure alerting/paging tools or modify the ticketing system",
+          "permitted_autonomy": "A0 — Analyze (survey existing SLAs and capacity); A1 — Propose (the severity matrix, SLAs, and escalation chain); never A2/A3 — the matrix requires explicit human approval before being adopted as official support policy",
+          "stop_criteria": "stop and escalate to a human if no real support team capacity data is available (headcount, coverage hours) — never fabricate an SLA matrix without verifying the team can sustain it; flag the proposal as low-confidence if contractual SLAs with clients exist but could not be confirmed",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "each severity level includes a concrete example of the incident type that triggers it, its corresponding first-response and resolution SLA, and the exact point in the escalation chain (who, and after how long without meeting the SLA) is explicit per level",
+          "recommended_next_prompt": "`16-01-triage-tickets-soporte` to apply this matrix by classifying incoming tickets in day-to-day operation",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1",
+            "A2",
+            "A3"
+          ],
+          "recommended_next_prompt_ids": [
+            "16-01-triage-tickets-soporte"
+          ]
+        }
+      }
+    },
+    {
+      "id": "16-05-analisis-tendencias-tickets",
+      "section": "16",
+      "title": {
+        "es": "16.5 — Análisis de tendencias y causas raíz agregadas de tickets",
+        "en": "16.5 — Aggregate Trend and Root Cause Analysis of Tickets"
+      },
+      "contract": {
+        "es": {
+          "type": "análisis",
+          "expected_risk": "bajo — el prompt solo analiza datos históricos de tickets ya cerrados y produce recomendaciones; no modifica tickets, no contacta clientes ni ejecuta cambios de producto o código",
+          "required_inputs": "export o acceso de lectura al lote de tickets resueltos del período a analizar (idealmente con categoría, resumen, resolución y tiempo de resolución de cada uno), rango de fechas o período a cubrir, taxonomía de categorías existente si el equipo ya usa una",
+          "allowed_tools": "lectura del sistema de tickets/helpdesk, exports o dashboards de soporte; la salida es un documento de análisis y recomendación de texto — no crea, edita ni cierra tickets, no crea issues de ingeniería directamente",
+          "permitted_autonomy": "A0 — Analizar (lectura y categorización agregada del lote); A1 — Proponer (recomendar iniciativas de ingeniería o documentación); nunca A2/A3 — este prompt no crea issues, no despliega documentación ni ejecuta cambios de producto",
+          "stop_criteria": "detener y escalar si el lote de tickets disponible es demasiado pequeño o no tiene campos mínimos (categoría, resumen, resolución) para sustentar un patrón agregado — no inventar categorías ni causas raíz sin evidencia de al menos varios tickets repetidos; señalar como hallazgo de baja confianza cualquier patrón basado en menos de [UMBRAL MÍNIMO] tickets",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada categoría recurrente cita el conteo real de tickets que la componen y el rango de fechas del lote analizado; cada causa raíz agregada referencia al menos los identificadores o resúmenes de los tickets que la sustentan (no una única anécdota); cada recomendación de iniciativa distingue explícitamente entre bug recurrente, gap de documentación y gap de producto",
+          "recommended_next_prompt": "`02-04-triage-backlog-github` si la recomendación es crear uno o más issues de ingeniería para un patrón identificado como bug recurrente o gap de producto; `10-01-documentacion-tecnica` si la recomendación es cerrar un gap de documentación identificado como causa raíz agregada",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "low"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1",
+            "A2",
+            "A3"
+          ],
+          "recommended_next_prompt_ids": [
+            "02-04-triage-backlog-github",
+            "10-01-documentacion-tecnica"
+          ]
+        },
+        "en": {
+          "type": "analysis",
+          "expected_risk": "low — the prompt only analyzes historical data from already-closed tickets and produces recommendations; it does not modify tickets, contact customers, or execute product or code changes",
+          "required_inputs": "export or read access to the batch of resolved tickets for the period to analyze (ideally with category, summary, resolution, and resolution time for each), the date range or period to cover, existing category taxonomy if the team already uses one",
+          "allowed_tools": "reading the ticketing/helpdesk system, support exports or dashboards; the output is a text analysis and recommendation document — it does not create, edit, or close tickets, and does not directly create engineering issues",
+          "permitted_autonomy": "A0 — Analyze (reading and aggregate categorization of the batch); A1 — Propose (recommend engineering or documentation initiatives); never A2/A3 — this prompt does not create issues, deploy documentation, or execute product changes",
+          "stop_criteria": "stop and escalate if the available ticket batch is too small or lacks the minimum fields (category, summary, resolution) to support an aggregate pattern — never invent categories or root causes without evidence from at least several repeated tickets; flag as low-confidence any pattern based on fewer than [MINIMUM THRESHOLD] tickets",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "each recurring category cites the real count of tickets that compose it and the date range of the batch analyzed; each aggregate root cause references at least the identifiers or summaries of the tickets that support it (not a single anecdote); each initiative recommendation explicitly distinguishes between recurring bug, documentation gap, and product gap",
+          "recommended_next_prompt": "`02-04-triage-backlog-github` if the recommendation is to create one or more engineering issues for a pattern identified as a recurring bug or product gap; `10-01-documentacion-tecnica` if the recommendation is to close a documentation gap identified as an aggregate root cause",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "low"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1",
+            "A2",
+            "A3"
+          ],
+          "recommended_next_prompt_ids": [
+            "02-04-triage-backlog-github",
+            "10-01-documentacion-tecnica"
+          ]
+        }
+      }
+    },
+    {
+      "id": "17-01-onboarding-tecnico",
+      "section": "17",
+      "title": {
+        "es": "17.1 — Checklist de onboarding técnico",
+        "en": "17.1 — Technical Onboarding Checklist"
+      },
+      "contract": {
+        "es": {
+          "type": "documentación/planificación",
+          "expected_risk": "medio — un checklist de accesos incompleto retrasa la productividad del nuevo integrante; un checklist excesivo (accesos de más, permisos elevados sin justificación) tiene implicaciones de seguridad, aunque el prompt en sí no otorga ningún acceso real",
+          "required_inputs": "rol y seniority del nuevo integrante, stack tecnológico y herramientas del equipo (repos, proveedor cloud, herramientas de CI/CD, gestor de secretos), nivel de acceso requerido por el rol, fecha de inicio, mentor/buddy asignado si existe, documentación interna disponible (wiki, runbooks, guías de arquitectura)",
+          "allowed_tools": "lectura de documentación interna existente sobre el stack, procesos y estructura de accesos del equipo; la salida es un checklist de texto — no crea cuentas, no otorga permisos IAM, no configura herramientas; la ejecución del aprovisionamiento de accesos queda delegada a quien tiene permisos IAM, no a este prompt",
+          "permitted_autonomy": "A0 — Analizar (relevar rol, stack y accesos existentes del equipo); A1 — Proponer (el checklist de accesos, herramientas y documentación a revisar); nunca A2/A3 — este prompt no crea cuentas, no otorga permisos ni ejecuta cambios en sistemas de identidad o acceso",
+          "stop_criteria": "detener y pedir clarificación si no se especifica el rol o el stack del equipo — no fabricar un checklist genérico sin contexto; escalar a quien tenga permisos IAM antes de que se otorgue cualquier acceso listado; si falta información sobre el gestor de secretos o la política de acceso mínimo del equipo, señalarlo explícitamente en vez de asumirla",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada ítem del checklist indica el sistema o herramienta específica, el responsable/dueño que debe otorgarlo o configurarlo, y si es bloqueante para el día 1 o esperable durante la semana 1",
+          "recommended_next_prompt": "`17-02-offboarding-tecnico` como su contraparte simétrica, para tener ambos flujos documentados de forma consistente",
+          "type_tags": [
+            "documentation"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1",
+            "A2",
+            "A3"
+          ],
+          "recommended_next_prompt_ids": [
+            "17-02-offboarding-tecnico"
+          ]
+        },
+        "en": {
+          "type": "documentation/planning",
+          "expected_risk": "medium — an incomplete access checklist delays the new member's productivity; an excessive checklist (extra access, elevated permissions without justification) carries security implications, even though the prompt itself never grants any real access",
+          "required_inputs": "role and seniority of the new team member, team tech stack and tooling (repos, cloud provider, CI/CD tooling, secrets manager), access level required by the role, start date, assigned mentor/buddy if any, available internal documentation (wiki, runbooks, architecture guides)",
+          "allowed_tools": "reading existing internal documentation about the team's stack, processes, and access structure; the output is a text checklist — it does not create accounts, does not grant IAM permissions, does not configure tooling; execution of the actual access provisioning is delegated to whoever holds IAM permissions, not to this prompt",
+          "permitted_autonomy": "A0 — Analyze (survey the role, stack, and the team's existing access setup); A1 — Propose (the checklist of access, tools, and documentation to review); never A2/A3 — this prompt does not create accounts, grant permissions, or make changes to identity/access systems",
+          "stop_criteria": "stop and ask for clarification if the role or the team's stack is not specified — never fabricate a generic checklist without context; escalate to whoever holds IAM permissions before any listed access is granted; if information about the team's secrets manager or least-privilege policy is missing, state this explicitly instead of assuming it",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "each checklist item states the specific system or tool, the owner responsible for granting or configuring it, and whether it is blocking for day 1 or expected during week 1",
+          "recommended_next_prompt": "`17-02-offboarding-tecnico` as its symmetric counterpart, so both flows are documented consistently",
+          "type_tags": [
+            "documentation"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1",
+            "A2",
+            "A3"
+          ],
+          "recommended_next_prompt_ids": [
+            "17-02-offboarding-tecnico"
+          ]
+        }
+      }
+    },
+    {
+      "id": "17-02-offboarding-tecnico",
+      "section": "17",
+      "title": {
+        "es": "17.2 — Checklist de offboarding técnico",
+        "en": "17.2 — Technical Offboarding Checklist"
+      },
+      "contract": {
+        "es": {
+          "type": "seguridad",
+          "expected_risk": "alto — un offboarding técnico incompleto deja accesos activos, tokens vigentes o service accounts huérfanos a nombre de alguien que ya no debería tenerlos, lo cual es una vía directa de fuga de datos o acceso no autorizado; el riesgo es alto aunque el prompt en sí solo genera el checklist, porque el costo de omitir un ítem lo paga la organización, no el prompt",
+          "required_inputs": "rol de la persona que deja el equipo y accesos/sistemas conocidos a los que tenía acceso, servicios/repositorios/rotaciones de on-call de los que es owner o mantenedor, fecha de salida confirmada, lista de sistemas de la organización que gestionan accesos (repos, cloud, gestor de secretos, SSO, CI/CD)",
+          "allowed_tools": "lectura de inventarios de accesos, listas de repositorios y ownership, documentación existente y registros de on-call; la salida es un checklist de texto — no ejecuta revocaciones, no elimina llaves ni deshabilita cuentas en ningún sistema",
+          "permitted_autonomy": "A1 — Proponer (genera el checklist de revocación, transferencia y verificación); nunca A2/A3 — la revocación real de accesos requiere ejecución humana con permisos de administración sobre cada sistema (IAM, SSO, gestor de secretos, CI/CD), y debe completarse antes o el mismo día de la fecha de salida",
+          "stop_criteria": "detener y escalar si no se conoce la lista completa de accesos o sistemas a los que la persona tenía acceso — señalarlo explícitamente como riesgo residual en vez de asumir una lista completa; detener si no hay fecha de salida confirmada y usar ese hueco como bloqueante para fijar plazos concretos en el checklist",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada ítem del checklist indica el sistema o acceso específico afectado, el responsable de ejecutarlo (rol o persona, no \"el equipo\"), el plazo (antes/en/después de la fecha de salida) y si depende de otro ítem previo (ej: reasignar ownership antes de revocar el acceso del owner saliente)",
+          "recommended_next_prompt": "`17-01-onboarding-tecnico` — su contraparte simétrica, para la persona que asuma el ownership o la rotación de on-call reasignada",
+          "type_tags": [
+            "security"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A1",
+            "A2",
+            "A3"
+          ],
+          "recommended_next_prompt_ids": [
+            "17-01-onboarding-tecnico"
+          ]
+        },
+        "en": {
+          "type": "security",
+          "expected_risk": "high — an incomplete technical offboarding leaves active access, valid tokens, or orphaned service accounts under the name of someone who should no longer have them, which is a direct path to data leakage or unauthorized access; the risk is high even though the prompt itself only generates the checklist, because the cost of missing an item is paid by the organization, not by the prompt",
+          "required_inputs": "role of the person leaving the team and the access/systems known to be theirs, services/repositories/on-call rotations they own or maintain, confirmed departure date, list of the organization's access-managing systems (repos, cloud, secrets manager, SSO, CI/CD)",
+          "allowed_tools": "reading access inventories, repository and ownership lists, existing documentation, and on-call records; the output is a text checklist — it does not execute revocations, does not delete keys, and does not disable accounts on any system",
+          "permitted_autonomy": "A1 — Propose (generates the revocation, transfer, and verification checklist); never A2/A3 — actual access revocation requires human execution with administrative permissions on each system (IAM, SSO, secrets manager, CI/CD), and must be completed on or before the departure date",
+          "stop_criteria": "stop and escalate if the complete list of access or systems the person had access to is not known — explicitly flag it as a residual risk instead of assuming the list is complete; stop if there is no confirmed departure date and use that gap as a blocker to set concrete deadlines in the checklist",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "each checklist item states the specific system or access affected, the responsible party for executing it (a role or person, not \"the team\"), the deadline (before/on/after the departure date), and whether it depends on a prior item (e.g., reassigning ownership before revoking the departing owner's access)",
+          "recommended_next_prompt": "`17-01-onboarding-tecnico` — its symmetric counterpart, for the person taking over the reassigned ownership or on-call rotation",
+          "type_tags": [
+            "security"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A1",
+            "A2",
+            "A3"
+          ],
+          "recommended_next_prompt_ids": [
+            "17-01-onboarding-tecnico"
+          ]
+        }
+      }
+    },
+    {
+      "id": "17-03-evaluacion-herramienta-licencia",
+      "section": "17",
+      "title": {
+        "es": "17.3 — Evaluación y decisión de adopción de herramienta/licencia",
+        "en": "17.3 — Tool/License Adoption Evaluation and Decision"
+      },
+      "contract": {
+        "es": {
+          "type": "análisis/decisión — la ejecución de la compra, contratación o firma del contrato con el proveedor queda delegada a quien aprueba presupuesto; este prompt nunca ejecuta una adquisición",
+          "expected_risk": "medio — una ficha de evaluación mal hecha puede llevar a gasto innecesario, a un vendor lock-in no anticipado, o a exponer datos sensibles a un proveedor sin el debido análisis de compliance, pero el prompt en sí solo produce un documento de análisis y recomendación, nunca ejecuta la compra",
+          "required_inputs": "nombre de la herramienta/servicio candidato, problema o necesidad que resuelve, alternativas conocidas (o indicar que no se han identificado aún), presupuesto disponible si aplica, modelo de licenciamiento propuesto, tipo de datos que la herramienta tocará",
+          "allowed_tools": "lectura de documentación pública del proveedor, comparación de alternativas y cálculo de costo total estimado a partir de datos provistos o verificables; no ejecuta compras, no firma contratos, no ingresa datos reales de la empresa en la plataforma del proveedor para pruebas",
+          "permitted_autonomy": "A1 — Proponer (ficha de evaluación con recomendación de adoptar/rechazar/evaluar más); nunca A2/A3 — este prompt no aprueba presupuesto ni contrata al proveedor",
+          "stop_criteria": "detener y escalar si no hay ningún precio de licencia verificable disponible — no fabricar cifras plausibles; detener si no se identificó ninguna alternativa (incluida la opción de no adoptar) para comparar",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada costo citado indica su fuente (documentación del proveedor, cotización, o \"estimado\" si no hay dato verificado), se listó al menos una alternativa además de \"no adoptar\", y los riesgos de vendor lock-in, seguridad/compliance y dependencia de proveedor único quedan explícitos con su severidad",
+          "recommended_next_prompt": "`11-08-finops-cloud-cost-audit` si la herramienta adoptada implica costo cloud recurrente que deba auditarse periódicamente una vez en producción",
+          "type_tags": [
+            "analysis",
+            "execution"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A1",
+            "A2",
+            "A3"
+          ],
+          "recommended_next_prompt_ids": [
+            "11-08-finops-cloud-cost-audit"
+          ]
+        },
+        "en": {
+          "type": "analysis/decision — execution of the purchase, contracting, or signing of the vendor agreement is delegated to whoever approves budget; this prompt never executes an acquisition",
+          "expected_risk": "medium — a poorly done evaluation sheet can lead to unnecessary spend, unanticipated vendor lock-in, or exposing sensitive data to a vendor without due compliance analysis, but the prompt itself only produces an analysis and recommendation document, never executes the purchase",
+          "required_inputs": "name of the candidate tool/service, problem or need it solves, known alternatives (or a statement that none have been identified yet), available budget if applicable, proposed licensing model, type of data the tool will touch",
+          "allowed_tools": "reading the vendor's public documentation, comparing alternatives, and calculating estimated total cost of ownership from provided or verifiable data; it does not execute purchases, sign contracts, or enter real company data into the vendor's platform for testing",
+          "permitted_autonomy": "A1 — Propose (evaluation sheet with an adopt/reject/evaluate-further recommendation); never A2/A3 — this prompt does not approve budget or contract the vendor",
+          "stop_criteria": "stop and escalate if no verifiable license price is available — never fabricate plausible-looking figures; stop if no alternative (including the option of not adopting) has been identified for comparison",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every cost cited states its source (vendor documentation, quote, or \"estimated\" if no verified figure exists), at least one alternative besides \"do not adopt\" was listed, and the risks of vendor lock-in, security/compliance, and single-vendor dependency are made explicit with their severity",
+          "recommended_next_prompt": "`11-08-finops-cloud-cost-audit` if the adopted tool implies recurring cloud cost that should be periodically audited once in production",
+          "type_tags": [
+            "analysis",
+            "execution"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A1",
+            "A2",
+            "A3"
+          ],
+          "recommended_next_prompt_ids": [
+            "11-08-finops-cloud-cost-audit"
+          ]
+        }
+      }
+    },
+    {
+      "id": "17-04-reporte-capacidad-equipo",
+      "section": "17",
+      "title": {
+        "es": "17.4 — Reporte de capacidad y carga del equipo de ingeniería",
+        "en": "17.4 — Engineering Team Capacity and Workload Report"
+      },
+      "contract": {
+        "es": {
+          "type": "análisis/planificación",
+          "expected_risk": "medio — un reporte de capacidad equivocado puede llevar a comprometer fechas inalcanzables (sobrecarga del equipo, burnout) o a subutilizar personas disponibles, pero el prompt en sí solo analiza y recomienda; la decisión de redistribuir trabajo, replanificar o contratar la toma un humano con autoridad sobre el equipo",
+          "required_inputs": "composición actual del equipo (roles, seniority, especialidades, % de disponibilidad semanal), ausencias planeadas por persona y periodo (vacaciones, licencias, capacitación), backlog o roadmap comprometido con estimaciones de esfuerzo por ítem, periodo a evaluar",
+          "allowed_tools": "lectura de gestor de tareas/backlog, calendario de ausencias, roadmap y estimaciones existentes; la salida es un documento de reporte y recomendación de texto — no reasigna tareas, no modifica el roadmap, no crea ni cierra vacantes ni ejecuta ningún cambio de personal",
+          "permitted_autonomy": "A0 — Analizar (lectura de composición del equipo, ausencias y backlog comprometido); A1 — Proponer (recomendaciones de redistribución, replanificación o contratación); nunca A2/A3 — este prompt no reasigna tareas ni ejecuta decisiones de personal, eso queda delegado a decisión humana del lead o manager responsable",
+          "stop_criteria": "detener y escalar si no hay backlog/roadmap comprometido con estimaciones de esfuerzo — no inventar estimaciones plausibles; detener si la composición del equipo o las ausencias planeadas no están confirmadas y señalarlo como riesgo residual en vez de asumir disponibilidad completa",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada fila de carga cita la fuente real de la estimación (ítem de backlog, ticket, o \"estimado\" si no hay ítem formal), cada riesgo de bus factor identifica la persona única y la especialidad o sistema afectado, y cada recomendación indica si aplica al corto plazo (redistribuir dentro del periodo) o al mediano plazo (contratar, entrenar respaldo)",
+          "recommended_next_prompt": "`11-10-capacity-planning` — su contraparte de infraestructura/cómputo, útil como complemento cuando la sobrecarga del equipo coincide con un roadmap de crecimiento técnico (no reemplaza este reporte, evalúa un dominio distinto); `05-01-plan-implementacion` para replanificar el alcance o las fechas de los ítems comprometidos si el reporte revela sobrecarga",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1",
+            "A2",
+            "A3"
+          ],
+          "recommended_next_prompt_ids": [
+            "11-10-capacity-planning",
+            "05-01-plan-implementacion"
+          ]
+        },
+        "en": {
+          "type": "analysis/planning",
+          "expected_risk": "medium — a wrong capacity report can lead to committing to unreachable dates (team overload, burnout) or underutilizing available people, but the prompt itself only analyzes and recommends; the decision to redistribute work, replan, or hire is made by a human with authority over the team",
+          "required_inputs": "current team composition (roles, seniority, specialties, weekly availability %), planned absences per person and period (vacation, leave, training), committed backlog or roadmap with effort estimates per item, period to evaluate",
+          "allowed_tools": "reading task manager/backlog, absence calendar, roadmap and existing estimates; the output is a text report and recommendation document — it does not reassign tasks, does not modify the roadmap, does not open or close positions, and does not execute any personnel change",
+          "permitted_autonomy": "A0 — Analyze (reading team composition, absences, and committed backlog); A1 — Propose (redistribution, replanning, or hiring recommendations); never A2/A3 — this prompt does not reassign tasks or execute personnel decisions, that is delegated to the human lead or manager responsible",
+          "stop_criteria": "stop and escalate if there is no committed backlog/roadmap with effort estimates — never invent plausible-looking estimates; stop if team composition or planned absences are not confirmed and flag it as a residual risk instead of assuming full availability",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "each workload row cites the real source of the estimate (backlog item, ticket, or \"estimated\" if there is no formal item), each bus-factor risk identifies the single person and the affected specialty or system, and each recommendation states whether it applies short-term (redistribute within the period) or medium-term (hire, train a backup)",
+          "recommended_next_prompt": "`11-10-capacity-planning` — its infrastructure/compute counterpart, useful as a complement when team overload coincides with a technical growth roadmap (it does not replace this report, it evaluates a different domain); `05-01-plan-implementacion` to replan the scope or dates of committed items if the report reveals overload",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1",
+            "A2",
+            "A3"
+          ],
+          "recommended_next_prompt_ids": [
+            "11-10-capacity-planning",
+            "05-01-plan-implementacion"
+          ]
+        }
+      }
+    },
+    {
+      "id": "17-05-auditoria-renovacion-vendors",
+      "section": "17",
+      "title": {
+        "es": "17.5 — Auditoría de renovación de vendors y contratos tecnológicos",
+        "en": "17.5 — Vendor and Technology Contract Renewal Audit"
+      },
+      "contract": {
+        "es": {
+          "type": "análisis/auditoría — la ejecución de la renovación, renegociación, migración o cancelación queda delegada a quien administra el contrato (procurement, finanzas o el responsable técnico del vendor), nunca a este prompt",
+          "expected_risk": "medio — una recomendación de renovación equivocada puede implicar sobre-pago sostenido, lock-in innecesario o migrar sin justificación suficiente, con impacto de costo y continuidad operativa; el prompt en sí solo analiza y recomienda, nunca ejecuta la renovación ni negocia con el vendor",
+          "required_inputs": "contrato o términos de licencia vigentes (costo, volumen/asientos contratados, fecha de renovación, cláusulas de cancelación o penalización), datos reales de uso (asientos activos, volumen consumido, frecuencia de uso por equipo/feature), alternativas de mercado conocidas o a investigar, historial de incidentes de soporte o seguridad del vendor si existe",
+          "allowed_tools": "lectura de contratos, facturas, dashboards de uso/analytics del propio vendor, documentación pública de alternativas de mercado; investigación de mercado (búsqueda web) para comparar alternativas vigentes; la salida es un documento de auditoría y recomendación de texto — no ejecuta renovaciones, cancelaciones, migraciones ni negociaciones con el vendor",
+          "permitted_autonomy": "A0 — Analizar (uso real vs. contratado, comparación de alternativas); A1 — Proponer (recomendación de renovar/renegociar/migrar/cancelar); nunca A2/A3 — este prompt no renueva, cancela, firma ni negocia contratos, ni ejecuta la migración a una alternativa",
+          "stop_criteria": "detener y escalar si no hay datos reales de uso disponibles para calcular la relación uso vs. contratado — no fabricar cifras de utilización plausibles; marcar como recomendación de baja confianza si la comparación con alternativas de mercado se basa en información desactualizada o no verificada; escalar como urgente si la fecha de renovación está a menos del lead time mínimo necesario para negociar o migrar",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "la cifra de uso real cita su fuente (dashboard del vendor, reporte de accesos, métricas internas) y su fecha de corte; el costo actual y las condiciones de renovación citan el contrato o la factura correspondiente; cada alternativa de mercado mencionada indica su fuente y fecha de consulta",
+          "recommended_next_prompt": "`17-03-evaluacion-herramienta-licencia` si la recomendación es migrar a una alternativa — se re-evalúa esa alternativa como si fuera una adopción nueva, con su propio análisis de encaje",
+          "type_tags": [
+            "analysis",
+            "execution"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1",
+            "A2",
+            "A3"
+          ],
+          "recommended_next_prompt_ids": [
+            "17-03-evaluacion-herramienta-licencia"
+          ]
+        },
+        "en": {
+          "type": "analysis/audit — execution of the renewal, renegotiation, migration, or cancellation is delegated to whoever administers the contract (procurement, finance, or the technical owner of the vendor relationship), never to this prompt",
+          "expected_risk": "medium — a wrong renewal recommendation can mean sustained overpayment, unnecessary lock-in, or migrating without sufficient justification, with cost and operational-continuity impact; the prompt itself only analyzes and recommends, it never executes the renewal or negotiates with the vendor",
+          "required_inputs": "current contract or license terms (cost, contracted volume/seats, renewal date, cancellation or penalty clauses), real usage data (active seats, consumed volume, usage frequency by team/feature), known or to-be-researched market alternatives, vendor support or security incident history if available",
+          "allowed_tools": "reading contracts, invoices, the vendor's own usage/analytics dashboards, public documentation of market alternatives; market research (web search) to compare current alternatives; the output is a text audit and recommendation document — it does not execute renewals, cancellations, migrations, or negotiations with the vendor",
+          "permitted_autonomy": "A0 — Analyze (real usage vs. contracted, comparison of alternatives); A1 — Propose (recommendation to renew/renegotiate/migrate/cancel); never A2/A3 — this prompt does not renew, cancel, sign, or negotiate contracts, nor execute migration to an alternative",
+          "stop_criteria": "stop and escalate if no real usage data is available to calculate the usage-vs-contracted ratio — never fabricate plausible-looking utilization figures; flag as a low-confidence recommendation if the comparison with market alternatives relies on outdated or unverified information; escalate as urgent if the renewal date is within less than the minimum lead time needed to negotiate or migrate",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "the real usage figure cites its source (vendor dashboard, access report, internal metrics) and its as-of date; current cost and renewal terms cite the corresponding contract or invoice; each market alternative mentioned states its source and consultation date",
+          "recommended_next_prompt": "`17-03-evaluacion-herramienta-licencia` if the recommendation is to migrate to an alternative — that alternative is re-evaluated as if it were a new adoption, with its own fit analysis",
+          "type_tags": [
+            "analysis",
+            "execution"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1",
+            "A2",
+            "A3"
+          ],
+          "recommended_next_prompt_ids": [
+            "17-03-evaluacion-herramienta-licencia"
+          ]
+        }
+      }
     }
   ]
 }

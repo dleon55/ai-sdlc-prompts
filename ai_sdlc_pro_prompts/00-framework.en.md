@@ -167,6 +167,22 @@ Use the root cause analysis prompt and adapt it to:
 | `15-02-casos-prueba-manuales.md` | 15.2 | Design of manual and functional test cases |
 | `15-03-analisis-defectos-negocio.md` | 15.3 | Defect reporting and business impact analysis |
 
+**── SUPPORT AND HELP DESK (16)**
+
+| `16-01-triage-tickets-soporte.md` | 16.1 | Support ticket triage and classification |
+| `16-02-diagnostico-respuesta-incidente-soporte.md` | 16.2 | Diagnosis and first response to a support incident |
+| `16-03-articulo-base-conocimiento.md` | 16.3 | Knowledge base article from a resolved ticket |
+| `16-04-matriz-escalamiento-sla.md` | 16.4 | Escalation matrix and SLA by severity |
+| `16-05-analisis-tendencias-tickets.md` | 16.5 | Trend analysis and aggregated root causes across tickets |
+
+**── ENGINEERING BACK OFFICE (17)**
+
+| `17-01-onboarding-tecnico.md` | 17.1 | Technical onboarding checklist |
+| `17-02-offboarding-tecnico.md` | 17.2 | Technical offboarding checklist |
+| `17-03-evaluacion-herramienta-licencia.md` | 17.3 | Tool/license adoption evaluation and decision |
+| `17-04-reporte-capacidad-equipo.md` | 17.4 | Engineering team capacity and workload report |
+| `17-05-auditoria-renovacion-vendors.md` | 17.5 | Vendor and technology contract renewal audit |
+
 ---
 
 ## Framework principles
