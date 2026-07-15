@@ -170,6 +170,22 @@ Usa el prompt de análisis de causa raíz y adáptalo a:
 | `15-02-casos-prueba-manuales.md` | 15.2 | Diseño de casos de prueba manuales y funcionales |
 | `15-03-analisis-defectos-negocio.md` | 15.3 | Reporte y análisis de defectos con impacto en negocio |
 
+**── SOPORTE Y MESA DE AYUDA (16)**
+
+| `16-01-triage-tickets-soporte.md` | 16.1 | Triage y clasificación de tickets de soporte |
+| `16-02-diagnostico-respuesta-incidente-soporte.md` | 16.2 | Diagnóstico y primera respuesta a incidente de soporte |
+| `16-03-articulo-base-conocimiento.md` | 16.3 | Artículo de base de conocimiento desde ticket resuelto |
+| `16-04-matriz-escalamiento-sla.md` | 16.4 | Matriz de escalamiento y SLA por severidad |
+| `16-05-analisis-tendencias-tickets.md` | 16.5 | Análisis de tendencias y causas raíz agregadas de tickets |
+
+**── BACK OFFICE DE INGENIERÍA (17)**
+
+| `17-01-onboarding-tecnico.md` | 17.1 | Checklist de onboarding técnico |
+| `17-02-offboarding-tecnico.md` | 17.2 | Checklist de offboarding técnico |
+| `17-03-evaluacion-herramienta-licencia.md` | 17.3 | Evaluación y decisión de adopción de herramienta/licencia |
+| `17-04-reporte-capacidad-equipo.md` | 17.4 | Reporte de capacidad y carga del equipo de ingeniería |
+| `17-05-auditoria-renovacion-vendors.md` | 17.5 | Auditoría de renovación de vendors y contratos tecnológicos |
+
 ---
 
 ## Principios del framework

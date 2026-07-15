@@ -196,6 +196,8 @@ SECTION_LABELS_I18N = {
         '13': 'Seguridad',
         '14': 'Monorepo',
         '15': 'Negocio & QA Funcional',
+        '16': 'Soporte y Mesa de Ayuda',
+        '17': 'Back Office de Ingeniería',
     },
     'en': {
         '00': 'Framework',
@@ -214,6 +216,8 @@ SECTION_LABELS_I18N = {
         '13': 'Security',
         '14': 'Monorepo',
         '15': 'Business & Functional QA',
+        '16': 'Support & Help Desk',
+        '17': 'Engineering Back Office',
     }
 }
 

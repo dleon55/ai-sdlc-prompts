@@ -9,7 +9,10 @@ Extrae magic numbers del código de pruebas para mantenibilidad.
 # riesgo/autonomía en 152 cards, chips de filtro por faceta, CONTRACT_TAGS
 # embebido, y un paso nuevo de onboarding bilingüe) -- crecimiento de
 # funcionalidad real, no bloat; con margen para crecimiento futuro moderado.
-MAX_INDEX_SIZE_KB = 1200
+# Elevado de 1200 a 1400 KB al agregar las secciones 16 (Soporte y Mesa de
+# Ayuda) y 17 (Back Office de Ingeniería) -- 10 prompts nuevos x ES/EN con
+# contrato editorial completo (82 -> 92 prompts totales), issue #100.
+MAX_INDEX_SIZE_KB = 1400
 MIN_INDEX_SIZE_KB = 100   # Mínimo esperado para contenido válido
 
 # Cobertura de prompts
