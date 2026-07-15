@@ -1030,6 +1030,13 @@ body.ms-mode .sec-check { display: block; }
   font-family: inherit; transition: background .12s;
 }
 .proj-add-btn:hover { background: #0891b2; }
+.proj-modal-footer { display: flex; gap: .5rem; margin-top: .5rem; }
+.proj-secondary-btn {
+  flex: 1; background: transparent; border: 1px solid var(--bdr2); color: var(--tx2);
+  border-radius: 8px; padding: 8px 12px; cursor: pointer; font-size: .78rem;
+  font-family: inherit; transition: background .12s, color .12s;
+}
+.proj-secondary-btn:hover { background: var(--bg3); color: var(--tx); }
 
 /* ════════════════════  PROYECTO QUICK-SWITCHER  ═══════════════════ */
 .proj-quick { position: relative; flex-shrink: 0; }
@@ -1753,6 +1760,99 @@ function switchProject(id) {
   renderProjFloat();
 }
 
+/* ════════════════════  PROYECTOS — exportar / importar  ═════════
+   Las variables de un Proyecto vivían solo en localStorage del
+   navegador -- sin forma de llevarlas a otra máquina o compartirlas
+   con el equipo (issue #104). Export/import como JSON, sin backend. */
+
+function downloadJSON(filename, dataObj) {
+  var blob = new Blob([JSON.stringify(dataObj, null, 2)], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+}
+
+function slugifyProjectName(name) {
+  return (name || 'proyecto').toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-').replace(/(^-+|-+$)/g, '') || 'proyecto';
+}
+
+function exportProject(id) {
+  var list = loadProjects() || [];
+  var p = list.find(function(x) { return x.id === id; });
+  if (!p) return;
+  var payload = { ai_sdlc_export_version: 1, projects: [{ name: p.name, vars: p.vars }] };
+  downloadJSON('ai-sdlc-proyecto-' + slugifyProjectName(p.name) + '.json', payload);
+}
+
+function exportAllProjects() {
+  var list = loadProjects() || [];
+  var payload = {
+    ai_sdlc_export_version: 1,
+    projects: list.map(function(p) { return { name: p.name, vars: p.vars }; })
+  };
+  downloadJSON('ai-sdlc-proyectos.json', payload);
+}
+
+function triggerImportProjects() {
+  var input = document.getElementById('proj-import-input');
+  if (input) input.click();
+}
+
+function importProjects(payload) {
+  var entries = Array.isArray(payload) ? payload
+    : (payload && Array.isArray(payload.projects)) ? payload.projects
+    : (payload && typeof payload.vars === 'object') ? [payload]
+    : null;
+  if (!entries || !entries.length) throw new Error('invalid import shape');
+  var list = loadProjects() || [];
+  var added = 0;
+  entries.forEach(function(entry) {
+    if (!entry || typeof entry !== 'object' || typeof entry.vars !== 'object' || !entry.vars) return;
+    list.push({
+      id: genId(),
+      name: (typeof entry.name === 'string' && entry.name.trim()) ? entry.name.trim() : 'Proyecto importado',
+      isDefault: false,
+      vars: Object.assign({}, EMPTY_VARS, entry.vars)
+    });
+    added++;
+  });
+  if (!added) throw new Error('no valid projects in import file');
+  saveProjects(list);
+  return added;
+}
+
+function handleImportProjectsFile(inputEl) {
+  var file = inputEl.files && inputEl.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var lang = getCurrentLanguage();
+    try {
+      var parsed = JSON.parse(e.target.result);
+      var added = importProjects(parsed);
+      var msg = lang === 'en'
+        ? (added + (added === 1 ? ' project imported' : ' projects imported'))
+        : (added + (added === 1 ? ' proyecto importado' : ' proyectos importados'));
+      showToast(msg, 'success');
+      renderProjectsModal();
+      renderProjectSelector();
+      renderProjQuick();
+      renderProjFloat();
+    } catch (err) {
+      showToast(lang === 'en' ? 'Invalid import file' : 'Archivo de importación inválido', 'warn');
+    }
+    inputEl.value = '';
+  };
+  reader.readAsText(file);
+}
+
 /* ════════════════════  PROYECTOS — sync DOM  ════════════════════ */
 
 var FIELD_VAR_MAP = {
@@ -1943,6 +2043,8 @@ function renderProjectsModal() {
         + ' onclick="setDefaultProject(\\'' + p.id + '\\');renderProjectsModal();renderProjectSelector();">\u2605</button>'
       + '<button class="proj-action-btn" title="Duplicar / Duplicate"'
         + ' onclick="duplicateProject(\\'' + p.id + '\\');renderProjectsModal();renderProjectSelector();syncPanelToProject();">\u2398</button>'
+      + '<button class="proj-action-btn" title="Exportar / Export"'
+        + ' onclick="exportProject(\\'' + p.id + '\\')">\u2b07</button>'
       + delBtn
       + '</li>';
   }).join('');
@@ -4282,6 +4384,14 @@ def build():
         '    <button class="proj-add-btn"'
         ' onclick="createProject();renderProjectsModal();renderProjectSelector();syncPanelToProject();">'
         '<span class="fw-lang-es">+ Nuevo proyecto</span><span class="fw-lang-en">+ New project</span></button>\n'
+        '    <div class="proj-modal-footer">\n'
+        '      <button class="proj-secondary-btn" onclick="exportAllProjects()">'
+        '<span class="fw-lang-es">Exportar todos</span><span class="fw-lang-en">Export all</span></button>\n'
+        '      <button class="proj-secondary-btn" onclick="triggerImportProjects()">'
+        '<span class="fw-lang-es">Importar</span><span class="fw-lang-en">Import</span></button>\n'
+        '      <input type="file" id="proj-import-input" accept="application/json,.json"'
+        ' style="display:none" onchange="handleImportProjectsFile(this)">\n'
+        '    </div>\n'
         '  </div>\n'
         '</div>\n'
 
