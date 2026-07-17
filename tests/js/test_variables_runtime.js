@@ -127,4 +127,13 @@ storage.set(context.I18N_KEY, "en");
 context.getCurrentLanguage = originalGetCurrentLanguage;
 assert.strictEqual(context.getCurrentLanguage(), "en");
 
+// escId() debe escapar comilla simple/doble, & y backslash antes de que un
+// id se inserte en onclick="fn('ID')" (auditoría de seguridad: hoy genId()
+// nunca produce estos caracteres, pero un futuro id de otro origen -ej.
+// importar un proyecto- no debe poder romper el atributo ni inyectar JS).
+assert.strictEqual(
+  context.escId(`a'b"c&d${String.fromCharCode(92)}e`),
+  "a\\'b&quot;c&amp;d\\\\e"
+);
+
 console.log("runtime variable tests: ok");
