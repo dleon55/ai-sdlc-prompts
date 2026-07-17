@@ -2325,7 +2325,12 @@ function hasActiveVars() {
 function resolvePrompt(template, options) {
   options = options || {};
   var text = template || '';
-  var v = Object.assign({}, getVarValues(), options.values || {});
+  // valuesOverride: snapshot completo ya resuelto (ver updateLivePreview) --
+  // evita releer y re-parsear localStorage en cada llamada cuando el
+  // llamador ya llamó getVarValues() una vez para muchos prompts. options.values
+  // sigue soportando el override parcial existente (se fusiona con el valor
+  // en vivo de localStorage), sin cambiar ese comportamiento.
+  var v = options.valuesOverride || Object.assign({}, getVarValues(), options.values || {});
   var replaced = [];
   Object.keys(VAR_MAP).forEach(function(field) {
     var val = (v[field] || '').trim();
@@ -2791,10 +2796,15 @@ function updateContextualVariablePanel() {
 }
 
 function updateLivePreview() {
+  // Antes cada resolvePrompt() dentro de este loop llamaba a getVarValues(),
+  // que relee y re-parsea localStorage -- con 184 prompts (92 x ES/EN) eso
+  // era hasta 184 lecturas/JSON.parse redundantes por cada tecla en el panel
+  // de variables. Se lee una sola vez y se reusa el mismo snapshot.
+  var values = getVarValues();
   Object.keys(RAW_PROMPTS).forEach(function(codeId) {
     var codeEl = document.getElementById(codeId);
     if (!codeEl) return;
-    var resolved = resolvePrompt(RAW_PROMPTS[codeId]);
+    var resolved = resolvePrompt(RAW_PROMPTS[codeId], { valuesOverride: values });
     codeEl.textContent = resolved.text;
   });
   updateContextualVariablePanel();
@@ -3232,9 +3242,15 @@ function copySelected(btn) {
 var _lastSearchQuery = '';
 var _activeFacet = null; // { kind: 'risk'|'autonomy', value: string }
 
+// applyFilters() escanea el texto de las 184 tarjetas (92 prompts x ES/EN)
+// en cada llamada -- sin debounce, cada tecla en el buscador repetía ese
+// escaneo completo. _lastSearchQuery se actualiza de inmediato (barato);
+// solo el escaneo/actualización de DOM se posterga ~150ms.
+var _searchDebounceTimer = null;
 function filterPrompts(q) {
   _lastSearchQuery = q || '';
-  applyFilters();
+  clearTimeout(_searchDebounceTimer);
+  _searchDebounceTimer = setTimeout(applyFilters, 150);
 }
 
 // Facetas por riesgo/autonomía, leídas de CONTRACT_TAGS (embebido en build

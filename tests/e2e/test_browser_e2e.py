@@ -207,6 +207,29 @@ def test_toast_container_has_accessible_live_region(app_page):
     assert live == "polite"
 
 
+# ─────────────────────  Búsqueda  ─────────────────────
+
+def test_search_filters_cards_after_debounce(app_page):
+    """La búsqueda por texto filtra las tarjetas visibles. El input tiene
+    debounce de 150ms (auditoría de performance: antes cada tecla re-escaneaba
+    el texto de las 184 tarjetas -92 prompts x ES/EN- sin ninguna espera);
+    se aguarda más que ese debounce antes de leer el resultado."""
+    total_before = app_page.locator("#vis-count").inner_text()
+    assert "en total" in total_before
+
+    app_page.fill(".search-bar input", "scaffolding")
+    app_page.wait_for_timeout(300)
+
+    assert app_page.locator(
+        '.card-title[onclick*="scaffolding-repositorio-es"]'
+    ).first.is_visible()
+    assert not app_page.locator(
+        '.card-title[onclick*="00-C-01-issue-para-agente-ia-es"]'
+    ).first.is_visible()
+    count_text = app_page.locator("#vis-count").inner_text()
+    assert "coincidencia" in count_text
+
+
 # ─────────────────────  Proyectos  ─────────────────────
 
 def test_project_switch_isolates_variables(app_page):
