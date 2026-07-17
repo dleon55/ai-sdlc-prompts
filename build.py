@@ -1716,6 +1716,21 @@ function genId() {
   return 'proj_' + Math.random().toString(36).slice(2, 9);
 }
 
+// Escapa un id para insertarlo de forma segura en onclick="fn('ID')": primero
+// para el contexto de string JS (comilla simple, backslash), luego para el
+// atributo HTML que lo envuelve (& y comilla doble). genId() nunca produce
+// caracteres especiales hoy (ni siquiera los proyectos importados vía
+// importProjects(), que siempre generan un id local nuevo), pero esto evita
+// que un futuro cambio rompa el atributo o inyecte JS si eso cambiara.
+function escId(s) {
+  var bs = String.fromCharCode(92);
+  return String(s)
+    .split(bs).join(bs + bs)
+    .split("'").join(bs + "'")
+    .split('&').join('&amp;')
+    .split('"').join('&quot;');
+}
+
 function loadProjects() {
   try {
     var raw = localStorage.getItem(LS_KEY_PROJ);
@@ -2049,7 +2064,7 @@ function renderProjectSelector() {
     sel.innerHTML = list.map(function(p) {
       var selAttr = (p.id === activeId) ? ' selected' : '';
       var label = p.name + (p.isDefault ? ' \u2605' : '');
-      return '<option value="' + p.id + '"' + selAttr + '>'
+      return '<option value="' + p.id.replace(/&/g,'&amp;').replace(/"/g,'&quot;') + '"' + selAttr + '>'
              + label.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</option>';
     }).join('');
   }
@@ -2072,22 +2087,22 @@ function renderProjectsModal() {
     var defBadge = p.isDefault ? '<span class="proj-def-badge">default</span>' : '';
     var delBtn = list.length > 1
       ? '<button class="proj-action-btn" title="Eliminar / Delete"'
-        + ' onclick="deleteProject(\\'' + p.id + '\\');renderProjectsModal();renderProjectSelector();">'
+        + ' onclick="deleteProject(\\'' + escId(p.id) + '\\');renderProjectsModal();renderProjectSelector();">'
         + '\u2715</button>'
       : '';
     return '<li class="proj-item' + (isActive ? ' active-proj' : '') + '">'
       + defBadge
       + '<input class="proj-item-name" value="'
         + p.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;') + '"'
-        + ' onblur="renameProject(\\'' + p.id + '\\',this.value)">'
+        + ' onblur="renameProject(\\'' + escId(p.id) + '\\',this.value)">'
       + '<button class="proj-action-btn" title="Activar / Activate"'
-        + ' onclick="switchProject(\\'' + p.id + '\\');renderProjectsModal();">\u26a1</button>'
+        + ' onclick="switchProject(\\'' + escId(p.id) + '\\');renderProjectsModal();">\u26a1</button>'
       + '<button class="proj-action-btn" title="Predeterminar / Make Default"'
-        + ' onclick="setDefaultProject(\\'' + p.id + '\\');renderProjectsModal();renderProjectSelector();">\u2605</button>'
+        + ' onclick="setDefaultProject(\\'' + escId(p.id) + '\\');renderProjectsModal();renderProjectSelector();">\u2605</button>'
       + '<button class="proj-action-btn" title="Duplicar / Duplicate"'
-        + ' onclick="duplicateProject(\\'' + p.id + '\\');renderProjectsModal();renderProjectSelector();syncPanelToProject();">\u2398</button>'
+        + ' onclick="duplicateProject(\\'' + escId(p.id) + '\\');renderProjectsModal();renderProjectSelector();syncPanelToProject();">\u2398</button>'
       + '<button class="proj-action-btn" title="Exportar / Export"'
-        + ' onclick="exportProject(\\'' + p.id + '\\')">\u2b07</button>'
+        + ' onclick="exportProject(\\'' + escId(p.id) + '\\')">\u2b07</button>'
       + delBtn
       + '</li>';
   }).join('');
@@ -2124,7 +2139,7 @@ function renderProjQuick() {
   var items = list.map(function(p) {
     var isAct = p.id === activeId;
     return '<button class="pq-item' + (isAct ? ' pq-active' : '') + '"'
-      + ' onclick="switchProject(\\'' + p.id + '\\');closeProjQuick();">'
+      + ' onclick="switchProject(\\'' + escId(p.id) + '\\');closeProjQuick();">'
       + '<span class="pq-dot' + (isAct ? ' on' : '') + '"></span>'
       + '<span class="pq-item-name">' + p.name.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</span>'
       + (p.isDefault ? '<span style="font-size:.6rem;color:var(--tx3)">\u2605</span>' : '')
@@ -2170,7 +2185,7 @@ function renderProjFloat() {
   var items = list.map(function(p) {
     var isAct = p.id === activeId;
     return '<button class="pq-item' + (isAct ? ' pq-active' : '') + '"'
-      + ' onclick="switchProject(\\'' + p.id + '\\');closeProjFloat();">' 
+      + ' onclick="switchProject(\\'' + escId(p.id) + '\\');closeProjFloat();">' 
       + '<span class="pq-dot' + (isAct ? ' on' : '') + '"></span>'
       + '<span class="pq-item-name">' + p.name.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</span>'
       + (p.isDefault ? '<span style="font-size:.6rem;color:var(--tx3)">\u2605</span>' : '')
