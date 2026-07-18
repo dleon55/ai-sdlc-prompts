@@ -691,6 +691,66 @@
       }
     },
     {
+      "id": "02-00-elicitacion-requerimientos-stakeholders",
+      "section": "02",
+      "title": {
+        "es": "2.0 — Elicitación de requerimientos con stakeholders",
+        "en": "2.0 — Stakeholder requirements elicitation"
+      },
+      "contract": {
+        "es": {
+          "type": "análisis",
+          "expected_risk": "bajo — este prompt no ejecuta cambios ni compromete decisiones; el riesgo es que una elicitación mal conducida deje necesidades implícitas sin descubrir, lo que se propaga como alcance incompleto a `02-01`/`02-05`",
+          "required_inputs": "contexto de la iniciativa (idea, queja o necesidad inicial en bruto), rol(es) de stakeholder a entrevistar, transcripción o notas de la conversación si ya ocurrió (o \"sesión aún no realizada\" si se pide el guion antes)",
+          "allowed_tools": "lectura de documentación o contexto existente; sin ejecución ni cambios — el prompt produce un guion de entrevista y/o una síntesis estructurada de una conversación ya ocurrida",
+          "permitted_autonomy": "A0 — Analizar (síntesis de una conversación ya ocurrida); A1 — Proponer (guion de entrevista, preguntas de sondeo)",
+          "stop_criteria": "si la transcripción o notas no permiten distinguir una necesidad real de una solución ya asumida por el stakeholder, señalarlo explícitamente en vez de aceptar la solución propuesta como el requerimiento; si falta el rol del stakeholder u otro dato necesario para el guion, solicitarlo antes de generar preguntas genéricas",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada necesidad sintetizada cita la frase o fragmento textual de la transcripción que la sustenta; cada pregunta de sondeo declara qué tipo de necesidad implícita busca descubrir",
+          "recommended_next_prompt": "`02-05-analisis-integral-requerimientos` una vez la conversación ya ocurrió y hay una síntesis de necesidades; `02-01-analisis-issue` si la elicitación ya produjo un alcance claro y acotado",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "low"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "02-05-analisis-integral-requerimientos",
+            "02-01-analisis-issue"
+          ]
+        },
+        "en": {
+          "type": "analysis",
+          "expected_risk": "low — this prompt does not execute changes nor commit decisions; the risk is that a poorly conducted elicitation leaves implicit needs undiscovered, which propagates as incomplete scope to `02-01`/`02-05`",
+          "required_inputs": "initiative context (raw idea, complaint, or initial need), stakeholder role(s) to interview, transcript or notes of the conversation if it already happened (or \"session not yet held\" if the script is requested beforehand)",
+          "allowed_tools": "reading of existing documentation or context; no execution or changes — the prompt produces an interview script and/or a structured synthesis of a conversation that already happened",
+          "permitted_autonomy": "A0 — Analyze (synthesis of a conversation that already happened); A1 — Propose (interview script, probing questions)",
+          "stop_criteria": "if the transcript or notes do not allow distinguishing a real need from a solution already assumed by the stakeholder, state it explicitly instead of accepting the proposed solution as the requirement; if the stakeholder's role or another datum needed for the script is missing, request it instead of generating generic questions",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every synthesized need cites the exact phrase or textual fragment from the transcript that supports it; every probing question states what type of implicit need it seeks to uncover",
+          "recommended_next_prompt": "`02-05-analisis-integral-requerimientos` once the conversation already happened and there is a synthesis of needs; `02-01-analisis-issue` if the elicitation already produced a clear, bounded scope",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "low"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "02-05-analisis-integral-requerimientos",
+            "02-01-analisis-issue"
+          ]
+        }
+      }
+    },
+    {
       "id": "02-01-analisis-issue",
       "section": "02",
       "title": {
@@ -2403,6 +2463,124 @@
       }
     },
     {
+      "id": "07-13-diagnostico-tests-flaky",
+      "section": "07",
+      "title": {
+        "es": "7.13 — Diagnóstico y estabilización de tests inestables (flaky)",
+        "en": "7.13 — Flaky test diagnosis and stabilization"
+      },
+      "contract": {
+        "es": {
+          "type": "diagnóstico",
+          "expected_risk": "medio — un test flaky mal diagnosticado y puesto en cuarentena permanente puede ocultar una regresión real futura; una \"corrección\" que solo enmascara el síntoma sin resolver la causa raíz (ej. sleeps o reintentos ciegos) da falsa confianza",
+          "required_inputs": "nombre/ruta del test, historial de ejecuciones recientes en CI (pasa/falla, timestamps), logs o stack traces de al menos 2-3 fallas, código del test y del código bajo prueba relacionado, indicación de si falla también en local o solo en CI",
+          "allowed_tools": "lectura de código, logs e historial de CI; ejecución repetida del test en un ambiente aislado (local o CI) para reproducir el patrón de falla — sin modificar el test hasta identificar la causa raíz",
+          "permitted_autonomy": "A0 — Analizar (diagnóstico de causa); A1 — Proponer (fix, cuarentena o eliminación); A2 — Ejecutar controlado solo para correr el test repetidamente en un ambiente aislado con el propósito de reproducir el patrón, nunca para aplicar el fix sin revisión humana",
+          "stop_criteria": "si no se puede reproducir la falla tras el número de corridas definido en el protocolo, declarar \"no reproducido\" en vez de adivinar la causa; nunca recomendar cuarentena permanente sin un ticket de seguimiento con fecha de revisión",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada causa candidata respaldada por al menos una corrida reproducida o un patrón identificable en el historial de CI (ej. \"falla más en el runner Linux que en macOS\", \"falla solo cuando corre después del test X\")",
+          "recommended_next_prompt": "`07-01`/`07-02`/`07-03` (según el tipo de test) si se requiere rediseñar el test desde cero; `11-03-deuda-tecnica` si el patrón de flakiness se repite en múltiples tests y amerita una iniciativa más amplia",
+          "type_tags": [
+            "diagnosis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1",
+            "A2"
+          ],
+          "recommended_next_prompt_ids": [
+            "11-03-deuda-tecnica"
+          ]
+        },
+        "en": {
+          "type": "diagnosis",
+          "expected_risk": "medium — a poorly diagnosed flaky test placed in permanent quarantine can hide a real future regression; a \"fix\" that only masks the symptom without resolving the root cause (e.g. sleeps or blind retries) creates false confidence",
+          "required_inputs": "test name/path, recent CI run history (pass/fail, timestamps), logs or stack traces from at least 2-3 failures, the test's code and the related code under test, whether it also fails locally or only in CI",
+          "allowed_tools": "reading code, logs, and CI history; repeated execution of the test in an isolated environment (local or CI) to reproduce the failure pattern — no modification of the test until the root cause is identified",
+          "permitted_autonomy": "A0 — Analyze (root-cause diagnosis); A1 — Propose (fix, quarantine, or removal); A2 — Execute controlled only to run the test repeatedly in an isolated environment for the purpose of reproducing the pattern, never to apply the fix without human review",
+          "stop_criteria": "if the failure cannot be reproduced after the number of runs defined in the protocol, state \"not reproduced\" instead of guessing the cause; never recommend permanent quarantine without a follow-up ticket and review date",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every candidate cause is backed by at least one reproduced run or an identifiable pattern in CI history (e.g. \"fails more on the Linux runner than on macOS\", \"fails only when running after test X\")",
+          "recommended_next_prompt": "`07-01`/`07-02`/`07-03` (depending on test type) if the test needs to be redesigned from scratch; `11-03-deuda-tecnica` if the flakiness pattern repeats across multiple tests and warrants a broader initiative",
+          "type_tags": [
+            "diagnosis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1",
+            "A2"
+          ],
+          "recommended_next_prompt_ids": [
+            "11-03-deuda-tecnica"
+          ]
+        }
+      }
+    },
+    {
+      "id": "07-14-gestion-datos-prueba",
+      "section": "07",
+      "title": {
+        "es": "7.14 — Estrategia de gestión de datos de prueba en QA",
+        "en": "7.14 — QA test data management strategy"
+      },
+      "contract": {
+        "es": {
+          "type": "diseño",
+          "expected_risk": "medio — un enmascarado de datos productivos mal diseñado puede filtrar datos sensibles reales a un ambiente de menor seguridad; una estrategia de reset mal diseñada puede corromper el estado de otros equipos que comparten el ambiente",
+          "required_inputs": "ambiente(s) de prueba a cubrir, origen del dataset (sintético / snapshot de producción enmascarado / mixto), volumen de datos necesario para representatividad, cantidad de pipelines/agentes ejecutando en paralelo, política de compliance aplicable a los datos (PII, PCI u otra, si aplica)",
+          "allowed_tools": "lectura de esquemas, scripts de seed/fixture existentes y políticas de datos; el prompt diseña la estrategia y genera scripts de generación/enmascarado — la ejecución contra un ambiente compartido real requiere aprobación explícita, y nunca contra producción",
+          "permitted_autonomy": "A1 — Proponer (estrategia y scripts); A2 — Ejecutar controlado solo en el ambiente de prueba aislado indicado, nunca contra producción ni contra un ambiente compartido sin aprobación explícita",
+          "stop_criteria": "detener si se pide partir de un snapshot de producción sin una política de enmascarado de PII/datos sensibles ya definida — no diseñar el enmascarado por cuenta propia sin esa política; detener si no se puede confirmar el volumen de datos necesario para que las pruebas sean representativas",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada campo sensible identificado en el dataset tiene una estrategia de enmascarado explícita (nunca \"se deja igual\" sin justificación); el mecanismo de aislamiento entre corridas paralelas se describe en términos concretos (namespacing, transacciones, contenedores efímeros)",
+          "recommended_next_prompt": "`07-01`/`07-02`/`07-03` para el diseño de pruebas específicas que consumen estos datos; `13-08-gestion-secretos-credenciales` si la estrategia requiere credenciales de acceso a producción para el snapshot inicial",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A1",
+            "A2"
+          ],
+          "recommended_next_prompt_ids": [
+            "13-08-gestion-secretos-credenciales"
+          ]
+        },
+        "en": {
+          "type": "design",
+          "expected_risk": "medium — a poorly designed production-data masking scheme can leak real sensitive data into a lower-security environment; a poorly designed reset strategy can corrupt the state of other teams sharing the environment",
+          "required_inputs": "test environment(s) to cover, dataset origin (synthetic / masked production snapshot / mixed), data volume needed for representativeness, number of pipelines/agents running in parallel, applicable compliance policy for the data (PII, PCI, or other, if any)",
+          "allowed_tools": "reading schemas, existing seed/fixture scripts, and data policies; the prompt designs the strategy and generates generation/masking scripts — execution against a real shared environment requires explicit approval, and never against production",
+          "permitted_autonomy": "A1 — Propose (strategy and scripts); A2 — Execute controlled only in the indicated isolated test environment, never against production or a shared environment without explicit approval",
+          "stop_criteria": "stop if asked to start from a production snapshot without an already-defined PII/sensitive-data masking policy — do not design the masking on your own without that policy; stop if the data volume needed for representative tests cannot be confirmed",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every sensitive field identified in the dataset has an explicit masking strategy (never \"left as-is\" without justification); the isolation mechanism between parallel runs is described in concrete terms (namespacing, transactions, ephemeral containers)",
+          "recommended_next_prompt": "`07-01`/`07-02`/`07-03` for designing specific tests that consume this data; `13-08-gestion-secretos-credenciales` if the strategy requires production-access credentials for the initial snapshot",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A1",
+            "A2"
+          ],
+          "recommended_next_prompt_ids": [
+            "13-08-gestion-secretos-credenciales"
+          ]
+        }
+      }
+    },
+    {
       "id": "08-01-revision-estatica",
       "section": "08",
       "title": {
@@ -3872,6 +4050,188 @@
       }
     },
     {
+      "id": "11-11-plan-decomiso-sistema-legacy",
+      "section": "11",
+      "title": {
+        "es": "11.11 — Plan de decomiso de sistema o servicio legacy",
+        "en": "11.11 — Legacy system/service decommission plan"
+      },
+      "contract": {
+        "es": {
+          "type": "operación",
+          "expected_risk": "alto — decomisar un sistema con dependientes no detectados puede romper servicios o reportes en producción sin aviso previo; perder datos sujetos a una obligación de retención (legal, fiscal, contractual) puede tener consecuencias legales",
+          "required_inputs": "sistema/servicio a decomisar, inventario conocido de consumidores/integraciones, obligaciones de retención de datos aplicables, fecha objetivo de apagado, disponibilidad de logs de acceso/tráfico reciente al sistema",
+          "allowed_tools": "lectura de logs de acceso/tráfico, código de integraciones conocidas, contratos de retención de datos y documentación de arquitectura; el diseño del plan es de solo análisis y propuesta — la ejecución del apagado real requiere aprobación explícita y ocurre fuera de este prompt",
+          "permitted_autonomy": "A0 — Analizar (inventario de dependientes, obligaciones de retención); A1 — Proponer (plan de comunicación y secuencia de apagado); A3 — Publicar únicamente para ejecutar cada fase de apagado (deshabilitar escritura, pasar a solo lectura, apagado final) contra el sistema real, y solo con aprobación explícita antes de cada fase — no ejecuta ninguna fase de apagado por sí solo",
+          "stop_criteria": "detener si los logs de acceso/tráfico reciente no están disponibles o no cubren un periodo representativo — no asumir que \"no hay tráfico visible\" significa \"no hay dependientes\"; detener si existe una obligación de retención de datos sin plan de cumplimiento antes de la fecha de apagado",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada dependiente identificado cita la fuente que lo confirma (log de acceso, código de integración, documentación); cada fase de apagado tiene un checkpoint de verificación y un criterio de rollback explícito",
+          "recommended_next_prompt": "`04-05-versionado-deprecacion-api` si el decomiso es parcial (una versión de API, no el sistema completo) y este prompt no aplica; `11-09-runbook-rollback` si aparece un dependiente no detectado durante la ejecución y se requiere revertir una fase ya ejecutada",
+          "type_tags": [
+            "operation"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1",
+            "A3"
+          ],
+          "recommended_next_prompt_ids": [
+            "04-05-versionado-deprecacion-api",
+            "11-09-runbook-rollback"
+          ]
+        },
+        "en": {
+          "type": "operation",
+          "expected_risk": "high — decommissioning a system with undetected dependents can break production services or reports without warning; losing data subject to a retention obligation (legal, tax, contractual) can have legal consequences",
+          "required_inputs": "system/service to decommission, known inventory of consumers/integrations, applicable data retention obligations, target shutdown date, availability of recent access/traffic logs for the system",
+          "allowed_tools": "reading access/traffic logs, code of known integrations, data retention contracts, and architecture documentation; the plan design is analysis and proposal only — actual shutdown execution requires explicit approval and happens outside this prompt",
+          "permitted_autonomy": "A0 — Analyze (dependent inventory, retention obligations); A1 — Propose (communication plan and shutdown sequence); A3 — Publish only to execute each shutdown phase (disable writes, switch to read-only, final shutdown) against the real system, and only with explicit approval before each phase — it does not execute any shutdown phase on its own",
+          "stop_criteria": "stop if recent access/traffic logs are unavailable or do not cover a representative period — do not assume \"no visible traffic\" means \"no dependents\"; stop if a data retention obligation exists without a compliance plan before the shutdown date",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every identified dependent cites the source that confirms it (access log, integration code, documentation); every shutdown phase has a verification checkpoint and an explicit rollback criterion",
+          "recommended_next_prompt": "`04-05-versionado-deprecacion-api` if the decommission is partial (one API version, not the full system) and this prompt does not apply; `11-09-runbook-rollback` if an undetected dependent surfaces during execution and an already-executed phase must be reverted",
+          "type_tags": [
+            "operation"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1",
+            "A3"
+          ],
+          "recommended_next_prompt_ids": [
+            "04-05-versionado-deprecacion-api",
+            "11-09-runbook-rollback"
+          ]
+        }
+      }
+    },
+    {
+      "id": "11-12-auditoria-ruido-alertas",
+      "section": "11",
+      "title": {
+        "es": "11.12 — Auditoría de ruido de alertas (alert fatigue)",
+        "en": "11.12 — Alert noise audit (alert fatigue)"
+      },
+      "contract": {
+        "es": {
+          "type": "análisis",
+          "expected_risk": "medio — silenciar o eliminar una alerta que parece ruido pero en realidad detecta un problema real poco frecuente puede dejar un incidente real sin detección futura; el prompt solo analiza y recomienda, no modifica configuración de alertas por sí mismo",
+          "required_inputs": "historial de alertas disparadas en el periodo (nombre, timestamp, severidad, si se tomó acción, si se silenció), acceso a dashboards/reglas de alerta actuales, definición de qué constituye \"acción tomada\" si existe",
+          "allowed_tools": "lectura del historial de alertas, reglas de alerta configuradas y logs de respuesta/acción asociados; no modifica configuración de alertas ni las silencia — produce el análisis y la recomendación",
+          "permitted_autonomy": "A0 — Analizar (clasificación de alertas por ruido/señal); A1 — Proponer (recomendación de tuning, consolidación o eliminación); nunca A2/A3 — la modificación real de reglas de alerta requiere que un humano la aplique tras revisar la recomendación",
+          "stop_criteria": "detener y señalar si el historial de alertas no registra si se tomó acción — no asumir \"sin acción visible\" como equivalente a \"ruido confirmado\" sin verificar con el equipo; si el periodo analizado es muy corto para alertas de baja frecuencia, señalar la limitación en vez de concluir que es ruido",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada alerta clasificada como ruido cita el patrón que lo sustenta (nunca se tomó acción en N ocurrencias, duplica otra alerta, se silencia recurrentemente sin investigar); cada recomendación de eliminación identifica qué escenario real dejaría de detectarse",
+          "recommended_next_prompt": "`10-04-observabilidad-instrumentacion` si el análisis revela que faltan SLOs/alertas para un punto ciego, no solo ruido en las existentes; `11-13-salud-rotacion-oncall` si el volumen de ruido correlaciona con fatiga del equipo de guardia",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "10-04-observabilidad-instrumentacion",
+            "11-13-salud-rotacion-oncall"
+          ]
+        },
+        "en": {
+          "type": "analysis",
+          "expected_risk": "medium — silencing or removing an alert that looks like noise but actually detects a rare real problem can leave a real incident undetected in the future; the prompt only analyzes and recommends, it does not modify alert configuration on its own",
+          "required_inputs": "history of alerts fired in the period (name, timestamp, severity, whether action was taken, whether silenced), access to current dashboards/alert rules, definition of what constitutes \"action taken\", if any",
+          "allowed_tools": "reading the alert history, configured alert rules, and associated response/action logs; does not modify alert configuration or silence alerts — produces the analysis and recommendation",
+          "permitted_autonomy": "A0 — Analyze (classify alerts as noise/signal); A1 — Propose (tuning, consolidation, or removal recommendation); never A2/A3 — actually modifying alert rules requires a human to apply it after reviewing the recommendation",
+          "stop_criteria": "stop and flag if the alert history does not record whether action was taken — do not assume \"no visible action\" is equivalent to \"confirmed noise\" without verifying with the team; if the analyzed period is too short for low-frequency alerts, flag the limitation instead of concluding it is noise",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every alert classified as noise cites the pattern that supports it (never led to action in N occurrences, duplicates another alert, is recurrently silenced without investigation); every removal recommendation identifies what real scenario would stop being detected",
+          "recommended_next_prompt": "`10-04-observabilidad-instrumentacion` if the analysis reveals missing SLOs/alerts for a blind spot, not just noise in existing ones; `11-13-salud-rotacion-oncall` if the noise volume correlates with on-call team fatigue",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "10-04-observabilidad-instrumentacion",
+            "11-13-salud-rotacion-oncall"
+          ]
+        }
+      }
+    },
+    {
+      "id": "11-13-salud-rotacion-oncall",
+      "section": "11",
+      "title": {
+        "es": "11.13 — Auditoría de salud de rotación on-call",
+        "en": "11.13 — On-call rotation health audit"
+      },
+      "contract": {
+        "es": {
+          "type": "análisis",
+          "expected_risk": "bajo — el prompt solo analiza y recomienda; no modifica el esquema de guardia ni reasigna turnos. El riesgo es que un esquema de guardia inequitativo no detectado a tiempo contribuya a burnout o rotación de personal, que sí tiene costo real",
+          "required_inputs": "historial de pages/alertas del periodo (quién recibió, timestamp, franja horaria), esquema de rotación configurado (quién está de guardia cuándo), periodo a evaluar, señales cualitativas de burnout o quejas si existen (opcional)",
+          "allowed_tools": "lectura del historial de pages, el esquema de rotación configurado y, si existen, encuestas o señales de clima del equipo; no modifica el esquema de guardia ni reasigna turnos — produce el análisis y recomendación",
+          "permitted_autonomy": "A0 — Analizar (distribución real de pages, equidad de la rotación); A1 — Proponer (recomendación de rebalanceo); nunca A2/A3 — el cambio real del esquema de guardia requiere decisión y ejecución humana del lead o manager responsable",
+          "stop_criteria": "detener si el historial de pages no distingue horario laboral de nocturno/fin de semana — no asumir que todos los pages tienen el mismo costo de fatiga; detener si el esquema de rotación configurado no está disponible, no inferir turnos a partir del historial de pages únicamente",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada persona en la tabla de distribución cita el conteo real de pages por franja horaria; toda afirmación de inequidad se compara contra la distribución esperada según el esquema de rotación configurado, no contra un promedio arbitrario",
+          "recommended_next_prompt": "`17-04-reporte-capacidad-equipo` si la sobrecarga de guardia coincide con sobrecarga general de backlog; `11-12-auditoria-ruido-alertas` si gran parte del volumen de pages resulta ser ruido más que incidentes reales",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "low"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "17-04-reporte-capacidad-equipo",
+            "11-12-auditoria-ruido-alertas"
+          ]
+        },
+        "en": {
+          "type": "analysis",
+          "expected_risk": "low — the prompt only analyzes and recommends; it does not modify the on-call schedule or reassign shifts. The risk is that an inequitable on-call schedule left undetected contributes to burnout or staff turnover, which does carry real cost",
+          "required_inputs": "period's page/alert history (who received it, timestamp, time band), configured rotation schedule (who is on call when), period to evaluate, qualitative burnout or complaint signals if any (optional)",
+          "allowed_tools": "reading the page history, the configured rotation schedule, and, if available, surveys or team climate signals; does not modify the on-call schedule or reassign shifts — produces the analysis and recommendation",
+          "permitted_autonomy": "A0 — Analyze (real page distribution, rotation fairness); A1 — Propose (rebalancing recommendation); never A2/A3 — actually changing the on-call schedule requires human decision and execution by the responsible lead or manager",
+          "stop_criteria": "stop if the page history does not distinguish business hours from night/weekend — do not assume all pages carry the same fatigue cost; stop if the configured rotation schedule is not available, do not infer shifts from the page history alone",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every person in the distribution table cites the real page count per time band; every claim of inequity is compared against the expected distribution per the configured rotation schedule, not against an arbitrary average",
+          "recommended_next_prompt": "`17-04-reporte-capacidad-equipo` if on-call overload coincides with general backlog overload; `11-12-auditoria-ruido-alertas` if a large share of page volume turns out to be noise rather than real incidents",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "low"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "17-04-reporte-capacidad-equipo",
+            "11-12-auditoria-ruido-alertas"
+          ]
+        }
+      }
+    },
+    {
       "id": "12-orquestador",
       "section": "12",
       "title": {
@@ -5026,6 +5386,66 @@
       }
     },
     {
+      "id": "16-06-auditoria-base-conocimiento",
+      "section": "16",
+      "title": {
+        "es": "16.6 — Auditoría de salud de la base de conocimiento de soporte",
+        "en": "16.6 — Support knowledge base health audit"
+      },
+      "contract": {
+        "es": {
+          "type": "análisis",
+          "expected_risk": "bajo — el prompt solo analiza y recomienda; no publica, edita ni elimina artículos por sí mismo. El riesgo indirecto es que una KB no auditada acumule artículos desactualizados que generen respuestas incorrectas a clientes si el equipo de soporte confía en ellos sin verificar",
+          "required_inputs": "inventario de artículos de la KB (título, fecha de última actualización, categoría, métricas de uso/vistas si existen), versión actual del producto o changelog reciente, categorías de tickets recurrentes (de `16-05` si existe, o el historial de tickets directamente)",
+          "allowed_tools": "lectura del inventario de la KB, changelog/release notes del producto y el historial o análisis de tendencias de tickets; no publica, edita ni elimina artículos — produce el análisis y la lista de acciones recomendadas",
+          "permitted_autonomy": "A0 — Analizar (staleness, duplicados, cobertura, uso); A1 — Proponer (qué actualizar, fusionar, archivar o crear); nunca A2/A3 — la publicación o eliminación real de artículos requiere revisión y ejecución humana del responsable de la KB",
+          "stop_criteria": "detener y señalar si no hay fecha de última actualización disponible para evaluar staleness — no asumir que un artículo está vigente solo porque no hay evidencia de que esté desactualizado; si no hay métricas de uso, limitar el análisis de \"sin uso\" a lo que pueda inferirse de otra forma y declararlo como proxy, no como dato real de uso",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada artículo marcado como desactualizado cita el cambio de producto (changelog/release) que lo hace obsoleto; cada duplicado cita los dos o más artículos que se solapan y el grado de solape",
+          "recommended_next_prompt": "`16-03-articulo-base-conocimiento` para redactar o actualizar los artículos priorizados por esta auditoría; `16-05-analisis-tendencias-tickets` si la auditoría revela categorías de tickets recurrentes sin ningún artículo que las cubra",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "low"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "16-03-articulo-base-conocimiento",
+            "16-05-analisis-tendencias-tickets"
+          ]
+        },
+        "en": {
+          "type": "analysis",
+          "expected_risk": "low — the prompt only analyzes and recommends; it does not publish, edit, or delete articles on its own. The indirect risk is that an unaudited KB accumulates outdated articles that generate incorrect answers to customers if the support team trusts them without verifying",
+          "required_inputs": "KB article inventory (title, last-updated date, category, usage/view metrics if any), current product version or recent changelog, recurring ticket categories (from `16-05` if available, or the ticket history directly)",
+          "allowed_tools": "reading the KB inventory, product changelog/release notes, and the ticket trend analysis or history; does not publish, edit, or delete articles — produces the analysis and the list of recommended actions",
+          "permitted_autonomy": "A0 — Analyze (staleness, duplicates, coverage, usage); A1 — Propose (what to update, merge, archive, or create); never A2/A3 — actually publishing or deleting articles requires human review and execution by the KB owner",
+          "stop_criteria": "stop and flag if no last-updated date is available to evaluate staleness — do not assume an article is current just because there is no evidence it is outdated; if no usage/view metrics exist, limit the \"unused\" analysis to what can be inferred another way and state it as a proxy, not real usage data",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every article flagged as outdated cites the product change (changelog/release) that makes it obsolete; every duplicate cites the two or more overlapping articles and the degree of overlap",
+          "recommended_next_prompt": "`16-03-articulo-base-conocimiento` to draft or update the articles prioritized by this audit; `16-05-analisis-tendencias-tickets` if the audit reveals recurring ticket categories with no article covering them",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "low"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "16-03-articulo-base-conocimiento",
+            "16-05-analisis-tendencias-tickets"
+          ]
+        }
+      }
+    },
+    {
       "id": "17-01-onboarding-tecnico",
       "section": "17",
       "title": {
@@ -5313,6 +5733,66 @@
           ],
           "recommended_next_prompt_ids": [
             "17-03-evaluacion-herramienta-licencia"
+          ]
+        }
+      }
+    },
+    {
+      "id": "17-06-reporte-estado-stakeholders",
+      "section": "17",
+      "title": {
+        "es": "17.6 — Reporte de estado a stakeholders",
+        "en": "17.6 — Stakeholder status report"
+      },
+      "contract": {
+        "es": {
+          "type": "reporte",
+          "expected_risk": "medio — un reporte que sobreestime el avance real o minimice un riesgo puede llevar a los stakeholders a tomar decisiones de negocio (compromisos con clientes, inversión adicional) sobre una base falsa; el prompt solo reporta y traduce a lenguaje de negocio, no decide ni ejecuta nada",
+          "required_inputs": "hitos comprometidos (de `00-D-01` o el roadmap vigente), issues/PRs cerrados y abiertos en el periodo, estado de CI/CD del periodo, riesgos activos (de `05-02` o el registro vigente), periodo a reportar, audiencia (nivel de detalle técnico esperado)",
+          "allowed_tools": "lectura del gestor de tareas/issues, historial de PRs, resultados de CI y documentos de riesgos/hitos existentes; la salida es un documento de reporte — no reasigna tareas, no cierra issues, no modifica el roadmap",
+          "permitted_autonomy": "A0 — Analizar (recopilar avance real de las fuentes); A1 — Proponer (redacción del reporte en lenguaje de negocio); nunca A2/A3 — este prompt no comunica directamente a los stakeholders, produce el documento para que un humano lo revise y envíe",
+          "stop_criteria": "detener y señalar explícitamente si un hito reportado como \"en progreso\" no tiene ningún issue/PR asociado verificable — no reportar avance que no pueda trazarse a una fuente real; detener si el periodo a reportar no está definido",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada hito reportado como completado o en progreso cita el issue, PR o resultado de CI que lo sustenta; cada riesgo mencionado se traza al registro de riesgos de origen",
+          "recommended_next_prompt": "`05-02-riesgos-implementacion` si aparece un riesgo nuevo no registrado que deba formalizarse; `17-04-reporte-capacidad-equipo` si el reporte revela que el atraso se debe a sobrecarga del equipo",
+          "type_tags": [
+            "report"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "05-02-riesgos-implementacion",
+            "17-04-reporte-capacidad-equipo"
+          ]
+        },
+        "en": {
+          "type": "report",
+          "expected_risk": "medium — a report that overstates real progress or downplays a risk can lead stakeholders to make business decisions (customer commitments, additional investment) on a false basis; this prompt only reports and translates into business language, it does not decide or execute anything",
+          "required_inputs": "committed milestones (from `00-D-01` or the current roadmap), issues/PRs closed and opened in the period, CI/CD status for the period, active risks (from `05-02` or the current register), period to report, audience (expected technical detail level)",
+          "allowed_tools": "reading the task/issue tracker, PR history, CI results, and existing risk/milestone documents; the output is a report document — it does not reassign tasks, close issues, or modify the roadmap",
+          "permitted_autonomy": "A0 — Analyze (gather real progress from the sources); A1 — Propose (draft the report in business language); never A2/A3 — this prompt does not communicate directly with stakeholders, it produces the document for a human to review and send",
+          "stop_criteria": "stop and explicitly flag if a milestone reported as \"in progress\" has no verifiable associated issue/PR — do not report progress that cannot be traced to a real source; stop if the period to report is not defined",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every milestone reported as completed or in progress cites the issue, PR, or CI result that supports it; every mentioned risk is traced to its source risk register",
+          "recommended_next_prompt": "`05-02-riesgos-implementacion` if a new, unregistered risk appears that should be formalized; `17-04-reporte-capacidad-equipo` if the report reveals the delay is due to team overload",
+          "type_tags": [
+            "report"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "05-02-riesgos-implementacion",
+            "17-04-reporte-capacidad-equipo"
           ]
         }
       }

@@ -288,6 +288,8 @@ _TYPE_TAGS = (
     (("operación", "operation"), "operation"),
     (("seguridad", "security"), "security"),
     (("documentación", "documentation"), "documentation"),
+    (("diagnóstico", "diagnosis"), "diagnosis"),
+    (("reporte", "report"), "report"),
 )
 _RISK_TAGS = (
     (("bajo", "low"), "low"),

@@ -1,6 +1,6 @@
 # AI-SDLC Pro — Biblioteca de Prompts de Ingeniería de Software
 
-Biblioteca interactiva de prompts estructurados bajo el **AI-SDLC Enterprise Framework**: **92 prompts** organizados en **18 secciones** que cubren el ciclo completo de ingeniería de software asistida por IA.
+Biblioteca interactiva de prompts estructurados bajo el **AI-SDLC Enterprise Framework**: **100 prompts** organizados en **18 secciones** que cubren el ciclo completo de ingeniería de software asistida por IA.
 
 ## Entornos activos
 
@@ -15,7 +15,7 @@ Biblioteca interactiva de prompts estructurados bajo el **AI-SDLC Enterprise Fra
 
 - **Proyectos con variables por entorno** — múltiples proyectos, cada uno con **19 variables** configurables (`repositorio`, `referencia/entrada`, `rama actual/destino`, `ambiente`, `componentes`, `módulo`, `stack`, `tipo de proyecto`, `metodología`, `agentes IA`, `nivel de autonomía`, `objetivo`, `responsable`, `workspace`, `estándar/compliance`, `documentos`, `profundidad`), más asignaciones adicionales `TOKEN=valor`. Variables persisten en `localStorage`, con acceso rápido desde un panel flotante además del panel completo. Exportables/importables como JSON para llevarlas a otra máquina o compartirlas con el equipo.
 - **Framework auto-prepend** — el bloque de contexto del framework se antepone automáticamente a cada prompt copiado, con validación bloqueante de placeholders obligatorios sin resolver antes de copiar.
-- **Contrato editorial por prompt** — cada uno de los 92 prompts declara tipo, riesgo esperado, autonomía permitida y siguiente prompt recomendado, expuestos como badges filtrables y publicados en `prompts-index.json` para consumo por agentes de IA.
+- **Contrato editorial por prompt** — cada uno de los 100 prompts declara tipo, riesgo esperado, autonomía permitida y siguiente prompt recomendado, expuestos como badges filtrables y publicados en `prompts-index.json` para consumo por agentes de IA.
 - **Filtros por riesgo y autonomía** — chips de faceta (`Bajo/Medio/Alto/Variable`, `A0-A3`) combinables con la búsqueda de texto y los filtros por sección.
 - **Onboarding guiado** — banner + overlay de bienvenida para nuevos usuarios con guía de primeros pasos.
 - **Multi-select** — selección de varios prompts para copiarlos en bloque.
@@ -35,7 +35,7 @@ El catálogo también se expone a agentes de IA (Claude Code, Claude Desktop, Cu
 ## Estructura del proyecto
 
 ```
-ai_sdlc_pro_prompts/    # 92 prompts Markdown (18 secciones, ciclo SDLC completo)
+ai_sdlc_pro_prompts/    # 100 prompts Markdown (18 secciones, ciclo SDLC completo)
 build.py                # Generador: produce index.html y prompts-index.json desde los .md
 extract_vars.py         # Analiza tokens [PLACEHOLDER] en los prompts
 verify_clean.py         # QA gate: valida prompts limpios (integrado en CI)
@@ -106,23 +106,23 @@ issue (milestone + project) → rama de trabajo → Pull Request → CI (gates) 
 | 00-C | Multi-agente: issues para IA, plan mode, configuración por agente | 3 |
 | 00-D | Definición de proyecto: Project Charter, stack y arquitectura inicial | 2 |
 | 01 | Comprensión del repositorio | 2 |
-| 02 | Análisis (issue, técnico, impacto cruzado, triage backlog, requerimientos) | 5 |
+| 02 | Análisis (elicitación de requerimientos, issue, técnico, impacto cruzado, triage backlog, requerimientos) | 6 |
 | 03 | Incidentes (GitHub, causa raíz) | 2 |
 | 04 | Diseño de solución (diseño, Mermaid, casos de uso, ADR, versionado y deprecación de API) | 5 |
 | 05 | Plan de implementación (plan, riesgos) | 2 |
 | 06 | Ejecución (multi-agente, commits, coordinación de programa multi-agente) | 3 |
-| 07 | Pruebas (diseño + implementación: stack, unitarias, integración, E2E, humo, automatización, performance, accesibilidad) | 13 |
+| 07 | Pruebas (diseño + implementación: stack, unitarias, integración, E2E, humo, automatización, performance, accesibilidad, diagnóstico de tests flaky, gestión de datos de prueba) | 15 |
 | 08 | Revisión y remediación (estática, cumplimiento, maestro, SQL profiling, migración de esquema de BD) | 5 |
 | 09 | Integración y CI/CD (ramas, monitoreo, workflows, promotion, feature flags, coordinación de breaking changes) | 6 |
 | 10 | Documentación (técnica, memoria, changelog, observabilidad) | 4 |
-| 11 | Operaciones (troubleshooting, hardening, deuda técnica, incident response, performance, parches, postmortem, FinOps, runbook de rollback, capacity planning) | 10 |
+| 11 | Operaciones (troubleshooting, hardening, deuda técnica, incident response, performance, parches, postmortem, FinOps, runbook de rollback, capacity planning, decomiso de sistemas legacy, ruido de alertas, salud de rotación on-call) | 13 |
 | 12 | Orquestador maestro (ciclo completo) | 1 |
 | 13 | Seguridad y DevSecOps (SAST, SCA, Secure SDLC, Threat Modeling, DAST, Pentesting, CVE, Secrets) | 8 |
 | 14 | Monorepo y estándares (workspaces/dependencias, PSP/TSP, ISO/MoProSoft) | 3 |
 | 15 | Negocio y QA funcional (historias Gherkin, casos de prueba manuales, defectos de negocio) | 3 |
-| 16 | Soporte y Mesa de Ayuda (triage de tickets, diagnóstico y respuesta, base de conocimiento, SLA/escalamiento, tendencias) | 5 |
-| 17 | Back Office de Ingeniería (onboarding/offboarding técnico, evaluación de herramientas, capacidad del equipo, renovación de vendors) | 5 |
-| **Total** | | **92** |
+| 16 | Soporte y Mesa de Ayuda (triage de tickets, diagnóstico y respuesta, base de conocimiento, SLA/escalamiento, tendencias, auditoría de salud de la KB) | 6 |
+| 17 | Back Office de Ingeniería (onboarding/offboarding técnico, evaluación de herramientas, capacidad del equipo, renovación de vendors, reporte de estado a stakeholders) | 6 |
+| **Total** | | **100** |
 
 ---
 

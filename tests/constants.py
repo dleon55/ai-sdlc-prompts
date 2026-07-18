@@ -12,7 +12,11 @@ Extrae magic numbers del código de pruebas para mantenibilidad.
 # Elevado de 1200 a 1400 KB al agregar las secciones 16 (Soporte y Mesa de
 # Ayuda) y 17 (Back Office de Ingeniería) -- 10 prompts nuevos x ES/EN con
 # contrato editorial completo (82 -> 92 prompts totales), issue #100.
-MAX_INDEX_SIZE_KB = 1400
+# Elevado de 1400 a 1600 KB al agregar 8 prompts nuevos x ES/EN cubriendo
+# gaps reales para analistas, testers, PM y mantenimiento/soporte (92 -> 100
+# prompts totales) -- crecimiento de contenido, no bloat; con margen para
+# crecimiento futuro moderado.
+MAX_INDEX_SIZE_KB = 1600
 MIN_INDEX_SIZE_KB = 100   # Mínimo esperado para contenido válido
 
 # Cobertura de prompts
