@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
 import { createServer } from "../src/server.js";
+import { getAllPromptIds, getPrompt } from "../src/dataStore.js";
 
 async function connectedClient() {
   const server = createServer();
@@ -33,7 +34,8 @@ test("list_prompts filters by section over MCP", async () => {
   const { client } = await connectedClient();
   const result = await client.callTool({ name: "list_prompts", arguments: { section: "17" } });
   const data = parseToolResult(result);
-  assert.equal(data.count, 5);
+  const expectedCount = getAllPromptIds().filter((id) => getPrompt(id).section === "17").length;
+  assert.equal(data.count, expectedCount);
   assert.ok(data.prompts.every((p) => p.section === "17"));
 });
 
