@@ -41,7 +41,7 @@ Steps:
 1. List the previous activities needed before touching code (access grants, branch creation, backups, feature flags, stakeholder notice).
 2. Detail the changes by component, at the same scope and granularity as the approved design (`04-01`) — if you add a component the design did not cover, flag it explicitly as a deviation instead of including it without comment.
 3. Specify the required data adjustments or migrations, stating whether they are reversible and what happens to existing data during and after the migration.
-4. Define the tests required per step (unit, integration, E2E, performance), prioritizing those that cover the change's critical path over peripheral cases if QA time is limited.
+4. Define the tests required per step (unit, integration, E2E, performance), prioritizing those that cover the change's critical path over peripheral cases if QA time is limited. If a test stack profile already exists (`07-00-deteccion-stack-pruebas`), reuse its commands and conventions instead of inventing your own test commands.
 5. Define the validations to run in each environment (dev/QA/staging) before promoting the change to the next one, and what result gates the move to the following environment.
 6. Describe the branch integration strategy: merge order, expected conflict resolution, and who approves each integration.
 7. Detail the deployment: deployment order by component, maintenance windows if applicable, and who executes each step.

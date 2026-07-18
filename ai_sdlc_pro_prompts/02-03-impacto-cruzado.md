@@ -38,7 +38,7 @@ Analiza el impacto del cambio solicitado en otros módulos, procesos, datos, int
 
 Actividades:
 1. Evalúa impacto en:
-   - subproyectos / workspaces del monorepo (por ejemplo, dependencias compartidas, utilerías comunes),
+   - subproyectos / workspaces del monorepo, si el repositorio lo es (por ejemplo, dependencias compartidas, utilerías comunes) — omite este punto si el proyecto no es monorepo,
    - contratos de API y versionado semántico (semver) de paquetes locales,
    - frontend,
    - backend,
@@ -59,7 +59,7 @@ Restricciones:
 - no cierres la matriz de impacto con severidades "bajo" en componentes que no pudiste inspeccionar directamente.
 
 Salida:
-- matriz de impacto (incluyendo workspaces y paquetes del monorepo),
+- matriz de impacto (incluyendo workspaces y paquetes del monorepo si aplica),
 - severidad,
 - componente/workspace afectado,
 - tipo de impacto (directo/indirecto, ruptura de retrocompatibilidad),

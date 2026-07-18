@@ -16,7 +16,7 @@ Prompt para ejecutar el proceso completo de respuesta a incidentes en producció
 | Riesgo esperado | alto — coordina acciones sobre producción activa, incluida contención con posible rollback |
 | Entradas requeridas | síntoma/alerta, sistema afectado, ambiente, hora de detección, fuente de detección, stack |
 | Herramientas permitidas | fases 1-3 y 6-7: solo lectura de logs/métricas; fase 4 (contención) puede requerir rollback o mitigación, siempre con aprobación |
-| Autonomía permitida | A0 — Analizar en fases 1-3 y 6-7; A2 — Ejecutar controlado en fase 4, solo si el runbook ya autorizó la acción específica |
+| Autonomía permitida | A0 — Analizar en fases 1-3 y 6-7; A3 — Publicar en fase 4 (rollback, mitigación o mutación contra producción activa son despliegue/mutación remota según `00-framework.md`, no ejecución en workspace aislado), solo si el runbook ya autorizó la acción específica y con la aprobación explícita o política preautorizada que exige A3 |
 | Criterios de detención | el propio prompt exige detener toda operación de agentes IA en el repositorio y no desplegar código mientras el incidente esté activo |
 | Salida esperada | ver `## Salida esperada` |
 | Evidencia mínima | cronología con hora exacta de cada fase y actor responsable |

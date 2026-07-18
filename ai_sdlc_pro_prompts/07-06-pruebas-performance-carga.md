@@ -87,6 +87,12 @@ Entrega:
 7. COMPARATIVA ANTES / DESPUÉS
    Tabla para registrar métricas pre y post cambio:
    | Escenario | P50 antes | P95 antes | P99 antes | P50 después | P95 después | P99 después | Delta |
+
+Restricciones:
+- este prompt solo diseña la estrategia y genera el script base; no ejecuta ninguna prueba de carga — la ejecución real corresponde a `07-11-implementacion-pruebas-performance`, y solo contra QA/Staging con aprobación explícita,
+- nunca propongas ni asumas que este prompt puede ejecutar carga contra producción bajo ninguna circunstancia — si el ambiente indicado es producción, detente y señálalo como bloqueante en vez de generar la estrategia,
+- los payloads de prueba deben ser siempre datos sintéticos; nunca uses ni sugieras usar datos reales de usuarios o de producción,
+- no completes umbrales de aceptación (P50/P95/P99, tasa de error, throughput) con valores inventados si el SLA no fue provisto — decláralos como pendientes de definir en vez de asumir un valor plausible.
 ```
 
 ---

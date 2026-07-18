@@ -98,7 +98,7 @@ Explicitly define what conditions MUST be met to continue:
 - any critical check from point 1 fails
 - target environment has active incidents
 - no responsible available for rollback
-- it is Friday afternoon or eve of important date (operational hygiene rule)
+- the deployment time falls within a freeze window explicitly defined by the team (e.g. Friday afternoon, eve of a commercial event, fiscal period close) — if no freeze-window policy was provided as input, do not assume one on your own; flag it as data not provided instead of applying your own judgment of what counts as an "important date"
 
 ## 3. DEPLOYMENT STEPS
 Exact and ordered sequence of commands or actions for this change.

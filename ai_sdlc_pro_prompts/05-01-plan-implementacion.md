@@ -41,7 +41,7 @@ Pasos:
 1. Lista las actividades previas necesarias antes de tocar código (accesos, creación de rama, backups, feature flags, aviso a stakeholders).
 2. Detalla los cambios por componente, con el mismo alcance y granularidad que el diseño aprobado (`04-01`) — si agregas un componente que el diseño no contemplaba, señálalo explícitamente como desviación en vez de incluirlo sin comentario.
 3. Especifica los ajustes de datos o migraciones necesarios, indicando si son reversibles y qué ocurre con los datos existentes durante y después de la migración.
-4. Define las pruebas requeridas por paso (unitarias, integración, E2E, performance), priorizando las que cubren el camino crítico del cambio antes que casos periféricos si el tiempo de QA es limitado.
+4. Define las pruebas requeridas por paso (unitarias, integración, E2E, performance), priorizando las que cubren el camino crítico del cambio antes que casos periféricos si el tiempo de QA es limitado. Si existe un perfil de stack de pruebas ya generado (`07-00-deteccion-stack-pruebas`), reutiliza sus comandos y convenciones en vez de inventar comandos de test propios.
 5. Define las validaciones a ejecutar en cada ambiente (dev/QA/staging) antes de promover el cambio al siguiente, y qué resultado habilita el paso al ambiente posterior.
 6. Describe la estrategia de integración con ramas: orden de merges, resolución de conflictos esperada y quién aprueba cada integración.
 7. Detalla el despliegue: orden de despliegue por componente, ventanas de mantenimiento si aplica, y quién ejecuta cada paso.

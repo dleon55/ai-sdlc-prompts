@@ -34,20 +34,28 @@ Prompt to formally document the use cases of the analyzed requirement or module:
 
 ```text
 Objective:
-Formally document the use cases related to the analyzed requirement or module.
+Formally document the use cases related to the analyzed requirement or module, based on the prior functional analysis (`02-01`).
 
-For each use case include:
-- name,
-- objective,
-- actors,
-- trigger,
-- preconditions,
-- main flow,
-- alternate flows,
-- postconditions,
-- business rules,
-- acceptance criteria,
-- related technical components.
+Inputs:
+- prior functional analysis: [PASTE OR REFERENCE TO 02-01]
+- existing use-case documentation: [REFERENCE OR "none"]
+- target module or functionality: [MODULE]
+
+Steps:
+1. Review the cited functional analysis and any existing use-case documentation to identify what behavior is already defined and what is missing.
+2. For each use case, document: name, objective, actors, trigger, preconditions, main flow, alternate flows, postconditions, business rules, acceptance criteria, and related technical components.
+3. The main flow must reflect the complete happy path; alternate flows must cover at least the exceptions and variations already mentioned in the functional analysis.
+4. Verify that every acceptance criterion is objectively verifiable (observable in the system), not a vague aspiration.
+5. If business rules, postconditions, or verifiable acceptance criteria are missing from the cited functional analysis for any use case, do not invent them.
+
+Constraints:
+- do not fill a field (postconditions, business rules, acceptance criteria) by inventing plausible content when the cited functional analysis does not specify it — mark that use case explicitly as "pending functional validation" instead,
+- every use case must include at least one alternate flow; if the functional analysis mentions no exceptions, flag it as an empty gap to validate instead of omitting the section,
+- do not propose architecture or implementation changes in this prompt — the goal is to formalize already-analyzed behavior, not to design or resolve it,
+- cite the functional analysis or existing documentation as the source for every non-obvious business rule or precondition; do not present them as if self-evident.
+
+Output:
+- see `## Structure of each use case`
 ```
 
 ---

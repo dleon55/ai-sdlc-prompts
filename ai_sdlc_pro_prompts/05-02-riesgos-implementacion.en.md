@@ -34,24 +34,31 @@ Prompt to identify and classify implementation risks: functional, technical, dat
 
 ```text
 Objective:
-Identify and analyze implementation risks and the potential impact of the change on other modules, processes, services, pipelines, integrations and users.
+Identify and analyze implementation risks and the potential impact of the change on other modules, processes, services, pipelines, integrations and users, in parallel with the implementation plan (`05-01`).
 
-Classify risks by:
-- functional,
-- technical,
-- data,
-- security,
-- operations,
-- agent concurrency,
-- integration,
-- deployment.
+Inputs:
+- approved design: [PASTE OR REFERENCE]
+- architecture: [REFERENCE]
+- related incident history: [REFERENCE OR "none known"]
+- implementation plan (`05-01`): [REFERENCE]
 
-Deliver:
-- risk matrix,
-- probability,
-- impact,
-- mitigation,
-- contingency.
+Steps:
+1. Review the approved design, architecture, and implementation plan to identify every point of change and its dependencies.
+2. For each point of change, identify risks in each of these categories where applicable: functional, technical, data, security, operations, agent concurrency, integration, deployment.
+3. For each risk, estimate probability (low/medium/high) and impact (low/medium/high) based on cited incident history or design — not on unsupported intuition.
+4. Define the proposed mitigation and contingency plan (what to do if the mitigation fails) for each risk.
+5. If a risk is classified as high without a viable mitigation, do not downplay or leave it implicit: state it explicitly as a blocker for `06-01`.
+
+Constraints:
+- do not classify a risk as low just because there is no evidence against it — if there is not enough information to evaluate it, state it as "risk not evaluable with available information" instead of assuming it is low,
+- no high risk may be left without an explicit mitigation and contingency in the output,
+- do not execute commands or modify the repository or environment — this prompt is analysis and proposal only (A0/A1),
+- distinguish in every matrix row what is a risk confirmed by cited evidence (design, architecture, incident history) versus your own inference — never mix them without marking the difference,
+- if there is no reference design or implementation plan, stop and request one instead of building the matrix on your own assumptions.
+
+Output:
+- risk matrix: category, probability, impact, mitigation, contingency
+- separate list of high risks without a viable mitigation (if any), flagged as blockers for `06-01`
 ```
 
 ---
