@@ -21,8 +21,9 @@ test("getPrompt returns null for unknown id", () => {
 });
 
 test("listPrompts filters by section", () => {
+  const expectedCount = getAllPromptIds().filter((id) => getPrompt(id).section === "16").length;
   const results = listPrompts({ section: "16" });
-  assert.equal(results.length, 5);
+  assert.equal(results.length, expectedCount);
   assert.ok(results.every((p) => p.section === "16"));
 });
 
