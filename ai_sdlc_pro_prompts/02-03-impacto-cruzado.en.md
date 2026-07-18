@@ -38,7 +38,7 @@ Analyze the impact of the requested change on other modules, processes, data, in
 
 Activities:
 1. Evaluate impact on:
-   - monorepo workspaces / subprojects (for example, shared dependencies, common utility packages),
+   - monorepo workspaces / subprojects, if the repository is one (for example, shared dependencies, common utility packages) — skip this point if the project is not a monorepo,
    - API contracts and semantic versioning (semver) of local packages,
    - frontend,
    - backend,
@@ -59,7 +59,7 @@ Constraints:
 - don't close the impact matrix with "low" severity on components you could not inspect directly.
 
 Output:
-- impact matrix (including monorepo workspaces and packages),
+- impact matrix (including monorepo workspaces and packages if applicable),
 - severity,
 - affected component/workspace,
 - impact type (direct/indirect, breaking changes in local dependencies),

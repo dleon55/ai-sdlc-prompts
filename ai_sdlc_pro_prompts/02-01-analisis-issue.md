@@ -52,7 +52,7 @@ Actividades:
    - comportamiento actual,
    - comportamiento esperado,
    - criterios de aceptación funcionales y de calidad.
-3. Determina el subproyecto/workspace del monorepo afectado y si hay dependencias con otros paquetes locales.
+3. Si el repositorio es un monorepo, determina el subproyecto/workspace afectado y si hay dependencias con otros paquetes locales; si no lo es, omite esta sub-verificación.
 4. Revisa si ya está documentado en el proyecto.
 5. Relaciona el requerimiento con módulos, componentes y datos impactados.
 6. Detecta dependencias, riesgos y controles de seguridad (DevSecOps/ISO 27001).

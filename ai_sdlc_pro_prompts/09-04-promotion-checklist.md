@@ -98,7 +98,7 @@ Define explícitamente qué condiciones DEBEN cumplirse para continuar:
 - algún check crítico del punto 1 falla
 - el ambiente destino tiene incidentes activos
 - no hay responsable disponible para rollback
-- es viernes por la tarde o víspera de fecha importante (regla de higiene operativa)
+- el momento del despliegue cae dentro de una ventana de congelamiento (freeze) definida explícitamente por el equipo (ej. viernes por la tarde, víspera de un evento comercial, fin de periodo fiscal) — si no se proveyó una política de ventanas de congelamiento como entrada, no asumas ninguna por tu cuenta; señálalo como dato no provisto en vez de aplicar un criterio propio de qué cuenta como "fecha importante"
 
 ## 3. PASOS DE DESPLIEGUE
 Secuencia exacta y ordenada de comandos o acciones para este cambio.

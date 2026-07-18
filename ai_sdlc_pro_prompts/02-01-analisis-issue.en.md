@@ -52,7 +52,7 @@ Activities:
    - current behavior,
    - expected behavior,
    - functional and quality acceptance criteria.
-3. Determine the affected monorepo subproject/workspace and if there are dependencies with other local packages.
+3. If the repository is a monorepo, determine the affected subproject/workspace and if there are dependencies with other local packages; if not, skip this sub-check.
 4. Review if it is already documented in the project.
 5. Relate the requirement to impacted modules, components and data.
 6. Detect dependencies, risks, and security controls (DevSecOps/ISO 27001).

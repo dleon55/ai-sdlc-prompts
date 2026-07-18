@@ -87,6 +87,12 @@ Deliver:
 7. BEFORE / AFTER COMPARISON
    Table to record pre and post change metrics:
    | Scenario | P50 before | P95 before | P99 before | P50 after | P95 after | P99 after | Delta |
+
+Constraints:
+- this prompt only designs the strategy and generates the base script; it does not execute any load test — actual execution belongs to `07-11-implementacion-pruebas-performance`, and only against QA/Staging with explicit approval,
+- never propose or assume that this prompt can execute load against production under any circumstance — if the indicated environment is production, stop and flag it as a blocker instead of generating the strategy,
+- test payloads must always be synthetic data; never use or suggest using real user or production data,
+- do not fill in acceptance thresholds (P50/P95/P99, error rate, throughput) with invented values if the SLA was not provided — flag them as pending definition instead of assuming a plausible value.
 ```
 
 ---

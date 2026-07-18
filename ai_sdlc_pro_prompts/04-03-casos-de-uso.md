@@ -34,20 +34,28 @@ Prompt para documentar formalmente los casos de uso del requerimiento o módulo 
 
 ```text
 Objetivo:
-Documenta formalmente los casos de uso relacionados con el requerimiento o módulo analizado.
+Documenta formalmente los casos de uso relacionados con el requerimiento o módulo analizado, a partir del análisis funcional previo (`02-01`).
 
-Para cada caso de uso incluye:
-- nombre,
-- objetivo,
-- actores,
-- disparador,
-- precondiciones,
-- flujo principal,
-- flujos alternos,
-- postcondiciones,
-- reglas de negocio,
-- criterios de aceptación,
-- componentes técnicos relacionados.
+Entradas:
+- análisis funcional previo: [PEGAR O REFERENCIA A 02-01]
+- documentación existente de casos de uso: [REFERENCIA O "ninguna"]
+- módulo o funcionalidad objetivo: [MODULO]
+
+Pasos:
+1. Revisa el análisis funcional citado y la documentación existente de casos de uso para identificar qué comportamiento ya está definido y qué falta.
+2. Para cada caso de uso, documenta: nombre, objetivo, actores, disparador, precondiciones, flujo principal, flujos alternos, postcondiciones, reglas de negocio, criterios de aceptación y componentes técnicos relacionados.
+3. El flujo principal debe reflejar el camino feliz completo; los flujos alternos deben cubrir al menos las excepciones y variaciones ya mencionadas en el análisis funcional.
+4. Verifica que cada criterio de aceptación sea verificable de forma objetiva (observable en el sistema), no una aspiración vaga.
+5. Si para algún caso de uso faltan reglas de negocio, postcondiciones o criterios de aceptación verificables en el análisis funcional citado, no los inventes.
+
+Restricciones:
+- no completes un campo (postcondiciones, reglas de negocio, criterios de aceptación) inventando contenido plausible cuando el análisis funcional citado no lo especifica — márcalo explícitamente como "pendiente de validación funcional" en ese caso de uso,
+- todo caso de uso debe incluir al menos un flujo alterno; si el análisis funcional no menciona ninguna excepción, señálalo como vacío a validar en vez de omitir la sección,
+- no propongas cambios de arquitectura ni de implementación en este prompt — el objetivo es formalizar el comportamiento ya analizado, no diseñarlo o resolverlo,
+- cita el análisis funcional o la documentación existente como fuente de cada regla de negocio o precondición no obvia; no las presentes como si fueran evidentes por sí mismas.
+
+Salida:
+- ver `## Estructura de cada caso de uso`
 ```
 
 ---

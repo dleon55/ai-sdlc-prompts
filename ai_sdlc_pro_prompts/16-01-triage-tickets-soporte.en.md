@@ -48,23 +48,23 @@ Steps:
 1. INTAKE AND NORMALIZATION
    For each ticket, extract the relevant fields (title, description, affected component/product, environment, affected user/customer, report timestamp, referenced attachments or logs). If a critical field is missing, state this explicitly instead of assuming it.
 
-2. SEVERITY/PRIORITY CLASSIFICATION
+2. SECURITY INDICATOR CHECK
+   Before investing effort in standard classification, check whether the ticket shows signs of a security incident or data exposure (exposed credentials, reported unauthorized access, suspected data leak). If so, stop the routine triage of that ticket immediately and flag it for security escalation instead of continuing with the steps below.
+
+3. SEVERITY/PRIORITY CLASSIFICATION
    Determine severity (e.g., critical/high/medium/low) and priority using an explicit impact x urgency matrix: impact (how many users/customers affected, whether there is data or revenue loss, total block vs. degradation) and urgency (whether a workaround exists, whether it worsens over time). Cite the specific ticket field or indicator supporting each assigned level — never assign severity without textual evidence from the ticket.
 
-3. APPLICABLE SLA DETERMINATION
+4. APPLICABLE SLA DETERMINATION
    Based on the assigned severity/priority, apply the current SLA policy to determine the target first-response and resolution time. If the SLA policy does not cover the case or was not provided, state this explicitly instead of inventing an SLA.
 
-4. DUPLICATE OR KNOWN ISSUE DETECTION
+5. DUPLICATE OR KNOWN ISSUE DETECTION
    Search the provided ticket history or knowledge base for a prior ticket or known issue that matches (same error/message, same component, same environment or pattern). If you find a reasonable match, cite the matching ticket/entry ID and the matching criterion. If the match is partial or uncertain, mark it as "possible duplicate, unconfirmed" — never declare it a confirmed duplicate without clear evidence.
 
-5. PROPOSED TEAM/OWNER FOR FIRST ASSIGNMENT
+6. PROPOSED TEAM/OWNER FOR FIRST ASSIGNMENT
    Based on the affected component/product and the provided routing rules, propose the team or owner that should receive the ticket in the first instance. If the routing rules do not cover the identified component, flag it as "no routing rule defined" instead of assigning a default team without justification.
 
-6. FLAGGING AMBIGUOUS OR INCOMPLETE CASES
+7. FLAGGING AMBIGUOUS OR INCOMPLETE CASES
    List separately the tickets lacking enough information to classify with confidence (severity, SLA, or team), and what specific information is missing to complete the triage.
-
-7. SECURITY INDICATOR CHECK
-   Before closing out the triage of each ticket, check whether it shows signs of a security incident or data exposure (exposed credentials, reported unauthorized access, suspected data leak). If so, stop the routine triage of that ticket and flag it for immediate security escalation instead of continuing with standard classification.
 
 8. EXECUTIVE SUMMARY AND CONSOLIDATED TABLE
    Summarize the classified batch: how many tickets per severity, how many duplicates/known issues detected, how many with insufficient information, and how many escalated due to security indicators.

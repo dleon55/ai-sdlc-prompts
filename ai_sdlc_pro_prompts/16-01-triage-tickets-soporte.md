@@ -48,23 +48,23 @@ Pasos:
 1. INGESTA Y NORMALIZACIÓN
    Para cada ticket, extrae los campos relevantes (título, descripción, componente/producto afectado, entorno, usuario/cliente afectado, timestamp de reporte, adjuntos o logs referenciados). Si un campo crítico falta, indícalo explícitamente en vez de asumirlo.
 
-2. CLASIFICACIÓN DE SEVERIDAD/PRIORIDAD
+2. VERIFICACIÓN DE INDICIOS DE SEGURIDAD
+   Antes de invertir esfuerzo en la clasificación estándar, verifica si el ticket contiene indicios de incidente de seguridad o exposición de datos (credenciales expuestas, acceso no autorizado reportado, fuga de datos sospechada). Si los hay, detén el triage rutinario de ese ticket de inmediato y márcalo para escalamiento de seguridad en vez de continuar con los pasos siguientes.
+
+3. CLASIFICACIÓN DE SEVERIDAD/PRIORIDAD
    Determina la severidad (ej: crítica/alta/media/baja) y prioridad usando una matriz de impacto x urgencia explícita: impacto (cuántos usuarios/clientes afectados, si hay pérdida de datos o de ingreso, si hay bloqueo total vs. degradación) y urgencia (si existe workaround, si empeora con el tiempo). Cita el campo o indicio concreto del ticket que sustenta cada nivel asignado — nunca asignes severidad sin evidencia textual del ticket.
 
-3. DETERMINACIÓN DEL SLA APLICABLE
+4. DETERMINACIÓN DEL SLA APLICABLE
    A partir de la severidad/prioridad asignada, aplica la política de SLA vigente para determinar el tiempo de primera respuesta y de resolución objetivo. Si la política de SLA no cubre el caso o no fue provista, indícalo explícitamente en vez de inventar un SLA.
 
-4. DETECCIÓN DE DUPLICADO O PROBLEMA CONOCIDO
+5. DETECCIÓN DE DUPLICADO O PROBLEMA CONOCIDO
    Busca en el historial de tickets o base de conocimiento provista si existe un ticket previo o un problema conocido que coincida (mismo error/mensaje, mismo componente, mismo entorno o patrón). Si encuentras una coincidencia razonable, cita el ID del ticket/entrada coincidente y el criterio de coincidencia. Si la coincidencia es parcial o incierta, márcalo como "posible duplicado, no confirmado" — nunca lo declares duplicado confirmado sin evidencia clara.
 
-5. PROPUESTA DE EQUIPO/RESPONSABLE DE PRIMERA ASIGNACIÓN
+6. PROPUESTA DE EQUIPO/RESPONSABLE DE PRIMERA ASIGNACIÓN
    Según el componente/producto afectado y las reglas de enrutamiento provistas, propone el equipo o responsable que debería recibir el ticket en primera instancia. Si las reglas de enrutamiento no cubren el componente identificado, señálalo como "sin regla de enrutamiento definida" en vez de asignar un equipo por defecto sin justificación.
 
-6. SEÑALIZACIÓN DE CASOS AMBIGUOS O INCOMPLETOS
+7. SEÑALIZACIÓN DE CASOS AMBIGUOS O INCOMPLETOS
    Lista aparte los tickets donde falte información suficiente para clasificar con confianza (severidad, SLA o equipo), y qué información específica falta para completar el triage.
-
-7. VERIFICACIÓN DE INDICIOS DE SEGURIDAD
-   Antes de cerrar el triage de cada ticket, verifica si contiene indicios de incidente de seguridad o exposición de datos (credenciales expuestas, acceso no autorizado reportado, fuga de datos sospechada). Si los hay, detén el triage rutinario de ese ticket y márcalo para escalamiento de seguridad inmediato en vez de continuar con la clasificación estándar.
 
 8. RESUMEN EJECUTIVO Y TABLA CONSOLIDADA
    Resume el lote clasificado: cuántos tickets por severidad, cuántos duplicados/conocidos detectados, cuántos con información insuficiente, y cuántos escalados por indicios de seguridad.

@@ -34,24 +34,31 @@ Prompt para identificar y clasificar los riesgos de implementación: funcionales
 
 ```text
 Objetivo:
-Identifica y analiza los riesgos de implementación y el impacto potencial del cambio en otros módulos, procesos, servicios, pipelines, integraciones y usuarios.
+Identifica y analiza los riesgos de implementación y el impacto potencial del cambio en otros módulos, procesos, servicios, pipelines, integraciones y usuarios, en paralelo al plan de implementación (`05-01`).
 
-Clasifica riesgos por:
-- funcional,
-- técnico,
-- datos,
-- seguridad,
-- operación,
-- concurrencia de agentes,
-- integración,
-- despliegue.
+Entradas:
+- diseño aprobado: [PEGAR O REFERENCIA]
+- arquitectura: [REFERENCIA]
+- historial de incidentes relacionados: [REFERENCIA O "ninguno conocido"]
+- plan de implementación (`05-01`): [REFERENCIA]
 
-Entrega:
-- matriz de riesgos,
-- probabilidad,
-- impacto,
-- mitigación,
-- contingencia.
+Pasos:
+1. Revisa el diseño aprobado, la arquitectura y el plan de implementación para identificar todos los puntos de cambio y sus dependencias.
+2. Para cada punto de cambio, identifica riesgos en cada una de estas categorías cuando aplique: funcional, técnico, datos, seguridad, operación, concurrencia de agentes, integración, despliegue.
+3. Para cada riesgo, estima probabilidad (baja/media/alta) e impacto (bajo/medio/alto) con base en el historial de incidentes o el diseño citado — no en intuición sin respaldo.
+4. Define la mitigación propuesta y el plan de contingencia (qué hacer si la mitigación falla) para cada riesgo.
+5. Si un riesgo queda clasificado como alto sin una mitigación viable, no lo minimices ni lo dejes implícito: decláralo explícitamente como bloqueante para `06-01`.
+
+Restricciones:
+- no clasifiques un riesgo como bajo solo porque falta evidencia en contra — si no hay información suficiente para evaluarlo, decláralo como "riesgo no evaluable con la información disponible" en vez de asumir que es bajo,
+- ningún riesgo alto puede quedar sin mitigación o contingencia explícitas en la salida,
+- no ejecutes comandos ni modifiques el repositorio o el ambiente — este prompt es de solo análisis y propuesta (A0/A1),
+- distingue en cada fila de la matriz qué es un riesgo confirmado por evidencia citada (diseño, arquitectura, historial de incidentes) y qué es una inferencia propia — nunca los mezcles sin marcarlos,
+- si no existe diseño o plan de implementación de referencia, detente y solicítalo en vez de construir la matriz sobre supuestos propios.
+
+Salida:
+- matriz de riesgos: categoría, probabilidad, impacto, mitigación, contingencia
+- lista separada de riesgos altos sin mitigación viable (si existen), marcados como bloqueantes para `06-01`
 ```
 
 ---
