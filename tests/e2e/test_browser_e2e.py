@@ -103,7 +103,7 @@ def test_single_copy_preview_equals_clipboard_content(app_page):
     special = "Repo-Test_valor/con-slash"
     _set_variable(app_page, "vf-repositorio", special)
     pid = "00-B-01-scaffolding-repositorio"
-    app_page.click(f'.card-title[onclick*="{pid}-es"]')
+    app_page.click(f'.card-expand[onclick*="{pid}-es"]')
     app_page.wait_for_timeout(150)
     preview = app_page.evaluate(f'document.getElementById("code-{pid}-es").textContent')
     clip = _copy_and_read_clipboard(app_page, pid, "es")
@@ -221,10 +221,10 @@ def test_search_filters_cards_after_debounce(app_page):
     app_page.wait_for_timeout(300)
 
     assert app_page.locator(
-        '.card-title[onclick*="scaffolding-repositorio-es"]'
+        '.card-expand[onclick*="scaffolding-repositorio-es"]'
     ).first.is_visible()
     assert not app_page.locator(
-        '.card-title[onclick*="00-C-01-issue-para-agente-ia-es"]'
+        '.card-expand[onclick*="00-C-01-issue-para-agente-ia-es"]'
     ).first.is_visible()
     count_text = app_page.locator("#vis-count").inner_text()
     assert "coincidencia" in count_text
@@ -251,7 +251,7 @@ def test_project_switch_isolates_variables(app_page):
 
 def test_contextual_variable_panel_reflects_active_prompt_fields(app_page):
     pid = "13-05-dast-analisis-dinamico-seguridad"
-    app_page.click(f'.card-title[onclick*="{pid}-es"]')
+    app_page.click(f'.card-expand[onclick*="{pid}-es"]')
     app_page.wait_for_timeout(150)
     app_page.evaluate(f"updateContextualVariablePanel('{pid}')")
     app_page.wait_for_timeout(150)

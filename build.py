@@ -525,6 +525,7 @@ header {
 .lang-option {
   padding: 8px 12px; font-size: .78rem; color: var(--tx2); cursor: pointer;
   transition: background .2s, color .2s;
+  display: block; width: 100%; text-align: left; background: none; border: none; font-family: inherit;
 }
 .lang-option:hover { background: var(--bg3); color: #fff; }
 .lang-option[selected] { color: #6366f1; font-weight: 700; }
@@ -685,7 +686,7 @@ body.sidebar-collapsed .sidebar-collapse-btn svg { transform: rotate(180deg); }
 }
 .sec-label {
   font-size: .72rem; font-weight: 700; text-transform: uppercase;
-  letter-spacing: .08em; color: var(--tx3); flex: 1;
+  letter-spacing: .08em; color: var(--tx3); flex: 1; margin: 0;
 }
 .sec-count {
   font-size: .62rem; color: var(--tx3); background: var(--bg3);
@@ -722,9 +723,8 @@ body.sidebar-collapsed .sidebar-collapse-btn svg { transform: rotate(180deg); }
 .card-expand.open svg { transform: rotate(180deg); }
 .card-title {
   flex: 1; font-size: .78rem; font-weight: 500; color: #c4c9e8;
-  line-height: 1.35; cursor: pointer; min-width: 0;
+  line-height: 1.35; min-width: 0; margin: 0;
 }
-.card-title:hover { color: var(--tx); }
 .copy-btn {
   flex-shrink: 0; padding: .32rem .7rem;
   background: var(--bg4); border: 1px solid var(--bdr2);
@@ -1362,6 +1362,10 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
 @keyframes toast-out {
   from { transform: scale(1); opacity: 1; }
   to { transform: scale(0.9); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card-flash { animation: none; outline: 2px solid #6366f1; outline-offset: 2px; }
+  .toast, .toast.fade-out { animation: none; }
 }
 .chips-container {
   display: flex;
@@ -2088,22 +2092,22 @@ function renderProjectsModal() {
     var isActive = p.id === activeId;
     var defBadge = p.isDefault ? '<span class="proj-def-badge">default</span>' : '';
     var delBtn = list.length > 1
-      ? '<button class="proj-action-btn" title="Eliminar / Delete"'
+      ? '<button class="proj-action-btn" title="Eliminar / Delete" aria-label="Eliminar / Delete"'
         + ' onclick="deleteProject(\\'' + escId(p.id) + '\\');renderProjectsModal();renderProjectSelector();">'
         + '\u2715</button>'
       : '';
     return '<li class="proj-item' + (isActive ? ' active-proj' : '') + '">'
       + defBadge
-      + '<input class="proj-item-name" value="'
+      + '<input class="proj-item-name" aria-label="Nombre del proyecto / Project name" value="'
         + p.name.replace(/&/g,'&amp;').replace(/"/g,'&quot;') + '"'
         + ' onblur="renameProject(\\'' + escId(p.id) + '\\',this.value)">'
-      + '<button class="proj-action-btn" title="Activar / Activate"'
+      + '<button class="proj-action-btn" title="Activar / Activate" aria-label="Activar / Activate"'
         + ' onclick="switchProject(\\'' + escId(p.id) + '\\');renderProjectsModal();">\u26a1</button>'
-      + '<button class="proj-action-btn" title="Predeterminar / Make Default"'
+      + '<button class="proj-action-btn" title="Predeterminar / Make Default" aria-label="Predeterminar / Make Default"'
         + ' onclick="setDefaultProject(\\'' + escId(p.id) + '\\');renderProjectsModal();renderProjectSelector();">\u2605</button>'
-      + '<button class="proj-action-btn" title="Duplicar / Duplicate"'
+      + '<button class="proj-action-btn" title="Duplicar / Duplicate" aria-label="Duplicar / Duplicate"'
         + ' onclick="duplicateProject(\\'' + escId(p.id) + '\\');renderProjectsModal();renderProjectSelector();syncPanelToProject();">\u2398</button>'
-      + '<button class="proj-action-btn" title="Exportar / Export"'
+      + '<button class="proj-action-btn" title="Exportar / Export" aria-label="Exportar / Export"'
         + ' onclick="exportProject(\\'' + escId(p.id) + '\\')">\u2b07</button>'
       + delBtn
       + '</li>';
@@ -2518,6 +2522,8 @@ function clearTaskVars() {
 
 /* ═══════════════════  TOGGLE CARD / COPY  ══════════════════════ */
 
+var _lastFocusedBeforeMenu = null;
+
 function toggleMenu() {
   var isOpen = document.body.classList.toggle('menu-open');
   var btn = document.querySelector('.menu-toggle-btn');
@@ -2528,6 +2534,7 @@ function toggleMenu() {
   // semánticamente un [role="dialog"], es una navegación), así que
   // trapFocusInModal() lo trata como caso aparte -- ver ese archivo.
   if (isOpen) {
+    _lastFocusedBeforeMenu = document.activeElement;
     var sidebar = document.getElementById('app-sidebar');
     var firstFocusable = sidebar ? sidebar.querySelector('a, button') : null;
     if (firstFocusable) firstFocusable.focus();
@@ -2538,6 +2545,10 @@ function closeMenu() {
   document.body.classList.remove('menu-open');
   var btn = document.querySelector('.menu-toggle-btn');
   if (btn) btn.setAttribute('aria-expanded', 'false');
+  if (_lastFocusedBeforeMenu && typeof _lastFocusedBeforeMenu.focus === 'function') {
+    _lastFocusedBeforeMenu.focus();
+  }
+  _lastFocusedBeforeMenu = null;
 }
 
 /* ═══════════════════  TOGGLE CARD / COPY  ══════════════════════ */
@@ -3121,7 +3132,7 @@ function toggleCard(pid) {
   ACTIVE_PROMPT_LANG = getCurrentLanguage();
   updateContextualVariablePanel();
   var isOpen = b.classList.toggle('open');
-  if (t) t.classList.toggle('open', isOpen);
+  if (t) { t.classList.toggle('open', isOpen); t.setAttribute('aria-expanded', isOpen ? 'true' : 'false'); }
 }
 
 function initMsMode() {
@@ -3131,9 +3142,9 @@ function initMsMode() {
       msMode = true;
       document.body.classList.add('ms-mode');
       var btn = document.getElementById('ms-toggle-btn');
-      if (btn) btn.classList.add('active');
+      if (btn) { btn.classList.add('active'); btn.setAttribute('aria-pressed', 'true'); }
       var floatBtn = document.getElementById('ms-float-btn');
-      if (floatBtn) floatBtn.classList.add('active');
+      if (floatBtn) { floatBtn.classList.add('active'); floatBtn.setAttribute('aria-pressed', 'true'); }
       updateMsBar();
     }
   } catch(e) {}
@@ -3143,9 +3154,9 @@ function toggleMsMode() {
   msMode = !msMode;
   document.body.classList.toggle('ms-mode', msMode);
   var btn = document.getElementById('ms-toggle-btn');
-  if (btn) btn.classList.toggle('active', msMode);
+  if (btn) { btn.classList.toggle('active', msMode); btn.setAttribute('aria-pressed', msMode ? 'true' : 'false'); }
   var floatBtn = document.getElementById('ms-float-btn');
-  if (floatBtn) floatBtn.classList.toggle('active', msMode);
+  if (floatBtn) { floatBtn.classList.toggle('active', msMode); floatBtn.setAttribute('aria-pressed', msMode ? 'true' : 'false'); }
   try {
     localStorage.setItem('AI_SDLC_ms_mode', msMode ? '1' : '0');
   } catch(e) {}
@@ -3269,6 +3280,7 @@ function filterByFacetChip(kind, value) {
   document.querySelectorAll('.facet-chip').forEach(function(c) {
     var active = !!(_activeFacet && c.getAttribute('data-kind') === _activeFacet.kind && c.getAttribute('data-value') === _activeFacet.value);
     c.classList.toggle('active', active);
+    c.setAttribute('aria-pressed', active ? 'true' : 'false');
   });
   applyFilters();
 }
@@ -3884,7 +3896,8 @@ def build():
     # Banner en español
     fw_block_es = (
         '<div class="framework-banner fw-lang-es" id="sec-00-es" data-observe>'
-        '<div class="fw-header" onclick="toggleFramework()" title="Click para expandir/colapsar">'
+        '<div class="fw-header" onclick="toggleFramework()" title="Click para expandir/colapsar"'
+        ' role="button" tabindex="0" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();toggleFramework();}">'
         '<span class="fw-badge">&#9888; Obligatorio</span>'
         + icon_svg("framework", SECTION_COLOR["00"], 18) +
         '<span class="fw-title">&#128204; PASO 1 — Copia este bloque antes de usar cualquier prompt</span>'
@@ -3908,7 +3921,8 @@ def build():
     # Banner en inglés
     fw_block_en = (
         '<div class="framework-banner fw-lang-en" id="sec-00-en" data-observe>'
-        '<div class="fw-header" onclick="toggleFramework()" title="Click to expand/collapse">'
+        '<div class="fw-header" onclick="toggleFramework()" title="Click to expand/collapse"'
+        ' role="button" tabindex="0" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();toggleFramework();}">'
         '<span class="fw-badge">&#9888; Required</span>'
         + icon_svg("framework", SECTION_COLOR["00"], 18) +
         '<span class="fw-title">&#128204; STEP 1 — Copy this block before using any prompt</span>'
@@ -3949,8 +3963,8 @@ def build():
             '<span class="sec-num" style="color:' + color + ';border-color:' + color + '22;background:' + color + '11">'
             + sk + '</span>'
             + icon_svg(icon_key, color, 16) +
-            '<span class="sec-label sec-lang-es">' + label_es + '</span>'
-            '<span class="sec-label sec-lang-en">' + label_en + '</span>'
+            '<h2 class="sec-label sec-lang-es">' + label_es + '</h2>'
+            '<h2 class="sec-label sec-lang-en">' + label_en + '</h2>'
             '<span class="sec-count">' + str(cnt) + '</span>'
             '</div>'
             '<div class="cards-grid">'
@@ -3979,12 +3993,13 @@ def build():
                 '<input type="checkbox" class="card-check" data-pid="' + pid + '"'
                 ' onchange="onCardCheck(this)" title="Seleccionar prompt">'
                 '<button class="card-expand" id="ce-' + pid + '-es"'
-                ' onclick="toggleCard(\'' + pid + '-es\')" title="Ver / ocultar prompt" aria-label="Ver / ocultar prompt ' + t_es_attr + '">'
+                ' onclick="toggleCard(\'' + pid + '-es\')" title="Ver / ocultar prompt" aria-label="Ver / ocultar prompt ' + t_es_attr + '"'
+                ' aria-expanded="false" aria-controls="cb-' + pid + '-es">'
                 + chevron +
                 '</button>'
-                '<span class="card-title" onclick="toggleCard(\'' + pid + '-es\')">'
+                '<h3 class="card-title">'
                 + h(p["title_es"]) +
-                '</span>'
+                '</h3>'
             )
             if has_info_es:
                 groups_html += (
@@ -4010,12 +4025,13 @@ def build():
                 '<input type="checkbox" class="card-check" data-pid="' + pid + '"'
                 ' onchange="onCardCheck(this)" title="Select prompt">'
                 '<button class="card-expand" id="ce-' + pid + '-en"'
-                ' onclick="toggleCard(\'' + pid + '-en\')" title="Show / hide prompt" aria-label="Show / hide prompt ' + t_en_attr + '">'
+                ' onclick="toggleCard(\'' + pid + '-en\')" title="Show / hide prompt" aria-label="Show / hide prompt ' + t_en_attr + '"'
+                ' aria-expanded="false" aria-controls="cb-' + pid + '-en">'
                 + chevron +
                 '</button>'
-                '<span class="card-title" onclick="toggleCard(\'' + pid + '-en\')">'
+                '<h3 class="card-title">'
                 + h(p["title_en"]) +
-                '</span>'
+                '</h3>'
             )
             if has_info_en:
                 groups_html += (
@@ -4067,7 +4083,7 @@ def build():
 
         '<header>\n'
         '  <div class="hdr-logo">'
-        '    <button class="menu-toggle-btn" onclick="toggleMenu()" title="Menú / Menu"'
+        '    <button class="menu-toggle-btn" onclick="toggleMenu()" title="Menú / Menu" aria-label="Menú / Menu"'
         ' aria-haspopup="true" aria-expanded="false" aria-controls="app-sidebar">'
         '      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
         '        <line x1="3" y1="12" x2="21" y2="12"></line>'
@@ -4089,9 +4105,9 @@ def build():
         '      <button class="lang-btn" id="lang-btn" onclick="toggleLanguageDropdown()" title="Cambiar idioma / Change language" aria-haspopup="true" aria-expanded="false">'
         '        <span class="flag">&#127760;</span><span class="lang-label" id="current-lang-label">ES</span>'
         '      </button>'
-        '      <div class="lang-dropdown" id="lang-dropdown">'
-        '        <div class="lang-option" data-lang="es" onclick="onLanguageSelect(\'es\')">Español</div>'
-        '        <div class="lang-option" data-lang="en" onclick="onLanguageSelect(\'en\')">English</div>'
+        '      <div class="lang-dropdown" id="lang-dropdown" role="menu">'
+        '        <button type="button" class="lang-option" role="menuitem" data-lang="es" onclick="onLanguageSelect(\'es\')">Español</button>'
+        '        <button type="button" class="lang-option" role="menuitem" data-lang="en" onclick="onLanguageSelect(\'en\')">English</button>'
         '      </div>'
         '    </div>'
         '    <div class="hdr-brand">'
@@ -4139,9 +4155,9 @@ def build():
         ' oninput="filterPrompts(this.value)" autocomplete="off">'
         '</div>\n'
         '  <div class="chips-container" id="category-chips"></div>\n'
-        '  <span class="search-count" id="vis-count">prompts</span>\n'
+        '  <span class="search-count" id="vis-count" aria-live="polite" aria-atomic="true">prompts</span>\n'
         '  <span class="vars-active-badge" id="vars-badge">■ Vars activas</span>\n'
-        '  <button class="ms-toggle-btn" id="ms-toggle-btn" onclick="toggleMsMode()" title="Activar selección múltiple / Enable multi-select">'
+        '  <button class="ms-toggle-btn" id="ms-toggle-btn" aria-pressed="false" onclick="toggleMsMode()" title="Activar selección múltiple / Enable multi-select">'
         '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
         '<rect x="3" y="5" width="13" height="13" rx="2"/><path d="M8 10l3 3 5-5"/>'
         '</svg><span class="ms-label"> <span class="fw-lang-es">Selección múltiple</span><span class="fw-lang-en">Multi-select</span></span></button>\n'
@@ -4155,19 +4171,19 @@ def build():
         '<div class="facet-chips-container">\n'
         '  <span class="facet-chips-label fw-lang-es">Filtrar por riesgo</span>'
         '<span class="facet-chips-label fw-lang-en">Filter by risk</span>\n'
-        '  <button class="facet-chip" data-kind="risk" data-value="low" onclick="filterByFacetChip(\'risk\',\'low\')">'
+        '  <button class="facet-chip" aria-pressed="false" data-kind="risk" data-value="low" onclick="filterByFacetChip(\'risk\',\'low\')">'
         '<span class="fw-lang-es">Bajo</span><span class="fw-lang-en">Low</span></button>\n'
-        '  <button class="facet-chip" data-kind="risk" data-value="medium" onclick="filterByFacetChip(\'risk\',\'medium\')">'
+        '  <button class="facet-chip" aria-pressed="false" data-kind="risk" data-value="medium" onclick="filterByFacetChip(\'risk\',\'medium\')">'
         '<span class="fw-lang-es">Medio</span><span class="fw-lang-en">Medium</span></button>\n'
-        '  <button class="facet-chip" data-kind="risk" data-value="high" onclick="filterByFacetChip(\'risk\',\'high\')">'
+        '  <button class="facet-chip" aria-pressed="false" data-kind="risk" data-value="high" onclick="filterByFacetChip(\'risk\',\'high\')">'
         '<span class="fw-lang-es">Alto</span><span class="fw-lang-en">High</span></button>\n'
-        '  <button class="facet-chip" data-kind="risk" data-value="variable" onclick="filterByFacetChip(\'risk\',\'variable\')">Variable</button>\n'
+        '  <button class="facet-chip" aria-pressed="false" data-kind="risk" data-value="variable" onclick="filterByFacetChip(\'risk\',\'variable\')">Variable</button>\n'
         '  <span class="facet-chips-label fw-lang-es" style="margin-left:.5rem">Autonomía</span>'
         '<span class="facet-chips-label fw-lang-en" style="margin-left:.5rem">Autonomy</span>\n'
-        '  <button class="facet-chip" data-kind="autonomy" data-value="A0" onclick="filterByFacetChip(\'autonomy\',\'A0\')">A0</button>\n'
-        '  <button class="facet-chip" data-kind="autonomy" data-value="A1" onclick="filterByFacetChip(\'autonomy\',\'A1\')">A1</button>\n'
-        '  <button class="facet-chip" data-kind="autonomy" data-value="A2" onclick="filterByFacetChip(\'autonomy\',\'A2\')">A2</button>\n'
-        '  <button class="facet-chip" data-kind="autonomy" data-value="A3" onclick="filterByFacetChip(\'autonomy\',\'A3\')">A3</button>\n'
+        '  <button class="facet-chip" aria-pressed="false" data-kind="autonomy" data-value="A0" onclick="filterByFacetChip(\'autonomy\',\'A0\')">A0</button>\n'
+        '  <button class="facet-chip" aria-pressed="false" data-kind="autonomy" data-value="A1" onclick="filterByFacetChip(\'autonomy\',\'A1\')">A1</button>\n'
+        '  <button class="facet-chip" aria-pressed="false" data-kind="autonomy" data-value="A2" onclick="filterByFacetChip(\'autonomy\',\'A2\')">A2</button>\n'
+        '  <button class="facet-chip" aria-pressed="false" data-kind="autonomy" data-value="A3" onclick="filterByFacetChip(\'autonomy\',\'A3\')">A3</button>\n'
         '</div>\n'
 
         # layout
@@ -4176,20 +4192,20 @@ def build():
         '  <nav class="sidebar" id="app-sidebar">\n'
         '<div class="sidebar-header">'
         '<span class="sidebar-label-text">Nav</span>'
-        '<button class="sidebar-collapse-btn" onclick="toggleSidebar()" title="Colapsar / expandir menú">'
+        '<button class="sidebar-collapse-btn" onclick="toggleSidebar()" title="Colapsar / expandir menú" aria-label="Colapsar / expandir menú">'
         '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">'
         '<path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/>'
         '</svg>'
         '</button>'
         '</div>'
         + sidebar_html + '  </nav>\n'
-        '  <div class="content">\n'
+        '  <main class="content">\n'
         + fw_block
         + groups_html +
-        '    <div class="glbl-empty" id="glbl-empty" style="display:none">'
+        '    <div class="glbl-empty" id="glbl-empty" style="display:none" aria-live="polite" aria-atomic="true">'
         '<p>Sin resultados.</p><small>Intenta con otro término de búsqueda.</small>'
         '</div>\n'
-        '  </div>\n'
+        '  </main>\n'
         '</div>\n'
 
         # ── Panel de variables ──
@@ -4198,7 +4214,7 @@ def build():
         '<h2><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2">'
         '<path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>'
         ' <span class="fw-lang-es">Variables del prompt</span><span class="fw-lang-en">Prompt Variables</span></h2>'
-        '<button class="var-close-btn" onclick="closeVarPanel()" title="Cerrar / Close">&#x2715;</button>'
+        '<button class="var-close-btn" onclick="closeVarPanel()" title="Cerrar / Close" aria-label="Cerrar / Close">&#x2715;</button>'
         '</div>\n'
         '<div class="proj-selector-row">'
         '<select id="proj-selector" class="proj-select" onchange="switchProject(this.value)" style="display:none"></select>'
@@ -4206,7 +4222,7 @@ def build():
         '<span style="color:var(--tx3);flex-shrink:0;"><span class="fw-lang-es">Proyecto\u00a0</span><span class="fw-lang-en">Project\u00a0</span></span>'
         '<span id="vp-proj-name" style="color:#7dd3fc;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>'
         '</div>'
-        '<button class="proj-mgr-btn" onclick="openProjectsModal()" title="Gestionar proyectos / Manage projects">&#x2699;</button>'
+        '<button class="proj-mgr-btn" onclick="openProjectsModal()" title="Gestionar proyectos / Manage projects" aria-label="Gestionar proyectos / Manage projects">&#x2699;</button>'
         '</div>\n'
         '  <div class="var-panel-body">\n'
         '    <div class="var-context-status" id="var-context-status"></div>\n'
@@ -4713,7 +4729,7 @@ def build():
         '</div>\n'
         '<!-- ═══ FLOATING MULTI-SELECT TOGGLE ═══ -->\n'
         '<div class="ms-float" id="ms-float">\n'
-        '  <button class="ms-float-btn" id="ms-float-btn" onclick="toggleMsMode()" title="Activar selección múltiple / Enable multi-select">\n'
+        '  <button class="ms-float-btn" id="ms-float-btn" aria-pressed="false" onclick="toggleMsMode()" title="Activar selección múltiple / Enable multi-select">\n'
         '    <span class="ms-float-icon">\n'
         '      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">\n'
         '        <rect x="3" y="5" width="13" height="13" rx="2"/><path d="M8 10l3 3 5-5"/>\n'
