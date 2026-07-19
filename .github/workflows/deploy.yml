@@ -98,13 +98,15 @@ jobs:
         run: |
           mkdir -p dist
           cp index.html dist/index.html
+          cp robots.txt dist/robots.txt
+          cp sitemap.xml dist/sitemap.xml
 
       - name: Upload artifact (shared by Pages and GCP)
         if: github.event_name != 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: site
-          path: dist/index.html
+          path: dist
           retention-days: 1
 
       - name: Upload Pages artifact
@@ -234,6 +236,10 @@ jobs:
         run: |
           scp -P "$P" -i ~/.ssh/gcp_key -o BatchMode=yes \
               dist/index.html "${U}@${H}:/home/${U}/index.html.new"
+          scp -P "$P" -i ~/.ssh/gcp_key -o BatchMode=yes \
+              dist/robots.txt "${U}@${H}:/home/${U}/robots.txt.new"
+          scp -P "$P" -i ~/.ssh/gcp_key -o BatchMode=yes \
+              dist/sitemap.xml "${U}@${H}:/home/${U}/sitemap.xml.new"
 
       - name: Atomic replace in production dir
         env:
@@ -244,9 +250,11 @@ jobs:
         run: |
           CMD="set -e"
           CMD="${CMD}; sudo cp /home/${U}/index.html.new ${D}/index.html"
-          CMD="${CMD}; sudo chown www-data:www-data ${D}/index.html"
-          CMD="${CMD}; sudo chmod 644 ${D}/index.html"
-          CMD="${CMD}; rm -f /home/${U}/index.html.new"
+          CMD="${CMD}; sudo cp /home/${U}/robots.txt.new ${D}/robots.txt"
+          CMD="${CMD}; sudo cp /home/${U}/sitemap.xml.new ${D}/sitemap.xml"
+          CMD="${CMD}; sudo chown www-data:www-data ${D}/index.html ${D}/robots.txt ${D}/sitemap.xml"
+          CMD="${CMD}; sudo chmod 644 ${D}/index.html ${D}/robots.txt ${D}/sitemap.xml"
+          CMD="${CMD}; rm -f /home/${U}/index.html.new /home/${U}/robots.txt.new /home/${U}/sitemap.xml.new"
           CMD="${CMD}; echo DEPLOY_PROD_OK"
           CMD="${CMD}; stat ${D}/index.html"
           ssh -p "$P" -i ~/.ssh/gcp_key -o BatchMode=yes "${U}@${H}" "$CMD"
@@ -265,6 +273,13 @@ jobs:
           echo "Cards en produccion: $COUNT (esperadas del build: $EXPECTED)"
           [ "$COUNT" -ge "$EXPECTED" ] || { echo "ERROR: esperadas >=$EXPECTED, encontradas $COUNT"; exit 1; }
           echo "SMOKE_OK: $COUNT cards verificadas"
+          ROBOTS_STATUS=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 \
+              https://prompts.lionsystems.com.mx/robots.txt)
+          [ "$ROBOTS_STATUS" = "200" ] || { echo "ERROR: robots.txt HTTP $ROBOTS_STATUS"; exit 1; }
+          SITEMAP_STATUS=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 \
+              https://prompts.lionsystems.com.mx/sitemap.xml)
+          [ "$SITEMAP_STATUS" = "200" ] || { echo "ERROR: sitemap.xml HTTP $SITEMAP_STATUS"; exit 1; }
+          echo "SMOKE_OK: robots.txt y sitemap.xml verificados"
 
       - name: Cleanup SSH key
         if: always()

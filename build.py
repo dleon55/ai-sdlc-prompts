@@ -2668,7 +2668,13 @@ function setLanguage(lang) {
   try { localStorage.setItem(I18N_KEY, lang); } catch(e) {}
   document.documentElement.lang = lang;
   document.documentElement.setAttribute('data-lang', lang);
-  
+
+  // Sincroniza el <title> de la pestaña con el idioma activo (el <title>
+  // estático del <head> solo cubre lo que ven crawlers/scrapers, en ES)
+  if (typeof PAGE_TITLES === 'object' && PAGE_TITLES[lang]) {
+    document.title = PAGE_TITLES[lang];
+  }
+
   // Actualizar UI del selector
   var langLabel = document.getElementById('current-lang-label');
   if (langLabel) langLabel.textContent = lang.toUpperCase();
@@ -3784,6 +3790,14 @@ def build():
     }
     contract_tags_js = "var CONTRACT_TAGS = " + json.dumps(contract_tags_by_id, ensure_ascii=False) + ";"
 
+    # PAGE_TITLES: el <title> estático del <head> solo refleja el idioma ES
+    # (el que ven crawlers/scrapers sociales); esto lo mantiene sincronizado
+    # con document.title cuando el usuario cambia de idioma en la app.
+    page_titles_js = "var PAGE_TITLES = " + json.dumps({
+        "es": i18n_strings.LANDING_STRINGS["es"]["page_title"],
+        "en": i18n_strings.LANDING_STRINGS["en"]["page_title"],
+    }, ensure_ascii=False) + ";"
+
     # ── PROMPT_INFO para el modal de ⓘ ──
     # next_ids: recommended_next_prompt_ids ya se calculaba para
     # prompts-index.json (issue #63) pero nunca llegaba al front-end
@@ -4061,17 +4075,42 @@ def build():
         f'<meta name="description" content="{i18n_strings.LANDING_STRINGS["es"]["meta_description"].format(n=TOTAL_PROMPTS)}">\n'
         '<meta name="keywords" content="prompts ingenieria software IA, prompts GitHub Copilot SDLC, prompts Claude desarrollo software, AI-SDLC framework espanol, prompts multi-agente desarrollo software, biblioteca prompts cursor windsurf">\n'
         '<meta name="author" content="LionSystems">\n'
+        '<meta name="robots" content="index,follow">\n'
+        '<meta name="theme-color" content="#0f172a">\n'
         '<meta property="og:type" content="website">\n'
         '<meta property="og:url" content="https://prompts.lionsystems.com.mx">\n'
+        '<meta property="og:site_name" content="AI-SDLC Pro">\n'
+        '<meta property="og:locale" content="es_MX">\n'
+        '<meta property="og:locale:alternate" content="en_US">\n'
         f'<meta property="og:title" content="{i18n_strings.LANDING_STRINGS["es"]["page_title"]}">\n'
         f'<meta property="og:description" content="{i18n_strings.LANDING_STRINGS["es"]["meta_description"].format(n=TOTAL_PROMPTS)}">\n'
         '<meta property="og:image" content="https://prompts.lionsystems.com.mx/og-image.png">\n'
         '<meta name="twitter:card" content="summary_large_image">\n'
         f'<meta name="twitter:title" content="{i18n_strings.LANDING_STRINGS["es"]["page_title"]}">\n'
+        f'<meta name="twitter:description" content="{i18n_strings.LANDING_STRINGS["es"]["meta_description"].format(n=TOTAL_PROMPTS)}">\n'
+        '<meta name="twitter:image" content="https://prompts.lionsystems.com.mx/og-image.png">\n'
         '<link rel="canonical" href="https://prompts.lionsystems.com.mx">\n'
         '<link rel="alternate" hreflang="es" href="https://prompts.lionsystems.com.mx">\n'
         '<link rel="alternate" hreflang="en" href="https://prompts.lionsystems.com.mx">\n'
         '<link rel="alternate" hreflang="x-default" href="https://prompts.lionsystems.com.mx">\n'
+        '<link rel="icon" type="image/png" href="https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png">\n'
+        '<link rel="apple-touch-icon" href="https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png">\n'
+        '<link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">\n'
+        '<script type="application/ld+json">' + json.dumps({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "AI-SDLC Pro",
+            "alternateName": i18n_strings.LANDING_STRINGS["es"]["page_title"],
+            "url": "https://prompts.lionsystems.com.mx",
+            "description": i18n_strings.LANDING_STRINGS["es"]["meta_description"].format(n=TOTAL_PROMPTS),
+            "inLanguage": ["es", "en"],
+            "publisher": {
+                "@type": "Organization",
+                "name": "LionSystems",
+                "url": "https://lionsystems.com.mx",
+                "logo": "https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png",
+            },
+        }, ensure_ascii=False) + '</script>\n'
         '<script async src="https://www.googletagmanager.com/gtag/js?id=G-C5JKYNZ62F"></script>\n'
         '<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-C5JKYNZ62F");</script>\n'
         '<style>' + CSS + '</style>\n'
@@ -4678,7 +4717,7 @@ def build():
 
         '</div>\n'  # close #app-root
 
-        '<script>' + prompt_info_js + '\n' + contract_tags_js + '\n' + JS + LANDING_JS + '</script>\n'
+        '<script>' + prompt_info_js + '\n' + contract_tags_js + '\n' + page_titles_js + '\n' + JS + LANDING_JS + '</script>\n'
         '<!-- ═══ BOTTOM RIGHT FLOATING CONTROLS ═══ -->\n'
         '<div class="bottom-right-floats">\n'
         '<!-- ═══ FLOATING VARIABLES QUICK ACCESS ═══ -->\n'
