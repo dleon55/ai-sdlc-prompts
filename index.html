@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link rel="preconnect" href="https://www.googletagmanager.com">
+<link rel="preconnect" href="https://lionsystems.com.mx" crossorigin>
 <title>AI-SDLC Pro — Biblioteca de Prompts de Ingeniería de Software</title>
 <meta name="description" content="100 prompts estructurados para dirigir agentes IA (Copilot, Claude, Cursor, Windsurf) en cada fase del ciclo de ingeniería de software. Framework SDLC profesional en español.">
 <meta name="keywords" content="prompts ingenieria software IA, prompts GitHub Copilot SDLC, prompts Claude desarrollo software, AI-SDLC framework espanol, prompts multi-agente desarrollo software, biblioteca prompts cursor windsurf">
@@ -29,8 +31,7 @@
 <link rel="apple-touch-icon" href="https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png">
 <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "AI-SDLC Pro", "alternateName": "AI-SDLC Pro — Biblioteca de Prompts de Ingeniería de Software", "url": "https://prompts.lionsystems.com.mx", "description": "100 prompts estructurados para dirigir agentes IA (Copilot, Claude, Cursor, Windsurf) en cada fase del ciclo de ingeniería de software. Framework SDLC profesional en español.", "inLanguage": ["es", "en"], "publisher": {"@type": "Organization", "name": "LionSystems", "url": "https://lionsystems.com.mx", "logo": "https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png"}}</script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-C5JKYNZ62F"></script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-C5JKYNZ62F");</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-C5JKYNZ62F");window.addEventListener("load",function(){var s=document.createElement("script");s.async=true;s.src="https://www.googletagmanager.com/gtag/js?id=G-C5JKYNZ62F";document.head.appendChild(s);});</script>
 <style>
 :root {
   --hdr:  58px;
@@ -95,7 +96,6 @@ header {
   background: var(--bg3); border: 1px solid var(--bdr2);
   color: var(--tx3); border-radius: 4px; padding: .15rem .5rem;
 }
-.tag-warn { border-color: #78350f; color: var(--warn); background: #1c1006; }
 .hdr-brand {
   display: flex; align-items: center; gap: .45rem;
   border-left: 1px solid var(--bdr2); padding-left: .85rem; margin-left: .35rem;
@@ -761,7 +761,6 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
 }
 @media (max-width: 900px) {
   .hdr-logo p { display: none; }
-  .tag-warn { font-size: .58rem; padding: .12rem .35rem; }
 }
 @media (max-width: 720px) {
   :root { --side: 46px; }
@@ -769,7 +768,7 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   .sid-text, .sid-badge, .sid-label, .sidebar-label-text { display: none !important; }
   .sid-link { padding: .38rem; justify-content: center; gap: 0; }
   .sidebar-header { justify-content: center; padding: .4rem .25rem; }
-  .hdr-tags .tag:not(.tag-warn) { display: none; }
+  .hdr-tags .tag { display: none; }
 }
 @media (max-width: 560px) {
   .hdr-tags { display: none; }
@@ -911,15 +910,7 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
 .ob-email-submit.ok { background: var(--grn); }
 .ob-email-note { font-size: .66rem; color: var(--tx3); margin-top: .35rem; text-align: center; }
 
-/* ═════════════════ HIGHLIGHT & TOAST & CHIPS ═══════════════════ */
-.var-highlight {
-  background: rgba(6, 182, 212, 0.12);
-  color: #22d3ee;
-  border: 1px solid rgba(6, 182, 212, 0.3);
-  border-radius: 4px;
-  padding: 1px 4px;
-  font-weight: 600;
-}
+/* ═════════════════ TOAST & CHIPS ═══════════════════ */
 #toast-container {
   position: fixed;
   bottom: 1.5rem;
@@ -14262,7 +14253,29 @@ function submitObEmail() {
 
 /* ═══════════════════  INIT  ════════════════════════════════════ */
 
-document.addEventListener('DOMContentLoaded', function() {
+// isAppRoute()/initAppData() son compartidos con LANDING_JS (misma
+// etiqueta <script>, mismo scope global): la landing page (ruta "/") no
+// muestra #app-root (display:none), así que todo el trabajo de esta
+// función -- leer/cachear los ~200 bloques <code> de prompts, cargar
+// proyectos, resolvePrompt() por cada prompt en updateLivePreview(), etc.
+// -- era trabajo de mainthread desperdiciado en cada visita a la landing
+// (issue: performance de carga inicial). El guard _appInitialized la
+// vuelve idempotente para poder invocarla también desde route() al
+// entrar a /app vía hash/popstate sin reload completo de página.
+var _appInitialized = false;
+
+function isAppRoute() {
+  var path = window.location.pathname;
+  var search = window.location.search;
+  var hash = window.location.hash;
+  // Soporte para producción (/app) y local (?view=app o #app)
+  return path === '/app' || path.startsWith('/app/') || search.includes('view=app') || hash === '#app';
+}
+
+function initAppData() {
+  if (_appInitialized) return;
+  _appInitialized = true;
+
   // Capturar plantillas limpias para Live Preview antes de inyectar variables
   document.querySelectorAll('code[id^="code-"]').forEach(function(codeEl) {
     RAW_PROMPTS[codeEl.id] = codeEl.textContent;
@@ -14289,6 +14302,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
   updateLivePreview();
   if (typeof initChips === 'function') initChips();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  if (isAppRoute()) initAppData();
 
   // Cerrar menús al hacer clic fuera
   document.addEventListener('click', function(e) {
@@ -14342,19 +14359,16 @@ document.addEventListener('DOMContentLoaded', function() {
 /* ═══════ ROUTING client-side ═══════ */
 (function() {
   function route() {
-    var path = window.location.pathname;
-    var search = window.location.search;
-    var hash = window.location.hash;
-    // Soporte para producción (/app) y local (?view=app o #app)
-    var isApp = path === '/app' || path.startsWith('/app/') || search.includes('view=app') || hash === '#app';
+    var isApp = isAppRoute();
     var lr = document.getElementById('landing-root');
     var ar = document.getElementById('app-root');
     if (lr) lr.classList.toggle('landing-hidden', isApp);
     if (ar) ar.classList.toggle('app-hidden', !isApp);
-    
-    // Si entramos a la app, inicializar i18n si no se ha hecho
-    if (isApp && typeof initLanguageDetection === 'function') {
-      initLanguageDetection();
+
+    // Si entramos a la app (incluyendo navegación por hash/popstate sin
+    // reload completo), inicializar datos de la app si no se ha hecho.
+    if (isApp && typeof initAppData === 'function') {
+      initAppData();
     }
   }
   if (document.readyState === 'loading') {
