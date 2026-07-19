@@ -702,9 +702,15 @@ body.sidebar-collapsed .sidebar-collapse-btn svg { transform: rotate(180deg); }
 /* ────── Card ────── */
 .card {
   background: var(--bg2); border: 1px solid var(--bdr);
-  border-radius: 8px; overflow: hidden; transition: border-color .22s cubic-bezier(0.4, 0, 0.2, 1), box-shadow .22s cubic-bezier(0.4, 0, 0.2, 1), transform .22s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 8px; overflow: hidden; transition: border-color .16s ease;
 }
-.card:hover { border-color: #6366f199; box-shadow: 0 8px 24px rgba(99,102,241,0.18); transform: translateY(-3px) scale(1.005); }
+/* Antes .card:hover aplicaba un "lift" (translateY + box-shadow) sobre
+   toda la tarjeta, incluyendo el cuerpo del prompt colapsado -- una señal
+   visual fuerte de "toda la tarjeta es clickeable" cuando en realidad solo
+   el botón .card-expand (24x24) responde al click (issue: auditoría de
+   UX). Se reduce a un cambio de borde sutil, coherente con que solo ese
+   botón es interactivo. */
+.card:hover { border-color: #6366f199; }
 
 /* Card header: siempre visible */
 .card-head {
@@ -1068,6 +1074,7 @@ body.ms-mode .sec-check { display: block; }
   border-radius: 4px; transition: color .12s, background .12s;
 }
 .proj-action-btn:hover { color: var(--tx); background: var(--bg3); }
+.proj-action-danger:hover { color: #f87171; background: rgba(248,113,113,.12); }
 .proj-add-btn {
   background: #0e7490; color: #fff; border: none; border-radius: 8px;
   padding: 8px 16px; width: 100%; cursor: pointer; font-size: .82rem;
@@ -1199,7 +1206,13 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
 }
 .welcome-banner.hidden { display: none; }
 .wb-lead { font-size: .7rem; font-weight: 700; color: #a5b4fc; white-space: nowrap; flex-shrink: 0; }
-.wb-pills { display: flex; align-items: center; gap: .45rem; flex: 1; flex-wrap: wrap; }
+/* min-width:0 es necesario porque es flex:1 dentro de .welcome-banner --
+   sin él, un flex item no se encoge más allá del ancho intrínseco de su
+   contenido (default min-width:auto), así que en viewports angostos
+   .wb-pills empujaba a .welcome-banner por fuera del viewport en vez de
+   envolver sus pills (issue: auditoría de UX, scroll horizontal en la
+   primera visita móvil). */
+.wb-pills { display: flex; align-items: center; gap: .45rem; flex: 1; flex-wrap: wrap; min-width: 0; }
 .wb-pill {
   display: flex; align-items: center; gap: .28rem;
   font-size: .66rem; color: #c7d2fe;
@@ -1564,39 +1577,11 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   background: var(--bg2); font-size: .72rem; color: var(--tx3);
 }
 
-/* ══════════════  FLOATING PROJECT SELECTOR (#30)  ══════════════ */
+/* ══════════════  BOTTOM RIGHT FLOATING CONTROLS  ══════════════ */
 .bottom-right-floats {
   position: fixed; bottom: 1.25rem; right: 1.25rem; z-index: 505;
   display: flex; flex-direction: column; align-items: flex-end; gap: 0.6rem;
 }
-.proj-float {
-  display: flex; flex-direction: column; align-items: flex-end; position: relative;
-}
-.proj-float-btn {
-  display: flex; align-items: center; gap: .45rem;
-  background: var(--bg2); border: 1px solid var(--bdr);
-  border-radius: 999px; padding: .35rem .75rem .35rem .55rem;
-  color: var(--tx); font-size: .78rem; cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,.35);
-  max-width: 200px; white-space: nowrap;
-  transition: background .15s, border-color .15s;
-}
-.proj-float-btn:hover { background: var(--bg3); border-color: var(--acc); }
-.proj-float-dot { width: 7px; height: 7px; border-radius: 50%; background: #06b6d4; flex-shrink: 0; }
-.proj-float-name { overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; }
-.proj-float-chevron { transition: transform .15s; flex-shrink: 0; }
-.proj-float.open .proj-float-chevron { transform: rotate(180deg); }
-.proj-float-dropdown {
-  display: none; margin-bottom: .4rem;
-  background: var(--bg2); border: 1px solid var(--bdr);
-  border-radius: 10px; padding: .35rem 0;
-  box-shadow: 0 4px 16px rgba(0,0,0,.4);
-  min-width: 160px; max-width: 240px;
-  max-height: 240px; overflow-y: auto;
-}
-.proj-float.open .proj-float-dropdown { display: block; }
-@media (max-width: 560px) { .proj-float-name { display: none; } }
-
 /* ══════════════ FLOATING VARIABLES QUICK ACCESS ══════════════ */
 .var-float {
   display: flex; flex-direction: column; align-items: flex-end; position: relative;
@@ -1616,10 +1601,9 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   background: rgba(6,182,212,.12); color: #67e8f9; flex-shrink: 0;
 }
 .var-float-label { font-weight: 700; color: #d7f9ff; }
-/* .ms-float-label y .proj-float-name ya colapsan a solo-icono en móvil;
-   a esta le faltaba la regla equivalente (issue #87) -- por eso "Vars N/20"
-   se quedaba a ancho completo y era el único de los 3 flotantes que tapaba
-   contenido de las tarjetas en viewports angostos. */
+/* Colapsa a solo-icono en móvil (issue #87) -- por eso "Vars N/20" se
+   quedaba a ancho completo y tapaba contenido de las tarjetas en
+   viewports angostos. */
 @media (max-width: 560px) { .var-float-label { display: none; } }
 .var-float-count {
   font-size: .66rem; font-weight: 700; border-radius: 999px;
@@ -1671,28 +1655,9 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
 }
 .var-float-primary:hover { background: #0e7490; }
 @media (max-width: 640px) {
-  .var-float { right: .85rem; bottom: 4.85rem; }
+  .var-float { right: .85rem; }
   .var-float-dropdown { width: min(320px, calc(100vw - 1.7rem)); }
 }
-.ms-float {
-  display: flex; flex-direction: column; align-items: flex-end; position: relative;
-}
-.ms-float-btn {
-  display: flex; align-items: center; gap: .45rem;
-  background: var(--bg2); border: 1px solid #4f46e5;
-  border-radius: 999px; padding: .35rem .75rem .35rem .55rem;
-  color: var(--tx); font-size: .78rem; cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,.35);
-  white-space: nowrap; transition: background .15s, border-color .15s;
-}
-.ms-float-btn:hover, .ms-float-btn.active { background: #0f172a; border-color: #6366f1; }
-.ms-float-icon {
-  width: 22px; height: 22px; border-radius: 50%;
-  display: inline-flex; align-items: center; justify-content: center;
-  background: rgba(99,102,241,.12); color: #a5b4fc; flex-shrink: 0;
-}
-.ms-float-label { font-weight: 700; color: #e0e7ff; }
-@media (max-width: 560px) { .ms-float-label { display: none; } }
 """
 
 JS = """
@@ -1778,6 +1743,24 @@ function deleteProject(id) {
   saveProjects(list);
   var active = localStorage.getItem(LS_KEY_ACTV);
   if (active === id) setActiveProjectId(list[0].id);
+}
+
+// Eliminar un proyecto borra sus variables guardadas de forma permanente
+// e inmediata, sin ningún paso intermedio (issue: auditoría de UX -- el
+// icono de eliminar está junto a otros 4 iconos del mismo peso visual,
+// sin ninguna diferenciación de riesgo). confirmDeleteProject() es el
+// único punto de entrada desde la UI; deleteProject() en sí queda sin
+// confirmación para no romper otros llamadores/tests que ya la asumen
+// directa.
+function confirmDeleteProject(id, name) {
+  var lang = getCurrentLanguage();
+  var msg = lang === 'en'
+    ? 'Delete project "' + name + '"? Its saved variables will be permanently removed. This cannot be undone.'
+    : 'Eliminar el proyecto "' + name + '"? Sus variables guardadas se perderán de forma permanente. Esta acción no se puede deshacer.';
+  if (!window.confirm(msg)) return;
+  deleteProject(id);
+  renderProjectsModal();
+  renderProjectSelector();
 }
 
 function duplicateProject(id) {
@@ -2082,8 +2065,8 @@ function renderProjectsModal() {
     var isActive = p.id === activeId;
     var defBadge = p.isDefault ? '<span class="proj-def-badge">default</span>' : '';
     var delBtn = list.length > 1
-      ? '<button class="proj-action-btn" title="Eliminar / Delete" aria-label="Eliminar / Delete"'
-        + ' onclick="deleteProject(\\'' + escId(p.id) + '\\');renderProjectsModal();renderProjectSelector();">'
+      ? '<button class="proj-action-btn proj-action-danger" title="Eliminar / Delete" aria-label="Eliminar / Delete"'
+        + ' onclick="confirmDeleteProject(\\'' + escId(p.id) + '\\',\\'' + escId(p.name) + '\\');">'
         + '\u2715</button>'
       : '';
     return '<li class="proj-item' + (isActive ? ' active-proj' : '') + '">'
@@ -3061,8 +3044,8 @@ function goToPrompt(pid, lang) {
   _lastSearchQuery = '';
   var searchInput = document.querySelector('.search-bar input');
   if (searchInput) searchInput.value = '';
-  _activeFacet = null;
-  document.querySelectorAll('.facet-chip').forEach(function(c) { c.classList.remove('active'); });
+  _activeFacets = { risk: null, autonomy: null };
+  document.querySelectorAll('.facet-chip').forEach(function(c) { c.classList.remove('active'); c.setAttribute('aria-pressed', 'false'); });
   applyFilters();
   var combined = pid + '-' + lang;
   var body = document.getElementById('cb-' + combined);
@@ -3249,7 +3232,13 @@ function copySelected(btn) {
 /* ═══════════════════  SEARCH / FILTER  ═════════════════════════ */
 
 var _lastSearchQuery = '';
-var _activeFacet = null; // { kind: 'risk'|'autonomy', value: string }
+// Riesgo y autonomía son facetas independientes que deben combinarse con
+// AND, no reemplazarse entre sí -- antes _activeFacet guardaba un único
+// {kind, value}, así que seleccionar autonomía después de riesgo
+// descartaba el filtro de riesgo en silencio, sin ningún aviso al
+// usuario (issue: auditoría de UX, el conteo de resultados subía en vez
+// de bajar al "agregar" un segundo filtro).
+var _activeFacets = { risk: null, autonomy: null };
 
 // applyFilters() escanea el texto de las 184 tarjetas (92 prompts x ES/EN)
 // en cada llamada -- sin debounce, cada tecla en el buscador repetía ese
@@ -3268,13 +3257,10 @@ function filterPrompts(q) {
 // independientes de idioma (siempre en inglés canónico: low/medium/high/
 // variable, A0-A3), así que no hace falta distinguir ES/EN aquí.
 function filterByFacetChip(kind, value) {
-  if (_activeFacet && _activeFacet.kind === kind && _activeFacet.value === value) {
-    _activeFacet = null;
-  } else {
-    _activeFacet = { kind: kind, value: value };
-  }
+  _activeFacets[kind] = (_activeFacets[kind] === value) ? null : value;
   document.querySelectorAll('.facet-chip').forEach(function(c) {
-    var active = !!(_activeFacet && c.getAttribute('data-kind') === _activeFacet.kind && c.getAttribute('data-value') === _activeFacet.value);
+    var k = c.getAttribute('data-kind');
+    var active = _activeFacets[k] === c.getAttribute('data-value');
     c.classList.toggle('active', active);
     c.setAttribute('aria-pressed', active ? 'true' : 'false');
   });
@@ -3284,6 +3270,7 @@ function filterByFacetChip(kind, value) {
 function applyFilters() {
   var q = (_lastSearchQuery || '').toLowerCase().trim();
   var activeLang = getCurrentLanguage();
+  var facetKinds = Object.keys(_activeFacets).filter(function(k) { return _activeFacets[k]; });
   var groups = document.querySelectorAll('.section-group');
   var total = 0;
   groups.forEach(function(g) {
@@ -3295,12 +3282,14 @@ function applyFilters() {
       var code = codeEl ? codeEl.textContent : '';
       var textMatch = !q || title.toLowerCase().includes(q) || code.toLowerCase().includes(q);
       var facetMatch = true;
-      if (_activeFacet) {
+      if (facetKinds.length) {
         var checkEl = card.querySelector('.card-check');
         var pid = checkEl ? checkEl.getAttribute('data-pid') : null;
         var tags = (pid && typeof CONTRACT_TAGS !== 'undefined') ? CONTRACT_TAGS[pid] : null;
-        var list = tags ? tags[_activeFacet.kind] : null;
-        facetMatch = !!(list && list.indexOf(_activeFacet.value) !== -1);
+        facetMatch = facetKinds.every(function(kind) {
+          var list = tags ? tags[kind] : null;
+          return !!(list && list.indexOf(_activeFacets[kind]) !== -1);
+        });
       }
       var match = textMatch && facetMatch;
       card.style.display = match ? '' : 'none';
@@ -3314,12 +3303,20 @@ function applyFilters() {
     g.style.display = vis ? '' : 'none';
     total += vis;
   });
-  var fw = document.getElementById('sec-00');
-  if (fw) fw.style.display = '';
+  var hasFilter = q || facetKinds.length > 0;
+  // El banner del framework (PASO 1, id sec-00-es/sec-00-en) vive fuera
+  // de .section-group -- no participaba del ocultamiento por resultados,
+  // así que en una búsqueda sin coincidencias quedaba flotando arriba del
+  // mensaje "sin resultados" como si fuera un resultado más (issue:
+  // auditoría de UX). Se oculta solo en ese caso puntual (filtro activo Y
+  // cero resultados); fuera de ahí sigue siempre visible como contexto
+  // obligatorio.
+  document.querySelectorAll('.framework-banner').forEach(function(fw) {
+    fw.style.display = (hasFilter && total === 0) ? 'none' : '';
+  });
   var empty = document.getElementById('glbl-empty');
   if (empty) empty.style.display = total === 0 ? '' : 'none';
   var countEl = document.getElementById('vis-count');
-  var hasFilter = q || _activeFacet;
   if (countEl) {
     var lang = getCurrentLanguage();
     var suffix;
@@ -3482,6 +3479,14 @@ function obPrev() {
   if (_obStep > 0) { _obStep--; renderObStep(); }
 }
 
+// closeOnboarding(true) marca el onboarding como descartado de forma
+// permanente (no vuelve a aparecer): se usa al completar el wizard
+// (obNext() en el último paso), al cerrar con la 'X' y con Escape --
+// cerrar el diálogo por cualquier vía cuenta como una decisión explícita
+// de no verlo, igual que el enlace "No volver a mostrar" (issue previo ya
+// corregido para la 'X', inconsistente con ese enlace hasta entonces;
+// Escape tenía la misma inconsistencia sin corregir -- issue: auditoría
+// de UX).
 function closeOnboarding(permanent) {
   try {
     var overlay = document.getElementById('ob-overlay');
@@ -3489,8 +3494,6 @@ function closeOnboarding(permanent) {
     if (permanent) localStorage.setItem(LS_ONBOARD, '1');
   } catch(e) {}
 }
-
-function skipOnboarding() { closeOnboarding(false); }
 
 function submitObEmail() {
   try {
@@ -3611,7 +3614,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
       closeInfo(); closeVarPanel(); closeVarFloat(); closeProjectsModal();
-      closeProjQuick(); skipOnboarding(); closeMenu(); closeLanguageDropdown();
+      closeProjQuick(); closeOnboarding(true); closeMenu(); closeLanguageDropdown();
     }
     trapFocusInModal(e);
   });
@@ -4640,7 +4643,7 @@ def build():
         '        <p class="fw-lang-es">Lo esencial antes de copiar tu primer prompt.</p>\n'
         '        <p class="fw-lang-en">The essentials before copying your first prompt.</p>\n'
         '      </div>\n'
-        '      <button class="ob-close" onclick="closeOnboarding(true)" title="Cerrar / Close">&#x2715;</button>\n'
+        '      <button class="ob-close" onclick="closeOnboarding(true)" title="Cerrar / Close" aria-label="Cerrar / Close">&#x2715;</button>\n'
         '    </div>\n'
         '    <div class="ob-steps">\n'
         '      <div class="ob-step active" id="ob-step-0">\n'
@@ -4738,9 +4741,12 @@ def build():
         '  </div>\n'
         '</div>\n'
 
-        '</div>\n'  # close #app-root
-
-        '<script>' + prompt_info_js + '\n' + contract_tags_js + '\n' + page_titles_js + '\n' + JS + LANDING_JS + '</script>\n'
+        # bottom-right-floats vive dentro de #app-root (antes vivia despues,
+        # fuera de el): son controles position:fixed pero exclusivos de la app,
+        # y al vivir fuera de #app-root no quedaban cubiertos por .app-hidden --
+        # se veian flotando sobre la landing page con estado sin inicializar
+        # (ej. "0/12" en variables, selector de proyecto vacio) antes de que
+        # el usuario entrara a /app (issue: auditoria de UX).
         '<!-- ═══ BOTTOM RIGHT FLOATING CONTROLS ═══ -->\n'
         '<div class="bottom-right-floats">\n'
         '<!-- ═══ FLOATING VARIABLES QUICK ACCESS ═══ -->\n'
@@ -4789,28 +4795,11 @@ def build():
         '    <span class="var-float-chevron"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>\n'
         '  </button>\n'
         '</div>\n'
-        '<!-- ═══ FLOATING MULTI-SELECT TOGGLE ═══ -->\n'
-        '<div class="ms-float" id="ms-float">\n'
-        '  <button class="ms-float-btn" id="ms-float-btn" aria-pressed="false" onclick="toggleMsMode()" title="Activar selección múltiple / Enable multi-select">\n'
-        '    <span class="ms-float-icon">\n'
-        '      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">\n'
-        '        <rect x="3" y="5" width="13" height="13" rx="2"/><path d="M8 10l3 3 5-5"/>\n'
-        '      </svg>\n'
-        '    </span>\n'
-        '    <span class="ms-float-label"><span class="fw-lang-es">Selección múltiple</span><span class="fw-lang-en">Multi-select</span></span>\n'
-        '  </button>\n'
-        '</div>\n'
-        '<!-- \u2550\u2550 FLOATING PROJECT SELECTOR \u2014 issue #30 \u2550\u2550 -->\n'
-        '<div class="proj-float" id="proj-float">\n'
-        '  <div class="proj-float-dropdown" id="proj-float-dropdown"></div>\n'
-        '  <button class="proj-float-btn" id="proj-float-btn" onclick="toggleProjFloat(event)" title="Cambiar proyecto activo" aria-haspopup="true" aria-expanded="false">\n'
-        '    <span class="proj-float-dot"></span>\n'
-        '    <span class="proj-float-name" id="proj-float-name">Proyecto</span>\n'
-        '    <span class="proj-float-chevron"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>\n'
-        '  </button>\n'
-        '</div>\n'
         '</div>\n'
         '<!-- ═══ END BOTTOM RIGHT FLOATS ═══ -->\n'
+        '</div>\n'  # close #app-root
+
+        '<script>' + prompt_info_js + '\n' + contract_tags_js + '\n' + page_titles_js + '\n' + JS + LANDING_JS + '</script>\n'
         '<div id="toast-container" role="status" aria-live="polite"></div>\n'
         '</body>\n</html>\n'
     )
