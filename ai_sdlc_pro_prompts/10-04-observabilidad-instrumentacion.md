@@ -35,9 +35,11 @@ Prompt para diseñar e implementar la estrategia de observabilidad de una aplica
 
 ```text
 Objetivo:
-Diseñar e implementar la estrategia de observabilidad completa para la aplicación,
-cubriendo los tres pilares (métricas, logs, trazas), definiendo SLOs, alertas accionables
-y dashboards para detectar y diagnosticar problemas antes de que impacten a los usuarios.
+Diseñar la estrategia de observabilidad completa para la aplicación (catálogo de
+métricas, logs, trazas, SLOs, alertas accionables y dashboards) para detectar y
+diagnosticar problemas antes de que impacten a los usuarios; la instrumentación
+real en código y el despliegue de agentes/exporters quedan fuera de este prompt
+y requieren A2 en workspace o rama aislada.
 
 Pasos:
 

@@ -98,9 +98,14 @@ Steps:
    Submit payloads at all entry points to detect:
    
    a) SQL Injection (if DB technology applies):
-      - Basic payloads: `'`, `''`, `1' OR '1'='1`, `1; DROP TABLE`, `UNION SELECT NULL`
+      - Basic non-destructive payloads: `'`, `''`, `1' OR '1'='1`, `UNION SELECT NULL`
       - Error behavior: database messages exposed in response?
       - Blind SQL: compare response times with `1 AND SLEEP(3)`
+      - To confirm SQLi with potentially destructive impact (e.g. stacked
+        queries like `1; DROP TABLE`), first use non-destructive detection
+        (time-based blind, boolean-based) and only execute the destructive
+        payload if the environment is a disposable database dedicated to
+        testing, never a staging environment shared with other teams
    
    b) Cross-Site Scripting (XSS):
       - Reflected XSS: `<script>alert(1)</script>` in GET/POST parameters

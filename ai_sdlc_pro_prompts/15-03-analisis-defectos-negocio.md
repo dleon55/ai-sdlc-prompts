@@ -114,4 +114,4 @@ Una ficha organizada lista para copiar en Jira o GitHub Issues:
 *   **Datos:** Cuenta de usuario de prueba `test_buyer@lionsystems.com`
 
 ### 6. Diagnóstico Técnico para Desarrolladores
-*   **Origen:** El servidor retorna `HTTP 500 (Internal Server Error)` al llamar al endpoint de creación de orden, posiblemente debido a una inconsistencia en el mapeo de campos de base de datos de envío.
+*   **Origen:** El servidor retorna `HTTP 500 (Internal Server Error)` al llamar al endpoint de creación de orden. La evidencia disponible (código HTTP y captura de consola) no incluye el log del servidor ni el stack trace, por lo que **la causa raíz no puede determinarse con esta evidencia — impacto no determinado en el origen técnico**. Se requiere el log del servidor (request id, timestamp) para diagnosticar la causa exacta.

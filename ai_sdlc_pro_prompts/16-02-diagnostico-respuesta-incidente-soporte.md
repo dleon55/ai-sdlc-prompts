@@ -77,6 +77,7 @@ Restricciones:
 - si el problema no pudo reproducirse con la evidencia disponible, no asumas una causa: pide al usuario la evidencia adicional específica que falta (logs, pasos exactos, capturas) en la primera respuesta.
 - si la clasificación indica bug de código confirmado, detén el flujo de este prompt en el paso de escalamiento — no continúes proponiendo o describiendo el fix de código como si fuera parte de este prompt.
 - distingue siempre en la salida qué es evidencia real (log, KB, reproducción) de qué es hipótesis sin confirmar.
+- no describas una corrección como "en curso" o "siendo trabajada" si el paso de escalamiento aún no se ha confirmado con un issue/PR real asignado — usa "fue escalado a ingeniería" en vez de "está siendo corregido" salvo que exista evidencia de que el trabajo ya inició.
 ```
 
 ---
@@ -111,7 +112,7 @@ Usa el prompt de diagnóstico y primera respuesta a incidente de soporte y adáp
 
 ### Borrador de primera respuesta al usuario
 
-> Hola [NOMBRE DEL USUARIO], gracias por reportarlo. Confirmamos el error al aplicar un cupón vencido durante el checkout y ya identificamos la causa en nuestro sistema de validación de cupones. Nuestro equipo de ingeniería está trabajando en la corrección. Como próximo paso, te recomendamos completar la compra sin el cupón mientras resolvemos el problema, o contactarnos para aplicar el descuento manualmente. Esperamos tener una actualización antes de [PLAZO SEGÚN SLA ACORDADO O ESTIMACIÓN EXPLÍCITA]. Te avisaremos apenas esté resuelto.
+> Hola [NOMBRE DEL USUARIO], gracias por reportarlo. Confirmamos el error al aplicar un cupón vencido durante el checkout y ya identificamos la causa en nuestro sistema de validación de cupones, así que escalamos el caso a nuestro equipo de ingeniería para su corrección. Como próximo paso, te recomendamos completar la compra sin el cupón mientras resolvemos el problema, o contactarnos para aplicar el descuento manualmente. Esperamos tener una actualización antes de [PLAZO SEGÚN SLA ACORDADO O ESTIMACIÓN EXPLÍCITA]. Te avisaremos apenas esté resuelto.
 
 ### Resumen ejecutivo
 

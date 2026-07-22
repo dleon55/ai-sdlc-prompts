@@ -117,6 +117,8 @@ Use the root cause analysis prompt and adapt it to:
 | `07-10-implementacion-pruebas-humo.md` | 7.10 | Smoke Test Implementation |
 | `07-11-implementacion-pruebas-performance.md` | 7.11 | Performance and Load Test Implementation |
 | `07-12-accessibility-a11y-audit.md` | 7.12 | Accessibility (a11y) Audit and UX Compliance |
+| `07-13-diagnostico-tests-flaky.md` | 7.13 | Flaky test diagnosis and stabilization |
+| `07-14-gestion-datos-prueba.md` | 7.14 | QA test data management strategy |
 | `08-01-revision-estatica.md` | 8.1 | Static code review |
 | `08-02-cumplimiento-requerimiento.md` | 8.2 | Requirement compliance review |
 | `08-03-remediacion-maestro.md` | 8.3 | Static review remediation (master prompt) |
@@ -142,6 +144,9 @@ Use the root cause analysis prompt and adapt it to:
 | `11-08-finops-cloud-cost-audit.md` | 11.8 | FinOps Audit and Cloud Cost Efficiency |
 | `11-09-runbook-rollback.md` | 11.9 | Rollback Execution Runbook |
 | `11-10-capacity-planning.md` | 11.10 | Capacity Planning and Scaling Forecast |
+| `11-11-plan-decomiso-sistema-legacy.md` | 11.11 | Safe decommission plan for a legacy system or service |
+| `11-12-auditoria-ruido-alertas.md` | 11.12 | Alert noise (alert fatigue) audit |
+| `11-13-salud-rotacion-oncall.md` | 11.13 | On-call rotation health audit |
 | `12-orquestador.md` | 12 | Master orchestrator prompt for complete cycle |
 
 **── SECURITY AND DEVSECOPS (13)**
@@ -174,6 +179,7 @@ Use the root cause analysis prompt and adapt it to:
 | `16-03-articulo-base-conocimiento.md` | 16.3 | Knowledge base article from a resolved ticket |
 | `16-04-matriz-escalamiento-sla.md` | 16.4 | Escalation matrix and SLA by severity |
 | `16-05-analisis-tendencias-tickets.md` | 16.5 | Trend analysis and aggregated root causes across tickets |
+| `16-06-auditoria-base-conocimiento.md` | 16.6 | Support knowledge base health audit |
 
 **── ENGINEERING BACK OFFICE (17)**
 
@@ -182,6 +188,7 @@ Use the root cause analysis prompt and adapt it to:
 | `17-03-evaluacion-herramienta-licencia.md` | 17.3 | Tool/license adoption evaluation and decision |
 | `17-04-reporte-capacidad-equipo.md` | 17.4 | Engineering team capacity and workload report |
 | `17-05-auditoria-renovacion-vendors.md` | 17.5 | Vendor and technology contract renewal audit |
+| `17-06-reporte-estado-stakeholders.md` | 17.6 | Periodic status report for non-technical stakeholders |
 
 ---
 

@@ -114,4 +114,4 @@ An organized card ready to copy into Jira or GitHub Issues:
 *   **Data:** Test buyer account `test_buyer@lionsystems.com`
 
 ### 6. Technical Diagnosis for Developers
-*   **Origin:** The server returns `HTTP 500 (Internal Server Error)` when calling the order creation endpoint, possibly due to a mismatch in shipping database fields mapping.
+*   **Origin:** The server returns `HTTP 500 (Internal Server Error)` when calling the order creation endpoint. The available evidence (HTTP status and console capture) does not include the server log or stack trace, so **the root cause cannot be determined from this evidence — technical origin not determined**. The server log (request id, timestamp) is required to diagnose the exact cause.

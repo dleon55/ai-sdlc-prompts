@@ -74,6 +74,13 @@ Salida Obligatoria:
 
 3. MATRIZ DE IMPACTO:
    Tabla con módulos, tablas y servicios afectados y su severidad de impacto.
+
+4. VALIDACIÓN DoR:
+   Checklist explícito confirmando o negando cada criterio de Definition of Ready:
+   - [ ] Criterios de aceptación verificables presentes
+   - [ ] Alcance e impacto confirmados contra el repositorio real
+   - [ ] Sin contradicciones abiertas entre requerimiento, documentación y código
+   - Resultado: Ready / No Ready (con razón si es No Ready)
 ```
 
 ---

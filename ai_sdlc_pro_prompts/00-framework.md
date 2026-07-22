@@ -120,6 +120,8 @@ Usa el prompt de análisis de causa raíz y adáptalo a:
 | `07-10-implementacion-pruebas-humo.md` | 7.10 | Implementación de script de smoke test ejecutable en pipeline |
 | `07-11-implementacion-pruebas-performance.md` | 7.11 | Implementación de scripts de performance y carga ejecutables |
 | `07-12-accessibility-a11y-audit.md` | 7.12 | Auditoría de accesibilidad (a11y) y UX compliance |
+| `07-13-diagnostico-tests-flaky.md` | 7.13 | Diagnóstico y estabilización de tests inestables (flaky) |
+| `07-14-gestion-datos-prueba.md` | 7.14 | Estrategia de gestión de datos de prueba en QA |
 | `08-01-revision-estatica.md` | 8.1 | Revisión estática de código |
 | `08-02-cumplimiento-requerimiento.md` | 8.2 | Revisión de cumplimiento contra requerimiento |
 | `08-03-remediacion-maestro.md` | 8.3 | Prompt maestro de remediación de revisión estática |
@@ -145,6 +147,9 @@ Usa el prompt de análisis de causa raíz y adáptalo a:
 | `11-08-finops-cloud-cost-audit.md` | 11.8 | Auditoría de FinOps y eficiencia de costos cloud |
 | `11-09-runbook-rollback.md` | 11.9 | Runbook de ejecución de rollback |
 | `11-10-capacity-planning.md` | 11.10 | Capacity planning y proyección de escalamiento |
+| `11-11-plan-decomiso-sistema-legacy.md` | 11.11 | Plan de decomiso seguro de sistema o servicio legacy |
+| `11-12-auditoria-ruido-alertas.md` | 11.12 | Auditoría de ruido de alertas (alert fatigue) |
+| `11-13-salud-rotacion-oncall.md` | 11.13 | Auditoría de salud de rotación on-call |
 | `12-orquestador.md` | 12 | Prompt maestro orquestador del ciclo completo |
 
 **── SEGURIDAD Y DEVSECOPS (13)**
@@ -177,6 +182,7 @@ Usa el prompt de análisis de causa raíz y adáptalo a:
 | `16-03-articulo-base-conocimiento.md` | 16.3 | Artículo de base de conocimiento desde ticket resuelto |
 | `16-04-matriz-escalamiento-sla.md` | 16.4 | Matriz de escalamiento y SLA por severidad |
 | `16-05-analisis-tendencias-tickets.md` | 16.5 | Análisis de tendencias y causas raíz agregadas de tickets |
+| `16-06-auditoria-base-conocimiento.md` | 16.6 | Auditoría de salud de la base de conocimiento de soporte |
 
 **── BACK OFFICE DE INGENIERÍA (17)**
 
@@ -185,6 +191,7 @@ Usa el prompt de análisis de causa raíz y adáptalo a:
 | `17-03-evaluacion-herramienta-licencia.md` | 17.3 | Evaluación y decisión de adopción de herramienta/licencia |
 | `17-04-reporte-capacidad-equipo.md` | 17.4 | Reporte de capacidad y carga del equipo de ingeniería |
 | `17-05-auditoria-renovacion-vendors.md` | 17.5 | Auditoría de renovación de vendors y contratos tecnológicos |
+| `17-06-reporte-estado-stakeholders.md` | 17.6 | Reporte de estado periódico a stakeholders no técnicos |
 
 ---
 

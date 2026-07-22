@@ -14,7 +14,7 @@ Structured quality assurance (QA / Audit) prompt to certify that functional, des
 |---|---|
 | Type | validation |
 | Expected risk | medium — this is a read-only audit, but an unwarranted "Approved" verdict can authorize the release of a non-compliant deliverable to production |
-| Required inputs | workspace/subproject and compliance standard to audit (ISO 29110 / MOPROSOFT / MAAGTICSI), generated artifacts (Implementation Plan, Test Cases, Test Code, Technical Memory) |
+| Required inputs | workspace/subproject and compliance standard to audit (ISO 29110 / MOPROSOFT / MAAGTICSI), generated artifacts (Implementation Plan, Test Cases, Test Code, Technical Memory), information security evidence (SAST/DAST report or applicable policy) if the ISO 27001 control will be evaluated |
 | Allowed tools | reading of project artifacts, code, and documentation — no test execution or repository changes |
 | Permitted autonomy | A0 — Analyze the conformity of each artifact; A1 — Propose the verdict and the mandatory remediation actions |
 | Stop criteria | do not issue an "Approved" verdict if bidirectional requirement-design-code-test traceability is missing; mark as "Rejected" or "Approved with Reservations" for any non-conformity without evidence of mitigation |
@@ -40,6 +40,7 @@ Inputs:
 - workspace/subproject: [WORKSPACE/SUBPROJECT]
 - generated artifacts (Implementation Plan, Test Cases, Test Code, Technical Memory): [READ OR PASTE DETAILS]
 - standard/compliance: [ISO 29110 / MOPROSOFT / MAAGTICSI]
+- security evidence (SAST/DAST report, applicable information security policy): [PASTE OR "not available"]
 
 Activities:
 1. Review the artifacts against the basic quality checklist:
@@ -54,7 +55,8 @@ Constraints:
 - don't issue an "Approved" verdict if full bidirectional traceability between requirement, design, code, and tests is missing,
 - for any non-conformity detected without mitigation evidence, mark the verdict as "Rejected" or "Approved with Reservations" — never "Approved" by omission or doubt,
 - don't run tests or modify the repository — the audit is strictly read-only over existing artifacts and documentation,
-- each reported non-conformity must reference the specific artifact or control that was not met, along with its associated mandatory remediation action.
+- each reported non-conformity must reference the specific artifact or control that was not met, along with its associated mandatory remediation action,
+- don't issue "Compliant" on the information security control (ISO 27001) without a cited evidence artifact (SAST/DAST report, security checklist); if none was provided, mark that control as "Not verifiable — evidence missing" instead of "Compliant".
 
 Output:
 1. Regulatory Compliance Report (Approved/Missing Checklist)

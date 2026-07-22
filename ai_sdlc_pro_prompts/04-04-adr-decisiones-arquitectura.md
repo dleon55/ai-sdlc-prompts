@@ -15,7 +15,7 @@ Prompt para documentar decisiones arquitectónicas de forma estructurada: contex
 | Tipo | documentación |
 | Riesgo esperado | medio — un ADR mal documentado o con opciones descartadas sin justificar puede llevar a repetir una decisión ya evaluada |
 | Entradas requeridas | contexto del problema, opciones evaluadas, decisión ya tomada (este prompt documenta, no decide) |
-| Herramientas permitidas | lectura de arquitectura existente y `docs/decisions/` para evitar colisión de numeración — solo escritura del archivo ADR nuevo |
+| Herramientas permitidas | lectura de arquitectura existente y `docs/decisions/` para evitar colisión de numeración y asignar el siguiente ADR-NNN libre — sin escritura ni ejecución; el ADR se entrega como bloque de texto para que un humano lo guarde en `docs/decisions/ADR-NNN-titulo-corto.md` |
 | Autonomía permitida | A1 — Proponer |
 | Criterios de detención | antes de asignar el número, verificar `docs/decisions/README.md` o el índice existente para evitar colisión con un ADR-NNN ya usado |
 | Salida esperada | ver `## Salida esperada` |
@@ -83,7 +83,11 @@ Por cada opción considerada (incluyendo la descartada):
 - issues o PRs que motivaron la decisión
 - ADRs relacionados
 
-Formato del archivo de salida: docs/decisions/ADR-NNN-titulo-corto.md
+Restricciones:
+- este prompt no crea ni sobrescribe el archivo ADR directamente: entrega el contenido completo como bloque de texto para que un humano lo guarde en la ruta indicada,
+- antes de asignar el número ADR-NNN, verifica `docs/decisions/` para evitar colisión con un número ya usado; si no puedes confirmarlo, decláralo como pendiente en vez de asumir el siguiente número disponible.
+
+Formato del archivo de salida (para que el humano lo guarde): docs/decisions/ADR-NNN-titulo-corto.md
 ```
 
 ---

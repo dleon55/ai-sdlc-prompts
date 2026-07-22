@@ -36,6 +36,10 @@ Prompt to generate Mermaid diagrams that document the solution: current and prop
 Objective:
 Based on the analysis and design of the change, generate clear and useful Mermaid diagrams to document the solution.
 
+Inputs:
+- approved design: [PASTE OR REFERENCE TO 04-01, OR "does not exist yet"]
+- real architecture / relevant source code: [PATHS OR UNKNOWN]
+
 I need:
 1. Flow diagram of current and proposed process
 2. Sequence diagram
@@ -49,6 +53,7 @@ Mermaid diagram type to use for each one:
 - Entity-relationship: use `erDiagram`.
 
 Rules:
+- If no approved design (`04-01`) or verifiable code/architecture is referenced, stop and request it before generating any diagram.
 - Diagrams must be consistent with the code and real architecture.
 - Do not invent non-existent components.
 - Clearly label actors, services, modules and data.

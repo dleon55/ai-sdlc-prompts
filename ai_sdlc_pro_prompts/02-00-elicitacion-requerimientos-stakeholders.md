@@ -14,7 +14,7 @@ Prompt para facilitar la elicitación de requerimientos con uno o más stakehold
 |---|---|
 | Tipo | análisis |
 | Riesgo esperado | bajo — este prompt no ejecuta cambios ni compromete decisiones; el riesgo es que una elicitación mal conducida deje necesidades implícitas sin descubrir, lo que se propaga como alcance incompleto a `02-01`/`02-05` |
-| Entradas requeridas | contexto de la iniciativa (idea, queja o necesidad inicial en bruto), rol(es) de stakeholder a entrevistar, transcripción o notas de la conversación si ya ocurrió (o "sesión aún no realizada" si se pide el guion antes) |
+| Entradas requeridas | contexto de la iniciativa (idea, queja o necesidad inicial en bruto), rol(es) de stakeholder a entrevistar, transcripción o notas de la conversación si ya ocurrió (o "sesión aún no realizada" si se pide el guion antes), objetivo de negocio de la iniciativa (o "no declarado aún") |
 | Herramientas permitidas | lectura de documentación o contexto existente; sin ejecución ni cambios — el prompt produce un guion de entrevista y/o una síntesis estructurada de una conversación ya ocurrida |
 | Autonomía permitida | A0 — Analizar (síntesis de una conversación ya ocurrida); A1 — Proponer (guion de entrevista, preguntas de sondeo) |
 | Criterios de detención | si la transcripción o notas no permiten distinguir una necesidad real de una solución ya asumida por el stakeholder, señalarlo explícitamente en vez de aceptar la solución propuesta como el requerimiento; si falta el rol del stakeholder u otro dato necesario para el guion, solicitarlo antes de generar preguntas genéricas |

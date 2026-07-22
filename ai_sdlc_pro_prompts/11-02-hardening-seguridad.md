@@ -14,7 +14,7 @@ Prompt para analizar el repositorio y la configuración operativa en busca de op
 |---|---|
 | Tipo | seguridad |
 | Riesgo esperado | alto — puede exponer configuración de infraestructura y secretos si se usa sin cuidado |
-| Entradas requeridas | docker-compose, configuración nginx, `.env` (estructura, no valores), workflows, permisos de GitHub |
+| Entradas requeridas | docker-compose, configuración nginx, `.env` (estructura, no valores), workflows, permisos de GitHub, acceso de lectura al historial de commits recientes (git log) |
 | Herramientas permitidas | lectura de configuración e infraestructura — nunca ejecutar cambios de configuración en el mismo paso |
 | Autonomía permitida | A0 — Analizar (solo entrega hallazgos y plan de mitigación, no aplica cambios) |
 | Criterios de detención | nunca incluir valores reales de secretos en la salida, aunque se detecten expuestos; referenciar solo ubicación y tipo |

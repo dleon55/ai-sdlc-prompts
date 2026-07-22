@@ -15,7 +15,7 @@ Prompt to investigate a defect or incident and determine the real root cause, no
 | Type | analysis |
 | Expected risk | medium — a wrongly identified root cause can misdirect remediation, although this prompt does not execute changes |
 | Required inputs | logs, code, configurations, recent commits and deployments; reference issue or incident |
-| Allowed tools | reading of code, logs, and git history — no execution or changes |
+| Allowed tools | reading of code, logs, and git history; non-destructive execution limited to reproducing the reported symptom (running the already-existing failing test or command, up to three attempts) — no file edits, no installing dependencies, no commits |
 | Permitted autonomy | A0 — Analyze |
 | Stop criteria | if the root cause cannot be confirmed, state confidence level and missing evidence instead of forcing a conclusion |
 | Expected output | see `## Expected output` |
@@ -46,13 +46,13 @@ Activities:
    - recent commits,
    - recent deployments.
 3. Formulate hypotheses.
-4. Validate hypotheses with evidence.
+4. Validate hypotheses with evidence. If the symptom is reproducible (an already-existing failing test or command), run it up to three times and record the exact result as evidence; do not edit code or install dependencies to do so.
 5. Determine:
    - root cause,
    - contributing factors,
    - impact,
    - affected modules.
-6. If it cannot be fully confirmed, indicate missing evidence and confidence level.
+6. If it cannot be fully confirmed, indicate missing evidence and confidence level. If you cannot reproduce the symptom after the allowed attempts, state it as "not reproduced" instead of assuming the most likely hypothesis as confirmed.
 
 Output:
 0. Start with a Task Metadata JSON Block (keys: status, trigger, root_cause, confidence_score [0.0 to 1.0]).

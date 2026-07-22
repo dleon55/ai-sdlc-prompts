@@ -16,7 +16,7 @@ Prompt to design a performance, load, stress and benchmark test strategy for the
 | Expected risk | medium — designing the strategy itself is low risk, but running the generated load against the wrong environment (production) can degrade or take down the service |
 | Required inputs | components to test, test environment (QA/Staging — never production), expected concurrent users in production, acceptable SLA or response time, available tool (k6/Locust/JMeter/Artillery/hey/wrk) |
 | Allowed tools | scenario design and base script generation for the chosen tool; actually running the load against any shared environment requires explicit human approval and must never target production |
-| Permitted autonomy | A1 — Propose (strategy, scenarios, and base script); A2 — Execute controlled only in QA/Staging with explicit approval; never A2/A3 to run load tests against production |
+| Permitted autonomy | A1 — Propose (strategy, scenarios, and base script) — this prompt never executes load tests under any autonomy level; execution (even in QA/Staging with approval) is the exclusive responsibility of `07-11-implementacion-pruebas-performance` |
 | Stop criteria | stop and escalate if the proposed environment is production; do not run the test if no SLA or failure thresholds are defined; never use real user or production data in test payloads |
 | Expected output | see `## Expected output` |
 | Minimum evidence | each scenario with defined P50/P95/P99 thresholds, maximum error rate, and minimum throughput; base script included and runnable with the indicated tool |

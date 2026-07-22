@@ -20,7 +20,7 @@ Prompt para analizar un lote o período de tickets de soporte ya resueltos y det
 | Criterios de detención | detener y escalar si el lote de tickets disponible es demasiado pequeño o no tiene campos mínimos (categoría, resumen, resolución) para sustentar un patrón agregado — no inventar categorías ni causas raíz sin evidencia de al menos varios tickets repetidos; señalar como hallazgo de baja confianza cualquier patrón basado en menos de [UMBRAL MÍNIMO] tickets |
 | Salida esperada | ver `## Salida esperada` |
 | Evidencia mínima | cada categoría recurrente cita el conteo real de tickets que la componen y el rango de fechas del lote analizado; cada causa raíz agregada referencia al menos los identificadores o resúmenes de los tickets que la sustentan (no una única anécdota); cada recomendación de iniciativa distingue explícitamente entre bug recurrente, gap de documentación y gap de producto |
-| Siguiente prompt recomendado | `02-04-triage-backlog-github` si la recomendación es crear uno o más issues de ingeniería para un patrón identificado como bug recurrente o gap de producto; `10-01-documentacion-tecnica` si la recomendación es cerrar un gap de documentación identificado como causa raíz agregada |
+| Siguiente prompt recomendado | `02-04-triage-backlog-github` si la recomendación es crear uno o más issues de ingeniería para un patrón identificado como bug recurrente o gap de producto; `10-01-documentacion-tecnica` si la recomendación es cerrar un gap de documentación identificado como causa raíz agregada; `16-06-auditoria-base-conocimiento` para cruzar las categorías recurrentes detectadas contra el corpus de la KB y encontrar huecos de cobertura |
 
 ---
 

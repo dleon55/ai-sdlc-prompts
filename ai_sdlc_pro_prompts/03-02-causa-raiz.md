@@ -15,7 +15,7 @@ Prompt para investigar un defecto o incidente y determinar la causa raíz real, 
 | Tipo | análisis |
 | Riesgo esperado | medio — una causa raíz mal identificada puede dirigir mal la remediación, aunque este prompt no ejecuta cambios |
 | Entradas requeridas | logs, código, configuraciones, commits y despliegues recientes; issue o incidente de referencia |
-| Herramientas permitidas | lectura de código, logs e historial git — sin ejecución ni cambios |
+| Herramientas permitidas | lectura de código, logs e historial git; ejecución no destructiva limitada a reproducir el síntoma reportado (correr el test o comando fallido ya existente, máximo tres intentos) — sin editar archivos, sin instalar dependencias ni hacer commits |
 | Autonomía permitida | A0 — Analizar |
 | Criterios de detención | si no se puede confirmar la causa raíz, declarar nivel de confianza y evidencia faltante en vez de forzar una conclusión |
 | Salida esperada | ver `## Salida esperada` |
@@ -46,13 +46,13 @@ Actividades:
    - commits recientes,
    - despliegues recientes.
 3. Formula hipótesis.
-4. Valida hipótesis con evidencia.
+4. Valida hipótesis con evidencia. Si el síntoma es reproducible (un test o comando fallido ya existente), ejecútalo hasta tres veces y registra el resultado exacto como evidencia; no edites código ni instales dependencias para lograrlo.
 5. Determina:
    - causa raíz,
    - factores contribuyentes,
    - impacto,
    - módulos afectados.
-6. Si no se puede confirmar totalmente, indica evidencia faltante y nivel de confianza.
+6. Si no se puede confirmar totalmente, indica evidencia faltante y nivel de confianza. Si no puedes reproducir el síntoma tras los intentos permitidos, decláralo como "no reproducido" en vez de asumir la hipótesis más probable como confirmada.
 
 Salida:
 0. Bloque JSON de Metadatos al inicio (claves: status, trigger, root_cause, confidence_score [0.0 a 1.0]).

@@ -80,12 +80,12 @@ Usa el prompt de monitoreo CI y adáptalo a:
 
 | Validación | Estado | Resultado | Causa probable | Acción |
 |---|---|---|---|---|
-| lint | | | | |
-| build | | | | |
+| lint | ✅ Aprobado | `eslint .` — 0 errores, 0 warnings | — | Ninguna |
+| build | ✅ Aprobado | build completado en 42s sin errores | — | Ninguna |
 | pruebas | ⚠️ Falló | 2 de 148 pruebas fallaron en `test_build_unit.py::test_missing_field` | Timeout intermitente al leer `00-framework.md` en el runner de CI (falla aislada, no reproducible en local) | Reintentar el job antes de bloquear el PR; si persiste en un segundo intento, investigar como regresión |
-| quality gates | | | | |
-| workflows | | | | |
-| artefactos | | | | |
+| quality gates | ✅ Aprobado | cobertura 87% (umbral 80%) | — | Ninguna |
+| workflows | ✅ Aprobado | `ci.yml` completó todos los jobs requeridos | — | Ninguna |
+| artefactos | ✅ Aprobado | artefacto `build.zip` generado y subido correctamente | — | Ninguna |
 | checks PR | ✅ Aprobado | Todos los checks requeridos (`lint`, `build`, `tests`) están en verde | — | Ninguna — listo para merge una vez resuelto el punto anterior |
 
 **Criterio de aprobación:** [APROBADO / RECHAZADO / PENDIENTE]
