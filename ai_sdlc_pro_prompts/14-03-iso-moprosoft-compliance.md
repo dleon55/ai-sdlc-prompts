@@ -14,7 +14,7 @@ Prompt estructurado de aseguramiento de calidad (QA / Audit) para certificar que
 |---|---|
 | Tipo | validación |
 | Riesgo esperado | medio — es una auditoría de solo lectura, pero un veredicto de "Aprobado" indebido puede autorizar la liberación de un entregable no conforme a producción |
-| Entradas requeridas | workspace/subproyecto y estándar de compliance a auditar (ISO 29110 / MOPROSOFT / MAAGTICSI), artefactos generados (Plan de Implementación, Casos de Prueba, Código de Pruebas, Memoria Técnica) |
+| Entradas requeridas | workspace/subproyecto y estándar de compliance a auditar (ISO 29110 / MOPROSOFT / MAAGTICSI), artefactos generados (Plan de Implementación, Casos de Prueba, Código de Pruebas, Memoria Técnica), evidencia de seguridad de la información (reporte SAST/DAST o política aplicable) si se va a evaluar el control ISO 27001 |
 | Herramientas permitidas | lectura de artefactos, código y documentación del proyecto — sin ejecución de pruebas ni cambios en el repositorio |
 | Autonomía permitida | A0 — Analizar la conformidad de cada artefacto; A1 — Proponer el veredicto y las acciones de remediación obligatorias |
 | Criterios de detención | no emitir veredicto "Aprobado" si falta trazabilidad bidireccional requerimiento-diseño-código-pruebas; marcar como "Rechazado" o "Aprobado con Reservas" ante cualquier no conformidad sin evidencia de mitigación |
@@ -40,6 +40,7 @@ Entradas:
 - workspace/subproyecto: [WORKSPACE/SUBPROYECTO]
 - artefactos generados (Plan de Implementación, Casos de Prueba, Código de Pruebas, Memoria Técnica): [LEER O PEGAR DETALLES]
 - estándar/compliance: [ISO 29110 / MOPROSOFT / MAAGTICSI]
+- evidencia de seguridad (reporte SAST/DAST, política de seguridad de la información aplicable): [PEGAR O "no disponible"]
 
 Actividades:
 1. Revisa los artefactos contra el checklist básico de calidad:
@@ -54,7 +55,8 @@ Restricciones:
 - no emitas veredicto "Aprobado" si falta trazabilidad bidireccional completa entre requerimiento, diseño, código y pruebas,
 - ante cualquier no conformidad detectada sin evidencia de mitigación, marca el veredicto como "Rechazado" o "Aprobado con Reservas" — nunca "Aprobado" por omisión o duda,
 - no ejecutes pruebas ni modifiques el repositorio — la auditoría es exclusivamente de lectura sobre artefactos y documentación existentes,
-- cada no conformidad reportada debe referenciar el artefacto o control específico incumplido junto con la acción de remediación obligatoria asociada.
+- cada no conformidad reportada debe referenciar el artefacto o control específico incumplido junto con la acción de remediación obligatoria asociada,
+- no emitas "Cumple" en el control de seguridad de la información (ISO 27001) sin un artefacto de evidencia citado (reporte SAST/DAST, checklist de seguridad); si no fue provisto, marca ese control como "No verificable — falta evidencia" en vez de "Cumple".
 
 Salida:
 1. Reporte de Cumplimiento Normativo (Checklist Aprobado/Faltante)

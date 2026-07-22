@@ -77,6 +77,7 @@ Constraints:
 - if the problem could not be reproduced with the available evidence, do not assume a cause: ask the user for the specific additional evidence that is missing (logs, exact steps, screenshots) in the first response.
 - if the classification indicates a confirmed code bug, stop this prompt's flow at the escalation step — do not continue proposing or describing the code fix as if it were part of this prompt.
 - always distinguish in the output what is real evidence (log, KB, reproduction) from what is an unconfirmed hypothesis.
+- do not describe a fix as "in progress" or "being worked on" if the escalation step has not yet been confirmed with a real, assigned issue/PR — use "was escalated to engineering" instead of "is being fixed" unless there is evidence the work has already started.
 ```
 
 ---
@@ -111,7 +112,7 @@ Use the support incident diagnosis and first response prompt and adapt it to:
 
 ### Draft first response to the user
 
-> Hi [USER NAME], thanks for reporting this. We confirmed the error when applying an expired coupon during checkout and have identified the cause in our coupon validation system. Our engineering team is working on the fix. As a next step, we recommend completing the purchase without the coupon while we resolve the issue, or contacting us to apply the discount manually. We expect to have an update before [DEADLINE PER AGREED SLA OR EXPLICIT ESTIMATE]. We'll let you know as soon as it's resolved.
+> Hi [USER NAME], thanks for reporting this. We confirmed the error when applying an expired coupon during checkout and have identified the cause in our coupon validation system, so we've escalated the case to our engineering team for a fix. As a next step, we recommend completing the purchase without the coupon while we resolve the issue, or contacting us to apply the discount manually. We expect to have an update before [DEADLINE PER AGREED SLA OR EXPLICIT ESTIMATE]. We'll let you know as soon as it's resolved.
 
 ### Executive summary
 

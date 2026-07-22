@@ -14,7 +14,7 @@ Prompt to analyze the repository and operational configuration for security stre
 |---|---|
 | Type | security |
 | Expected risk | high — can expose infrastructure configuration and secrets if used carelessly |
-| Required inputs | docker-compose, nginx configuration, `.env` (structure, not values), workflows, GitHub permissions |
+| Required inputs | docker-compose, nginx configuration, `.env` (structure, not values), workflows, GitHub permissions, read access to recent commit history (git log) |
 | Allowed tools | reading configuration and infrastructure — never execute configuration changes in the same step |
 | Permitted autonomy | A0 — Analyze (only delivers findings and mitigation plan, does not apply changes) |
 | Stop criteria | never include real secret values in the output, even if found exposed; reference only location and type |

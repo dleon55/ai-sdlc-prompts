@@ -98,7 +98,9 @@ Usa el prompt de implementación multi-agente y adáptalo a:
 
 ## Salida esperada
 
-| Archivo | Cambio aplicado | Riesgo residual | Commit sugerido |
-|---|---|---|---|
-| `src/auth/session.py` | Se agregó validación de expiración de token antes de refrescar la sesión | bajo — cambio aislado al middleware de sesión, cubierto por las pruebas unitarias existentes | `fix(auth): valida expiración de token antes de refrescar sesión #205` |
-| `src/api/routes/orders.py` | Se corrigió condición de carrera al actualizar el estado de una orden concurrentemente | medio — otro agente editaba el mismo archivo en paralelo; se detectó el conflicto por drift, se clasificó como textual y se resolvió preservando ambos cambios | `fix(api/orders): evita condición de carrera al actualizar estado #211` |
+| Archivo | Cambio aplicado | Pruebas ejecutadas | Concurrencia detectada | Riesgo residual | Commit sugerido |
+|---|---|---|---|---|---|
+| `src/auth/session.py` | Se agregó validación de expiración de token antes de refrescar la sesión | `pytest tests/auth/test_session.py` — 12/12 OK | Ninguna | bajo — cambio aislado al middleware de sesión, cubierto por las pruebas unitarias existentes | `fix(auth): valida expiración de token antes de refrescar sesión #205` |
+| `src/api/routes/orders.py` | Se corrigió condición de carrera al actualizar el estado de una orden concurrentemente | `pytest tests/api/test_orders.py` — 8/8 OK | Otro agente editaba el mismo archivo en paralelo; se detectó el conflicto por drift, se clasificó como textual y se resolvió preservando ambos cambios | medio | `fix(api/orders): evita condición de carrera al actualizar estado #211` |
+
+**Presupuesto consumido:** 2 archivos / 14 minutos de un presupuesto de 5 archivos / 30 minutos. Condiciones de detención: ninguna alcanzada (dentro de presupuesto).

@@ -35,9 +35,11 @@ Prompt to design and implement an application observability strategy: metrics, s
 
 ```text
 Objective:
-Design and implement a complete observability strategy for the application,
-covering the three pillars (metrics, logs, traces), defining SLOs, actionable alerts,
-and dashboards to detect and diagnose problems before they impact users.
+Design the complete observability strategy for the application (catalog of
+metrics, logs, traces, SLOs, actionable alerts, and dashboards) to detect and
+diagnose problems before they impact users; actual code instrumentation and
+deploying agents/exporters are out of scope for this prompt and require A2 in
+an isolated workspace or branch.
 
 Steps:
 

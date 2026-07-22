@@ -57,10 +57,15 @@ Constraints:
 - Include explicit error handling and timeouts for service calls.
 
 Deliverables:
-- complete and executable integration test files,
-- test environment setup instructions (environment variables, required services),
-- verified execution command,
-- notes on external dependencies requiring additional configuration.
+0. JSON metadata block at the start (keys: status, tests_written_count, estimated_coverage_pct, confidence_score [0.0 to 1.0]).
+1. Complete and executable integration test files.
+2. Test environment setup instructions (environment variables, required services).
+3. Verified execution command.
+4. Results from a local run of the tests (stdout/stderr from a real run).
+5. Notes on external dependencies requiring additional configuration.
+
+Self-Correction Limit (Halt Condition):
+- If the execution command produces failures, self-limit to a maximum of 3 correction cycles. If it persists, abort and describe the exact diagnosis.
 ```
 
 ---

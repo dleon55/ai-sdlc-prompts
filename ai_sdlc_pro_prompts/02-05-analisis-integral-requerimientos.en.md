@@ -74,6 +74,13 @@ Mandatory Output:
 
 3. IMPACT MATRIX:
    Table with affected modules, tables, and services, and their impact severity.
+
+4. DoR VALIDATION:
+   Explicit checklist confirming or denying each Definition of Ready criterion:
+   - [ ] Verifiable acceptance criteria present
+   - [ ] Scope and impact confirmed against the real repository
+   - [ ] No open contradictions between requirement, documentation, and code
+   - Result: Ready / Not Ready (with reason if Not Ready)
 ```
 
 ---

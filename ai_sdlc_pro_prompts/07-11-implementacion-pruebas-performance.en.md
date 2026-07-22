@@ -147,7 +147,8 @@ Deliverables:
 - executable scripts by test type (load, stress, spike, soak, benchmark),
 - execution command for each type with environment variables,
 - proposed CI/CD pipeline integration,
-- guide for interpreting results: which metrics to review and how to read them.
+- guide for interpreting results: which metrics to review and how to read them,
+- execution report (JSON/HTML) from at least one real run against the test environment, with observed P95/P99 and error rate — if this prompt does not execute the run, state so explicitly instead of omitting the report.
 ```
 
 ---

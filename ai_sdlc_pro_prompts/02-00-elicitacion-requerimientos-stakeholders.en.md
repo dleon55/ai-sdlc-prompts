@@ -14,7 +14,7 @@ Prompt to facilitate requirements elicitation with one or more stakeholders **be
 |---|---|
 | Type | analysis |
 | Expected risk | low — this prompt does not execute changes nor commit decisions; the risk is that a poorly conducted elicitation leaves implicit needs undiscovered, which propagates as incomplete scope to `02-01`/`02-05` |
-| Required inputs | initiative context (raw idea, complaint, or initial need), stakeholder role(s) to interview, transcript or notes of the conversation if it already happened (or "session not yet held" if the script is requested beforehand) |
+| Required inputs | initiative context (raw idea, complaint, or initial need), stakeholder role(s) to interview, transcript or notes of the conversation if it already happened (or "session not yet held" if the script is requested beforehand), initiative's business objective (or "not yet stated") |
 | Allowed tools | reading of existing documentation or context; no execution or changes — the prompt produces an interview script and/or a structured synthesis of a conversation that already happened |
 | Permitted autonomy | A0 — Analyze (synthesis of a conversation that already happened); A1 — Propose (interview script, probing questions) |
 | Stop criteria | if the transcript or notes do not allow distinguishing a real need from a solution already assumed by the stakeholder, state it explicitly instead of accepting the proposed solution as the requirement; if the stakeholder's role or another datum needed for the script is missing, request it instead of generating generic questions |

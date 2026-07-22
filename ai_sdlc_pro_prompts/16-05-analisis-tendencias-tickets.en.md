@@ -20,7 +20,7 @@ Prompt to analyze a batch or period of already-resolved support tickets and dete
 | Stop criteria | stop and escalate if the available ticket batch is too small or lacks the minimum fields (category, summary, resolution) to support an aggregate pattern — never invent categories or root causes without evidence from at least several repeated tickets; flag as low-confidence any pattern based on fewer than [MINIMUM THRESHOLD] tickets |
 | Expected output | see `## Expected output` |
 | Minimum evidence | each recurring category cites the real count of tickets that compose it and the date range of the batch analyzed; each aggregate root cause references at least the identifiers or summaries of the tickets that support it (not a single anecdote); each initiative recommendation explicitly distinguishes between recurring bug, documentation gap, and product gap |
-| Recommended next prompt | `02-04-triage-backlog-github` if the recommendation is to create one or more engineering issues for a pattern identified as a recurring bug or product gap; `10-01-documentacion-tecnica` if the recommendation is to close a documentation gap identified as an aggregate root cause |
+| Recommended next prompt | `02-04-triage-backlog-github` if the recommendation is to create one or more engineering issues for a pattern identified as a recurring bug or product gap; `10-01-documentacion-tecnica` if the recommendation is to close a documentation gap identified as an aggregate root cause; `16-06-auditoria-base-conocimiento` to cross-check the detected recurring categories against the KB corpus and find coverage gaps |
 
 ---
 

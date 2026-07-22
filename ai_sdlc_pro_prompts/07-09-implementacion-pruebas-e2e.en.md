@@ -57,12 +57,20 @@ Constraints:
 - Tests must be able to run independently and in headless mode.
 - Include application state cleanup after each test if the flow requires it
   (e.g., deleting created records).
+- Never run these scripts against a production URL; explicitly confirm the
+  configured base URL is QA/staging before running any script, and stop if
+  it cannot be confirmed.
 
 Deliverables:
-- complete and executable E2E scripts,
-- required framework configuration (environment variables, base URL, etc.),
-- verified execution command (headless and headed),
-- directory where screenshots and reports are stored.
+0. JSON metadata block at the start (keys: status, tests_written_count, estimated_coverage_pct, confidence_score [0.0 to 1.0]).
+1. Complete and executable E2E scripts.
+2. Required framework configuration (environment variables, base URL, etc.).
+3. Verified execution command (headless and headed).
+4. Results from a local run of the tests (stdout/stderr from a real run).
+5. Directory where screenshots and reports are stored.
+
+Self-Correction Limit (Halt Condition):
+- If the execution command produces failures, self-limit to a maximum of 3 correction cycles. If it persists, abort and describe the exact diagnosis.
 ```
 
 ---

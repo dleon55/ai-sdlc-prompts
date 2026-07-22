@@ -98,13 +98,32 @@ Use the incident review prompt and adapt it to:
 
 | Metric | Value |
 |---|---|
-| Total reported incidents | |
-| Exist and are correct | |
-| Exist but incomplete | |
-| Do not exist | |
-| Duplicates | |
+| Total reported incidents | 14 |
+| Exist and are correct | 6 |
+| Exist but incomplete | 3 |
+| Do not exist | 4 |
+| Duplicates | 1 |
 
 ### QA vs GitHub Matrix
 
 | Incident | Severity | GH Issue | Current status | Proposed action |
 |---|---|---|---|---|
+| INC-014 — build.py doesn't validate ES/EN pair before publishing | high | none found | Does not exist | Create |
+| INC-015 — intermittent timeout in test_build_unit | medium | #138 | Exists, incomplete (missing environment and steps) | Comment requesting missing data |
+| INC-016 — same symptom as INC-014 reported by another tester | high | (same as INC-014, still no issue) | Duplicate of INC-014 | Mark duplicate, don't create a new issue |
+
+### Issues to create
+
+| Incident | Proposed title | Severity | Labels |
+|---|---|---|---|
+| INC-014 | fix: build.py doesn't validate ES/EN pair before publishing | high | bug, ai-agent |
+
+### Issues to update / with traceability problems
+
+| GH Issue | Detected problem | Proposed action |
+|---|---|---|
+| #138 | Missing environment and exact reproduction steps | Comment requesting the missing fields before closing |
+
+### Recommendations for improvement to the QA → GH process
+
+- Example: standardize that every QA report include the environment and version before normalizing it, to avoid the "comment requesting missing data" cycle on every round.

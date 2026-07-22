@@ -98,13 +98,32 @@ Usa el prompt de revisión de incidentes y adáptalo a:
 
 | Métrica | Valor |
 |---|---|
-| Total incidentes reportados | |
-| Existen y están correctos | |
-| Existen pero incompletos | |
-| No existen | |
-| Duplicados | |
+| Total incidentes reportados | 14 |
+| Existen y están correctos | 6 |
+| Existen pero incompletos | 3 |
+| No existen | 4 |
+| Duplicados | 1 |
 
 ### Matriz QA vs GitHub
 
 | Incidente | Severidad | Issue GH | Estado actual | Acción propuesta |
 |---|---|---|---|---|
+| INC-014 — build.py no valida par ES/EN antes de publicar | alta | ninguno encontrado | No existe | Crear |
+| INC-015 — timeout intermitente en test_build_unit | media | #138 | Existe, incompleto (falta ambiente y pasos) | Comentar solicitando datos faltantes |
+| INC-016 — mismo síntoma que INC-014 reportado por otro tester | alta | (mismo que INC-014, aún sin issue) | Duplicado de INC-014 | Marcar duplicado, no crear issue nuevo |
+
+### Issues a crear
+
+| Incidente | Título propuesto | Severidad | Labels |
+|---|---|---|---|
+| INC-014 | fix: build.py no valida par ES/EN antes de publicar | alta | bug, agente-ia |
+
+### Issues a actualizar / con problemas de trazabilidad
+
+| Issue GH | Problema detectado | Acción propuesta |
+|---|---|---|
+| #138 | Falta ambiente y pasos de reproducción exactos | Comentar solicitando los campos faltantes antes de cerrar |
+
+### Recomendaciones de mejora al proceso QA → GH
+
+- Ejemplo: estandarizar que todo reporte de QA incluya el ambiente y la versión antes de normalizarlo, para evitar el ciclo de "comentar solicitando datos faltantes" en cada ronda.

@@ -147,7 +147,8 @@ Entregables:
 - scripts ejecutables por tipo de prueba (load, stress, spike, soak, benchmark),
 - comando de ejecución para cada tipo con variables de entorno,
 - integración propuesta en el pipeline CI/CD,
-- guía de interpretación de resultados: qué métricas revisar y cómo leerlas.
+- guía de interpretación de resultados: qué métricas revisar y cómo leerlas,
+- reporte de ejecución (JSON/HTML) de al menos una corrida real contra el ambiente de prueba, con P95/P99 y tasa de error observados — si este prompt no ejecuta la corrida, decláralo explícitamente en vez de omitir el reporte.
 ```
 
 ---

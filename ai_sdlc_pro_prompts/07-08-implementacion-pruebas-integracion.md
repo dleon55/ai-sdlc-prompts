@@ -57,10 +57,15 @@ Restricciones:
 - Incluye manejo explícito de errores y timeouts para llamadas a servicios.
 
 Entrega:
-- archivos de prueba de integración completos y ejecutables,
-- instrucciones de setup del entorno de pruebas (variables de entorno, servicios requeridos),
-- comando de ejecución verificado,
-- notas sobre dependencias externas que requieren configuración adicional.
+0. Bloque JSON de Metadatos al inicio (claves: status, tests_written_count, estimated_coverage_pct, confidence_score [0.0 a 1.0]).
+1. Archivos de prueba de integración completos y ejecutables.
+2. Instrucciones de setup del entorno de pruebas (variables de entorno, servicios requeridos).
+3. Comando de ejecución verificado.
+4. Resultados de la ejecución local de las pruebas (stdout/stderr de una corrida real).
+5. Notas sobre dependencias externas que requieren configuración adicional.
+
+Límite de Auto-Corrección (Halt Condition):
+- Si el comando de ejecución arroja fallos, autolímite a un máximo de 3 ciclos de corrección. Si persiste, aborta y describe el diagnóstico exacto.
 ```
 
 ---

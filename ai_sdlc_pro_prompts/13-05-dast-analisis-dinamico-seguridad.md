@@ -99,9 +99,14 @@ Pasos:
    Ingresar payloads en todos los puntos de entrada para detectar:
    
    a) Inyección SQL (si aplica tecnología de BD):
-      - Payloads básicos: `'`, `''`, `1' OR '1'='1`, `1; DROP TABLE`, `UNION SELECT NULL`
+      - Payloads básicos no destructivos: `'`, `''`, `1' OR '1'='1`, `UNION SELECT NULL`
       - Comportamiento de error: ¿mensajes de BD expuestos en respuesta?
       - Blind SQL: comparar tiempos de respuesta con `1 AND SLEEP(3)`
+      - Para confirmar SQLi con impacto potencialmente destructivo (ej. stacked
+        queries tipo `1; DROP TABLE`), usa primero detección no destructiva
+        (time-based blind, boolean-based) y solo ejecuta el payload destructivo
+        si el entorno es una base de datos desechable dedicada a la prueba,
+        nunca una staging compartida con otros equipos
    
    b) Cross-Site Scripting (XSS):
       - Reflected XSS: `<script>alert(1)</script>` en parámetros GET/POST

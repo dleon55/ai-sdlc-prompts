@@ -701,7 +701,7 @@
         "es": {
           "type": "análisis",
           "expected_risk": "bajo — este prompt no ejecuta cambios ni compromete decisiones; el riesgo es que una elicitación mal conducida deje necesidades implícitas sin descubrir, lo que se propaga como alcance incompleto a `02-01`/`02-05`",
-          "required_inputs": "contexto de la iniciativa (idea, queja o necesidad inicial en bruto), rol(es) de stakeholder a entrevistar, transcripción o notas de la conversación si ya ocurrió (o \"sesión aún no realizada\" si se pide el guion antes)",
+          "required_inputs": "contexto de la iniciativa (idea, queja o necesidad inicial en bruto), rol(es) de stakeholder a entrevistar, transcripción o notas de la conversación si ya ocurrió (o \"sesión aún no realizada\" si se pide el guion antes), objetivo de negocio de la iniciativa (o \"no declarado aún\")",
           "allowed_tools": "lectura de documentación o contexto existente; sin ejecución ni cambios — el prompt produce un guion de entrevista y/o una síntesis estructurada de una conversación ya ocurrida",
           "permitted_autonomy": "A0 — Analizar (síntesis de una conversación ya ocurrida); A1 — Proponer (guion de entrevista, preguntas de sondeo)",
           "stop_criteria": "si la transcripción o notas no permiten distinguir una necesidad real de una solución ya asumida por el stakeholder, señalarlo explícitamente en vez de aceptar la solución propuesta como el requerimiento; si falta el rol del stakeholder u otro dato necesario para el guion, solicitarlo antes de generar preguntas genéricas",
@@ -726,7 +726,7 @@
         "en": {
           "type": "analysis",
           "expected_risk": "low — this prompt does not execute changes nor commit decisions; the risk is that a poorly conducted elicitation leaves implicit needs undiscovered, which propagates as incomplete scope to `02-01`/`02-05`",
-          "required_inputs": "initiative context (raw idea, complaint, or initial need), stakeholder role(s) to interview, transcript or notes of the conversation if it already happened (or \"session not yet held\" if the script is requested beforehand)",
+          "required_inputs": "initiative context (raw idea, complaint, or initial need), stakeholder role(s) to interview, transcript or notes of the conversation if it already happened (or \"session not yet held\" if the script is requested beforehand), initiative's business objective (or \"not yet stated\")",
           "allowed_tools": "reading of existing documentation or context; no execution or changes — the prompt produces an interview script and/or a structured synthesis of a conversation that already happened",
           "permitted_autonomy": "A0 — Analyze (synthesis of a conversation that already happened); A1 — Propose (interview script, probing questions)",
           "stop_criteria": "if the transcript or notes do not allow distinguishing a real need from a solution already assumed by the stakeholder, state it explicitly instead of accepting the proposed solution as the requirement; if the stakeholder's role or another datum needed for the script is missing, request it instead of generating generic questions",
@@ -1102,7 +1102,7 @@
           "type": "análisis",
           "expected_risk": "medio — una causa raíz mal identificada puede dirigir mal la remediación, aunque este prompt no ejecuta cambios",
           "required_inputs": "logs, código, configuraciones, commits y despliegues recientes; issue o incidente de referencia",
-          "allowed_tools": "lectura de código, logs e historial git — sin ejecución ni cambios",
+          "allowed_tools": "lectura de código, logs e historial git; ejecución no destructiva limitada a reproducir el síntoma reportado (correr el test o comando fallido ya existente, máximo tres intentos) — sin editar archivos, sin instalar dependencias ni hacer commits",
           "permitted_autonomy": "A0 — Analizar",
           "stop_criteria": "si no se puede confirmar la causa raíz, declarar nivel de confianza y evidencia faltante en vez de forzar una conclusión",
           "expected_output": "ver `## Salida esperada`",
@@ -1126,7 +1126,7 @@
           "type": "analysis",
           "expected_risk": "medium — a wrongly identified root cause can misdirect remediation, although this prompt does not execute changes",
           "required_inputs": "logs, code, configurations, recent commits and deployments; reference issue or incident",
-          "allowed_tools": "reading of code, logs, and git history — no execution or changes",
+          "allowed_tools": "reading of code, logs, and git history; non-destructive execution limited to reproducing the reported symptom (running the already-existing failing test or command, up to three attempts) — no file edits, no installing dependencies, no commits",
           "permitted_autonomy": "A0 — Analyze",
           "stop_criteria": "if the root cause cannot be confirmed, state confidence level and missing evidence instead of forcing a conclusion",
           "expected_output": "see `## Expected output`",
@@ -1334,7 +1334,7 @@
           "type": "documentación",
           "expected_risk": "medio — un ADR mal documentado o con opciones descartadas sin justificar puede llevar a repetir una decisión ya evaluada",
           "required_inputs": "contexto del problema, opciones evaluadas, decisión ya tomada (este prompt documenta, no decide)",
-          "allowed_tools": "lectura de arquitectura existente y `docs/decisions/` para evitar colisión de numeración — solo escritura del archivo ADR nuevo",
+          "allowed_tools": "lectura de arquitectura existente y `docs/decisions/` para evitar colisión de numeración y asignar el siguiente ADR-NNN libre — sin escritura ni ejecución; el ADR se entrega como bloque de texto para que un humano lo guarde en `docs/decisions/ADR-NNN-titulo-corto.md`",
           "permitted_autonomy": "A1 — Proponer",
           "stop_criteria": "antes de asignar el número, verificar `docs/decisions/README.md` o el índice existente para evitar colisión con un ADR-NNN ya usado",
           "expected_output": "ver `## Salida esperada`",
@@ -1357,7 +1357,7 @@
           "type": "documentation",
           "expected_risk": "medium — a poorly documented ADR, or rejected options left unjustified, can lead the team to re-evaluate a decision already made",
           "required_inputs": "problem context, evaluated options, decision already made (this prompt documents, it does not decide)",
-          "allowed_tools": "reading existing architecture and `docs/decisions/` to avoid numbering collisions — only writes the new ADR file",
+          "allowed_tools": "reading existing architecture and `docs/decisions/` to avoid numbering collisions and assign the next free ADR-NNN — no writing or execution; the ADR is delivered as a text block for a human to save at `docs/decisions/ADR-NNN-short-title.md`",
           "permitted_autonomy": "A1 — Propose",
           "stop_criteria": "before assigning the number, check `docs/decisions/README.md` or the existing index to avoid colliding with an already-used ADR-NNN",
           "expected_output": "see `## Expected output`",
@@ -2073,7 +2073,7 @@
           "expected_risk": "medio — el diseño de la estrategia en sí es de bajo riesgo, pero ejecutar la carga generada contra el ambiente equivocado (producción) puede degradar o caer el servicio",
           "required_inputs": "componentes a probar, ambiente de prueba (QA/Staging — nunca producción), usuarios concurrentes esperados en producción, SLA o tiempo de respuesta aceptable, herramienta disponible (k6/Locust/JMeter/Artillery/hey/wrk)",
           "allowed_tools": "diseño de escenarios y generación del script base para la herramienta elegida; la ejecución real de la carga contra cualquier ambiente compartido requiere aprobación humana explícita y nunca debe apuntar a producción",
-          "permitted_autonomy": "A1 — Proponer (estrategia, escenarios y script base); A2 — Ejecutar controlado solo en QA/Staging con aprobación explícita; nunca A2/A3 para ejecutar pruebas de carga contra producción",
+          "permitted_autonomy": "A1 — Proponer (estrategia, escenarios y script base) — este prompt nunca ejecuta pruebas de carga bajo ninguna autonomía; la ejecución (incluso en QA/Staging con aprobación) es responsabilidad exclusiva de `07-11-implementacion-pruebas-performance`",
           "stop_criteria": "detener y escalar si el ambiente propuesto es producción; no ejecutar la prueba si no hay SLA o umbrales de fallo definidos; nunca usar datos reales de usuarios o de producción en los payloads de prueba",
           "expected_output": "ver `## Salida esperada`",
           "minimum_evidence": "cada escenario con umbrales de P50/P95/P99, tasa de error máxima y throughput mínimo definidos; script base incluido y ejecutable con la herramienta indicada",
@@ -2086,8 +2086,7 @@
             "medium"
           ],
           "permitted_autonomy_tags": [
-            "A1",
-            "A2"
+            "A1"
           ],
           "recommended_next_prompt_ids": [
             "07-11-implementacion-pruebas-performance"
@@ -2098,7 +2097,7 @@
           "expected_risk": "medium — designing the strategy itself is low risk, but running the generated load against the wrong environment (production) can degrade or take down the service",
           "required_inputs": "components to test, test environment (QA/Staging — never production), expected concurrent users in production, acceptable SLA or response time, available tool (k6/Locust/JMeter/Artillery/hey/wrk)",
           "allowed_tools": "scenario design and base script generation for the chosen tool; actually running the load against any shared environment requires explicit human approval and must never target production",
-          "permitted_autonomy": "A1 — Propose (strategy, scenarios, and base script); A2 — Execute controlled only in QA/Staging with explicit approval; never A2/A3 to run load tests against production",
+          "permitted_autonomy": "A1 — Propose (strategy, scenarios, and base script) — this prompt never executes load tests under any autonomy level; execution (even in QA/Staging with approval) is the exclusive responsibility of `07-11-implementacion-pruebas-performance`",
           "stop_criteria": "stop and escalate if the proposed environment is production; do not run the test if no SLA or failure thresholds are defined; never use real user or production data in test payloads",
           "expected_output": "see `## Expected output`",
           "minimum_evidence": "each scenario with defined P50/P95/P99 thresholds, maximum error rate, and minimum throughput; base script included and runnable with the indicated tool",
@@ -2111,8 +2110,7 @@
             "medium"
           ],
           "permitted_autonomy_tags": [
-            "A1",
-            "A2"
+            "A1"
           ],
           "recommended_next_prompt_ids": [
             "07-11-implementacion-pruebas-performance"
@@ -3521,7 +3519,7 @@
         "es": {
           "type": "seguridad",
           "expected_risk": "alto — puede exponer configuración de infraestructura y secretos si se usa sin cuidado",
-          "required_inputs": "docker-compose, configuración nginx, `.env` (estructura, no valores), workflows, permisos de GitHub",
+          "required_inputs": "docker-compose, configuración nginx, `.env` (estructura, no valores), workflows, permisos de GitHub, acceso de lectura al historial de commits recientes (git log)",
           "allowed_tools": "lectura de configuración e infraestructura — nunca ejecutar cambios de configuración en el mismo paso",
           "permitted_autonomy": "A0 — Analizar (solo entrega hallazgos y plan de mitigación, no aplica cambios)",
           "stop_criteria": "nunca incluir valores reales de secretos en la salida, aunque se detecten expuestos; referenciar solo ubicación y tipo",
@@ -3545,7 +3543,7 @@
         "en": {
           "type": "security",
           "expected_risk": "high — can expose infrastructure configuration and secrets if used carelessly",
-          "required_inputs": "docker-compose, nginx configuration, `.env` (structure, not values), workflows, GitHub permissions",
+          "required_inputs": "docker-compose, nginx configuration, `.env` (structure, not values), workflows, GitHub permissions, read access to recent commit history (git log)",
           "allowed_tools": "reading configuration and infrastructure — never execute configuration changes in the same step",
           "permitted_autonomy": "A0 — Analyze (only delivers findings and mitigation plan, does not apply changes)",
           "stop_criteria": "never include real secret values in the output, even if found exposed; reference only location and type",
@@ -4866,7 +4864,7 @@
         "es": {
           "type": "validación",
           "expected_risk": "medio — es una auditoría de solo lectura, pero un veredicto de \"Aprobado\" indebido puede autorizar la liberación de un entregable no conforme a producción",
-          "required_inputs": "workspace/subproyecto y estándar de compliance a auditar (ISO 29110 / MOPROSOFT / MAAGTICSI), artefactos generados (Plan de Implementación, Casos de Prueba, Código de Pruebas, Memoria Técnica)",
+          "required_inputs": "workspace/subproyecto y estándar de compliance a auditar (ISO 29110 / MOPROSOFT / MAAGTICSI), artefactos generados (Plan de Implementación, Casos de Prueba, Código de Pruebas, Memoria Técnica), evidencia de seguridad de la información (reporte SAST/DAST o política aplicable) si se va a evaluar el control ISO 27001",
           "allowed_tools": "lectura de artefactos, código y documentación del proyecto — sin ejecución de pruebas ni cambios en el repositorio",
           "permitted_autonomy": "A0 — Analizar la conformidad de cada artefacto; A1 — Proponer el veredicto y las acciones de remediación obligatorias",
           "stop_criteria": "no emitir veredicto \"Aprobado\" si falta trazabilidad bidireccional requerimiento-diseño-código-pruebas; marcar como \"Rechazado\" o \"Aprobado con Reservas\" ante cualquier no conformidad sin evidencia de mitigación",
@@ -4891,7 +4889,7 @@
         "en": {
           "type": "validation",
           "expected_risk": "medium — this is a read-only audit, but an unwarranted \"Approved\" verdict can authorize the release of a non-compliant deliverable to production",
-          "required_inputs": "workspace/subproject and compliance standard to audit (ISO 29110 / MOPROSOFT / MAAGTICSI), generated artifacts (Implementation Plan, Test Cases, Test Code, Technical Memory)",
+          "required_inputs": "workspace/subproject and compliance standard to audit (ISO 29110 / MOPROSOFT / MAAGTICSI), generated artifacts (Implementation Plan, Test Cases, Test Code, Technical Memory), information security evidence (SAST/DAST report or applicable policy) if the ISO 27001 control will be evaluated",
           "allowed_tools": "reading of project artifacts, code, and documentation — no test execution or repository changes",
           "permitted_autonomy": "A0 — Analyze the conformity of each artifact; A1 — Propose the verdict and the mandatory remediation actions",
           "stop_criteria": "do not issue an \"Approved\" verdict if bidirectional requirement-design-code-test traceability is missing; mark as \"Rejected\" or \"Approved with Reservations\" for any non-conformity without evidence of mitigation",
@@ -5342,7 +5340,7 @@
           "stop_criteria": "detener y escalar si el lote de tickets disponible es demasiado pequeño o no tiene campos mínimos (categoría, resumen, resolución) para sustentar un patrón agregado — no inventar categorías ni causas raíz sin evidencia de al menos varios tickets repetidos; señalar como hallazgo de baja confianza cualquier patrón basado en menos de [UMBRAL MÍNIMO] tickets",
           "expected_output": "ver `## Salida esperada`",
           "minimum_evidence": "cada categoría recurrente cita el conteo real de tickets que la componen y el rango de fechas del lote analizado; cada causa raíz agregada referencia al menos los identificadores o resúmenes de los tickets que la sustentan (no una única anécdota); cada recomendación de iniciativa distingue explícitamente entre bug recurrente, gap de documentación y gap de producto",
-          "recommended_next_prompt": "`02-04-triage-backlog-github` si la recomendación es crear uno o más issues de ingeniería para un patrón identificado como bug recurrente o gap de producto; `10-01-documentacion-tecnica` si la recomendación es cerrar un gap de documentación identificado como causa raíz agregada",
+          "recommended_next_prompt": "`02-04-triage-backlog-github` si la recomendación es crear uno o más issues de ingeniería para un patrón identificado como bug recurrente o gap de producto; `10-01-documentacion-tecnica` si la recomendación es cerrar un gap de documentación identificado como causa raíz agregada; `16-06-auditoria-base-conocimiento` para cruzar las categorías recurrentes detectadas contra el corpus de la KB y encontrar huecos de cobertura",
           "type_tags": [
             "analysis"
           ],
@@ -5355,7 +5353,8 @@
           ],
           "recommended_next_prompt_ids": [
             "02-04-triage-backlog-github",
-            "10-01-documentacion-tecnica"
+            "10-01-documentacion-tecnica",
+            "16-06-auditoria-base-conocimiento"
           ]
         },
         "en": {
@@ -5367,7 +5366,7 @@
           "stop_criteria": "stop and escalate if the available ticket batch is too small or lacks the minimum fields (category, summary, resolution) to support an aggregate pattern — never invent categories or root causes without evidence from at least several repeated tickets; flag as low-confidence any pattern based on fewer than [MINIMUM THRESHOLD] tickets",
           "expected_output": "see `## Expected output`",
           "minimum_evidence": "each recurring category cites the real count of tickets that compose it and the date range of the batch analyzed; each aggregate root cause references at least the identifiers or summaries of the tickets that support it (not a single anecdote); each initiative recommendation explicitly distinguishes between recurring bug, documentation gap, and product gap",
-          "recommended_next_prompt": "`02-04-triage-backlog-github` if the recommendation is to create one or more engineering issues for a pattern identified as a recurring bug or product gap; `10-01-documentacion-tecnica` if the recommendation is to close a documentation gap identified as an aggregate root cause",
+          "recommended_next_prompt": "`02-04-triage-backlog-github` if the recommendation is to create one or more engineering issues for a pattern identified as a recurring bug or product gap; `10-01-documentacion-tecnica` if the recommendation is to close a documentation gap identified as an aggregate root cause; `16-06-auditoria-base-conocimiento` to cross-check the detected recurring categories against the KB corpus and find coverage gaps",
           "type_tags": [
             "analysis"
           ],
@@ -5380,7 +5379,8 @@
           ],
           "recommended_next_prompt_ids": [
             "02-04-triage-backlog-github",
-            "10-01-documentacion-tecnica"
+            "10-01-documentacion-tecnica",
+            "16-06-auditoria-base-conocimiento"
           ]
         }
       }
@@ -5688,7 +5688,7 @@
         "es": {
           "type": "análisis/auditoría — la ejecución de la renovación, renegociación, migración o cancelación queda delegada a quien administra el contrato (procurement, finanzas o el responsable técnico del vendor), nunca a este prompt",
           "expected_risk": "medio — una recomendación de renovación equivocada puede implicar sobre-pago sostenido, lock-in innecesario o migrar sin justificación suficiente, con impacto de costo y continuidad operativa; el prompt en sí solo analiza y recomienda, nunca ejecuta la renovación ni negocia con el vendor",
-          "required_inputs": "contrato o términos de licencia vigentes (costo, volumen/asientos contratados, fecha de renovación, cláusulas de cancelación o penalización), datos reales de uso (asientos activos, volumen consumido, frecuencia de uso por equipo/feature), alternativas de mercado conocidas o a investigar, historial de incidentes de soporte o seguridad del vendor si existe",
+          "required_inputs": "contrato o términos de licencia vigentes (costo, volumen/asientos contratados, fecha de renovación, cláusulas de cancelación o penalización), datos reales de uso (asientos activos, volumen consumido, frecuencia de uso por equipo/feature), alternativas de mercado conocidas o a investigar, historial de incidentes de soporte o seguridad del vendor si existe, lead time disponible antes de la fecha de renovación",
           "allowed_tools": "lectura de contratos, facturas, dashboards de uso/analytics del propio vendor, documentación pública de alternativas de mercado; investigación de mercado (búsqueda web) para comparar alternativas vigentes; la salida es un documento de auditoría y recomendación de texto — no ejecuta renovaciones, cancelaciones, migraciones ni negociaciones con el vendor",
           "permitted_autonomy": "A0 — Analizar (uso real vs. contratado, comparación de alternativas); A1 — Proponer (recomendación de renovar/renegociar/migrar/cancelar); nunca A2/A3 — este prompt no renueva, cancela, firma ni negocia contratos, ni ejecuta la migración a una alternativa",
           "stop_criteria": "detener y escalar si no hay datos reales de uso disponibles para calcular la relación uso vs. contratado — no fabricar cifras de utilización plausibles; marcar como recomendación de baja confianza si la comparación con alternativas de mercado se basa en información desactualizada o no verificada; escalar como urgente si la fecha de renovación está a menos del lead time mínimo necesario para negociar o migrar",
@@ -5713,7 +5713,7 @@
         "en": {
           "type": "analysis/audit — execution of the renewal, renegotiation, migration, or cancellation is delegated to whoever administers the contract (procurement, finance, or the technical owner of the vendor relationship), never to this prompt",
           "expected_risk": "medium — a wrong renewal recommendation can mean sustained overpayment, unnecessary lock-in, or migrating without sufficient justification, with cost and operational-continuity impact; the prompt itself only analyzes and recommends, it never executes the renewal or negotiates with the vendor",
-          "required_inputs": "current contract or license terms (cost, contracted volume/seats, renewal date, cancellation or penalty clauses), real usage data (active seats, consumed volume, usage frequency by team/feature), known or to-be-researched market alternatives, vendor support or security incident history if available",
+          "required_inputs": "current contract or license terms (cost, contracted volume/seats, renewal date, cancellation or penalty clauses), real usage data (active seats, consumed volume, usage frequency by team/feature), known or to-be-researched market alternatives, vendor support or security incident history if available, lead time available before the renewal date",
           "allowed_tools": "reading contracts, invoices, the vendor's own usage/analytics dashboards, public documentation of market alternatives; market research (web search) to compare current alternatives; the output is a text audit and recommendation document — it does not execute renewals, cancellations, migrations, or negotiations with the vendor",
           "permitted_autonomy": "A0 — Analyze (real usage vs. contracted, comparison of alternatives); A1 — Propose (recommendation to renew/renegotiate/migrate/cancel); never A2/A3 — this prompt does not renew, cancel, sign, or negotiate contracts, nor execute migration to an alternative",
           "stop_criteria": "stop and escalate if no real usage data is available to calculate the usage-vs-contracted ratio — never fabricate plausible-looking utilization figures; flag as a low-confidence recommendation if the comparison with market alternatives relies on outdated or unverified information; escalate as urgent if the renewal date is within less than the minimum lead time needed to negotiate or migrate",

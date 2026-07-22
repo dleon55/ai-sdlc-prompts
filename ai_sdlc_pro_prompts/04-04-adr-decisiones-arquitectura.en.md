@@ -15,7 +15,7 @@ Prompt to document architectural decisions in a structured way: problem context,
 | Type | documentation |
 | Expected risk | medium — a poorly documented ADR, or rejected options left unjustified, can lead the team to re-evaluate a decision already made |
 | Required inputs | problem context, evaluated options, decision already made (this prompt documents, it does not decide) |
-| Allowed tools | reading existing architecture and `docs/decisions/` to avoid numbering collisions — only writes the new ADR file |
+| Allowed tools | reading existing architecture and `docs/decisions/` to avoid numbering collisions and assign the next free ADR-NNN — no writing or execution; the ADR is delivered as a text block for a human to save at `docs/decisions/ADR-NNN-short-title.md` |
 | Permitted autonomy | A1 — Propose |
 | Stop criteria | before assigning the number, check `docs/decisions/README.md` or the existing index to avoid colliding with an already-used ADR-NNN |
 | Expected output | see `## Expected output` |
@@ -83,7 +83,11 @@ For each option considered (including the rejected one):
 - issues or PRs that motivated the decision
 - related ADRs
 
-Output file format: docs/decisions/ADR-NNN-short-title.md
+Constraints:
+- this prompt does not create or overwrite the ADR file directly: it delivers the full content as a text block for a human to save at the indicated path,
+- before assigning the ADR-NNN number, check `docs/decisions/` to avoid collision with an already-used number; if you cannot confirm it, declare it as pending instead of assuming the next available number.
+
+Output file format (for the human to save it): docs/decisions/ADR-NNN-short-title.md
 ```
 
 ---

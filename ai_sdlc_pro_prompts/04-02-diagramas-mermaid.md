@@ -36,6 +36,10 @@ Prompt para generar diagramas Mermaid que documenten la solución: flujo actual 
 Objetivo:
 Con base en el análisis y diseño del cambio, genera diagramas Mermaid claros y útiles para documentar la solución.
 
+Entradas:
+- diseño aprobado: [PEGAR O REFERENCIA A 04-01, O "no existe aún"]
+- arquitectura real / código fuente relevante: [RUTAS O DESCONOCIDO]
+
 Necesito:
 1. Diagrama de flujo del proceso actual y propuesto
 2. Diagrama de secuencia
@@ -49,6 +53,7 @@ Tipo de diagrama Mermaid a usar por cada uno:
 - Entidad-relación: usa `erDiagram`.
 
 Reglas:
+- Si no se referencia un diseño aprobado (`04-01`) ni código/arquitectura verificable, detente y solicítalo antes de generar cualquier diagrama.
 - Los diagramas deben ser consistentes con el código y la arquitectura real.
 - No inventes componentes inexistentes.
 - Etiqueta claramente actores, servicios, módulos y datos.

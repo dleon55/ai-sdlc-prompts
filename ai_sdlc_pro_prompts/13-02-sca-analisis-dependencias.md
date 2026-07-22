@@ -68,7 +68,10 @@ Pasos:
    - GitHub: Dependabot alerts + Security Advisories
 
 3. ANÁLISIS DE VULNERABILIDADES CONOCIDAS
-   Para cada vulnerabilidad detectada (o simulada si no hay acceso a ejecución):
+   Para cada vulnerabilidad detectada: si no tienes acceso a ejecutar herramientas
+   de auditoría, no reportes CVEs — enumera qué comando(s) del paso 2 debe ejecutar
+   un humano, y limita tu salida a lo verificable en fuentes públicas (NVD, GitHub
+   Advisory, OSV) sin acceso a ejecución. Para cada vulnerabilidad confirmada:
    - paquete afectado y versión instalada
    - CVE ID y puntuación CVSS v3.1
    - descripción del impacto

@@ -161,6 +161,12 @@ Pasos:
       - procedimiento: detectar → revocar → rotar → auditar logs → documentar
       - tiempo máximo de respuesta: 1 hora para críticos, 24 horas para altos
 
+Restricciones:
+- este prompt es de auditoría y planificación: nunca ejecutes directamente la revocación, rotación o reescritura de historial Git — entrega cada acción del Paso 5 como un paso pendiente de aprobación explícita, con el comando exacto que un humano debe ejecutar,
+- nunca incluyas el valor real de un secreto detectado en la salida, solo su ubicación (archivo:línea o commit) y su tipo,
+- antes de proponer `git filter-repo`, exige que la coordinación con el equipo esté documentada explícitamente (todos deben re-clonar tras el push forzado) — no lo presentes como un paso más de limpieza rutinaria,
+- si el estado de un secreto no puede determinarse, trátalo como ACTIVO para efectos de urgencia y SLA — nunca lo clasifiques como de baja prioridad por falta de certeza.
+
 Herramientas recomendadas:
 - Detección en código: gitleaks, truffleHog, detect-secrets, semgrep (reglas de secretos)
 - Detección en CI/CD: GitHub Secret Scanning, GitLab Secret Detection, Snyk

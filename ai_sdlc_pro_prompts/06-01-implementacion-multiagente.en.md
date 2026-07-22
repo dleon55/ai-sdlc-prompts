@@ -97,7 +97,9 @@ Use the multi-agent implementation prompt and adapt it to:
 
 ## Expected output
 
-| File | Applied change | Residual risk | Suggested commit |
-|---|---|---|---|
-| `src/auth/session.py` | Added token expiration validation before refreshing the session | low — change isolated to the session middleware, covered by existing unit tests | `fix(auth): validate token expiration before refreshing session #205` |
-| `src/api/routes/orders.py` | Fixed a race condition when updating order status concurrently | medium — another agent was editing the same file in parallel; the conflict was caught via drift detection, classified as textual, and resolved while preserving both changes | `fix(api/orders): avoid race condition when updating status #211` |
+| File | Applied change | Tests executed | Concurrency detected | Residual risk | Suggested commit |
+|---|---|---|---|---|---|
+| `src/auth/session.py` | Added token expiration validation before refreshing the session | `pytest tests/auth/test_session.py` — 12/12 passed | None | low — change isolated to the session middleware, covered by existing unit tests | `fix(auth): validate token expiration before refreshing session #205` |
+| `src/api/routes/orders.py` | Fixed a race condition when updating order status concurrently | `pytest tests/api/test_orders.py` — 8/8 passed | Another agent was editing the same file in parallel; the conflict was caught via drift detection, classified as textual, and resolved while preserving both changes | medium | `fix(api/orders): avoid race condition when updating status #211` |
+
+**Budget consumed:** 2 files / 14 minutes out of a budget of 5 files / 30 minutes. Stop conditions: none reached (within budget).

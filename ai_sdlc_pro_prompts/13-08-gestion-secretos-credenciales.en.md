@@ -161,6 +161,12 @@ Steps:
       - procedure: detect → revoke → rotate → audit logs → document
       - maximum response time: 1 hour for critical, 24 hours for high
 
+Constraints:
+- this prompt is for audit and planning only: never directly execute revocation, rotation, or Git history rewriting — deliver each Step 5 action as a step pending explicit approval, with the exact command a human must run,
+- never include the real value of a detected secret in the output, only its location (file:line or commit) and type,
+- before proposing `git filter-repo`, require that team coordination be explicitly documented (everyone must re-clone after the forced push) — do not present it as just another cleanup step,
+- if a secret's status cannot be determined, treat it as ACTIVE for urgency/SLA purposes — never classify it as low priority due to uncertainty.
+
 Recommended tools:
 - Detection in code: gitleaks, truffleHog, detect-secrets, semgrep (secrets rules)
 - Detection in CI/CD: GitHub Secret Scanning, GitLab Secret Detection, Snyk

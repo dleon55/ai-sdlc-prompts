@@ -57,12 +57,20 @@ Restricciones:
 - Los tests deben poder ejecutarse de forma independiente y en modo headless.
 - Incluye cleanup del estado de la aplicación al finalizar cada test si el flujo
   lo requiere (por ejemplo, eliminar registros creados).
+- Nunca ejecutes estos scripts contra una URL de producción; confirma
+  explícitamente que la URL base configurada es de QA/staging antes de correr
+  cualquier script, y detente si no puede confirmarse.
 
 Entrega:
-- scripts E2E completos y ejecutables,
-- configuración necesaria del framework (variables de entorno, base URL, etc.),
-- comando de ejecución verificado (headless y headed),
-- directorio donde se guardan screenshots y reportes.
+0. Bloque JSON de Metadatos al inicio (claves: status, tests_written_count, estimated_coverage_pct, confidence_score [0.0 a 1.0]).
+1. Scripts E2E completos y ejecutables.
+2. Configuración necesaria del framework (variables de entorno, base URL, etc.).
+3. Comando de ejecución verificado (headless y headed).
+4. Resultados de la ejecución local de las pruebas (stdout/stderr de una corrida real).
+5. Directorio donde se guardan screenshots y reportes.
+
+Límite de Auto-Corrección (Halt Condition):
+- Si el comando de ejecución arroja fallos, autolímite a un máximo de 3 ciclos de corrección. Si persiste, aborta y describe el diagnóstico exacto.
 ```
 
 ---
