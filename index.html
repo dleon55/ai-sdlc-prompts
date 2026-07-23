@@ -31,7 +31,7 @@
 <link rel="apple-touch-icon" href="https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png">
 <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebSite", "name": "AI-SDLC Pro", "alternateName": "AI-SDLC Pro — Biblioteca de Prompts de Ingeniería de Software", "url": "https://prompts.lionsystems.com.mx", "description": "100 prompts estructurados para dirigir agentes IA (Copilot, Claude, Cursor, Windsurf) en cada fase del ciclo de ingeniería de software. Framework SDLC profesional en español.", "inLanguage": ["es", "en"], "publisher": {"@type": "Organization", "name": "LionSystems", "url": "https://lionsystems.com.mx", "logo": "https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png"}}</script>
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-C5JKYNZ62F");window.addEventListener("load",function(){var s=document.createElement("script");s.async=true;s.src="https://www.googletagmanager.com/gtag/js?id=G-C5JKYNZ62F";document.head.appendChild(s);});</script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-C5JKYNZ62F");window.addEventListener("load",function(){var s=document.createElement("script");s.async=true;s.src="https://www.googletagmanager.com/gtag/js?id=G-C5JKYNZ62F";document.head.appendChild(s);if (typeof isSupabaseConfigured === "function" && isSupabaseConfigured()) {var sbs=document.createElement("script");sbs.src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";sbs.onload=function(){if(typeof initSupabaseAuth==="function")initSupabaseAuth();};document.head.appendChild(sbs);}});</script>
 <style>
 :root {
   --hdr:  58px;
@@ -733,6 +733,19 @@ body.ms-mode .sec-check { display: block; }
 }
 .pq-mgr-btn:hover { border-color: var(--bdr2); color: var(--tx2); background: var(--bg4); }
 
+/* ════════════════════  AUTENTICACIÓN (Supabase + GitHub)  ═══════ */
+.auth-btn {
+  display: flex; align-items: center; gap: .3rem; flex-shrink: 0;
+  padding: .26rem .65rem; background: rgba(99,102,241,.12);
+  border: 1px solid #6366f1; border-radius: 6px;
+  color: #a5b4fc; font-size: .72rem; cursor: pointer;
+  font-family: inherit; font-weight: 600; transition: all .12s;
+  max-width: 200px; white-space: nowrap;
+}
+.auth-btn:hover { background: rgba(99,102,241,.25); border-color: #818cf8; }
+.auth-btn-label { overflow: hidden; text-overflow: ellipsis; max-width: 130px; display: inline-block; vertical-align: middle; }
+@media (max-width: 900px) { .auth-btn-label { display: none; } }
+
 /* ════════════════════  SIDEBAR COLLAPSE  ════════════════════════ */
 .sidebar-header {
   display: flex; align-items: center; justify-content: space-between;
@@ -1343,6 +1356,7 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
 </div>
 <div class="search-bar">
   <div class="proj-quick" id="proj-quick"><button class="proj-quick-btn" id="proj-quick-btn" onclick="toggleProjQuick(event)" title="Cambiar proyecto activo / Change active project" aria-haspopup="true" aria-expanded="false"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M3 12h18M3 17h18"/></svg><span class="proj-quick-name" id="proj-quick-name">Proyecto</span><span class="proj-quick-chevron"><svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M2.5 3.5L5 6 7.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button><div class="proj-quick-dropdown" id="proj-quick-dropdown"></div></div>
+  <button class="auth-btn" id="auth-btn" onclick="signInWithGitHub()" title="Iniciar sesión con GitHub / Sign in with GitHub"><svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" style="flex-shrink:0"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span class="auth-btn-label" id="auth-btn-label">Iniciar sesión</span></button>
   <div class="search-wrap"><span class="search-ico"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg></span><input type="text" placeholder="Buscar por nombre o contenido del prompt..." aria-label="Buscar por nombre o contenido del prompt" oninput="filterPrompts(this.value)" autocomplete="off"></div>
   <div class="chips-container" id="category-chips"></div>
   <span class="search-count" id="vis-count" aria-live="polite" aria-atomic="true">prompts</span>
@@ -12556,8 +12570,16 @@ var EMPTY_VARS  = {
   compliance: '', documentos: '', profundidad: '', adicionales: ''
 };
 
+// UUID v4 real (no un prefijo "proj_" arbitrario): así un id generado
+// localmente ya es válido para la columna `uuid` de la tabla `projects`
+// en Supabase sin necesitar remapeo cuando el usuario inicia sesión
+// (issue: registro de usuarios -- ver docs/auth-setup.md).
 function genId() {
-  return 'proj_' + Math.random().toString(36).slice(2, 9);
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
 }
 
 // Escapa un id para insertarlo de forma segura en onclick="fn('ID')": primero
@@ -12588,6 +12610,7 @@ function loadProjects() {
 
 function saveProjects(list) {
   try { localStorage.setItem(LS_KEY_PROJ, JSON.stringify(list)); } catch (e) {}
+  pushProjectsUpdateToCloud(list);
 }
 
 function setActiveProjectId(id) {
@@ -12624,6 +12647,7 @@ function deleteProject(id) {
   if (!list.length) { createProject('Default'); return; }
   if (!list.find(function(p) { return p.isDefault; })) list[0].isDefault = true;
   saveProjects(list);
+  deleteProjectFromCloud(id);
   var active = localStorage.getItem(LS_KEY_ACTV);
   if (active === id) setActiveProjectId(list[0].id);
 }
@@ -12678,6 +12702,176 @@ function switchProject(id) {
   renderProjectSelector();
   renderProjQuick();
   renderProjFloat();
+}
+
+/* ════════════════════  AUTENTICACIÓN (Supabase + GitHub)  ═══════
+   Registro de usuarios opcional vía Supabase Auth (GitHub OAuth), sin
+   backend propio -- diseño completo en docs/auth-setup.md. Un usuario
+   anónimo sigue funcionando exactamente igual que antes (localStorage
+   solamente); iniciar sesión es aditivo, nunca un requisito.
+
+   SUPABASE_URL/SUPABASE_ANON_KEY quedan con un valor centinela hasta
+   que se complete la configuración manual (crear el proyecto de
+   Supabase, la GitHub OAuth App y la tabla `projects` con su política
+   RLS -- pasos que requieren una cuenta humana y no pueden hacerse
+   desde este código). Mientras no estén configurados, el botón de
+   inicio de sesión se muestra pero informa que falta configuración en
+   vez de intentar hablar con un backend que no existe. El SDK de
+   Supabase tampoco se descarga hasta window.load y solo si ya está
+   configurado, siguiendo el mismo patrón ya usado para diferir gtag.js
+   (issue: performance de carga inicial) -- así un visitante anónimo no
+   paga ningún costo de red por esta función mientras no esté lista. */
+
+var SUPABASE_URL = 'PENDIENTE_CONFIGURAR';
+var SUPABASE_ANON_KEY = 'PENDIENTE_CONFIGURAR';
+var _sb = null;
+var _sbUser = null;
+
+function isSupabaseConfigured() {
+  return SUPABASE_URL !== 'PENDIENTE_CONFIGURAR' && SUPABASE_ANON_KEY !== 'PENDIENTE_CONFIGURAR';
+}
+
+function getSupabaseClient() {
+  if (!isSupabaseConfigured() || typeof supabase === 'undefined') return null;
+  if (!_sb) _sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  return _sb;
+}
+
+// Llamada por el <script onload> del SDK diferido (ver LANDING_JS/JS al
+// final del documento) una vez que el SDK terminó de descargarse.
+function initSupabaseAuth() {
+  var client = getSupabaseClient();
+  if (!client) return;
+  client.auth.getSession().then(function(res) {
+    _sbUser = (res && res.data && res.data.session) ? res.data.session.user : null;
+    renderAuthUI();
+    if (_sbUser) pullCloudProjects();
+  });
+  client.auth.onAuthStateChange(function(event, session) {
+    _sbUser = session ? session.user : null;
+    renderAuthUI();
+    if (_sbUser) pullCloudProjects();
+  });
+}
+
+function signInWithGitHub() {
+  var lang = getCurrentLanguage();
+  if (!isSupabaseConfigured()) {
+    showToast(lang === 'en'
+      ? 'Sign-in isn’t configured yet — see docs/auth-setup.md'
+      : 'El inicio de sesión aún no está configurado — ver docs/auth-setup.md', 'warn');
+    return;
+  }
+  var client = getSupabaseClient();
+  if (!client) {
+    showToast(lang === 'en' ? 'Still loading — try again in a moment' : 'Aún cargando — intenta de nuevo en un momento', 'warn');
+    return;
+  }
+  client.auth.signInWithOAuth({ provider: 'github' });
+}
+
+function signOutUser() {
+  var client = getSupabaseClient();
+  if (!client) return;
+  client.auth.signOut();
+}
+
+function renderAuthUI() {
+  var btn = document.getElementById('auth-btn');
+  var label = document.getElementById('auth-btn-label');
+  if (!btn || !label) return;
+  var lang = getCurrentLanguage();
+  if (_sbUser) {
+    var who = (_sbUser.user_metadata && _sbUser.user_metadata.user_name) || _sbUser.email || '';
+    label.textContent = who ? who : (lang === 'en' ? 'Signed in' : 'Con sesión');
+    btn.title = lang === 'en' ? 'Sign out' : 'Cerrar sesión';
+    btn.onclick = signOutUser;
+  } else {
+    label.textContent = lang === 'en' ? 'Sign in' : 'Iniciar sesión';
+    btn.title = lang === 'en' ? 'Sign in with GitHub' : 'Iniciar sesión con GitHub';
+    btn.onclick = signInWithGitHub;
+  }
+}
+
+// Última pieza de la sincronización: al iniciar sesión, la nube pasa a
+// ser la fuente de verdad y sobrescribe la caché local (localStorage)
+// vía las funciones ya existentes -- ningún otro código de proyectos
+// necesita saber que hay una nube detrás.
+function pullCloudProjects() {
+  var client = getSupabaseClient();
+  if (!client || !_sbUser) return;
+  client.from('projects').select('*').eq('user_id', _sbUser.id).then(function(res) {
+    if (!res || res.error || !res.data) return;
+    if (res.data.length) {
+      var list = res.data.map(function(row) {
+        return { id: row.id, name: row.name, isDefault: row.is_default, vars: Object.assign({}, EMPTY_VARS, row.vars || {}) };
+      });
+      try { localStorage.setItem(LS_KEY_PROJ, JSON.stringify(list)); } catch (e) {}
+      var activeId = localStorage.getItem(LS_KEY_ACTV);
+      if (!list.find(function(p) { return p.id === activeId; })) {
+        setActiveProjectId((list.find(function(p) { return p.isDefault; }) || list[0]).id);
+      }
+      renderProjectSelector(); renderProjQuick(); renderProjFloat(); syncPanelToProject();
+    } else {
+      offerLocalImportIfNeeded();
+    }
+  }).catch(function() {});
+}
+
+// Primer inicio de sesión sin proyectos aún en la nube: ofrece (no
+// fuerza) subir los proyectos que ya existían en este navegador antes
+// de tener cuenta.
+function offerLocalImportIfNeeded() {
+  var local = loadProjects();
+  if (!local || !local.length) return;
+  var lang = getCurrentLanguage();
+  var msg = lang === 'en'
+    ? 'You have ' + local.length + ' project(s) saved in this browser — import them into your account?'
+    : 'Tienes ' + local.length + ' proyecto(s) guardado(s) en este navegador — ¿quieres importarlos a tu cuenta?';
+  if (window.confirm(msg)) pushLocalProjectsToCloud(local);
+}
+
+// Solo se usa para la importación inicial: inserta filas nuevas (deja
+// que Postgres genere sus propios ids) y luego adopta esos ids en la
+// caché local, para que las siguientes ediciones sincronicen por
+// upsert/delete sin ambigüedad.
+function pushLocalProjectsToCloud(list) {
+  var client = getSupabaseClient();
+  if (!client || !_sbUser) return;
+  var rows = list.map(function(p) {
+    return { user_id: _sbUser.id, name: p.name, is_default: !!p.isDefault, vars: p.vars };
+  });
+  client.from('projects').insert(rows).select().then(function(res) {
+    if (!res || res.error || !res.data) return;
+    var newList = res.data.map(function(row) {
+      return { id: row.id, name: row.name, isDefault: row.is_default, vars: Object.assign({}, EMPTY_VARS, row.vars || {}) };
+    });
+    try { localStorage.setItem(LS_KEY_PROJ, JSON.stringify(newList)); } catch (e) {}
+    setActiveProjectId((newList.find(function(p) { return p.isDefault; }) || newList[0]).id);
+    renderProjectSelector(); renderProjQuick(); renderProjFloat(); syncPanelToProject();
+  }).catch(function() {});
+}
+
+// Enganchado desde saveProjects(): todo alta/edición local se refleja
+// en la nube si hay sesión activa. No-op para usuarios anónimos --
+// mismo comportamiento que hoy, sin ningún cambio.
+function pushProjectsUpdateToCloud(list) {
+  var client = getSupabaseClient();
+  if (!client || !_sbUser) return;
+  var rows = list.map(function(p) {
+    return { id: p.id, user_id: _sbUser.id, name: p.name, is_default: !!p.isDefault, vars: p.vars, updated_at: new Date().toISOString() };
+  });
+  try {
+    client.from('projects').upsert(rows).then(function() {}).catch(function() {});
+  } catch (e) {}
+}
+
+function deleteProjectFromCloud(id) {
+  var client = getSupabaseClient();
+  if (!client || !_sbUser) return;
+  try {
+    client.from('projects').delete().eq('id', id).then(function() {}).catch(function() {});
+  } catch (e) {}
 }
 
 /* ════════════════════  PROYECTOS — exportar / importar  ═════════
