@@ -1,12 +1,20 @@
 # Configuración de registro de usuarios (Supabase Auth + GitHub)
 
-El código de registro de usuarios ya está implementado en `build.py` (ver
-sección `AUTENTICACIÓN (Supabase + GitHub)` en el JS embebido), pero queda
-**inerte hasta completar estos pasos manuales** — ninguno de ellos puede
-hacerse desde este repositorio, porque requieren una cuenta humana (Supabase,
-GitHub) con permisos de administración.
+> **Estado: configurado.** `build.py` ya tiene el `SUPABASE_URL` y la
+> `anon`/`publishable key` reales (no el centinela) y el proyecto de
+> Supabase tiene el proveedor de GitHub, los dominios permitidos y la
+> tabla `projects` con RLS habilitado. Esta página queda como referencia
+> de los pasos ya ejecutados — útil si necesitas rotar la clave, agregar
+> un dominio nuevo, o recrear el proyecto desde cero.
 
-Mientras no se complete esta configuración:
+El código de registro de usuarios está implementado en `build.py` (ver
+sección `AUTENTICACIÓN (Supabase + GitHub)` en el JS embebido). Ninguno de
+los pasos de configuración puede hacerse desde este repositorio, porque
+requieren una cuenta humana (Supabase, GitHub) con permisos de
+administración — por eso quedan documentados aquí en vez de automatizados.
+
+Mientras **no** esté configurado (p. ej. tras clonar el repo con los
+valores centinela por defecto, o si se revierte a ellos):
 - El botón "Iniciar sesión" es visible pero muestra un aviso de que falta
   configuración, en vez de intentar hablar con un backend inexistente.
 - No se descarga ningún script externo nuevo (el SDK de Supabase solo se
