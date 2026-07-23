@@ -371,11 +371,20 @@ def test_dismissing_onboarding_with_close_button_persists_across_reload():
 # ─────────────────────  Registro de usuarios (Supabase, sin configurar)  ─────────────────────
 
 def test_auth_button_is_inert_and_safe_when_supabase_not_configured(app_page):
-    """Antes de completar docs/auth-setup.md, SUPABASE_URL sigue siendo el
-    centinela 'PENDIENTE_CONFIGURAR' -- el botón debe seguir siendo visible
-    y con nombre accesible, pero al hacer clic debe avisar que falta
-    configuración en vez de intentar llamar a un backend inexistente
-    (o lanzar un error de JS)."""
+    """Guarda la rama defensiva de isSupabaseConfigured() == false, sin
+    depender de si build.py ya tiene credenciales reales (desde que se
+    completó docs/auth-setup.md, SUPABASE_URL/SUPABASE_ANON_KEY dejaron de
+    ser el centinela en el sitio publicado). Se fuerza el centinela en la
+    página ya cargada para seguir cubriendo el caso "aún sin configurar":
+    el botón debe seguir siendo visible y con nombre accesible, pero al
+    hacer clic debe avisar que falta configuración en vez de intentar
+    llamar a un backend inexistente (o lanzar un error de JS)."""
+    app_page.evaluate(
+        "window.SUPABASE_URL = 'PENDIENTE_CONFIGURAR'; "
+        "window.SUPABASE_ANON_KEY = 'PENDIENTE_CONFIGURAR'; "
+        "window._sb = null;"
+    )
+
     label = app_page.evaluate(
         "(document.getElementById('auth-btn') || {}).textContent || ''"
     ).strip()
@@ -389,13 +398,54 @@ def test_auth_button_is_inert_and_safe_when_supabase_not_configured(app_page):
     assert "configurad" in toast_text.lower(), (
         f"Se esperaba un aviso de 'no configurado', se obtuvo: {toast_text!r}"
     )
+    # La carga (o no) del <script> del SDK de Supabase se decide una sola vez,
+    # en window.load, antes de que este test pueda forzar el centinela --
+    # por eso no se verifica aquí; ver test_supabase_sdk_script_is_gated_by_isSupabaseConfigured
+    # en tests/test_build.py para la cobertura estática de esa condición.
 
-    # Ninguna petición de red al SDK de Supabase mientras no esté configurado
-    # (mismo criterio que gtag.js diferido -- issue: performance de carga inicial).
-    sdk_requested = app_page.evaluate(
-        "Array.from(document.scripts).some(s => s.src.includes('supabase'))"
+
+def test_auth_button_attempts_github_oauth_when_supabase_is_configured(app_page):
+    """Complemento del test anterior: confirma que build.py ya tiene
+    credenciales reales (no el centinela) tras completar docs/auth-setup.md,
+    y que en ese caso el botón intenta el flujo real de GitHub OAuth
+    (signInWithOAuth) en vez de mostrar el aviso de 'no configurado'. Se
+    reemplaza el SDK real por un stub para no depender de red externa ni
+    de una redirección real a GitHub dentro del test."""
+    assert app_page.evaluate("isSupabaseConfigured()"), (
+        "SUPABASE_URL/SUPABASE_ANON_KEY siguen siendo el centinela en build.py"
     )
-    assert not sdk_requested, "El SDK de Supabase no debería cargarse sin configurar"
+
+    app_page.evaluate(
+        """
+        window.__oauthCalls = [];
+        window.supabase = {
+            createClient: function() {
+                return { auth: {
+                    getSession: function() { return Promise.resolve({ data: { session: null } }); },
+                    onAuthStateChange: function() {},
+                    signInWithOAuth: function(opts) { window.__oauthCalls.push(opts); },
+                    signOut: function() {}
+                }};
+            }
+        };
+        window._sb = null;
+        """
+    )
+
+    app_page.click("#auth-btn")
+    app_page.wait_for_timeout(250)
+
+    calls = app_page.evaluate("window.__oauthCalls")
+    assert calls and calls[0]["provider"] == "github", (
+        f"signInWithOAuth no fue invocado con GitHub: {calls!r}"
+    )
+
+    toast_text = app_page.evaluate(
+        "(document.querySelector('.toast') || {}).textContent || ''"
+    )
+    assert "configurad" not in toast_text.lower(), (
+        f"No debería mostrarse el aviso de 'no configurado': {toast_text!r}"
+    )
 
 
 def test_new_project_id_is_a_valid_uuid_for_cloud_sync(app_page):

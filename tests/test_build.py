@@ -131,6 +131,26 @@ def test_variables_quick_access_present():
     print("✓ Acceso flotante de variables presente")
 
 
+def test_supabase_sdk_script_is_gated_by_isSupabaseConfigured():
+    """El <script> del SDK de Supabase debe seguir condicionado a
+    isSupabaseConfigured() sin importar si build.py ya tiene credenciales
+    reales o el centinela 'PENDIENTE_CONFIGURAR' -- esta es la garantía
+    estática (independiente del estado actual del despliegue) de que un
+    visitante anónimo con la función aún sin configurar no paga ninguna
+    petición de red nueva por ella (ver docs/auth-setup.md)."""
+    index_file = PROJECT_ROOT / "index.html"
+    content = index_file.read_text(encoding='utf-8')
+    assert 'function isSupabaseConfigured()' in content, "isSupabaseConfigured no encontrada"
+    gate_pattern = (
+        r'if\s*\(\s*typeof isSupabaseConfigured === "function"\s*&&\s*isSupabaseConfigured\(\)\s*\)\s*\{'
+        r'[^}]*cdn\.jsdelivr\.net/npm/@supabase/supabase-js'
+    )
+    assert re.search(gate_pattern, content), (
+        "El <script> del SDK de Supabase ya no está condicionado a isSupabaseConfigured()"
+    )
+    print("✓ Carga del SDK de Supabase condicionada a isSupabaseConfigured()")
+
+
 def run_all_tests():
     """Ejecutar todas las pruebas de build"""
     print("=" * 60)
@@ -149,6 +169,7 @@ def run_all_tests():
         test_framework_dual_language,
         test_js_i18n_functions_present,
         test_variables_quick_access_present,
+        test_supabase_sdk_script_is_gated_by_isSupabaseConfigured,
     ]
     
     passed = 0

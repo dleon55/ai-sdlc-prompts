@@ -1826,20 +1826,23 @@ function switchProject(id) {
    anónimo sigue funcionando exactamente igual que antes (localStorage
    solamente); iniciar sesión es aditivo, nunca un requisito.
 
-   SUPABASE_URL/SUPABASE_ANON_KEY quedan con un valor centinela hasta
-   que se complete la configuración manual (crear el proyecto de
-   Supabase, la GitHub OAuth App y la tabla `projects` con su política
-   RLS -- pasos que requieren una cuenta humana y no pueden hacerse
-   desde este código). Mientras no estén configurados, el botón de
-   inicio de sesión se muestra pero informa que falta configuración en
-   vez de intentar hablar con un backend que no existe. El SDK de
-   Supabase tampoco se descarga hasta window.load y solo si ya está
-   configurado, siguiendo el mismo patrón ya usado para diferir gtag.js
-   (issue: performance de carga inicial) -- así un visitante anónimo no
-   paga ningún costo de red por esta función mientras no esté lista. */
+   SUPABASE_URL/SUPABASE_ANON_KEY quedan con un valor centinela
+   ('PENDIENTE_CONFIGURAR') hasta completar la configuración manual
+   descrita en docs/auth-setup.md (crear el proyecto de Supabase, la
+   GitHub OAuth App y la tabla `projects` con su política RLS -- pasos
+   que requieren una cuenta humana y no pueden hacerse desde este
+   código). Mientras no estén configurados, el botón de inicio de
+   sesión se muestra pero informa que falta configuración en vez de
+   intentar hablar con un backend que no existe, y el SDK de Supabase
+   tampoco se descarga hasta window.load y solo si ya está configurado,
+   siguiendo el mismo patrón ya usado para diferir gtag.js (issue:
+   performance de carga inicial) -- así un visitante anónimo no paga
+   ningún costo de red por esta función mientras no esté lista.
+   isSupabaseConfigured() es lo único que decide esa rama: cualquier
+   valor distinto al centinela ya cuenta como "configurado". */
 
-var SUPABASE_URL = 'PENDIENTE_CONFIGURAR';
-var SUPABASE_ANON_KEY = 'PENDIENTE_CONFIGURAR';
+var SUPABASE_URL = 'https://sqdzoreqfatpdainlhrm.supabase.co';
+var SUPABASE_ANON_KEY = 'sb_publishable_qLmbKA8tlIUdW4xzmB1Z-w_kN3ygt7j';
 var _sb = null;
 var _sbUser = null;
 
