@@ -366,3 +366,48 @@ def test_dismissing_onboarding_with_close_button_persists_across_reload():
             "document.getElementById('ob-overlay').classList.contains('hidden')"
         ), "El onboarding reapareció tras recargar pese a haberse cerrado con la 'X'"
         browser.close()
+
+
+# ─────────────────────  Registro de usuarios (Supabase, sin configurar)  ─────────────────────
+
+def test_auth_button_is_inert_and_safe_when_supabase_not_configured(app_page):
+    """Antes de completar docs/auth-setup.md, SUPABASE_URL sigue siendo el
+    centinela 'PENDIENTE_CONFIGURAR' -- el botón debe seguir siendo visible
+    y con nombre accesible, pero al hacer clic debe avisar que falta
+    configuración en vez de intentar llamar a un backend inexistente
+    (o lanzar un error de JS)."""
+    label = app_page.evaluate(
+        "(document.getElementById('auth-btn') || {}).textContent || ''"
+    ).strip()
+    assert label, "El botón de autenticación no tiene nombre accesible"
+
+    app_page.click("#auth-btn")
+    app_page.wait_for_timeout(250)
+    toast_text = app_page.evaluate(
+        "(document.querySelector('.toast') || {}).textContent || ''"
+    )
+    assert "configurad" in toast_text.lower(), (
+        f"Se esperaba un aviso de 'no configurado', se obtuvo: {toast_text!r}"
+    )
+
+    # Ninguna petición de red al SDK de Supabase mientras no esté configurado
+    # (mismo criterio que gtag.js diferido -- issue: performance de carga inicial).
+    sdk_requested = app_page.evaluate(
+        "Array.from(document.scripts).some(s => s.src.includes('supabase'))"
+    )
+    assert not sdk_requested, "El SDK de Supabase no debería cargarse sin configurar"
+
+
+def test_new_project_id_is_a_valid_uuid_for_cloud_sync(app_page):
+    """genId() debe producir un UUID real (no el prefijo 'proj_' anterior):
+    la tabla `projects` de Supabase usa una columna `uuid`, y un id local
+    inválido para ese tipo rompería la sincronización en cuanto el usuario
+    inicia sesión (ver docs/auth-setup.md)."""
+    app_page.evaluate("createProject('Proyecto UUID')")
+    app_page.wait_for_timeout(100)
+    new_id = app_page.evaluate("(loadProjects() || []).slice(-1)[0].id")
+    uuid_pattern = r"^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    import re
+    assert re.match(uuid_pattern, new_id, re.IGNORECASE), (
+        f"id de proyecto no es un UUID v4 válido: {new_id!r}"
+    )

@@ -9,6 +9,7 @@ Este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 ## [Unreleased]
 
 ### Added
+- Registro de usuarios opcional vía Supabase Auth + GitHub OAuth, sin backend propio: sincroniza proyectos/variables entre dispositivos para quien inicia sesión, mientras el uso anónimo con `localStorage` sigue funcionando exactamente igual. Queda inerte (sin ninguna petición de red nueva) hasta completar la configuración manual descrita en `docs/auth-setup.md`. Ver también `supabase/schema.sql`.
 - Panel de variables: amplía los catálogos de compliance y metodología, permite selección múltiple y admite valores personalizados mediante “Otro”.
 - Panel de variables: agrega `Workspace / subproyecto`, `Estándar / compliance`, `Documentos a revisar` y `Nivel de profundidad`.
 - Panel de variables: agrega `Entrada principal`, `Objetivo específico` y `Responsable / assignee`, con migración automática de proyectos guardados.
