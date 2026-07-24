@@ -1873,6 +1873,16 @@ var SUPABASE_URL = 'https://sqdzoreqfatpdainlhrm.supabase.co';
 var SUPABASE_ANON_KEY = 'sb_publishable_qLmbKA8tlIUdW4xzmB1Z-w_kN3ygt7j';
 var _sb = null;
 var _sbUser = null;
+// Bug real reportado tras el primer login post-redirect de GitHub: justo al
+// volver del OAuth, getSession() todavía está intercambiando el código por
+// una sesión (viaje de red real, no instantáneo) -- _sbUser sigue en null
+// durante esa ventana, así que checkCopyGate() lo trataba como anónimo y
+// mostraba el muro de registro otra vez aunque el login sí hubiera
+// funcionado. _authStateResolved distingue "aún no sabemos" de "confirmado
+// sin sesión", para que el gate falle abierto (permita copiar) mientras la
+// primera resolución de getSession() está en curso, en vez de asumir
+// "anónimo" por defecto.
+var _authStateResolved = false;
 
 function isSupabaseConfigured() {
   return SUPABASE_URL !== 'PENDIENTE_CONFIGURAR' && SUPABASE_ANON_KEY !== 'PENDIENTE_CONFIGURAR';
@@ -1891,11 +1901,13 @@ function initSupabaseAuth() {
   if (!client) return;
   client.auth.getSession().then(function(res) {
     _sbUser = (res && res.data && res.data.session) ? res.data.session.user : null;
+    _authStateResolved = true;
     renderAuthUI();
     if (_sbUser) pullCloudProjects();
   });
   client.auth.onAuthStateChange(function(event, session) {
     _sbUser = session ? session.user : null;
+    _authStateResolved = true;
     renderAuthUI();
     if (_sbUser) pullCloudProjects();
   });
@@ -2035,6 +2047,12 @@ function checkCopyGate() {
   if (!isSupabaseConfigured()) return Promise.resolve({ allowed: true });
   var client = getSupabaseClient();
   if (!client) return Promise.resolve({ allowed: true });
+  // Aún no sabemos si hay sesión o no (getSession() sigue resolviendo --
+  // p. ej. justo tras volver del redirect de GitHub, intercambiando el
+  // código por una sesión real). Tratarlo como "anónimo" por defecto aquí
+  // mostraría el muro de registro otra vez a alguien que sí inició sesión
+  // con éxito -- se falla abierto hasta confirmar el estado real.
+  if (!_authStateResolved) return Promise.resolve({ allowed: true });
 
   if (_sbUser) {
     return client.rpc('check_trial_status').then(function(res) {

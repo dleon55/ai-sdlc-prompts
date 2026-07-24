@@ -85,3 +85,48 @@ def test_grants_are_scoped_to_the_correct_role():
     assert "grant execute on function check_anon_usage(int) to anon;" in SCHEMA
     assert "grant execute on function check_trial_status() to authenticated;" in SCHEMA
     assert "grant execute on function submit_feedback_and_renew(int, text) to authenticated;" in SCHEMA
+
+
+def test_check_trial_status_self_heals_missing_trial_row():
+    """Regresión de un bug real en producción: un usuario que se registró
+    ANTES de que este archivo se ejecutara (durante las pruebas del feature
+    de auth base, antes de que existiera el trigger) nunca tuvo una fila en
+    user_trial. Tratar 'sin fila' como 'prueba vencida' lo bloqueaba para
+    siempre. La función debe crear la fila faltante en vez de solo
+    reportar un vencimiento falso."""
+    match = re.search(
+        r"create (or replace )?function check_trial_status\(\)"
+        r"[\s\S]*?\$\$;",
+        SCHEMA,
+        re.IGNORECASE,
+    )
+    assert match, "No se encontró el cuerpo de check_trial_status()"
+    body = match.group(0)
+    assert "if not found then" in body.lower()
+    assert "insert into user_trial" in body.lower(), (
+        "check_trial_status() ya no se auto-repara: volvería a bloquear "
+        "para siempre a un usuario sin fila de prueba"
+    )
+    assert "'no_trial_row', true" not in body.replace(" ", ""), (
+        "no debería quedar ningún camino que reporte no_trial_row=true sin "
+        "antes intentar crear la fila"
+    )
+
+
+def test_submit_feedback_and_renew_upserts_instead_of_blind_update():
+    """Regresión del mismo bug: un UPDATE simple sobre una fila inexistente
+    afecta 0 filas mientras la función igual reporta 'renewed: true' --
+    éxito falso que deja al usuario bloqueado pese a 'enviar' el feedback.
+    Debe ser un insert ... on conflict (upsert), no un update ciego."""
+    match = re.search(
+        r"create (or replace )?function submit_feedback_and_renew\([^)]*\)"
+        r"[\s\S]*?\$\$;",
+        SCHEMA,
+        re.IGNORECASE,
+    )
+    assert match, "No se encontró el cuerpo de submit_feedback_and_renew()"
+    body = match.group(0).lower()
+    assert "on conflict (user_id) do update" in body, (
+        "submit_feedback_and_renew() debe usar upsert sobre user_trial, "
+        "no un update ciego que puede afectar 0 filas en silencio"
+    )

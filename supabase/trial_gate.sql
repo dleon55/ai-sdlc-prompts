@@ -103,6 +103,14 @@ grant execute on function check_anon_usage(int) to anon;
 -- ───────────────────── check_trial_status() ─────────────────────
 -- Devuelve el estado de la prueba del usuario autenticado. Ejecutable por
 -- el rol authenticated -- usa auth.uid(), nunca un id que el cliente pase.
+--
+-- Auto-reparable (bug real corregido): un usuario que se registró ANTES de
+-- que este archivo se ejecutara (p. ej. durante las pruebas del feature de
+-- auth base) nunca pasó por el trigger on_auth_user_created_trial -- no
+-- tiene fila en user_trial. Tratar "sin fila" como "prueba vencida" bloquea
+-- para siempre a alguien que en realidad nunca tuvo oportunidad de
+-- empezarla. Si no se encuentra la fila, se crea aquí mismo con una prueba
+-- de 1 mes nueva, en vez de reportar un vencimiento falso.
 create or replace function check_trial_status()
 returns jsonb
 language plpgsql
@@ -115,9 +123,9 @@ begin
   select * into row_trial from user_trial where user_id = auth.uid();
 
   if not found then
-    -- No debería ocurrir si el trigger de creación funcionó, pero se
-    -- declara explícitamente en vez de fallar en silencio.
-    return jsonb_build_object('active', false, 'expires_at', null, 'no_trial_row', true);
+    insert into user_trial (user_id) values (auth.uid())
+    on conflict (user_id) do nothing;
+    select * into row_trial from user_trial where user_id = auth.uid();
   end if;
 
   return jsonb_build_object(
@@ -133,6 +141,13 @@ grant execute on function check_trial_status() to authenticated;
 -- ───────────────── submit_feedback_and_renew() ─────────────────
 -- Inserta el feedback y extiende la prueba 1 mes desde ahora, en una sola
 -- transacción. Ejecutable por el rol authenticated.
+--
+-- Auto-reparable (mismo bug real de check_trial_status): un UPDATE simple
+-- sobre una fila que no existe afecta 0 filas y devuelve new_expiry en
+-- null, pero la función igual reportaba "renewed: true" -- éxito falso
+-- que dejaba a un usuario sin fila de prueba bloqueado para siempre pese
+-- a "enviar" el feedback exitosamente. Un upsert garantiza que la fila
+-- exista y quede renovada, sin importar si ya existía o no.
 create or replace function submit_feedback_and_renew(p_rating int, p_comments text default null)
 returns jsonb
 language plpgsql
@@ -145,11 +160,12 @@ begin
   insert into feedback (user_id, rating, comments)
   values (auth.uid(), p_rating, p_comments);
 
-  update user_trial
+  insert into user_trial (user_id, trial_expires_at, renewed_count)
+  values (auth.uid(), now() + interval '1 month', 1)
+  on conflict (user_id) do update
     set trial_expires_at = now() + interval '1 month',
-        renewed_count = renewed_count + 1
-    where user_id = auth.uid()
-    returning trial_expires_at into new_expiry;
+        renewed_count = user_trial.renewed_count + 1
+  returning trial_expires_at into new_expiry;
 
   return jsonb_build_object('renewed', true, 'new_expires_at', new_expiry);
 end;
