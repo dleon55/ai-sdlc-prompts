@@ -1149,6 +1149,34 @@ body.ms-mode .sec-check { display: block; }
 .auth-btn-label { overflow: hidden; text-overflow: ellipsis; max-width: 130px; display: inline-block; vertical-align: middle; }
 @media (max-width: 900px) { .auth-btn-label { display: none; } }
 
+/* ══════════  MURO DE REGISTRO / PRUEBA / FEEDBACK  ══════════
+   Ver docs/trial-gate-setup.md. Reutiliza .modal-box/.modal-hdr/.modal-body
+   (mismo patrón que info-modal/proj-modal) -- solo se agrega lo específico
+   de cada muro (botón de GitHub reutilizado vía .auth-btn, y el widget de
+   calificación + textarea del formulario de feedback). */
+.wall-modal-body p { color: var(--tx2); margin-bottom: 1rem; line-height: 1.5; }
+.wall-modal-body .auth-btn { max-width: none; width: 100%; justify-content: center; padding: .6rem 1rem; font-size: .85rem; }
+.fb-stars { display: flex; gap: .35rem; margin-bottom: 1rem; }
+.fb-star {
+  width: 2.1rem; height: 2.1rem; border-radius: 6px; border: 1px solid var(--bdr2);
+  background: var(--bg3); color: var(--tx3); cursor: pointer; font-size: 1.1rem;
+  display: flex; align-items: center; justify-content: center; transition: all .12s;
+}
+.fb-star:hover { border-color: #f59e0b; color: #f59e0b; }
+.fb-star-active { border-color: #f59e0b; color: #f59e0b; background: rgba(245,158,11,.12); }
+.fb-textarea {
+  width: 100%; min-height: 4.5rem; resize: vertical; background: var(--bg3);
+  border: 1px solid var(--bdr2); border-radius: 7px; color: var(--tx); font-family: inherit;
+  font-size: .85rem; padding: .55rem .7rem; margin-bottom: 1rem;
+}
+.fb-textarea:focus { outline: 2px solid #6366f1; outline-offset: 1px; }
+.fb-submit-btn {
+  width: 100%; padding: .6rem 1rem; background: #6366f1; border: none; border-radius: 7px;
+  color: #fff; font-weight: 700; font-size: .85rem; cursor: pointer; font-family: inherit;
+  transition: background .12s;
+}
+.fb-submit-btn:hover { background: #4f46e5; }
+
 /* ════════════════════  SIDEBAR COLLAPSE  ════════════════════════ */
 .sidebar-header {
   display: flex; align-items: center; justify-content: space-between;
@@ -1991,6 +2019,109 @@ function deleteProjectFromCloud(id) {
   try {
     client.from('projects').delete().eq('id', id).then(function() {}).catch(function() {});
   } catch (e) {}
+}
+
+/* ══════════  MURO DE REGISTRO / PRUEBA / FEEDBACK  ══════════
+   Ver docs/trial-gate-setup.md y supabase/trial_gate.sql. Único punto de
+   verificación: checkCopyGate(), invocado desde copyResolvedText() antes
+   de escribir al portapapeles (doCopy). Anónimo: 2 copias gratis contadas
+   por IP en Supabase (check_anon_usage). Con sesión: 1 mes de prueba
+   (check_trial_status); al vencer, se exige enviar feedback para renovar
+   (submit_feedback_and_renew). Fail-open ante cualquier error de red o SDK
+   aún no cargado -- nunca se bloquea a un usuario real por una falla
+   transitoria (decisión de diseño, ver docs/trial-gate-setup.md). */
+
+function checkCopyGate() {
+  if (!isSupabaseConfigured()) return Promise.resolve({ allowed: true });
+  var client = getSupabaseClient();
+  if (!client) return Promise.resolve({ allowed: true });
+
+  if (_sbUser) {
+    return client.rpc('check_trial_status').then(function(res) {
+      if (!res || res.error || !res.data) return { allowed: true };
+      return res.data.active ? { allowed: true } : { allowed: false, reason: 'trial_expired' };
+    }).catch(function() { return { allowed: true }; });
+  }
+  return client.rpc('check_anon_usage').then(function(res) {
+    if (!res || res.error || !res.data) return { allowed: true };
+    return res.data.allowed ? { allowed: true } : { allowed: false, reason: 'anon_limit' };
+  }).catch(function() { return { allowed: true }; });
+}
+
+function openRegisterWall() {
+  var modal = document.getElementById('register-wall-modal');
+  if (!modal) return;
+  _lastFocusedBeforeModal = document.activeElement;
+  modal.classList.add('open');
+  var closeBtn = modal.querySelector('.modal-close-btn');
+  if (closeBtn) closeBtn.focus();
+}
+
+function closeRegisterWall() {
+  var modal = document.getElementById('register-wall-modal');
+  if (modal) modal.classList.remove('open');
+  if (_lastFocusedBeforeModal && typeof _lastFocusedBeforeModal.focus === 'function') {
+    _lastFocusedBeforeModal.focus();
+  }
+  _lastFocusedBeforeModal = null;
+}
+
+var _fbRating = 0;
+
+function openFeedbackWall() {
+  var modal = document.getElementById('feedback-wall-modal');
+  if (!modal) return;
+  var lang = getCurrentLanguage();
+  var ta = document.getElementById('fb-comments');
+  if (ta) ta.placeholder = lang === 'en' ? 'What would you improve?' : '¿Qué mejorarías?';
+  _lastFocusedBeforeModal = document.activeElement;
+  modal.classList.add('open');
+  var closeBtn = modal.querySelector('.modal-close-btn');
+  if (closeBtn) closeBtn.focus();
+}
+
+function closeFeedbackWall() {
+  var modal = document.getElementById('feedback-wall-modal');
+  if (modal) modal.classList.remove('open');
+  if (_lastFocusedBeforeModal && typeof _lastFocusedBeforeModal.focus === 'function') {
+    _lastFocusedBeforeModal.focus();
+  }
+  _lastFocusedBeforeModal = null;
+}
+
+function setFbRating(n) {
+  _fbRating = n;
+  var stars = document.querySelectorAll('#fb-stars .fb-star');
+  for (var i = 0; i < stars.length; i++) {
+    var active = i < n;
+    stars[i].setAttribute('aria-checked', active ? 'true' : 'false');
+    stars[i].classList.toggle('fb-star-active', active);
+  }
+}
+
+function submitFeedbackWall() {
+  var lang = getCurrentLanguage();
+  if (!_fbRating) {
+    showToast(lang === 'en' ? 'Please select a rating' : 'Selecciona una calificación', 'warn');
+    return;
+  }
+  var client = getSupabaseClient();
+  if (!client) return;
+  var ta = document.getElementById('fb-comments');
+  var comments = ta ? ta.value : '';
+  client.rpc('submit_feedback_and_renew', { p_rating: _fbRating, p_comments: comments }).then(function(res) {
+    if (!res || res.error) {
+      showToast(lang === 'en' ? 'Could not submit — try again' : 'No se pudo enviar — intenta de nuevo', 'warn');
+      return;
+    }
+    closeFeedbackWall();
+    _fbRating = 0;
+    setFbRating(0);
+    if (ta) ta.value = '';
+    showToast(lang === 'en' ? 'Thanks! Renewed for 1 month' : '¡Gracias! Renovado por 1 mes', 'success');
+  }).catch(function() {
+    showToast(lang === 'en' ? 'Could not submit — try again' : 'No se pudo enviar — intenta de nuevo', 'warn');
+  });
 }
 
 /* ════════════════════  PROYECTOS — exportar / importar  ═════════
@@ -3016,20 +3147,31 @@ function showUnresolvedWarning(result) {
 // Los placeholders opcionales sin resolver siguen mostrando el aviso suave
 // existente, sin bloquear.
 function copyResolvedText(resolved, btn) {
-  if (resolved.unresolvedRequired && resolved.unresolvedRequired.length) {
-    var lang = getCurrentLanguage();
-    var list = resolved.unresolvedRequired;
-    var msg = lang === 'en'
-      ? list.length + ' required placeholder(s) still unfilled: ' + list.slice(0, 3).join(', ') + (list.length > 3 ? '…' : '')
-      : list.length + ' placeholder(s) obligatorios sin llenar: ' + list.slice(0, 3).join(', ') + (list.length > 3 ? '…' : '');
-    var actionLabel = lang === 'en' ? 'Copy anyway' : 'Copiar de todas formas';
-    showToast(msg, 'warn', actionLabel, function() { doCopy(resolved.text, btn); });
-    return;
-  }
-  if (resolved.unresolvedOptional && resolved.unresolvedOptional.length) {
-    showUnresolvedWarning(resolved);
-  }
-  doCopy(resolved.text, btn);
+  // Gate único (ver sección MURO DE REGISTRO / PRUEBA / FEEDBACK más abajo):
+  // se evalúa antes que cualquier otra cosa. Fire-and-forget desde los 3
+  // invocadores (copyPromptLang, copySelected, botón de fórmula del modal
+  // de información) -- ninguno consume el valor de retorno de esta función.
+  checkCopyGate().then(function(gate) {
+    if (!gate.allowed) {
+      if (gate.reason === 'trial_expired') openFeedbackWall();
+      else openRegisterWall();
+      return;
+    }
+    if (resolved.unresolvedRequired && resolved.unresolvedRequired.length) {
+      var lang = getCurrentLanguage();
+      var list = resolved.unresolvedRequired;
+      var msg = lang === 'en'
+        ? list.length + ' required placeholder(s) still unfilled: ' + list.slice(0, 3).join(', ') + (list.length > 3 ? '…' : '')
+        : list.length + ' placeholder(s) obligatorios sin llenar: ' + list.slice(0, 3).join(', ') + (list.length > 3 ? '…' : '');
+      var actionLabel = lang === 'en' ? 'Copy anyway' : 'Copiar de todas formas';
+      showToast(msg, 'warn', actionLabel, function() { doCopy(resolved.text, btn); });
+      return;
+    }
+    if (resolved.unresolvedOptional && resolved.unresolvedOptional.length) {
+      showUnresolvedWarning(resolved);
+    }
+    doCopy(resolved.text, btn);
+  });
 }
 
 function showToast(msg, type, actionLabel, actionFn) {
@@ -3807,10 +3949,26 @@ document.addEventListener('DOMContentLoaded', function() {
       if (e.target === overlay) closeInfo();
     });
   }
+  // Ídem para los muros de registro/feedback -- cerrarlos con clic-fuera o
+  // Escape nunca otorga acceso: el gate se re-evalúa en el siguiente intento
+  // de copia (checkCopyGate), así que es seguro permitir descartarlos.
+  var registerWallOverlay = document.getElementById('register-wall-modal');
+  if (registerWallOverlay) {
+    registerWallOverlay.addEventListener('click', function(e) {
+      if (e.target === registerWallOverlay) closeRegisterWall();
+    });
+  }
+  var feedbackWallOverlay = document.getElementById('feedback-wall-modal');
+  if (feedbackWallOverlay) {
+    feedbackWallOverlay.addEventListener('click', function(e) {
+      if (e.target === feedbackWallOverlay) closeFeedbackWall();
+    });
+  }
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
       closeInfo(); closeVarPanel(); closeVarFloat(); closeProjectsModal();
       closeProjQuick(); closeOnboarding(true); closeMenu(); closeLanguageDropdown();
+      closeRegisterWall(); closeFeedbackWall();
     }
     trapFocusInModal(e);
   });
@@ -4838,6 +4996,59 @@ def build():
         '<span class="fw-lang-es">Importar</span><span class="fw-lang-en">Import</span></button>\n'
         '      <input type="file" id="proj-import-input" accept="application/json,.json"'
         ' style="display:none" onchange="handleImportProjectsFile(this)">\n'
+        '    </div>\n'
+        '  </div>\n'
+        '</div>\n'
+
+        # ── Muro de registro (2 copias gratis agotadas, anónimo) ──
+        '<div class="modal-overlay" id="register-wall-modal" role="dialog" aria-modal="true" aria-labelledby="register-wall-title">\n'
+        '  <div class="modal-box">\n'
+        '    <div class="modal-hdr">\n'
+        '      <h2 id="register-wall-title">'
+        '<span class="fw-lang-es">¡Ya copiaste 2 prompts!</span>'
+        '<span class="fw-lang-en">You’ve copied 2 prompts!</span>'
+        '</h2>\n'
+        '      <button class="modal-close-btn" onclick="closeRegisterWall()" aria-label="Cerrar / Close">&#x2715;</button>\n'
+        '    </div>\n'
+        '    <div class="modal-body wall-modal-body">\n'
+        '      <p class="fw-lang-es">Regístrate gratis con GitHub para seguir usando la biblioteca completa — 1 mes de acceso sin límite.</p>\n'
+        '      <p class="fw-lang-en">Sign up free with GitHub to keep using the full library — 1 month of unlimited access.</p>\n'
+        '      <button class="auth-btn" onclick="closeRegisterWall();signInWithGitHub();">'
+        '<svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" style="flex-shrink:0">'
+        '<path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>'
+        '</svg>'
+        '<span class="fw-lang-es">Iniciar sesión con GitHub</span><span class="fw-lang-en">Sign in with GitHub</span>'
+        '</button>\n'
+        '    </div>\n'
+        '  </div>\n'
+        '</div>\n'
+
+        # ── Muro de feedback (prueba de 1 mes vencida) ──
+        '<div class="modal-overlay" id="feedback-wall-modal" role="dialog" aria-modal="true" aria-labelledby="feedback-wall-title">\n'
+        '  <div class="modal-box">\n'
+        '    <div class="modal-hdr">\n'
+        '      <h2 id="feedback-wall-title">'
+        '<span class="fw-lang-es">Tu mes de acceso expiró</span>'
+        '<span class="fw-lang-en">Your access month expired</span>'
+        '</h2>\n'
+        '      <button class="modal-close-btn" onclick="closeFeedbackWall()" aria-label="Cerrar / Close">&#x2715;</button>\n'
+        '    </div>\n'
+        '    <div class="modal-body wall-modal-body">\n'
+        '      <p class="fw-lang-es">Cuéntanos qué tal te fue — al enviar, renuevas otro mes al instante.</p>\n'
+        '      <p class="fw-lang-en">Tell us how it went — submitting renews another month instantly.</p>\n'
+        '      <div class="fb-stars" id="fb-stars" role="radiogroup" aria-label="Calificación de 1 a 5 / Rating from 1 to 5">\n'
+        + ''.join(
+            '        <button type="button" class="fb-star" role="radio" aria-checked="false" '
+            'data-value="' + str(i) + '" onclick="setFbRating(' + str(i) + ')" '
+            'aria-label="' + str(i) + ' / 5">★</button>\n'
+            for i in range(1, 6)
+        ) +
+        '      </div>\n'
+        '      <textarea id="fb-comments" class="fb-textarea" '
+        'aria-label="Comentario / Comment"></textarea>\n'
+        '      <button class="fb-submit-btn" onclick="submitFeedbackWall()">'
+        '<span class="fw-lang-es">Enviar y renovar 1 mes</span><span class="fw-lang-en">Submit and renew 1 month</span>'
+        '</button>\n'
         '    </div>\n'
         '  </div>\n'
         '</div>\n'

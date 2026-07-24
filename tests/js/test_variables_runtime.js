@@ -92,48 +92,60 @@ context.RAW_PROMPTS["code-fw-es"] = "Framework [NOMBRE O URL]";
 const originalGetCurrentLanguage = context.getCurrentLanguage;
 context.getCurrentLanguage = () => "es";
 
-let copied = "";
-context.doCopy = text => { copied = text; };
-context.showUnresolvedWarning = () => {};
-const button = { dataset: {}, classList: { contains() { return false; } } };
-context.copyPromptLang("demo", "es", button);
-assert(copied.includes("org/<repo>&$1 módulo/ñ"));
-assert(!copied.includes("PREVIEW ALTERADO"));
+// A partir de aquí el flujo corre dentro de un IIFE async: desde el muro de
+// registro/prueba/feedback (ver docs/trial-gate-setup.md), copyPromptLang()/
+// copySelected() resuelven vía checkCopyGate().then(...) antes de llamar a
+// doCopy() -- ya no son síncronos, así que hace falta ceder el control
+// (await) para que ese microtask corra antes de leer `copied`.
+(async () => {
+  let copied = "";
+  context.doCopy = text => { copied = text; };
+  context.showUnresolvedWarning = () => {};
+  const button = { dataset: {}, classList: { contains() { return false; } } };
+  context.copyPromptLang("demo", "es", button);
+  await Promise.resolve(); await Promise.resolve();
+  assert(copied.includes("org/<repo>&$1 módulo/ñ"));
+  assert(!copied.includes("PREVIEW ALTERADO"));
 
-const checkbox = { dataset: { pid: "demo" } };
-context.getSelected = () => [checkbox];
-context.copySelected(button);
-assert(copied.includes("org/<repo>&$1 módulo/ñ"));
-assert(!copied.includes("PREVIEW ALTERADO"));
+  const checkbox = { dataset: { pid: "demo" } };
+  context.getSelected = () => [checkbox];
+  context.copySelected(button);
+  await Promise.resolve(); await Promise.resolve();
+  assert(copied.includes("org/<repo>&$1 módulo/ñ"));
+  assert(!copied.includes("PREVIEW ALTERADO"));
 
-const preview = { textContent: "" };
-elements.set("code-demo-es", preview);
-context.updateContextualVariablePanel = () => {};
-context.updateLivePreview();
-assert.strictEqual(preview.textContent, "org/<repo>&$1 módulo/ñ");
+  const preview = { textContent: "" };
+  elements.set("code-demo-es", preview);
+  context.updateContextualVariablePanel = () => {};
+  context.updateLivePreview();
+  assert.strictEqual(preview.textContent, "org/<repo>&$1 módulo/ñ");
 
-storage.clear();
-context.saveProjects([{
-  id: "p1",
-  name: "Proyecto",
-  isDefault: true,
-  vars: { repositorio: "org/repo" },
-}]);
-storage.set(context.LS_KEY_ACTV, "p1");
-assert.strictEqual(context.getActiveProject().vars.repositorio, "org/repo");
-assert(Object.prototype.hasOwnProperty.call(context.getActiveProject().vars, "workspace"));
+  storage.clear();
+  context.saveProjects([{
+    id: "p1",
+    name: "Proyecto",
+    isDefault: true,
+    vars: { repositorio: "org/repo" },
+  }]);
+  storage.set(context.LS_KEY_ACTV, "p1");
+  assert.strictEqual(context.getActiveProject().vars.repositorio, "org/repo");
+  assert(Object.prototype.hasOwnProperty.call(context.getActiveProject().vars, "workspace"));
 
-storage.set(context.I18N_KEY, "en");
-context.getCurrentLanguage = originalGetCurrentLanguage;
-assert.strictEqual(context.getCurrentLanguage(), "en");
+  storage.set(context.I18N_KEY, "en");
+  context.getCurrentLanguage = originalGetCurrentLanguage;
+  assert.strictEqual(context.getCurrentLanguage(), "en");
 
-// escId() debe escapar comilla simple/doble, & y backslash antes de que un
-// id se inserte en onclick="fn('ID')" (auditoría de seguridad: hoy genId()
-// nunca produce estos caracteres, pero un futuro id de otro origen -ej.
-// importar un proyecto- no debe poder romper el atributo ni inyectar JS).
-assert.strictEqual(
-  context.escId(`a'b"c&d${String.fromCharCode(92)}e`),
-  "a\\'b&quot;c&amp;d\\\\e"
-);
+  // escId() debe escapar comilla simple/doble, & y backslash antes de que un
+  // id se inserte en onclick="fn('ID')" (auditoría de seguridad: hoy genId()
+  // nunca produce estos caracteres, pero un futuro id de otro origen -ej.
+  // importar un proyecto- no debe poder romper el atributo ni inyectar JS).
+  assert.strictEqual(
+    context.escId(`a'b"c&d${String.fromCharCode(92)}e`),
+    "a\\'b&quot;c&amp;d\\\\e"
+  );
 
-console.log("runtime variable tests: ok");
+  console.log("runtime variable tests: ok");
+})().catch(err => {
+  console.error(err);
+  process.exit(1);
+});
