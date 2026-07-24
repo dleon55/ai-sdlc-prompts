@@ -89,6 +89,15 @@ def app_page():
                 }
             };
             window._sb = null;
+            // Por defecto, el estado de auth ya está "resuelto" (sin sesión) --
+            // checkCopyGate() falla abierto mientras _authStateResolved sea
+            // false (ver build.py, regresión del race condition post-login),
+            // así que sin esto TODOS los tests de este archivo quedarían en
+            // modo fail-open permanente y el muro de registro/feedback nunca
+            // se mostraría en ningún test, aunque el stub de arriba sí
+            // bloqueara. Los tests que ejercitan esa ventana de carrera lo
+            // sobreescriben explícitamente de vuelta a false.
+            window._authStateResolved = true;
             """
         )
         yield page
@@ -499,6 +508,55 @@ def test_new_project_id_is_a_valid_uuid_for_cloud_sync(app_page):
 
 # ─────────────────────  Muro de registro / prueba / feedback  ─────────────────────
 # Ver diseño 04-01, plan 05-01 y docs/trial-gate-setup.md.
+
+def test_copy_gate_fails_open_while_auth_state_is_still_resolving(app_page):
+    """Regresión de un bug real reportado en producción: justo tras volver
+    del redirect de GitHub, getSession() todavía está intercambiando el
+    código por una sesión (viaje de red real) -- _sbUser sigue en null
+    durante esa ventana. Antes de este fix, checkCopyGate() trataba eso
+    como "anónimo" y volvía a mostrar el muro de registro aunque el login
+    ya hubiera funcionado. Con _authStateResolved en false (simulando esa
+    ventana exacta), la copia debe permitirse (fail-open), no bloquearse."""
+    app_page.evaluate(
+        """
+        window._authStateResolved = false;
+        window._sbUser = null;
+        window.supabase.createClient = function() {
+            return {
+                auth: {
+                    getSession: function() { return new Promise(function() {}); },
+                    onAuthStateChange: function() {},
+                    signInWithOAuth: function() {},
+                    signOut: function() {}
+                },
+                rpc: function(name) {
+                    if (name === 'check_anon_usage') {
+                        return Promise.resolve({ data: { allowed: false, remaining: 0 }, error: null });
+                    }
+                    return Promise.resolve({ data: null, error: null });
+                }
+            };
+        };
+        window._sb = null;
+        """
+    )
+    pid = "00-B-01-scaffolding-repositorio"
+    clip = _copy_and_read_clipboard(app_page, pid, "es")
+
+    is_open = app_page.evaluate(
+        "(document.getElementById('register-wall-modal') || {}).classList"
+        ".contains('open')"
+    )
+    assert not is_open, (
+        "El muro de registro no debería aparecer mientras el estado de "
+        "auth sigue resolviéndose (fail-open) -- ver checkCopyGate()"
+    )
+    # No se compara contra el pid literal -- el slug del prompt no
+    # necesariamente aparece tal cual en su propio texto copiado. Un
+    # portapapeles no vacío y razonablemente largo (framework + cuerpo del
+    # prompt) confirma que la copia sí se completó en vez de quedar bloqueada.
+    assert len(clip) > 200, f"La copia debería haberse completado (fail-open), portapapeles: {clip!r}"
+
 
 def test_register_wall_appears_when_anon_copy_limit_is_reached(app_page):
     """Con check_anon_usage() stubeado devolviendo 'allowed: false' (simula
