@@ -57,6 +57,40 @@ def app_page():
         )
         page.reload()
         page.wait_for_load_state("networkidle")
+        # Reemplaza el SDK real de Supabase (ya cargado desde el CDN real en
+        # este punto -- ver docs/trial-gate-setup.md) por un stub que jamás
+        # llega a red: sin esto, cada copia en la suite incrementaría el
+        # contador real de anon_usage en producción y eventualmente el
+        # runner de CI quedaría "gateado", rompiendo todos los tests de
+        # copiado (riesgo #2 del diseño 04-01, ver también supabase/trial_gate.sql).
+        # Por defecto todo queda "permitido"; los tests que ejercitan el
+        # muro de registro/feedback sobreescriben este stub explícitamente.
+        page.evaluate(
+            """
+            window.supabase = {
+                createClient: function() {
+                    return {
+                        auth: {
+                            getSession: function() { return Promise.resolve({ data: { session: null } }); },
+                            onAuthStateChange: function() {},
+                            signInWithOAuth: function() {},
+                            signOut: function() {}
+                        },
+                        rpc: function(name) {
+                            if (name === 'check_anon_usage') {
+                                return Promise.resolve({ data: { allowed: true, remaining: 99 }, error: null });
+                            }
+                            if (name === 'check_trial_status') {
+                                return Promise.resolve({ data: { active: true, expires_at: null }, error: null });
+                            }
+                            return Promise.resolve({ data: null, error: null });
+                        }
+                    };
+                }
+            };
+            window._sb = null;
+            """
+        )
         yield page
         browser.close()
 
@@ -461,3 +495,104 @@ def test_new_project_id_is_a_valid_uuid_for_cloud_sync(app_page):
     assert re.match(uuid_pattern, new_id, re.IGNORECASE), (
         f"id de proyecto no es un UUID v4 válido: {new_id!r}"
     )
+
+
+# ─────────────────────  Muro de registro / prueba / feedback  ─────────────────────
+# Ver diseño 04-01, plan 05-01 y docs/trial-gate-setup.md.
+
+def test_register_wall_appears_when_anon_copy_limit_is_reached(app_page):
+    """Con check_anon_usage() stubeado devolviendo 'allowed: false' (simula
+    que ya se agotaron las 2 copias gratis por IP), el siguiente intento de
+    copia debe abrir el muro de registro en vez de copiar al portapapeles."""
+    app_page.evaluate(
+        """
+        window.supabase.createClient = function() {
+            return {
+                auth: {
+                    getSession: function() { return Promise.resolve({ data: { session: null } }); },
+                    onAuthStateChange: function() {},
+                    signInWithOAuth: function() {},
+                    signOut: function() {}
+                },
+                rpc: function(name) {
+                    if (name === 'check_anon_usage') {
+                        return Promise.resolve({ data: { allowed: false, remaining: 0 }, error: null });
+                    }
+                    return Promise.resolve({ data: null, error: null });
+                }
+            };
+        };
+        window._sb = null;
+        window._sbUser = null;
+        """
+    )
+    pid = "00-B-01-scaffolding-repositorio"
+    app_page.click(f'.copy-btn[onclick*="{pid}\', \'es\'"]')
+    app_page.wait_for_timeout(300)
+
+    is_open = app_page.evaluate(
+        "(document.getElementById('register-wall-modal') || {}).classList"
+        ".contains('open')"
+    )
+    assert is_open, "El muro de registro no apareció con el límite anónimo agotado"
+
+    clip = app_page.evaluate("navigator.clipboard.readText()")
+    assert pid not in clip or clip == "", (
+        "El copiado no debería haberse completado con el límite agotado"
+    )
+
+
+def test_feedback_wall_blocks_copy_until_submitted_then_renews(app_page):
+    """Con sesión simulada y check_trial_status() devolviendo 'active: false'
+    (prueba vencida), el intento de copia debe abrir el muro de feedback en
+    vez de copiar. Al enviarlo (submit_feedback_and_renew stubeado con
+    éxito), el modal se cierra y confirma la renovación."""
+    app_page.evaluate(
+        """
+        window._sbUser = { id: 'fake-user-id', email: 'test@example.com' };
+        window.supabase.createClient = function() {
+            return {
+                auth: {
+                    getSession: function() { return Promise.resolve({ data: { session: null } }); },
+                    onAuthStateChange: function() {},
+                    signInWithOAuth: function() {},
+                    signOut: function() {}
+                },
+                rpc: function(name, args) {
+                    if (name === 'check_trial_status') {
+                        return Promise.resolve({ data: { active: false, expires_at: '2020-01-01' }, error: null });
+                    }
+                    if (name === 'submit_feedback_and_renew') {
+                        window.__renewCall = args;
+                        return Promise.resolve({ data: { renewed: true, new_expires_at: '2099-01-01' }, error: null });
+                    }
+                    return Promise.resolve({ data: null, error: null });
+                }
+            };
+        };
+        window._sb = null;
+        """
+    )
+    pid = "00-B-01-scaffolding-repositorio"
+    app_page.click(f'.copy-btn[onclick*="{pid}\', \'es\'"]')
+    app_page.wait_for_timeout(300)
+
+    is_open = app_page.evaluate(
+        "(document.getElementById('feedback-wall-modal') || {}).classList"
+        ".contains('open')"
+    )
+    assert is_open, "El muro de feedback no apareció con la prueba vencida"
+
+    app_page.click('#fb-stars .fb-star[data-value="4"]')
+    app_page.fill("#fb-comments", "Muy útil, gracias.")
+    app_page.click(".fb-submit-btn")
+    app_page.wait_for_timeout(300)
+
+    call = app_page.evaluate("window.__renewCall")
+    assert call and call["p_rating"] == 4, f"submit_feedback_and_renew no recibió la calificación: {call!r}"
+
+    still_open = app_page.evaluate(
+        "(document.getElementById('feedback-wall-modal') || {}).classList"
+        ".contains('open')"
+    )
+    assert not still_open, "El muro de feedback debería cerrarse tras enviar exitosamente"

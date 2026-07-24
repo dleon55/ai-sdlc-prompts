@@ -9,6 +9,7 @@ Este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 ## [Unreleased]
 
 ### Added
+- Muro de registro + prueba de 1 mes + renovación por feedback: un visitante anónimo puede copiar 2 prompts libremente (contados por IP en Supabase, no por `localStorage`); al 3er intento se exige iniciar sesión con GitHub, lo que activa 1 mes de acceso completo. Al vencer, se bloquea la copia hasta enviar una breve retroalimentación (calificación 1-5 + comentario), que renueva otro mes al instante. Fail-open ante cualquier error de red o de configuración pendiente — nunca bloquea a un usuario real por una falla transitoria. Ver `docs/trial-gate-setup.md` y `supabase/trial_gate.sql`.
 - Registro de usuarios opcional vía Supabase Auth + GitHub OAuth, sin backend propio: sincroniza proyectos/variables entre dispositivos para quien inicia sesión, mientras el uso anónimo con `localStorage` sigue funcionando exactamente igual. Configurado y activo en producción (ver `docs/auth-setup.md` y `supabase/schema.sql`); si `SUPABASE_URL`/`SUPABASE_ANON_KEY` volvieran al centinela `PENDIENTE_CONFIGURAR`, la función queda inerte de nuevo sin ninguna petición de red nueva.
 - Panel de variables: amplía los catálogos de compliance y metodología, permite selección múltiple y admite valores personalizados mediante “Otro”.
 - Panel de variables: agrega `Workspace / subproyecto`, `Estándar / compliance`, `Documentos a revisar` y `Nivel de profundidad`.
