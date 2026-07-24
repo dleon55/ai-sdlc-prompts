@@ -82,7 +82,7 @@ def test_trial_renewal_uses_one_month_interval():
 
 
 def test_grants_are_scoped_to_the_correct_role():
-    assert "grant execute on function check_anon_usage(int) to anon;" in SCHEMA
+    assert "grant execute on function check_anon_usage() to anon;" in SCHEMA
     assert "grant execute on function check_trial_status() to authenticated;" in SCHEMA
     assert "grant execute on function submit_feedback_and_renew(int, text) to authenticated;" in SCHEMA
 
@@ -129,4 +129,42 @@ def test_submit_feedback_and_renew_upserts_instead_of_blind_update():
     assert "on conflict (user_id) do update" in body, (
         "submit_feedback_and_renew() debe usar upsert sobre user_trial, "
         "no un update ciego que puede afectar 0 filas en silencio"
+    )
+
+
+def test_check_anon_usage_does_not_accept_client_controlled_limit():
+    """Vulnerabilidad real corregida: el límite gratuito vivía como
+    parámetro de la función (con default 2) -- cualquiera puede llamar una
+    función RPC pasando sus propios argumentos desde la consola del
+    navegador (supabase.rpc('check_anon_usage', {free_limit: 999999})),
+    evadiendo el límite sin siquiera falsificar la IP. La firma no debe
+    aceptar ningún parámetro; el límite debe ser una constante fija dentro
+    del cuerpo de la función."""
+    assert "create or replace function check_anon_usage()" in SCHEMA, (
+        "check_anon_usage() no debe aceptar parámetros del cliente"
+    )
+    assert "grant execute on function check_anon_usage() to anon;" in SCHEMA
+    assert "free_limit int default" not in SCHEMA, (
+        "el límite gratuito no debe volver a ser un parámetro con default "
+        "controlable por quien invoca la función"
+    )
+
+
+def test_anon_ip_key_uses_last_forwarded_for_hop_not_raw_client_header():
+    """Vulnerabilidad real corregida: tomar el header x-forwarded-for
+    completo y tal cual como clave permitía evadir el límite mandando un
+    valor distinto (falso) en cada petición -- cada proxy AGREGA al final
+    de la cadena, nunca sobrescribe, así que el ÚLTIMO valor es el único
+    que el cliente no controla."""
+    match = re.search(
+        r"create (or replace )?function check_anon_usage\(\)"
+        r"[\s\S]*?\$\$;",
+        SCHEMA,
+        re.IGNORECASE,
+    )
+    assert match, "No se encontró el cuerpo de check_anon_usage()"
+    body = match.group(0).lower()
+    assert "string_to_array" in body and "array_length" in body, (
+        "check_anon_usage() debe tomar el último tramo de x-forwarded-for, "
+        "no la cadena completa tal cual"
     )

@@ -69,18 +69,43 @@ create policy "cada quien lee solo su propio feedback"
 -- Identifica al visitante por su IP (cabecera que PostgREST expone en cada
 -- request) e incrementa su contador. Devuelve cuántas copias le quedan.
 -- Ejecutable por el rol anon.
-create or replace function check_anon_usage(free_limit int default 2)
+-- Vulnerabilidad real corregida: x-forwarded-for puede traer una cadena
+-- "ip_cliente, ip_proxy1, ip_proxy2, ..." -- cada proxy AGREGA la IP de su
+-- peer inmediato al final, nunca sobrescribe lo anterior. Tomar la cadena
+-- completa como clave permitía a cualquiera evadir el límite por completo:
+-- basta con mandar un x-forwarded-for distinto (falso) en cada petición
+-- para que cada intento cuente como una "IP" nueva. El ÚLTIMO valor de la
+-- cadena es el que agrega el borde de Supabase (el único salto que el
+-- cliente no controla), así que es el único confiable como identificador.
+-- Supuesto a validar: que el edge de Supabase efectivamente AGREGA en vez
+-- de sobrescribir este header (comportamiento estándar de proxy, pero no
+-- verificado contra la infraestructura real de este proyecto).
+--
+-- Vulnerabilidad real corregida (más grave que la del header): el límite
+-- vivía como PARÁMETRO de la función, con valor por defecto 2 -- pero
+-- cualquiera puede llamar a una función RPC pasando sus propios argumentos
+-- desde la consola del navegador (`supabase.rpc('check_anon_usage', {
+-- free_limit: 999999 })`), evadiendo el límite sin siquiera falsificar la
+-- IP. El límite ahora es una constante fija dentro de la función, no un
+-- valor que el cliente pueda decidir.
+create or replace function check_anon_usage()
 returns jsonb
 language plpgsql
 security definer
 set search_path = public
 as $$
 declare
+  free_limit constant int := 2;
   caller_ip text;
+  xff_parts text[];
   current_count int;
 begin
+  xff_parts := string_to_array(
+    coalesce(current_setting('request.headers', true)::json ->> 'x-forwarded-for', ''),
+    ','
+  );
   caller_ip := coalesce(
-    (current_setting('request.headers', true)::json ->> 'x-forwarded-for'),
+    nullif(trim(xff_parts[array_length(xff_parts, 1)]), ''),
     'unknown'
   );
 
@@ -98,7 +123,7 @@ begin
 end;
 $$;
 
-grant execute on function check_anon_usage(int) to anon;
+grant execute on function check_anon_usage() to anon;
 
 -- ───────────────────── check_trial_status() ─────────────────────
 -- Devuelve el estado de la prueba del usuario autenticado. Ejecutable por
