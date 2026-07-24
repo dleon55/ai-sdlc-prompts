@@ -12822,6 +12822,13 @@ function initSupabaseAuth() {
     _authStateResolved = true;
     renderAuthUI();
     if (_sbUser) pullCloudProjects();
+  }).catch(function() {
+    // Si getSession() llega a rechazar en vez de resolver, _authStateResolved
+    // debe quedar en true de todas formas -- de lo contrario checkCopyGate()
+    // se queda fallando abierto (permitiendo todo) para siempre en esta
+    // sesión en vez de solo durante la ventana breve de carga real.
+    _authStateResolved = true;
+    renderAuthUI();
   });
   client.auth.onAuthStateChange(function(event, session) {
     _sbUser = session ? session.user : null;
