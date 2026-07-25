@@ -12,6 +12,7 @@ import i18n_strings
 
 PROMPTS_DIR = Path(__file__).parent / "ai_sdlc_pro_prompts"
 OUTPUT_FILE = Path(__file__).parent / "index.html"
+PRECIOS_OUTPUT_FILE = Path(__file__).parent / "precios.html"
 INDEX_OUTPUT_FILE = Path(__file__).parent / "prompts-index.json"
 MCP_DATA_OUTPUT_FILE = Path(__file__).parent / "mcp-server" / "data" / "prompts-full.json"
 
@@ -2043,12 +2044,13 @@ function deleteProjectFromCloud(id) {
 /* ══════════  MURO DE REGISTRO / PRUEBA / FEEDBACK  ══════════
    Ver docs/trial-gate-setup.md y supabase/trial_gate.sql. Único punto de
    verificación: checkCopyGate(), invocado desde copyResolvedText() antes
-   de escribir al portapapeles (doCopy). Anónimo: 2 copias gratis contadas
-   por IP en Supabase (check_anon_usage). Con sesión: 1 mes de prueba
-   (check_trial_status); al vencer, se exige enviar feedback para renovar
-   (submit_feedback_and_renew). Fail-open ante cualquier error de red o SDK
-   aún no cargado -- nunca se bloquea a un usuario real por una falla
-   transitoria (decisión de diseño, ver docs/trial-gate-setup.md). */
+   de escribir al portapapeles (doCopy). Anónimo: 10 copias gratis contadas
+   por IP en Supabase (check_anon_usage), acumuladas de por vida. Con sesión:
+   1 semana de prueba (check_trial_status); al vencer, se exige enviar
+   feedback para renovar otra semana (submit_feedback_and_renew). Fail-open
+   ante cualquier error de red o SDK aún no cargado -- nunca se bloquea a un
+   usuario real por una falla transitoria (decisión de diseño, ver
+   docs/trial-gate-setup.md). */
 
 function checkCopyGate() {
   if (!isSupabaseConfigured()) return Promise.resolve({ allowed: true });
@@ -2071,6 +2073,20 @@ function checkCopyGate() {
     if (!res || res.error || !res.data) return { allowed: true };
     return res.data.allowed ? { allowed: true } : { allowed: false, reason: 'anon_limit' };
   }).catch(function() { return { allowed: true }; });
+}
+
+// Indicador de administrador (issue #7 Fase 2): registra qué prompts se
+// copian más, sin afectar el gate ni el copiado en sí. Fire-and-forget a
+// propósito -- si track_prompt_copy() falla o tarda, la copia ya sucedió y
+// no debe verse afectada (mismo principio fail-open del resto del muro).
+function trackPromptCopy(promptIds) {
+  if (!promptIds || !promptIds.length) return;
+  if (!isSupabaseConfigured()) return;
+  var client = getSupabaseClient();
+  if (!client) return;
+  try {
+    client.rpc('track_prompt_copy', { p_prompt_ids: promptIds }).then(function() {}).catch(function() {});
+  } catch (e) {}
 }
 
 function openRegisterWall() {
@@ -2143,7 +2159,7 @@ function submitFeedbackWall() {
     _fbRating = 0;
     setFbRating(0);
     if (ta) ta.value = '';
-    showToast(lang === 'en' ? 'Thanks! Renewed for 1 month' : '¡Gracias! Renovado por 1 mes', 'success');
+    showToast(lang === 'en' ? 'Thanks! Renewed for 1 week' : '¡Gracias! Renovado por 1 semana', 'success');
   }).catch(function() {
     showToast(lang === 'en' ? 'Could not submit — try again' : 'No se pudo enviar — intenta de nuevo', 'warn');
   });
@@ -3189,12 +3205,13 @@ function copyResolvedText(resolved, btn) {
         ? list.length + ' required placeholder(s) still unfilled: ' + list.slice(0, 3).join(', ') + (list.length > 3 ? '…' : '')
         : list.length + ' placeholder(s) obligatorios sin llenar: ' + list.slice(0, 3).join(', ') + (list.length > 3 ? '…' : '');
       var actionLabel = lang === 'en' ? 'Copy anyway' : 'Copiar de todas formas';
-      showToast(msg, 'warn', actionLabel, function() { doCopy(resolved.text, btn); });
+      showToast(msg, 'warn', actionLabel, function() { trackPromptCopy(resolved.promptIds); doCopy(resolved.text, btn); });
       return;
     }
     if (resolved.unresolvedOptional && resolved.unresolvedOptional.length) {
       showUnresolvedWarning(resolved);
     }
+    trackPromptCopy(resolved.promptIds);
     doCopy(resolved.text, btn);
   });
 }
@@ -3290,19 +3307,20 @@ function copyPromptLang(pid, lang, btn) {
   var raw = RAW_PROMPTS[codeId] || codeEl.textContent;
   var resolved = resolvePrompt(raw);
   var text = resolved.text;
-  
+  var promptIds = [pid];
+
   if (pid !== 'fw') {
     var fwId = 'code-fw-' + lang;
     var fwEl = document.getElementById(fwId) || document.getElementById('code-fw');
     if (fwEl) {
       var fwRaw = RAW_PROMPTS[fwId] || fwEl.textContent;
       var fwResolved = resolvePrompt(fwRaw);
-      if (fwResolved.text) text = fwResolved.text + '\\n\\n---\\n\\n' + text;
+      if (fwResolved.text) { text = fwResolved.text + '\\n\\n---\\n\\n' + text; promptIds.push('fw'); }
       resolved.unresolvedRequired = fwResolved.unresolvedRequired.concat(resolved.unresolvedRequired);
       resolved.unresolvedOptional = fwResolved.unresolvedOptional.concat(resolved.unresolvedOptional);
     }
   }
-  copyResolvedText({ text: text, unresolvedRequired: resolved.unresolvedRequired, unresolvedOptional: resolved.unresolvedOptional }, btn);
+  copyResolvedText({ text: text, unresolvedRequired: resolved.unresolvedRequired, unresolvedOptional: resolved.unresolvedOptional, promptIds: promptIds }, btn);
 }
 
 function openInfoLang(pid, lang) {
@@ -3350,6 +3368,7 @@ function openInfoLang(pid, lang) {
         (function(formula, b) {
           b.addEventListener('click', function() {
             var result = resolvePrompt(formula);
+            result.promptIds = [pid];
             copyResolvedText(result, b);
           });
         })(f, btn);
@@ -3572,10 +3591,12 @@ function copySelected(btn) {
   // obtener prompts en orden DOM (orden de proceso)
   var aggregate = { unresolvedRequired: [], unresolvedOptional: [] };
   var seenPids = {};
+  var promptIds = [];
   var parts = checks.map(function(cb) {
     var pid = cb.dataset.pid;
     if (seenPids[pid]) return '';
     seenPids[pid] = true;
+    promptIds.push(pid);
     var codeId = 'code-' + pid + '-' + lang;
     var el = document.getElementById(codeId);
     if (!el) return '';
@@ -3588,8 +3609,9 @@ function copySelected(btn) {
   var fwResult = resolvePrompt(RAW_PROMPTS[fwId] || getFwText());
   aggregate.unresolvedRequired = aggregate.unresolvedRequired.concat(fwResult.unresolvedRequired);
   aggregate.unresolvedOptional = aggregate.unresolvedOptional.concat(fwResult.unresolvedOptional);
+  if (fwResult.text) promptIds.push('fw');
   var text = (fwResult.text ? fwResult.text + '\\n\\n---\\n\\n' : '') + parts.join('\\n\\n---\\n\\n');
-  copyResolvedText({ text: text, unresolvedRequired: aggregate.unresolvedRequired, unresolvedOptional: aggregate.unresolvedOptional }, btn);
+  copyResolvedText({ text: text, unresolvedRequired: aggregate.unresolvedRequired, unresolvedOptional: aggregate.unresolvedOptional, promptIds: promptIds }, btn);
 }
 
 /* ═══════════════════  SEARCH / FILTER  ═════════════════════════ */
@@ -4108,6 +4130,133 @@ def get_landing_html(n):
 LANDING_HTML = get_landing_html(TOTAL_PROMPTS)
 
 
+def build_precios_page():
+    """Página estática nueva (issue #8): explica el periodo de prueba
+    vigente (10 copias anónimas + 1 semana con registro, renovable por
+    feedback) en vez de comprometerse a precios fijos -- los tiers de pago
+    (Fase 2, issue #7) aún no están definidos, se decidirán con datos reales
+    del piloto (ver diseño 04-01). Autocontenida: no depende del bundle CSS/JS
+    de index.html, reutiliza los mismos tokens de color y el mismo mecanismo
+    de idioma (I18N_KEY en localStorage + fw-lang-es/fw-lang-en) para que la
+    preferencia de idioma del usuario se mantenga entre ambas páginas."""
+    return (
+        '<!DOCTYPE html>\n<html lang="es" data-lang="es">\n<head>\n'
+        '<meta charset="UTF-8">\n'
+        '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n'
+        '<title>Precios — AI-SDLC Pro / Pricing — AI-SDLC Pro</title>\n'
+        '<meta name="description" content="Periodo de prueba vigente de AI-SDLC Pro: 10 copias gratis, 1 semana con registro, renovable con feedback. Los planes de pago aun no estan definidos.">\n'
+        '<meta name="robots" content="index,follow">\n'
+        '<meta name="theme-color" content="#0f172a">\n'
+        '<link rel="canonical" href="https://prompts.lionsystems.com.mx/precios.html">\n'
+        '<link rel="alternate" hreflang="es" href="https://prompts.lionsystems.com.mx/precios.html">\n'
+        '<link rel="alternate" hreflang="en" href="https://prompts.lionsystems.com.mx/precios.html">\n'
+        '<link rel="alternate" hreflang="x-default" href="https://prompts.lionsystems.com.mx/precios.html">\n'
+        '<link rel="icon" type="image/png" href="https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png">\n'
+        '<style>\n'
+        ':root{--bg:#080b14;--bg2:#0f1220;--bg3:#161929;--bdr:#1f2340;--tx:#dde1f5;--tx2:#8892c0;'
+        '--tx3:#7b86b8;--grn:#22c55e;--warn:#f59e0b;'
+        '--mono:"JetBrains Mono","Fira Code","Cascadia Code","Courier New",monospace;}\n'
+        '*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}\n'
+        'html[lang="es"] .fw-lang-en{display:none !important;}\n'
+        'html[lang="en"] .fw-lang-es{display:none !important;}\n'
+        'html{scroll-behavior:smooth;}\n'
+        'body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;'
+        'background:var(--bg);color:var(--tx);font-size:15px;line-height:1.6;min-height:100vh;}\n'
+        'header{display:flex;align-items:center;justify-content:space-between;'
+        'padding:1rem 1.5rem;border-bottom:1px solid var(--bdr);background:var(--bg2);}\n'
+        '.px-logo{font-weight:700;letter-spacing:.015em;text-decoration:none;'
+        'background:linear-gradient(90deg,#818cf8,#c084fc);-webkit-background-clip:text;'
+        '-webkit-text-fill-color:transparent;font-size:1rem;}\n'
+        '.px-lang-btn{background:var(--bg3);border:1px solid var(--bdr);color:var(--tx2);'
+        'border-radius:6px;padding:.4rem .8rem;font-size:.8rem;cursor:pointer;}\n'
+        'main{max-width:640px;margin:0 auto;padding:3rem 1.5rem 4rem;}\n'
+        'h1{font-size:1.75rem;font-weight:700;margin-bottom:.5rem;}\n'
+        '.px-sub{color:var(--tx2);margin-bottom:2.5rem;}\n'
+        '.px-card{background:var(--bg2);border:1px solid var(--bdr);border-radius:12px;'
+        'padding:1.5rem;margin-bottom:1.25rem;}\n'
+        '.px-card h2{font-size:1rem;margin-bottom:.75rem;display:flex;align-items:center;gap:.5rem;}\n'
+        '.px-card ul{margin:0 0 0 1.1rem;color:var(--tx2);}\n'
+        '.px-card li{margin-bottom:.35rem;}\n'
+        '.px-badge{display:inline-block;font-size:.7rem;font-weight:600;padding:.15rem .5rem;'
+        'border-radius:999px;background:rgba(34,197,94,.15);color:var(--grn);}\n'
+        '.px-future{border-style:dashed;color:var(--tx3);}\n'
+        '.px-future .px-badge{background:rgba(245,158,11,.15);color:var(--warn);}\n'
+        '.px-cta{display:inline-block;margin-top:1rem;background:linear-gradient(90deg,#818cf8,#c084fc);'
+        'color:#0a0c16;font-weight:600;text-decoration:none;padding:.65rem 1.3rem;border-radius:8px;'
+        'font-size:.9rem;}\n'
+        '.px-foot{margin-top:3rem;color:var(--tx3);font-size:.8rem;}\n'
+        '</style>\n</head>\n<body>\n'
+        '<header>\n'
+        '  <a class="px-logo" href="/">AI-SDLC Pro</a>\n'
+        '  <button class="px-lang-btn" onclick="pxToggleLang()">'
+        '<span class="fw-lang-es">EN</span><span class="fw-lang-en">ES</span></button>\n'
+        '</header>\n'
+        '<main>\n'
+        '  <h1><span class="fw-lang-es">Precios</span><span class="fw-lang-en">Pricing</span></h1>\n'
+        '  <p class="px-sub fw-lang-es">Estamos en periodo de piloto: así funciona el acceso hoy.</p>\n'
+        '  <p class="px-sub fw-lang-en">We are in a pilot period: here is how access works today.</p>\n'
+        '  <div class="px-card">\n'
+        '    <h2><span class="px-badge fw-lang-es">Gratis</span><span class="px-badge fw-lang-en">Free</span>'
+        '<span class="fw-lang-es">&nbsp;Sin registro</span><span class="fw-lang-en">&nbsp;No sign-up</span></h2>\n'
+        '    <ul class="fw-lang-es">\n'
+        '      <li>10 copias de prompts, sin necesidad de crear cuenta.</li>\n'
+        '      <li>Al copiar el prompt número 11 se te pide iniciar sesión con GitHub.</li>\n'
+        '    </ul>\n'
+        '    <ul class="fw-lang-en">\n'
+        '      <li>10 prompt copies, no account required.</li>\n'
+        '      <li>Copying the 11th prompt asks you to sign in with GitHub.</li>\n'
+        '    </ul>\n'
+        '  </div>\n'
+        '  <div class="px-card">\n'
+        '    <h2><span class="px-badge fw-lang-es">Prueba</span><span class="px-badge fw-lang-en">Trial</span>'
+        '<span class="fw-lang-es">&nbsp;1 semana, renovable</span>'
+        '<span class="fw-lang-en">&nbsp;1 week, renewable</span></h2>\n'
+        '    <ul class="fw-lang-es">\n'
+        '      <li>Al iniciar sesión con GitHub obtienes 1 semana de acceso ilimitado a la biblioteca completa.</li>\n'
+        '      <li>Al vencer, una breve retroalimentación (calificación + comentario) renueva otra semana al instante.</li>\n'
+        '      <li>Puedes renovar cada semana mientras dure el piloto.</li>\n'
+        '    </ul>\n'
+        '    <ul class="fw-lang-en">\n'
+        '      <li>Signing in with GitHub grants 1 week of unlimited access to the full library.</li>\n'
+        '      <li>When it expires, brief feedback (rating + comment) renews another week instantly.</li>\n'
+        '      <li>You can keep renewing weekly for as long as the pilot runs.</li>\n'
+        '    </ul>\n'
+        '  </div>\n'
+        '  <div class="px-card px-future">\n'
+        '    <h2><span class="px-badge fw-lang-es">Próximamente</span><span class="px-badge fw-lang-en">Coming soon</span>'
+        '<span class="fw-lang-es">&nbsp;Planes de pago</span><span class="fw-lang-en">&nbsp;Paid plans</span></h2>\n'
+        '    <p class="fw-lang-es">Aún no hemos definido precio ni fecha para los planes Individual y Equipo — '
+        'los vamos a decidir con datos reales de este piloto (qué tanto se usa la herramienta y qué prompts '
+        'importan más), no a ciegas.</p>\n'
+        '    <p class="fw-lang-en">We haven’t set a price or date yet for the Individual and Team plans — '
+        'we’ll decide them using real data from this pilot (how much the tool gets used and which prompts '
+        'matter most), not a guess.</p>\n'
+        '  </div>\n'
+        '  <a class="px-cta fw-lang-es" href="/">Volver a la biblioteca de prompts</a>\n'
+        '  <a class="px-cta fw-lang-en" href="/">Back to the prompt library</a>\n'
+        '  <p class="px-foot fw-lang-es">¿Dudas o feedback? Escríbenos al enviar tu retroalimentación semanal desde la app.</p>\n'
+        '  <p class="px-foot fw-lang-en">Questions or feedback? Send it via the weekly feedback form in the app.</p>\n'
+        '</main>\n'
+        '<script>\n'
+        'window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}'
+        'gtag("js",new Date());gtag("config","G-C5JKYNZ62F");\n'
+        'var PX_I18N_KEY="AI_SDLC_language";\n'
+        'function pxCurrentLang(){\n'
+        '  try{var s=localStorage.getItem(PX_I18N_KEY);if(s==="es"||s==="en")return s;}catch(e){}\n'
+        '  var n=((navigator.language||"")+"").split("-")[0].toLowerCase();\n'
+        '  return n==="en"?"en":"es";\n'
+        '}\n'
+        'function pxSetLang(lang){\n'
+        '  document.documentElement.lang=lang;document.documentElement.setAttribute("data-lang",lang);\n'
+        '  try{localStorage.setItem(PX_I18N_KEY,lang);}catch(e){}\n'
+        '}\n'
+        'function pxToggleLang(){pxSetLang(pxCurrentLang()==="es"?"en":"es");}\n'
+        'pxSetLang(pxCurrentLang());\n'
+        '</script>\n'
+        '</body>\n</html>\n'
+    )
+
+
 def build():
     # ── leer framework en ambos idiomas ──
     fw_file_es = PROMPTS_DIR / "00-framework.md"
@@ -4567,6 +4716,8 @@ def build():
         '      <div><span class="hdr-brand-text">Lionsystems</span>'
         '      <span class="hdr-brand-sub">Prueba gratis &middot; Plan Pro</span></div>'
         '    </div>'
+        '    <a href="/precios.html" class="hdr-pricing-link" style="color:var(--tx3);font-size:.75rem;text-decoration:none;white-space:nowrap;">'
+        '<span class="fw-lang-es">Precios</span><span class="fw-lang-en">Pricing</span></a>'
         '  </div>\n'
         '</header>\n'
 
@@ -5025,19 +5176,19 @@ def build():
         '  </div>\n'
         '</div>\n'
 
-        # ── Muro de registro (2 copias gratis agotadas, anónimo) ──
+        # ── Muro de registro (10 copias gratis agotadas, anónimo) ──
         '<div class="modal-overlay" id="register-wall-modal" role="dialog" aria-modal="true" aria-labelledby="register-wall-title">\n'
         '  <div class="modal-box">\n'
         '    <div class="modal-hdr">\n'
         '      <h2 id="register-wall-title">'
-        '<span class="fw-lang-es">¡Ya copiaste 2 prompts!</span>'
-        '<span class="fw-lang-en">You’ve copied 2 prompts!</span>'
+        '<span class="fw-lang-es">¡Ya copiaste 10 prompts!</span>'
+        '<span class="fw-lang-en">You’ve copied 10 prompts!</span>'
         '</h2>\n'
         '      <button class="modal-close-btn" onclick="closeRegisterWall()" aria-label="Cerrar / Close">&#x2715;</button>\n'
         '    </div>\n'
         '    <div class="modal-body wall-modal-body">\n'
-        '      <p class="fw-lang-es">Regístrate gratis con GitHub para seguir usando la biblioteca completa — 1 mes de acceso sin límite.</p>\n'
-        '      <p class="fw-lang-en">Sign up free with GitHub to keep using the full library — 1 month of unlimited access.</p>\n'
+        '      <p class="fw-lang-es">Regístrate gratis con GitHub para seguir usando la biblioteca completa — 1 semana de acceso sin límite.</p>\n'
+        '      <p class="fw-lang-en">Sign up free with GitHub to keep using the full library — 1 week of unlimited access.</p>\n'
         '      <button class="auth-btn" onclick="closeRegisterWall();signInWithGitHub();">'
         '<svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" style="flex-shrink:0">'
         '<path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>'
@@ -5048,19 +5199,19 @@ def build():
         '  </div>\n'
         '</div>\n'
 
-        # ── Muro de feedback (prueba de 1 mes vencida) ──
+        # ── Muro de feedback (prueba de 1 semana vencida) ──
         '<div class="modal-overlay" id="feedback-wall-modal" role="dialog" aria-modal="true" aria-labelledby="feedback-wall-title">\n'
         '  <div class="modal-box">\n'
         '    <div class="modal-hdr">\n'
         '      <h2 id="feedback-wall-title">'
-        '<span class="fw-lang-es">Tu mes de acceso expiró</span>'
-        '<span class="fw-lang-en">Your access month expired</span>'
+        '<span class="fw-lang-es">Tu semana de acceso expiró</span>'
+        '<span class="fw-lang-en">Your access week expired</span>'
         '</h2>\n'
         '      <button class="modal-close-btn" onclick="closeFeedbackWall()" aria-label="Cerrar / Close">&#x2715;</button>\n'
         '    </div>\n'
         '    <div class="modal-body wall-modal-body">\n'
-        '      <p class="fw-lang-es">Cuéntanos qué tal te fue — al enviar, renuevas otro mes al instante.</p>\n'
-        '      <p class="fw-lang-en">Tell us how it went — submitting renews another month instantly.</p>\n'
+        '      <p class="fw-lang-es">Cuéntanos qué tal te fue — al enviar, renuevas otra semana al instante.</p>\n'
+        '      <p class="fw-lang-en">Tell us how it went — submitting renews another week instantly.</p>\n'
         '      <div class="fb-stars" id="fb-stars" role="radiogroup" aria-label="Calificación de 1 a 5 / Rating from 1 to 5">\n'
         + ''.join(
             '        <button type="button" class="fb-star" role="radio" aria-checked="false" '
@@ -5072,7 +5223,7 @@ def build():
         '      <textarea id="fb-comments" class="fb-textarea" '
         'aria-label="Comentario / Comment"></textarea>\n'
         '      <button class="fb-submit-btn" onclick="submitFeedbackWall()">'
-        '<span class="fw-lang-es">Enviar y renovar 1 mes</span><span class="fw-lang-en">Submit and renew 1 month</span>'
+        '<span class="fw-lang-es">Enviar y renovar 1 semana</span><span class="fw-lang-en">Submit and renew 1 week</span>'
         '</button>\n'
         '    </div>\n'
         '  </div>\n'
@@ -5260,6 +5411,9 @@ def build():
     print(f"Tamano    : {size_kb:.1f} KB")
     print(f"Indice    : {INDEX_OUTPUT_FILE.name} ({contracted}/{total} con contrato editorial)")
     print(f"MCP data  : mcp-server/data/{MCP_DATA_OUTPUT_FILE.name} ({len(mcp_prompts)} prompts)")
+
+    PRECIOS_OUTPUT_FILE.write_text(build_precios_page(), encoding="utf-8")
+    print(f"OK  -> {PRECIOS_OUTPUT_FILE.name}")
 
 
 if __name__ == "__main__":

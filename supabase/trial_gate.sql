@@ -1,4 +1,4 @@
--- AI-SDLC Pro — muro de registro + prueba de 1 mes + renovación por feedback
+-- AI-SDLC Pro — muro de registro + prueba de 1 semana + renovación por feedback
 --
 -- Ejecutar una sola vez en el SQL Editor del proyecto de Supabase, después de
 -- supabase/schema.sql. Ver docs/trial-gate-setup.md para el paso a paso.
@@ -30,7 +30,7 @@ alter table anon_usage enable row level security;
 create table if not exists user_trial (
   user_id          uuid primary key references auth.users(id) on delete cascade,
   trial_started_at  timestamptz not null default now(),
-  trial_expires_at  timestamptz not null default (now() + interval '1 month'),
+  trial_expires_at  timestamptz not null default (now() + interval '1 week'),
   renewed_count     int not null default 0
 );
 
@@ -95,7 +95,7 @@ security definer
 set search_path = public
 as $$
 declare
-  free_limit constant int := 2;
+  free_limit constant int := 10;
   caller_ip text;
   xff_parts text[];
   current_count int;
@@ -135,7 +135,7 @@ grant execute on function check_anon_usage() to anon;
 -- tiene fila en user_trial. Tratar "sin fila" como "prueba vencida" bloquea
 -- para siempre a alguien que en realidad nunca tuvo oportunidad de
 -- empezarla. Si no se encuentra la fila, se crea aquí mismo con una prueba
--- de 1 mes nueva, en vez de reportar un vencimiento falso.
+-- de 1 semana nueva, en vez de reportar un vencimiento falso.
 create or replace function check_trial_status()
 returns jsonb
 language plpgsql
@@ -164,7 +164,7 @@ $$;
 grant execute on function check_trial_status() to authenticated;
 
 -- ───────────────── submit_feedback_and_renew() ─────────────────
--- Inserta el feedback y extiende la prueba 1 mes desde ahora, en una sola
+-- Inserta el feedback y extiende la prueba 1 semana desde ahora, en una sola
 -- transacción. Ejecutable por el rol authenticated.
 --
 -- Auto-reparable (mismo bug real de check_trial_status): un UPDATE simple
@@ -186,9 +186,9 @@ begin
   values (auth.uid(), p_rating, p_comments);
 
   insert into user_trial (user_id, trial_expires_at, renewed_count)
-  values (auth.uid(), now() + interval '1 month', 1)
+  values (auth.uid(), now() + interval '1 week', 1)
   on conflict (user_id) do update
-    set trial_expires_at = now() + interval '1 month',
+    set trial_expires_at = now() + interval '1 week',
         renewed_count = user_trial.renewed_count + 1
   returning trial_expires_at into new_expiry;
 

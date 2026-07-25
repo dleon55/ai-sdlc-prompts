@@ -1,4 +1,4 @@
-# Configuración del muro de registro + prueba de 1 mes + feedback
+# Configuración del muro de registro + prueba de 1 semana + feedback
 
 Este feature se apoya en el registro de usuarios ya configurado (ver
 [`docs/auth-setup.md`](auth-setup.md)) — si ese feature todavía muestra el
@@ -19,7 +19,9 @@ pierde acceso por un despliegue a medias.
 
 En el SQL Editor del mismo proyecto de Supabase ya configurado (`Database →
 SQL Editor`), pega y ejecuta el contenido completo de
-[`supabase/trial_gate.sql`](../supabase/trial_gate.sql).
+[`supabase/trial_gate.sql`](../supabase/trial_gate.sql), y después el de
+[`supabase/prompt_copy_stats.sql`](../supabase/prompt_copy_stats.sql) (indicador
+de "prompts más copiados" para el administrador).
 
 ## 2. Verificar la regla de seguridad crítica
 
@@ -35,12 +37,12 @@ Antes de dar esto por terminado, confirma en **Database → Tables** que:
 ## 3. Verificación funcional (manual, no automatizable desde aquí)
 
 1. Abre el sitio en una ventana de incógnito (sin sesión).
-2. Copia 2 prompts distintos — deben copiar normal.
-3. Intenta copiar un 3er prompt — debe aparecer el muro de registro en vez
+2. Copia 10 prompts distintos — deben copiar normal.
+3. Intenta copiar un 11vo prompt — debe aparecer el muro de registro en vez
    de copiar.
 4. Inicia sesión con GitHub. Copia debe funcionar sin límite mientras la
    prueba esté activa.
-5. Para simular el vencimiento sin esperar 1 mes real, en el SQL Editor:
+5. Para simular el vencimiento sin esperar 1 semana real, en el SQL Editor:
    ```sql
    update user_trial set trial_expires_at = now() - interval '1 day'
    where user_id = (select id from auth.users where email = 'tu-email-de-prueba@ejemplo.com');
@@ -50,7 +52,9 @@ Antes de dar esto por terminado, confirma en **Database → Tables** que:
 7. Envía el formulario (calificación + comentario) — debe cerrarse el
    modal y la copia debe volver a funcionar de inmediato.
 8. Confirma en **Table Editor → feedback** que la fila quedó registrada, y
-   en **user_trial** que `trial_expires_at` avanzó ~1 mes desde el envío.
+   en **user_trial** que `trial_expires_at` avanzó ~1 semana desde el envío.
+9. En **Table Editor → prompt_copy_stats**, confirma que aparece una fila
+   por cada prompt copiado durante esta prueba, con `copy_count` correcto.
 
 ## Notas de diseño (por qué quedó así, no un olvido)
 

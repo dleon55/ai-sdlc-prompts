@@ -1364,7 +1364,7 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
 <div id="app-root" class="app-hidden">
 <header>
   <div class="hdr-logo">    <button class="menu-toggle-btn" onclick="toggleMenu()" title="Menú / Menu" aria-label="Menú / Menu" aria-haspopup="true" aria-expanded="false" aria-controls="app-sidebar">      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">        <line x1="3" y1="12" x2="21" y2="12"></line>        <line x1="3" y1="6" x2="21" y2="6"></line>        <line x1="3" y1="18" x2="21" y2="18"></line>      </svg>    </button>    <div class="hdr-logo-icon">      <img src="https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png" width="28" height="28" alt="Lionsystems" style="border-radius:4px;flex-shrink:0;">    </div>    <div>      <h1>AI-SDLC Pro</h1>      <p>Biblioteca de Prompts / Lionsystems</p>    </div>  </div>
-  <div class="hdr-tags">    <div class="tag">v1.2.0</div>    <div class="lang-wrap">      <button class="lang-btn" id="lang-btn" onclick="toggleLanguageDropdown()" title="Cambiar idioma / Change language" aria-haspopup="true" aria-expanded="false">        <span class="flag">&#127760;</span><span class="lang-label" id="current-lang-label">ES</span>      </button>      <div class="lang-dropdown" id="lang-dropdown" role="menu">        <button type="button" class="lang-option" role="menuitem" data-lang="es" onclick="onLanguageSelect('es')">Español</button>        <button type="button" class="lang-option" role="menuitem" data-lang="en" onclick="onLanguageSelect('en')">English</button>      </div>    </div>    <div class="hdr-brand">      <div><span class="hdr-brand-text">Lionsystems</span>      <span class="hdr-brand-sub">Prueba gratis &middot; Plan Pro</span></div>    </div>  </div>
+  <div class="hdr-tags">    <div class="tag">v1.2.0</div>    <div class="lang-wrap">      <button class="lang-btn" id="lang-btn" onclick="toggleLanguageDropdown()" title="Cambiar idioma / Change language" aria-haspopup="true" aria-expanded="false">        <span class="flag">&#127760;</span><span class="lang-label" id="current-lang-label">ES</span>      </button>      <div class="lang-dropdown" id="lang-dropdown" role="menu">        <button type="button" class="lang-option" role="menuitem" data-lang="es" onclick="onLanguageSelect('es')">Español</button>        <button type="button" class="lang-option" role="menuitem" data-lang="en" onclick="onLanguageSelect('en')">English</button>      </div>    </div>    <div class="hdr-brand">      <div><span class="hdr-brand-text">Lionsystems</span>      <span class="hdr-brand-sub">Prueba gratis &middot; Plan Pro</span></div>    </div>    <a href="/precios.html" class="hdr-pricing-link" style="color:var(--tx3);font-size:.75rem;text-decoration:none;white-space:nowrap;"><span class="fw-lang-es">Precios</span><span class="fw-lang-en">Pricing</span></a>  </div>
 </header>
 <div class="welcome-banner" id="welcome-banner">
   <span class="wb-lead fw-lang-es">&#128640; Bienvenido a AI-SDLC Pro</span>
@@ -12458,12 +12458,12 @@ Output:
 <div class="modal-overlay" id="register-wall-modal" role="dialog" aria-modal="true" aria-labelledby="register-wall-title">
   <div class="modal-box">
     <div class="modal-hdr">
-      <h2 id="register-wall-title"><span class="fw-lang-es">¡Ya copiaste 2 prompts!</span><span class="fw-lang-en">You’ve copied 2 prompts!</span></h2>
+      <h2 id="register-wall-title"><span class="fw-lang-es">¡Ya copiaste 10 prompts!</span><span class="fw-lang-en">You’ve copied 10 prompts!</span></h2>
       <button class="modal-close-btn" onclick="closeRegisterWall()" aria-label="Cerrar / Close">&#x2715;</button>
     </div>
     <div class="modal-body wall-modal-body">
-      <p class="fw-lang-es">Regístrate gratis con GitHub para seguir usando la biblioteca completa — 1 mes de acceso sin límite.</p>
-      <p class="fw-lang-en">Sign up free with GitHub to keep using the full library — 1 month of unlimited access.</p>
+      <p class="fw-lang-es">Regístrate gratis con GitHub para seguir usando la biblioteca completa — 1 semana de acceso sin límite.</p>
+      <p class="fw-lang-en">Sign up free with GitHub to keep using the full library — 1 week of unlimited access.</p>
       <button class="auth-btn" onclick="closeRegisterWall();signInWithGitHub();"><svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" style="flex-shrink:0"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span class="fw-lang-es">Iniciar sesión con GitHub</span><span class="fw-lang-en">Sign in with GitHub</span></button>
     </div>
   </div>
@@ -12471,12 +12471,12 @@ Output:
 <div class="modal-overlay" id="feedback-wall-modal" role="dialog" aria-modal="true" aria-labelledby="feedback-wall-title">
   <div class="modal-box">
     <div class="modal-hdr">
-      <h2 id="feedback-wall-title"><span class="fw-lang-es">Tu mes de acceso expiró</span><span class="fw-lang-en">Your access month expired</span></h2>
+      <h2 id="feedback-wall-title"><span class="fw-lang-es">Tu semana de acceso expiró</span><span class="fw-lang-en">Your access week expired</span></h2>
       <button class="modal-close-btn" onclick="closeFeedbackWall()" aria-label="Cerrar / Close">&#x2715;</button>
     </div>
     <div class="modal-body wall-modal-body">
-      <p class="fw-lang-es">Cuéntanos qué tal te fue — al enviar, renuevas otro mes al instante.</p>
-      <p class="fw-lang-en">Tell us how it went — submitting renews another month instantly.</p>
+      <p class="fw-lang-es">Cuéntanos qué tal te fue — al enviar, renuevas otra semana al instante.</p>
+      <p class="fw-lang-en">Tell us how it went — submitting renews another week instantly.</p>
       <div class="fb-stars" id="fb-stars" role="radiogroup" aria-label="Calificación de 1 a 5 / Rating from 1 to 5">
         <button type="button" class="fb-star" role="radio" aria-checked="false" data-value="1" onclick="setFbRating(1)" aria-label="1 / 5">★</button>
         <button type="button" class="fb-star" role="radio" aria-checked="false" data-value="2" onclick="setFbRating(2)" aria-label="2 / 5">★</button>
@@ -12485,7 +12485,7 @@ Output:
         <button type="button" class="fb-star" role="radio" aria-checked="false" data-value="5" onclick="setFbRating(5)" aria-label="5 / 5">★</button>
       </div>
       <textarea id="fb-comments" class="fb-textarea" aria-label="Comentario / Comment"></textarea>
-      <button class="fb-submit-btn" onclick="submitFeedbackWall()"><span class="fw-lang-es">Enviar y renovar 1 mes</span><span class="fw-lang-en">Submit and renew 1 month</span></button>
+      <button class="fb-submit-btn" onclick="submitFeedbackWall()"><span class="fw-lang-es">Enviar y renovar 1 semana</span><span class="fw-lang-en">Submit and renew 1 week</span></button>
     </div>
   </div>
 </div>
@@ -12961,12 +12961,13 @@ function deleteProjectFromCloud(id) {
 /* ══════════  MURO DE REGISTRO / PRUEBA / FEEDBACK  ══════════
    Ver docs/trial-gate-setup.md y supabase/trial_gate.sql. Único punto de
    verificación: checkCopyGate(), invocado desde copyResolvedText() antes
-   de escribir al portapapeles (doCopy). Anónimo: 2 copias gratis contadas
-   por IP en Supabase (check_anon_usage). Con sesión: 1 mes de prueba
-   (check_trial_status); al vencer, se exige enviar feedback para renovar
-   (submit_feedback_and_renew). Fail-open ante cualquier error de red o SDK
-   aún no cargado -- nunca se bloquea a un usuario real por una falla
-   transitoria (decisión de diseño, ver docs/trial-gate-setup.md). */
+   de escribir al portapapeles (doCopy). Anónimo: 10 copias gratis contadas
+   por IP en Supabase (check_anon_usage), acumuladas de por vida. Con sesión:
+   1 semana de prueba (check_trial_status); al vencer, se exige enviar
+   feedback para renovar otra semana (submit_feedback_and_renew). Fail-open
+   ante cualquier error de red o SDK aún no cargado -- nunca se bloquea a un
+   usuario real por una falla transitoria (decisión de diseño, ver
+   docs/trial-gate-setup.md). */
 
 function checkCopyGate() {
   if (!isSupabaseConfigured()) return Promise.resolve({ allowed: true });
@@ -12989,6 +12990,20 @@ function checkCopyGate() {
     if (!res || res.error || !res.data) return { allowed: true };
     return res.data.allowed ? { allowed: true } : { allowed: false, reason: 'anon_limit' };
   }).catch(function() { return { allowed: true }; });
+}
+
+// Indicador de administrador (issue #7 Fase 2): registra qué prompts se
+// copian más, sin afectar el gate ni el copiado en sí. Fire-and-forget a
+// propósito -- si track_prompt_copy() falla o tarda, la copia ya sucedió y
+// no debe verse afectada (mismo principio fail-open del resto del muro).
+function trackPromptCopy(promptIds) {
+  if (!promptIds || !promptIds.length) return;
+  if (!isSupabaseConfigured()) return;
+  var client = getSupabaseClient();
+  if (!client) return;
+  try {
+    client.rpc('track_prompt_copy', { p_prompt_ids: promptIds }).then(function() {}).catch(function() {});
+  } catch (e) {}
 }
 
 function openRegisterWall() {
@@ -13061,7 +13076,7 @@ function submitFeedbackWall() {
     _fbRating = 0;
     setFbRating(0);
     if (ta) ta.value = '';
-    showToast(lang === 'en' ? 'Thanks! Renewed for 1 month' : '¡Gracias! Renovado por 1 mes', 'success');
+    showToast(lang === 'en' ? 'Thanks! Renewed for 1 week' : '¡Gracias! Renovado por 1 semana', 'success');
   }).catch(function() {
     showToast(lang === 'en' ? 'Could not submit — try again' : 'No se pudo enviar — intenta de nuevo', 'warn');
   });
@@ -14107,12 +14122,13 @@ function copyResolvedText(resolved, btn) {
         ? list.length + ' required placeholder(s) still unfilled: ' + list.slice(0, 3).join(', ') + (list.length > 3 ? '…' : '')
         : list.length + ' placeholder(s) obligatorios sin llenar: ' + list.slice(0, 3).join(', ') + (list.length > 3 ? '…' : '');
       var actionLabel = lang === 'en' ? 'Copy anyway' : 'Copiar de todas formas';
-      showToast(msg, 'warn', actionLabel, function() { doCopy(resolved.text, btn); });
+      showToast(msg, 'warn', actionLabel, function() { trackPromptCopy(resolved.promptIds); doCopy(resolved.text, btn); });
       return;
     }
     if (resolved.unresolvedOptional && resolved.unresolvedOptional.length) {
       showUnresolvedWarning(resolved);
     }
+    trackPromptCopy(resolved.promptIds);
     doCopy(resolved.text, btn);
   });
 }
@@ -14208,19 +14224,20 @@ function copyPromptLang(pid, lang, btn) {
   var raw = RAW_PROMPTS[codeId] || codeEl.textContent;
   var resolved = resolvePrompt(raw);
   var text = resolved.text;
-  
+  var promptIds = [pid];
+
   if (pid !== 'fw') {
     var fwId = 'code-fw-' + lang;
     var fwEl = document.getElementById(fwId) || document.getElementById('code-fw');
     if (fwEl) {
       var fwRaw = RAW_PROMPTS[fwId] || fwEl.textContent;
       var fwResolved = resolvePrompt(fwRaw);
-      if (fwResolved.text) text = fwResolved.text + '\n\n---\n\n' + text;
+      if (fwResolved.text) { text = fwResolved.text + '\n\n---\n\n' + text; promptIds.push('fw'); }
       resolved.unresolvedRequired = fwResolved.unresolvedRequired.concat(resolved.unresolvedRequired);
       resolved.unresolvedOptional = fwResolved.unresolvedOptional.concat(resolved.unresolvedOptional);
     }
   }
-  copyResolvedText({ text: text, unresolvedRequired: resolved.unresolvedRequired, unresolvedOptional: resolved.unresolvedOptional }, btn);
+  copyResolvedText({ text: text, unresolvedRequired: resolved.unresolvedRequired, unresolvedOptional: resolved.unresolvedOptional, promptIds: promptIds }, btn);
 }
 
 function openInfoLang(pid, lang) {
@@ -14268,6 +14285,7 @@ function openInfoLang(pid, lang) {
         (function(formula, b) {
           b.addEventListener('click', function() {
             var result = resolvePrompt(formula);
+            result.promptIds = [pid];
             copyResolvedText(result, b);
           });
         })(f, btn);
@@ -14490,10 +14508,12 @@ function copySelected(btn) {
   // obtener prompts en orden DOM (orden de proceso)
   var aggregate = { unresolvedRequired: [], unresolvedOptional: [] };
   var seenPids = {};
+  var promptIds = [];
   var parts = checks.map(function(cb) {
     var pid = cb.dataset.pid;
     if (seenPids[pid]) return '';
     seenPids[pid] = true;
+    promptIds.push(pid);
     var codeId = 'code-' + pid + '-' + lang;
     var el = document.getElementById(codeId);
     if (!el) return '';
@@ -14506,8 +14526,9 @@ function copySelected(btn) {
   var fwResult = resolvePrompt(RAW_PROMPTS[fwId] || getFwText());
   aggregate.unresolvedRequired = aggregate.unresolvedRequired.concat(fwResult.unresolvedRequired);
   aggregate.unresolvedOptional = aggregate.unresolvedOptional.concat(fwResult.unresolvedOptional);
+  if (fwResult.text) promptIds.push('fw');
   var text = (fwResult.text ? fwResult.text + '\n\n---\n\n' : '') + parts.join('\n\n---\n\n');
-  copyResolvedText({ text: text, unresolvedRequired: aggregate.unresolvedRequired, unresolvedOptional: aggregate.unresolvedOptional }, btn);
+  copyResolvedText({ text: text, unresolvedRequired: aggregate.unresolvedRequired, unresolvedOptional: aggregate.unresolvedOptional, promptIds: promptIds }, btn);
 }
 
 /* ═══════════════════  SEARCH / FILTER  ═════════════════════════ */

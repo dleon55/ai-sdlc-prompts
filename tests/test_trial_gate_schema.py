@@ -75,10 +75,20 @@ def test_write_functions_are_security_definer():
         assert fn_pattern.search(SCHEMA), f"La función {fn} no está marcada 'security definer'"
 
 
-def test_trial_renewal_uses_one_month_interval():
-    """Documenta explícitamente la decisión de diseño: 1 mes calendario de
-    Postgres, no 30 días fijos (04-01 §2)."""
-    assert "interval '1 month'" in SCHEMA
+def test_trial_renewal_uses_one_week_interval():
+    """Documenta explícitamente la decisión de diseño (ajuste de sprint,
+    04-01/05-01): prueba semanal renovable, no mensual -- ciclo de
+    retroalimentación más frecuente durante el pilotaje. No debe quedar
+    ningún 'interval '1 month'' residual en el archivo vigente."""
+    assert "interval '1 week'" in SCHEMA
+    assert "interval '1 month'" not in SCHEMA
+
+
+def test_anon_free_limit_is_ten_not_two():
+    """Documenta el ajuste de sprint: 10 copias gratis acumuladas de por
+    vida por IP (antes 2), decidido explícitamente por el negocio para dar
+    más "prueba de sabor" antes del muro de registro."""
+    assert "free_limit constant int := 10;" in SCHEMA
 
 
 def test_grants_are_scoped_to_the_correct_role():
