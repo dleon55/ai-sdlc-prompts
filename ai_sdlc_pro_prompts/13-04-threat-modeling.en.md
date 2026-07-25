@@ -24,7 +24,7 @@ Prompt to perform threat modeling of a system, component, or feature before or d
 
 ---
 
-## Required prior context
+## Mandatory previous context
 
 > Include the block from `00-framework.md` before this prompt.
 > Attach the solution design (`04-01`) or use cases (`04-03`) if available.
@@ -32,7 +32,7 @@ Prompt to perform threat modeling of a system, component, or feature before or d
 
 ---
 
-## Full prompt
+## Complete prompt
 
 ```text
 Objective:

@@ -24,14 +24,14 @@ Prompt to verify that required security controls have been applied in each phase
 
 ---
 
-## Required prior context
+## Mandatory previous context
 
 > Include the block from `00-framework.md` before this prompt.
 > Attach available relevant results: `13-01` (SAST), `13-02` (SCA), `13-04` (Threat Modeling).
 
 ---
 
-## Full prompt
+## Complete prompt
 
 ```text
 Objective:

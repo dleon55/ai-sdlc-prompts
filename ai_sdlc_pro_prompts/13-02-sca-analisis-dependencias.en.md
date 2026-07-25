@@ -24,14 +24,14 @@ Prompt to analyze third-party dependencies of the project and identify known vul
 
 ---
 
-## Required prior context
+## Mandatory previous context
 
 > Include the block from `00-framework.md` before this prompt.
 > If there are findings from `13-07` (CVE Management), attach it to correlate with the current triage state.
 
 ---
 
-## Full prompt
+## Complete prompt
 
 ```text
 Objective:

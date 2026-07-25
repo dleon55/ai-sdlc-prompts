@@ -24,13 +24,13 @@ Prompt to detect and document the active test stack in the repository. Produces 
 
 ---
 
-## Required prior context
+## Mandatory previous context
 
 > Include the block from `00-framework.md` before this prompt.
 
 ---
 
-## Full prompt
+## Complete prompt
 
 ```text
 Objective:
