@@ -238,6 +238,8 @@ jobs:
           scp -P "$P" -i ~/.ssh/gcp_key -o BatchMode=yes \
               dist/index.html "${U}@${H}:/home/${U}/index.html.new"
           scp -P "$P" -i ~/.ssh/gcp_key -o BatchMode=yes \
+              dist/precios.html "${U}@${H}:/home/${U}/precios.html.new"
+          scp -P "$P" -i ~/.ssh/gcp_key -o BatchMode=yes \
               dist/robots.txt "${U}@${H}:/home/${U}/robots.txt.new"
           scp -P "$P" -i ~/.ssh/gcp_key -o BatchMode=yes \
               dist/sitemap.xml "${U}@${H}:/home/${U}/sitemap.xml.new"
@@ -251,11 +253,12 @@ jobs:
         run: |
           CMD="set -e"
           CMD="${CMD}; sudo cp /home/${U}/index.html.new ${D}/index.html"
+          CMD="${CMD}; sudo cp /home/${U}/precios.html.new ${D}/precios.html"
           CMD="${CMD}; sudo cp /home/${U}/robots.txt.new ${D}/robots.txt"
           CMD="${CMD}; sudo cp /home/${U}/sitemap.xml.new ${D}/sitemap.xml"
-          CMD="${CMD}; sudo chown www-data:www-data ${D}/index.html ${D}/robots.txt ${D}/sitemap.xml"
-          CMD="${CMD}; sudo chmod 644 ${D}/index.html ${D}/robots.txt ${D}/sitemap.xml"
-          CMD="${CMD}; rm -f /home/${U}/index.html.new /home/${U}/robots.txt.new /home/${U}/sitemap.xml.new"
+          CMD="${CMD}; sudo chown www-data:www-data ${D}/index.html ${D}/precios.html ${D}/robots.txt ${D}/sitemap.xml"
+          CMD="${CMD}; sudo chmod 644 ${D}/index.html ${D}/precios.html ${D}/robots.txt ${D}/sitemap.xml"
+          CMD="${CMD}; rm -f /home/${U}/index.html.new /home/${U}/precios.html.new /home/${U}/robots.txt.new /home/${U}/sitemap.xml.new"
           CMD="${CMD}; echo DEPLOY_PROD_OK"
           CMD="${CMD}; stat ${D}/index.html"
           ssh -p "$P" -i ~/.ssh/gcp_key -o BatchMode=yes "${U}@${H}" "$CMD"
