@@ -24,13 +24,13 @@ Prompt for defining, justifying, and documenting the **initial technology stack 
 
 ---
 
-## Required prior context
+## Mandatory previous context
 
 > Include the block from `00-framework.md` before this prompt.
 
 ---
 
-## Full prompt
+## Complete prompt
 
 ```text
 Objective:

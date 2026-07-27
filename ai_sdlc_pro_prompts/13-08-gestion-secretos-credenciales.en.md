@@ -24,14 +24,14 @@ Prompt to audit, classify, and remediate secrets management in source code, infr
 
 ---
 
-## Required prior context
+## Mandatory previous context
 
 > Include the block from `00-framework.md` before this prompt.
 > If a result from `13-03` (Secure SDLC review) exists, use it to identify prior secrets management findings.
 
 ---
 
-## Full prompt
+## Complete prompt
 
 ```text
 Objective:

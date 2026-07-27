@@ -24,7 +24,7 @@ Prompt to design and execute dynamic application security testing (DAST) against
 
 ---
 
-## Required prior context
+## Mandatory previous context
 
 > Include the block from `00-framework.md` before this prompt.
 > Attach results from `13-04` (Threat Modeling) to use the identified attack surface as a testing guide.
@@ -32,7 +32,7 @@ Prompt to design and execute dynamic application security testing (DAST) against
 
 ---
 
-## Full prompt
+## Complete prompt
 
 ```text
 Mandatory preconditions — verify each one before continuing. If any is missing, STOP and request it; do not run any active test (steps 3 onward) without all of them confirmed:

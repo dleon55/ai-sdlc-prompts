@@ -24,7 +24,7 @@ Prompt to diagnose, analyze, and remediate performance problems in production: i
 
 ---
 
-## Required prior context
+## Mandatory previous context
 
 > Include the block from `00-framework.md` before this prompt.
 > Attach metrics, traces, or logs from the degradation period (result from `10-04` or Grafana/Datadog/CloudWatch export).
@@ -32,7 +32,7 @@ Prompt to diagnose, analyze, and remediate performance problems in production: i
 
 ---
 
-## Full prompt
+## Complete prompt
 
 ```text
 Objective:

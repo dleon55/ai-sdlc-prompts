@@ -24,14 +24,14 @@ Prompt to perform triage, classification, prioritization, and full lifecycle man
 
 ---
 
-## Required prior context
+## Mandatory previous context
 
 > Include the block from `00-framework.md` before this prompt.
 > Attach security tool results: reports from `13-01`, `13-02`, `13-05`, `13-06`, or automated scanner outputs.
 
 ---
 
-## Full prompt
+## Complete prompt
 
 ```text
 Objective:

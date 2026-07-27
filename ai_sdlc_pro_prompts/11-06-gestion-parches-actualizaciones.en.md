@@ -24,14 +24,14 @@ Prompt to plan and execute the complete patch management cycle: dependency and c
 
 ---
 
-## Required prior context
+## Mandatory previous context
 
 > Include the block from `00-framework.md` before this prompt.
 > If a result from `13-02` (SCA) or `13-07` (Vulnerability Management) exists, attach it to prioritize security patches.
 
 ---
 
-## Full prompt
+## Complete prompt
 
 ```text
 Objective:

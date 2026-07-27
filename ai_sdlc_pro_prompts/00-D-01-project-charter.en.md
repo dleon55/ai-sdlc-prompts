@@ -24,13 +24,13 @@ Prompt for generating the **Project Charter** of a new project: the foundational
 
 ---
 
-## Required prior context
+## Mandatory previous context
 
 > Include the block from `00-framework.md` before this prompt.
 
 ---
 
-## Full prompt
+## Complete prompt
 
 ```text
 Objective:

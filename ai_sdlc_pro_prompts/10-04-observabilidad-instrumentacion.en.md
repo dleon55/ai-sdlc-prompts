@@ -24,14 +24,14 @@ Prompt to design and implement an application observability strategy: metrics, s
 
 ---
 
-## Required prior context
+## Mandatory previous context
 
 > Include the block from `00-framework.md` before this prompt.
 > If a result from `13-04` (Threat Modeling) exists, attach it to identify critical components requiring greater observability coverage.
 
 ---
 
-## Full prompt
+## Complete prompt
 
 ```text
 Objective:
