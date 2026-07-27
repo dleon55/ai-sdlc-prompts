@@ -4142,9 +4142,22 @@ def build_precios_page():
     return (
         '<!DOCTYPE html>\n<html lang="es" data-lang="es">\n<head>\n'
         '<meta charset="UTF-8">\n'
+        # Detección de idioma síncrona, ANTES de cualquier CSS/contenido: si
+        # este script corriera al final del <body> (como en la primera
+        # versión), toda la página se pintaría primero en español y recién
+        # al terminar de cargar cambiaría al idioma real del visitante -- un
+        # parpadeo visible que un visitante angloparlante percibe como que
+        # el idioma "no se respeta". Corriendo aquí, el <html lang="..">
+        # correcto ya está puesto antes del primer pintado.
+        '<script>(function(){'
+        'var k="AI_SDLC_language",l;'
+        'try{var s=localStorage.getItem(k);if(s==="es"||s==="en")l=s;}catch(e){}'
+        'if(!l){var n=((navigator.language||"")+"").split("-")[0].toLowerCase();l=(n==="en")?"en":"es";}'
+        'document.documentElement.lang=l;document.documentElement.setAttribute("data-lang",l);'
+        '})();</script>\n'
         '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n'
         '<title>Precios — AI-SDLC Pro / Pricing — AI-SDLC Pro</title>\n'
-        '<meta name="description" content="Periodo de prueba vigente de AI-SDLC Pro: 10 copias gratis, 1 semana con registro, renovable con feedback. Los planes de pago aun no estan definidos.">\n'
+        '<meta name="description" content="Periodo de prueba vigente de AI-SDLC Pro: 10 copias gratis, 1 semana con registro, renovable con feedback. Plan de pago introductorio: 1 USD al mes.">\n'
         '<meta name="robots" content="index,follow">\n'
         '<meta name="theme-color" content="#0f172a">\n'
         '<link rel="canonical" href="https://prompts.lionsystems.com.mx/precios.html">\n'
@@ -4224,13 +4237,14 @@ def build_precios_page():
         '  </div>\n'
         '  <div class="px-card px-future">\n'
         '    <h2><span class="px-badge fw-lang-es">Próximamente</span><span class="px-badge fw-lang-en">Coming soon</span>'
-        '<span class="fw-lang-es">&nbsp;Planes de pago</span><span class="fw-lang-en">&nbsp;Paid plans</span></h2>\n'
-        '    <p class="fw-lang-es">Aún no hemos definido precio ni fecha para los planes Individual y Equipo — '
-        'los vamos a decidir con datos reales de este piloto (qué tanto se usa la herramienta y qué prompts '
-        'importan más), no a ciegas.</p>\n'
-        '    <p class="fw-lang-en">We haven’t set a price or date yet for the Individual and Team plans — '
-        'we’ll decide them using real data from this pilot (how much the tool gets used and which prompts '
-        'matter most), not a guess.</p>\n'
+        '<span class="fw-lang-es">&nbsp;Plan de pago — $1 USD/mes</span>'
+        '<span class="fw-lang-en">&nbsp;Paid plan — $1 USD/month</span></h2>\n'
+        '    <p class="fw-lang-es">Precio introductorio del piloto: <strong>$1 USD al mes</strong>. Los tiers '
+        'definitivos (Individual y Equipo) se van a decidir con datos reales de este piloto (qué tanto se usa '
+        'la herramienta y qué prompts importan más), no a ciegas — este precio puede ajustarse.</p>\n'
+        '    <p class="fw-lang-en">Pilot introductory price: <strong>$1 USD per month</strong>. The final tiers '
+        '(Individual and Team) will be decided using real data from this pilot (how much the tool gets used and '
+        'which prompts matter most), not a guess — this price may change.</p>\n'
         '  </div>\n'
         '  <a class="px-cta fw-lang-es" href="/">Volver a la biblioteca de prompts</a>\n'
         '  <a class="px-cta fw-lang-en" href="/">Back to the prompt library</a>\n'
@@ -4240,18 +4254,18 @@ def build_precios_page():
         '<script>\n'
         'window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}'
         'gtag("js",new Date());gtag("config","G-C5JKYNZ62F");\n'
+        # La detección inicial ya corrió arriba en <head> (evita el
+        # parpadeo de idioma); aquí solo queda el botón para cambiarlo
+        # manualmente, que sí debe persistir la elección explícita.
         'var PX_I18N_KEY="AI_SDLC_language";\n'
-        'function pxCurrentLang(){\n'
-        '  try{var s=localStorage.getItem(PX_I18N_KEY);if(s==="es"||s==="en")return s;}catch(e){}\n'
-        '  var n=((navigator.language||"")+"").split("-")[0].toLowerCase();\n'
-        '  return n==="en"?"en":"es";\n'
-        '}\n'
         'function pxSetLang(lang){\n'
         '  document.documentElement.lang=lang;document.documentElement.setAttribute("data-lang",lang);\n'
         '  try{localStorage.setItem(PX_I18N_KEY,lang);}catch(e){}\n'
         '}\n'
-        'function pxToggleLang(){pxSetLang(pxCurrentLang()==="es"?"en":"es");}\n'
-        'pxSetLang(pxCurrentLang());\n'
+        'function pxToggleLang(){\n'
+        '  var current=document.documentElement.getAttribute("data-lang")||"es";\n'
+        '  pxSetLang(current==="es"?"en":"es");\n'
+        '}\n'
         '</script>\n'
         '</body>\n</html>\n'
     )

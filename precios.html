@@ -2,9 +2,10 @@
 <html lang="es" data-lang="es">
 <head>
 <meta charset="UTF-8">
+<script>(function(){var k="AI_SDLC_language",l;try{var s=localStorage.getItem(k);if(s==="es"||s==="en")l=s;}catch(e){}if(!l){var n=((navigator.language||"")+"").split("-")[0].toLowerCase();l=(n==="en")?"en":"es";}document.documentElement.lang=l;document.documentElement.setAttribute("data-lang",l);})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Precios — AI-SDLC Pro / Pricing — AI-SDLC Pro</title>
-<meta name="description" content="Periodo de prueba vigente de AI-SDLC Pro: 10 copias gratis, 1 semana con registro, renovable con feedback. Los planes de pago aun no estan definidos.">
+<meta name="description" content="Periodo de prueba vigente de AI-SDLC Pro: 10 copias gratis, 1 semana con registro, renovable con feedback. Plan de pago introductorio: 1 USD al mes.">
 <meta name="robots" content="index,follow">
 <meta name="theme-color" content="#0f172a">
 <link rel="canonical" href="https://prompts.lionsystems.com.mx/precios.html">
@@ -70,9 +71,9 @@ h1{font-size:1.75rem;font-weight:700;margin-bottom:.5rem;}
     </ul>
   </div>
   <div class="px-card px-future">
-    <h2><span class="px-badge fw-lang-es">Próximamente</span><span class="px-badge fw-lang-en">Coming soon</span><span class="fw-lang-es">&nbsp;Planes de pago</span><span class="fw-lang-en">&nbsp;Paid plans</span></h2>
-    <p class="fw-lang-es">Aún no hemos definido precio ni fecha para los planes Individual y Equipo — los vamos a decidir con datos reales de este piloto (qué tanto se usa la herramienta y qué prompts importan más), no a ciegas.</p>
-    <p class="fw-lang-en">We haven’t set a price or date yet for the Individual and Team plans — we’ll decide them using real data from this pilot (how much the tool gets used and which prompts matter most), not a guess.</p>
+    <h2><span class="px-badge fw-lang-es">Próximamente</span><span class="px-badge fw-lang-en">Coming soon</span><span class="fw-lang-es">&nbsp;Plan de pago — $1 USD/mes</span><span class="fw-lang-en">&nbsp;Paid plan — $1 USD/month</span></h2>
+    <p class="fw-lang-es">Precio introductorio del piloto: <strong>$1 USD al mes</strong>. Los tiers definitivos (Individual y Equipo) se van a decidir con datos reales de este piloto (qué tanto se usa la herramienta y qué prompts importan más), no a ciegas — este precio puede ajustarse.</p>
+    <p class="fw-lang-en">Pilot introductory price: <strong>$1 USD per month</strong>. The final tiers (Individual and Team) will be decided using real data from this pilot (how much the tool gets used and which prompts matter most), not a guess — this price may change.</p>
   </div>
   <a class="px-cta fw-lang-es" href="/">Volver a la biblioteca de prompts</a>
   <a class="px-cta fw-lang-en" href="/">Back to the prompt library</a>
@@ -82,17 +83,14 @@ h1{font-size:1.75rem;font-weight:700;margin-bottom:.5rem;}
 <script>
 window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-C5JKYNZ62F");
 var PX_I18N_KEY="AI_SDLC_language";
-function pxCurrentLang(){
-  try{var s=localStorage.getItem(PX_I18N_KEY);if(s==="es"||s==="en")return s;}catch(e){}
-  var n=((navigator.language||"")+"").split("-")[0].toLowerCase();
-  return n==="en"?"en":"es";
-}
 function pxSetLang(lang){
   document.documentElement.lang=lang;document.documentElement.setAttribute("data-lang",lang);
   try{localStorage.setItem(PX_I18N_KEY,lang);}catch(e){}
 }
-function pxToggleLang(){pxSetLang(pxCurrentLang()==="es"?"en":"es");}
-pxSetLang(pxCurrentLang());
+function pxToggleLang(){
+  var current=document.documentElement.getAttribute("data-lang")||"es";
+  pxSetLang(current==="es"?"en":"es");
+}
 </script>
 </body>
 </html>
