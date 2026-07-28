@@ -1,0 +1,89 @@
+#!/usr/bin/env python3
+"""
+tests/test_subscriptions_schema.py — Contrato de regresión para
+supabase/subscriptions.sql
+
+Mismo riesgo central que user_trial en trial_gate.sql: subscriptions no
+debe tener ninguna política RLS que permita a un usuario escribir su
+propia fila. Si la tuviera, cualquiera podría auto-otorgarse
+status='active' desde la consola del navegador con el anon key público,
+sin haber pagado nada -- la única vía de escritura debe ser la Edge
+Function del webhook de Paddle (que usa la service role key).
+"""
+import re
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).parent.parent
+SCHEMA = (PROJECT_ROOT / "supabase" / "subscriptions.sql").read_text(encoding="utf-8")
+WEBHOOK_FN = (
+    PROJECT_ROOT / "supabase" / "functions" / "paddle-webhook" / "index.ts"
+).read_text(encoding="utf-8")
+
+
+def _policies_on_table(table):
+    pattern = re.compile(
+        r"create policy\s+\"[^\"]*\"\s+on\s+" + re.escape(table) + r"\s+for\s+(\w+)",
+        re.IGNORECASE,
+    )
+    return [m.group(1).lower() for m in pattern.finditer(SCHEMA)]
+
+
+def test_subscriptions_has_rls_enabled():
+    assert "alter table subscriptions enable row level security" in SCHEMA
+
+
+def test_subscriptions_has_no_client_write_policy():
+    """Negativo a propósito: solo 'select' es aceptable."""
+    policies = _policies_on_table("subscriptions")
+    assert policies, "subscriptions no tiene ninguna política RLS -- revisar RLS habilitado"
+    forbidden = {"update", "insert", "delete", "all"}
+    found_forbidden = forbidden.intersection(policies)
+    assert not found_forbidden, (
+        f"subscriptions tiene política(s) de {found_forbidden} para el cliente -- "
+        "esto permitiría a un usuario auto-otorgarse una suscripción activa sin pagar"
+    )
+    assert policies == ["select"], f"Se esperaba solo ['select'], se encontró {policies}"
+
+
+def test_check_trial_status_checks_subscription_before_trial():
+    """El check_trial_status() de subscriptions.sql (que reemplaza al de
+    trial_gate.sql) debe revisar la suscripción ANTES de aplicar el límite
+    de prueba gratuita -- si no, un usuario que ya pagó podría quedar
+    bloqueado por el muro de prueba vencida."""
+    match = re.search(
+        r"create (or replace )?function check_trial_status\(\)"
+        r"[\s\S]*?\$\$;",
+        SCHEMA,
+        re.IGNORECASE,
+    )
+    assert match, "No se encontró el check_trial_status() actualizado en subscriptions.sql"
+    body = match.group(0)
+    sub_check_pos = body.lower().find("from subscriptions")
+    trial_check_pos = body.lower().find("from user_trial")
+    assert sub_check_pos != -1, "no revisa la tabla subscriptions"
+    assert trial_check_pos != -1, "no revisa la tabla user_trial"
+    assert sub_check_pos < trial_check_pos, (
+        "debe revisar subscriptions ANTES que user_trial -- si no, un usuario "
+        "con suscripción activa pero prueba vencida quedaría bloqueado"
+    )
+
+
+def test_paddle_webhook_verifies_signature_before_parsing_payload():
+    """Vulnerabilidad a evitar: si la función procesara el payload antes de
+    verificar la firma HMAC, cualquiera podría mandar un POST falso
+    diciendo 'ya pagué' y auto-otorgarse acceso ilimitado sin pagar."""
+    sig_check_pos = WEBHOOK_FN.find("timingSafeEqual")
+    json_parse_pos = WEBHOOK_FN.find("JSON.parse(rawBody)")
+    assert sig_check_pos != -1, "no se encontró la verificación de firma"
+    assert json_parse_pos != -1, "no se encontró el parseo del payload"
+    assert sig_check_pos < json_parse_pos, (
+        "la verificación de firma debe ocurrir ANTES de parsear/usar el payload"
+    )
+
+
+def test_paddle_webhook_uses_service_role_not_anon_key():
+    """La Edge Function debe escribir con la service role key (bypassa
+    RLS por diseño, ya que subscriptions no tiene política de escritura de
+    cliente) -- si usara la anon key, ningún insert/update funcionaría."""
+    assert "SUPABASE_SERVICE_ROLE_KEY" in WEBHOOK_FN
+    assert "SUPABASE_ANON_KEY" not in WEBHOOK_FN

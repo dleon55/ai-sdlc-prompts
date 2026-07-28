@@ -179,6 +179,40 @@ jobs:
         run: npm test
 
 # ============================================================
+#  JOB 1D - SUPABASE EDGE FUNCTION (webhook de Paddle)
+#  Solo en push a main. Independiente de deploy-pages/deploy-gcp (no hay
+#  dependencia de orden entre desplegar el sitio estatico y la funcion).
+#  Secreto requerido en el environment 'production':
+#    SUPABASE_ACCESS_TOKEN -> token personal de Supabase (Account Settings
+#    > Access Tokens), NO la anon key ni la service role key.
+#  El secreto PADDLE_WEBHOOK_SECRET se configura UNA SOLA VEZ directo en
+#  Supabase (Edge Functions > paddle-webhook > Secrets), no en este
+#  workflow -- no cambia en cada deploy, y así nunca pasa por GitHub.
+# ============================================================
+  deploy-supabase-function:
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Deploy paddle-webhook Edge Function
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase functions deploy paddle-webhook \
+            --project-ref sqdzoreqfatpdainlhrm \
+            --no-verify-jwt
+
+# ============================================================
 #  JOB 2 - GITHUB PAGES  (staging / ambiente de pruebas)
 #  Solo en push a main; los PR no despliegan.
 # ============================================================

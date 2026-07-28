@@ -71,15 +71,19 @@ h1{font-size:1.75rem;font-weight:700;margin-bottom:.5rem;}
     </ul>
   </div>
   <div class="px-card px-future">
-    <h2><span class="px-badge fw-lang-es">Próximamente</span><span class="px-badge fw-lang-en">Coming soon</span><span class="fw-lang-es">&nbsp;Plan de pago — $1 USD/mes</span><span class="fw-lang-en">&nbsp;Paid plan — $1 USD/month</span></h2>
-    <p class="fw-lang-es">Precio introductorio del piloto: <strong>$1 USD al mes</strong>. Los tiers definitivos (Individual y Equipo) se van a decidir con datos reales de este piloto (qué tanto se usa la herramienta y qué prompts importan más), no a ciegas — este precio puede ajustarse.</p>
-    <p class="fw-lang-en">Pilot introductory price: <strong>$1 USD per month</strong>. The final tiers (Individual and Team) will be decided using real data from this pilot (how much the tool gets used and which prompts matter most), not a guess — this price may change.</p>
+    <h2><span class="px-badge fw-lang-es">Plan de pago</span><span class="px-badge fw-lang-en">Paid plan</span><span class="fw-lang-es">&nbsp;$1 USD/mes</span><span class="fw-lang-en">&nbsp;$1 USD/month</span></h2>
+    <p class="fw-lang-es">Precio introductorio del piloto: <strong>$1 USD al mes</strong>, acceso ilimitado sin muro de prueba. Los tiers definitivos (Individual y Equipo) se van a decidir con datos reales de este piloto (qué tanto se usa la herramienta y qué prompts importan más), no a ciegas — este precio puede ajustarse.</p>
+    <p class="fw-lang-en">Pilot introductory price: <strong>$1 USD per month</strong>, unlimited access with no trial wall. The final tiers (Individual and Team) will be decided using real data from this pilot (how much the tool gets used and which prompts matter most), not a guess — this price may change.</p>
+    <button id="px-subscribe-btn" class="px-cta" style="border:none;cursor:pointer;" onclick="pxStartCheckout()"><span class="fw-lang-es">Suscribirme</span><span class="fw-lang-en">Subscribe</span></button>
+    <p id="px-sub-status" class="px-foot" style="margin-top:.75rem;"></p>
   </div>
   <a class="px-cta fw-lang-es" href="/">Volver a la biblioteca de prompts</a>
   <a class="px-cta fw-lang-en" href="/">Back to the prompt library</a>
   <p class="px-foot fw-lang-es">¿Dudas o feedback? Escríbenos al enviar tu retroalimentación semanal desde la app.</p>
   <p class="px-foot fw-lang-en">Questions or feedback? Send it via the weekly feedback form in the app.</p>
 </main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 <script>
 window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-C5JKYNZ62F");
 var PX_I18N_KEY="AI_SDLC_language";
@@ -91,6 +95,53 @@ function pxToggleLang(){
   var current=document.documentElement.getAttribute("data-lang")||"es";
   pxSetLang(current==="es"?"en":"es");
 }
+
+var SUPABASE_URL="https://sqdzoreqfatpdainlhrm.supabase.co";
+var SUPABASE_ANON_KEY="sb_publishable_qLmbKA8tlIUdW4xzmB1Z-w_kN3ygt7j";
+var PADDLE_CLIENT_TOKEN="test_679f65fd7ded3bfb059cd4d67a4";
+var PADDLE_PRICE_ID="pri_01kymshm1eh9bqq049qkn3qk24";
+var PADDLE_ENVIRONMENT="sandbox";
+var _pxUser=null;
+function pxSetStatus(es,en){
+  var el=document.getElementById("px-sub-status");if(!el)return;
+  el.innerHTML="<span class=\"fw-lang-es\">"+es+"</span><span class=\"fw-lang-en\">"+en+"</span>";
+}
+function pxInitPaddle(){
+  if(PADDLE_CLIENT_TOKEN==="PENDIENTE_CONFIGURAR"||typeof Paddle==="undefined")return;
+  Paddle.Environment.set(PADDLE_ENVIRONMENT);
+  Paddle.Initialize({token:PADDLE_CLIENT_TOKEN});
+}
+function pxInitAuth(){
+  if(typeof supabase==="undefined")return;
+  var client=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+  client.auth.getSession().then(function(res){
+    _pxUser=(res&&res.data&&res.data.session)?res.data.session.user:null;
+    if(_pxUser){
+      client.rpc("check_trial_status").then(function(r){
+        if(r&&r.data&&r.data.subscribed){
+          var btn=document.getElementById("px-subscribe-btn");if(btn)btn.style.display="none";
+          pxSetStatus("Ya tienes acceso Pro activo — ¡gracias!","You already have active Pro access — thank you!");
+        }
+      }).catch(function(){});
+    }
+  }).catch(function(){});
+}
+function pxStartCheckout(){
+  if(PADDLE_CLIENT_TOKEN==="PENDIENTE_CONFIGURAR"){
+    pxSetStatus("El pago aún no está disponible — vuelve pronto.","Payment isn\u2019t available yet — check back soon.");
+    return;
+  }
+  if(!_pxUser){
+    pxSetStatus("Primero <a href=\"/\" style=\"color:inherit\">inicia sesión con GitHub</a> en la app.","First <a href=\"/\" style=\"color:inherit\">sign in with GitHub</a> in the app.");
+    return;
+  }
+  Paddle.Checkout.open({
+    items:[{priceId:PADDLE_PRICE_ID,quantity:1}],
+    customData:{user_id:_pxUser.id}
+  });
+}
+pxInitPaddle();
+pxInitAuth();
 </script>
 </body>
 </html>
