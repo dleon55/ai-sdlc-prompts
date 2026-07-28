@@ -64,7 +64,7 @@ def test_http_redirects_to_https():
     assert "return 301 https://$host$request_uri;" in CONF
 
 
-def test_csp_allows_paddle_checkout_script_api_and_frame():
+def test_csp_allows_paddle_checkout_script_style_api_and_frame():
     """Regresión: al integrar el checkout de Paddle en /precios.html (ver
     docs/paddle-integration.md) se agregó el <script src="https://cdn.paddle.com/...">
     en build.py, pero -- mismo bug exacto que el de Supabase -- se nos
@@ -72,11 +72,21 @@ def test_csp_allows_paddle_checkout_script_api_and_frame():
     hacía nada, sin ningún aviso visible para el usuario (solo en la
     consola del navegador). A diferencia de Supabase (que solo carga un
     script y hace fetch/XHR), el checkout de Paddle se abre como iframe --
-    sin frame-src también quedaría bloqueado aunque el script sí cargara."""
+    sin frame-src también quedaría bloqueado aunque el script sí cargara.
+
+    Segundo hallazgo real confirmado en producción (mismo despliegue):
+    Paddle carga su hoja de estilos desde un SUBDOMINIO DISTINTO al del
+    script en modo Sandbox (sandbox-cdn.paddle.com, no cdn.paddle.com) --
+    por eso se usa un comodín *.paddle.com en vez de listar un subdominio
+    exacto, que además puede diferir entre Sandbox y producción."""
     script_src = CSP_VALUE.split("script-src", 1)[1].split(";", 1)[0]
+    style_src = CSP_VALUE.split("style-src", 1)[1].split(";", 1)[0]
     connect_src = CSP_VALUE.split("connect-src", 1)[1].split(";", 1)[0]
-    assert "cdn.paddle.com" in script_src, (
-        "CSP script-src no permite cdn.paddle.com -- el SDK de Paddle no podría cargar"
+    assert "paddle.com" in script_src, (
+        "CSP script-src no permite paddle.com -- el SDK de Paddle no podría cargar"
+    )
+    assert "paddle.com" in style_src, (
+        "CSP style-src no permite paddle.com -- la hoja de estilos del checkout de Paddle quedaría bloqueada"
     )
     assert "paddle.com" in connect_src, (
         "CSP connect-src no permite paddle.com -- las llamadas del checkout a la API de Paddle quedarían bloqueadas"
