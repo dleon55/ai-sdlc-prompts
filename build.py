@@ -4316,6 +4316,16 @@ def build_precios_page():
         '    pxSetStatus("El pago aún no está disponible — vuelve pronto.","Payment isn\\u2019t available yet — check back soon.");\n'
         '    return;\n'
         '  }\n'
+        # Bug real corregido: si el CSP del servidor no permite
+        # cdn.paddle.com, el script nunca carga y "Paddle" queda
+        # indefinido -- sin este chequeo, el clic tronaba en silencio
+        # (ReferenceError solo visible en la consola) en vez de avisarle
+        # algo al usuario.
+        '  if(typeof Paddle==="undefined"){\n'
+        '    pxSetStatus("No se pudo cargar el pago -- intenta recargar la página.",'
+        '"Could not load payment -- try reloading the page.");\n'
+        '    return;\n'
+        '  }\n'
         '  if(!_pxUser){\n'
         '    pxSetStatus("Primero <a href=\\"/\\" style=\\"color:inherit\\">inicia sesión con GitHub</a> en la app.",'
         '"First <a href=\\"/\\" style=\\"color:inherit\\">sign in with GitHub</a> in the app.");\n'

@@ -131,6 +131,10 @@ function pxStartCheckout(){
     pxSetStatus("El pago aún no está disponible — vuelve pronto.","Payment isn\u2019t available yet — check back soon.");
     return;
   }
+  if(typeof Paddle==="undefined"){
+    pxSetStatus("No se pudo cargar el pago -- intenta recargar la página.","Could not load payment -- try reloading the page.");
+    return;
+  }
   if(!_pxUser){
     pxSetStatus("Primero <a href=\"/\" style=\"color:inherit\">inicia sesión con GitHub</a> en la app.","First <a href=\"/\" style=\"color:inherit\">sign in with GitHub</a> in the app.");
     return;
