@@ -4280,7 +4280,7 @@ def build_precios_page():
         # checkout roto -- solo avisa que el pago aún no está disponible.
         'var SUPABASE_URL="https://sqdzoreqfatpdainlhrm.supabase.co";\n'
         'var SUPABASE_ANON_KEY="sb_publishable_qLmbKA8tlIUdW4xzmB1Z-w_kN3ygt7j";\n'
-        'var PADDLE_CLIENT_TOKEN="PENDIENTE_CONFIGURAR";\n'
+        'var PADDLE_CLIENT_TOKEN="test_679f65fd7ded3bfb059cd4d67a4";\n'
         'var PADDLE_PRICE_ID="pri_01kymshm1eh9bqq049qkn3qk24";\n'
         'var PADDLE_ENVIRONMENT="sandbox";\n'
         # Sandbox mientras se prueba -- cambiar a "production" (y el
