@@ -575,6 +575,64 @@
       }
     },
     {
+      "id": "00-D-03-plan-trabajo-proyecto",
+      "section": "00",
+      "title": {
+        "es": "0-D.3 — Plan de trabajo del proyecto: cronograma, EDT y asignación de recursos",
+        "en": "0-D.3 — Project work plan: schedule, WBS, and resource allocation"
+      },
+      "contract": {
+        "es": {
+          "type": "diseño",
+          "expected_risk": "alto — el cronograma y la asignación de recursos resultantes condicionan compromisos de fecha ante el patrocinador y la carga de trabajo del equipo; una estimación optimista o una sobreasignación de recursos no detectada se descubre típicamente tarde, cuando ya es costosa de corregir",
+          "required_inputs": "Project Charter aprobado (`00-D-01`), alcance y entregables principales, equipo disponible (roles, capacidad, calendario), fecha límite o ventana objetivo si existe, dependencias externas conocidas (otros equipos, proveedores, aprobaciones)",
+          "allowed_tools": "ninguna de ejecución — el prompt produce un documento de planeación (EDT, cronograma, tabla de asignación); no crea issues, milestones ni eventos de calendario reales",
+          "permitted_autonomy": "A1 — Proponer (cronograma y asignación de recursos quedan marcados como propuesta hasta aprobación del patrocinador o equipo)",
+          "stop_criteria": "si la fecha límite declarada no es alcanzable con el equipo y alcance dados, no ajustar las estimaciones para que \"encajen\" — reportarlo explícitamente como conflicto con las opciones de trade-off; si falta información de capacidad del equipo, detener y solicitarla antes de asignar recursos",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada entregable de la EDT tiene estimación con método declarado, cada dependencia entre entregables está listada, la ruta crítica está identificada explícitamente, y cualquier sobreasignación de un recurso queda señalada con la fila y el recurso afectado",
+          "recommended_next_prompt": "`05-02-riesgos-implementacion` para profundizar en riesgos de ejecución del cronograma; `05-01-plan-implementacion` cuando cada entregable de la EDT entre a su fase de diseño/implementación individual",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "05-02-riesgos-implementacion",
+            "05-01-plan-implementacion"
+          ]
+        },
+        "en": {
+          "type": "design",
+          "expected_risk": "high — the resulting schedule and resource allocation condition date commitments to the sponsor and the team's workload; an optimistic estimate or an undetected resource overallocation is typically discovered late, when it's already expensive to fix",
+          "required_inputs": "approved Project Charter (`00-D-01`), scope and main deliverables, available team (roles, capacity, calendar), deadline or target window if it exists, known external dependencies (other teams, vendors, approvals)",
+          "allowed_tools": "none for execution — the prompt produces a planning document (WBS, schedule, allocation table); it does not create real issues, milestones, or calendar events",
+          "permitted_autonomy": "A1 — Propose (schedule and resource allocation remain marked as a proposal until approved by the sponsor or team)",
+          "stop_criteria": "if the declared deadline is not achievable with the given team and scope, do not adjust the estimates to \"make it fit\" — report it explicitly as a conflict with the trade-off options; if team capacity information is missing, stop and request it before allocating resources",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every WBS deliverable has an estimate with a declared method, every dependency between deliverables is listed, the critical path is explicitly identified, and any resource overallocation is flagged with the row and the affected resource",
+          "recommended_next_prompt": "`05-02-riesgos-implementacion` to go deeper into schedule-execution risks; `05-01-plan-implementacion` once each WBS deliverable enters its individual design/implementation phase",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "05-02-riesgos-implementacion",
+            "05-01-plan-implementacion"
+          ]
+        }
+      }
+    },
+    {
       "id": "01-01-arranque-comprension-repositorio",
       "section": "01",
       "title": {
@@ -1030,6 +1088,66 @@
           "recommended_next_prompt_ids": [
             "02-04-triage-backlog-github",
             "04-01-diseno-solucion"
+          ]
+        }
+      }
+    },
+    {
+      "id": "02-06-requerimientos-no-funcionales",
+      "section": "02",
+      "title": {
+        "es": "2.6 — Especificación de requerimientos no funcionales",
+        "en": "2.6 — Non-functional requirements specification"
+      },
+      "contract": {
+        "es": {
+          "type": "análisis",
+          "expected_risk": "medio — un RNF omitido o mal cuantificado (p. ej. \"debe ser rápido\" sin número) deja al diseño y al plan de pruebas sin un criterio verificable, propagando ambigüedad a `04-01`/`07-06`, aunque este prompt no ejecuta ni compromete nada por sí mismo",
+          "required_inputs": "contexto del sistema o cambio, requerimientos funcionales ya definidos (de `02-05`/`04-03`) si existen, restricciones de negocio conocidas (SLA contractual, compliance, presupuesto de infraestructura), arquitectura o stack tentativo si existe (`00-D-02`)",
+          "allowed_tools": "lectura de documentación y código existente — sin ejecución ni cambios",
+          "permitted_autonomy": "A0 — Analizar (catalogar RNF ya declarados o inferibles del contexto); A1 — Proponer (umbrales sugeridos cuando el negocio no los ha fijado, siempre marcados explícitamente como propuesta a validar)",
+          "stop_criteria": "si un RNF no puede expresarse con un umbral medible (número, unidad, condición de prueba), no lo declares como definido — regístralo como \"pendiente de cuantificar\" en vez de inventar una cifra",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada RNF numerado (RNF-XXX) declara categoría, umbral medible o \"pendiente de cuantificar\", método de verificación, y si es una restricción de negocio, de dónde proviene esa restricción",
+          "recommended_next_prompt": "`04-01-diseno-solucion` (los RNF alimentan las restricciones de diseño); `07-06-pruebas-performance-carga` para los RNF de rendimiento/carga",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "04-01-diseno-solucion",
+            "07-06-pruebas-performance-carga"
+          ]
+        },
+        "en": {
+          "type": "analysis",
+          "expected_risk": "medium — an omitted or poorly quantified NFR (e.g. \"must be fast\" with no number) leaves design and the test plan without a verifiable criterion, propagating ambiguity to `04-01`/`07-06`, although this prompt does not execute or commit anything by itself",
+          "required_inputs": "system or change context, functional requirements already defined (from `02-05`/`04-03`) if they exist, known business constraints (contractual SLA, compliance, infrastructure budget), tentative architecture or stack if it exists (`00-D-02`)",
+          "allowed_tools": "reading existing documentation and code — no execution or changes",
+          "permitted_autonomy": "A0 — Analyze (catalog NFRs already stated or inferable from context); A1 — Propose (suggested thresholds when the business hasn't set them, always explicitly marked as a proposal to validate)",
+          "stop_criteria": "if an NFR cannot be expressed with a measurable threshold (number, unit, test condition), do not declare it as defined — register it as \"pending quantification\" instead of inventing a figure",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "each numbered NFR (NFR-XXX) declares category, measurable threshold or \"pending quantification\", verification method, and if it's a business constraint, where that constraint comes from",
+          "recommended_next_prompt": "`04-01-diseno-solucion` (NFRs feed the design constraints); `07-06-pruebas-performance-carga` for performance/load NFRs",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "04-01-diseno-solucion",
+            "07-06-pruebas-performance-carga"
           ]
         }
       }

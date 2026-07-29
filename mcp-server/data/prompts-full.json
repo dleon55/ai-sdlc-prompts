@@ -1032,6 +1032,84 @@
       ]
     },
     {
+      "id": "00-D-03-plan-trabajo-proyecto",
+      "section": "00",
+      "title": {
+        "es": "0-D.3 — Plan de trabajo del proyecto: cronograma, EDT y asignación de recursos",
+        "en": "0-D.3 — Project work plan: schedule, WBS, and resource allocation"
+      },
+      "description": {
+        "es": "Prompt para elaborar el plan de trabajo de todo el proyecto: estructura de desglose del trabajo (EDT/WBS), estimación por fase o entregable, dependencias, cronograma con ruta crítica y asignación de recursos. Es el plan a nivel de proyecto completo — distinto de `05-01-plan-implementacion`, que planifica la ejecución de un cambio o feature ya diseñado dentro de un componente existente.\n\nCuándo usarlo: después de aprobar el Project Charter (`00-D-01`) y, si ya existe, el stack/arquitectura inicial (`00-D-02`) — antes de iniciar la ejecución del proyecto, para tener un cronograma y una asignación de recursos que el equipo o patrocinador pueda aprobar.",
+        "en": ""
+      },
+      "template": {
+        "es": "Objetivo:\nElabora el plan de trabajo completo del proyecto: estructura de desglose del trabajo (EDT/WBS), estimación, dependencias, cronograma con ruta crítica y asignación de recursos.\n\nEntradas:\n- Project Charter aprobado: [PEGAR O REFERENCIA A 00-D-01]\n- alcance y entregables principales: [LISTA O DESCRIPCIÓN]\n- equipo disponible: [ROLES, CAPACIDAD POR PERSONA (horas/semana), CALENDARIO/AUSENCIAS CONOCIDAS]\n- fecha límite o ventana objetivo: [FECHA O \"no declarada aún\"]\n- dependencias externas conocidas: [OTROS EQUIPOS, PROVEEDORES, APROBACIONES REQUERIDAS, O \"ninguna declarada\"]\n\nActividades:\n1. ESTRUCTURA DE DESGLOSE DEL TRABAJO (EDT/WBS)\n   Descompón el alcance en entregables y, dentro de cada entregable, en paquetes de trabajo lo bastante pequeños para estimar con confianza (regla general: ningún paquete debe exceder ~2 semanas de esfuerzo; si lo excede, descompónlo más). Cada paquete de trabajo debe tener un responsable único identificable (rol, no necesariamente persona nombrada).\n\n2. ESTIMACIÓN\n   Para cada paquete de trabajo, estima el esfuerzo con un método declarado explícitamente (analogía con trabajo similar previo, juicio experto, descomposición PERT de tres puntos, u otro) — nunca presentes una cifra sin indicar de dónde sale. Declara el nivel de confianza de cada estimación (alto/medio/bajo) según la información disponible al momento de estimar.\n\n3. DEPENDENCIAS\n   Identifica dependencias entre paquetes de trabajo (secuenciales, de recursos compartidos, externas) y clasifícalas por tipo. Señala explícitamente las dependencias externas (fuera del control directo del equipo) porque son las de mayor riesgo para el cronograma.\n\n4. CRONOGRAMA Y RUTA CRÍTICA\n   A partir de las estimaciones y dependencias, construye el cronograma y calcula la ruta crítica (la secuencia de paquetes de trabajo que determina la duración mínima del proyecto). Señala explícitamente cuánta holgura (slack) tiene cada paquete fuera de la ruta crítica.\n\n5. ASIGNACIÓN DE RECURSOS\n   Asigna cada paquete de trabajo a un rol o persona según la capacidad declarada. Detecta y señala explícitamente cualquier sobreasignación (un recurso comprometido más allá de su capacidad declarada en una misma ventana de tiempo) — no la resuelvas por tu cuenta reasignando o recortando alcance sin indicarlo como una decisión pendiente.\n\n6. VALIDACIÓN CONTRA FECHA LÍMITE\n   Si existe una fecha límite u objetivo declarado, compárala contra la fecha resultante del cronograma. Si el cronograma no alcanza la fecha, no comprimas las estimaciones para forzar que encaje — presenta las opciones reales de trade-off (reducir alcance, sumar recursos, extender fecha, aceptar el riesgo de comprimir sin margen) para que el patrocinador decida.\n\nRestricciones:\n- nunca ajustes una estimación a la baja únicamente para que el cronograma alcance una fecha límite declarada — si hay una brecha, repórtala explícitamente con las opciones de trade-off, no la ocultes comprimiendo números,\n- todo paquete de trabajo debe declarar el método de estimación usado y su nivel de confianza — una estimación sin método declarado se reporta como \"estimación no verificable\", no como cifra definitiva,\n- no asignes un recurso por encima de su capacidad declarada sin señalarlo explícitamente como sobreasignación — nunca lo dejes implícito en la tabla de asignación,\n- si falta información de capacidad del equipo o de alcance para poder planear con confianza, detente y solicita la información faltante en vez de asumir una capacidad o un alcance no declarados.\n\nSalida:\n0. Bloque JSON de metadatos (claves: status, work_package_count, critical_path_duration_days, overallocated_resources_count, confidence_score [0.0 a 1.0]).\n1. EDT/WBS: Entregable | Paquete de trabajo | Responsable (rol) | Estimación | Método de estimación | Confianza\n2. Dependencias: Paquete de trabajo | Depende de | Tipo de dependencia | Riesgo si se retrasa\n3. Cronograma con ruta crítica: Paquete de trabajo | Inicio | Fin | ¿En ruta crítica? | Holgura\n4. Asignación de recursos: Recurso (rol/persona) | Paquetes asignados | Carga total vs. capacidad | ¿Sobreasignado?\n5. Validación contra fecha límite: fecha resultante del cronograma, brecha contra la fecha objetivo (si existe), opciones de trade-off si hay brecha.\n6. Supuestos y vacíos de información pendientes de confirmar antes de aprobar el plan.",
+        "en": "Objective:\nBuild the complete project work plan: work breakdown structure (WBS), estimation, dependencies, schedule with critical path, and resource allocation.\n\nInputs:\n- approved Project Charter: [PASTE OR REFERENCE TO 00-D-01]\n- scope and main deliverables: [LIST OR DESCRIPTION]\n- available team: [ROLES, CAPACITY PER PERSON (hours/week), KNOWN CALENDAR/ABSENCES]\n- deadline or target window: [DATE OR \"not yet declared\"]\n- known external dependencies: [OTHER TEAMS, VENDORS, REQUIRED APPROVALS, OR \"none declared\"]\n\nActivities:\n1. WORK BREAKDOWN STRUCTURE (WBS)\n   Decompose the scope into deliverables and, within each deliverable, into work packages small enough to estimate with confidence (rule of thumb: no package should exceed ~2 weeks of effort; if it does, decompose it further). Each work package must have a single identifiable owner (role, not necessarily a named person).\n\n2. ESTIMATION\n   For each work package, estimate the effort with an explicitly declared method (analogy with similar prior work, expert judgment, three-point PERT decomposition, or other) — never present a figure without indicating where it comes from. Declare the confidence level of each estimate (high/medium/low) based on the information available at estimation time.\n\n3. DEPENDENCIES\n   Identify dependencies between work packages (sequential, shared-resource, external) and classify them by type. Explicitly flag external dependencies (outside the team's direct control) because they carry the highest schedule risk.\n\n4. SCHEDULE AND CRITICAL PATH\n   From the estimates and dependencies, build the schedule and calculate the critical path (the sequence of work packages that determines the project's minimum duration). Explicitly flag how much slack each package outside the critical path has.\n\n5. RESOURCE ALLOCATION\n   Assign each work package to a role or person according to declared capacity. Detect and explicitly flag any overallocation (a resource committed beyond its declared capacity within the same time window) — do not resolve it on your own by reassigning or cutting scope without flagging it as a pending decision.\n\n6. VALIDATION AGAINST THE DEADLINE\n   If a deadline or target exists, compare it against the date resulting from the schedule. If the schedule doesn't meet the date, do not compress the estimates to force a fit — present the real trade-off options (reduce scope, add resources, extend the date, accept the risk of compressing with no margin) for the sponsor to decide.\n\nConstraints:\n- never lower an estimate solely to make the schedule meet a declared deadline — if there's a gap, report it explicitly with the trade-off options, don't hide it by compressing numbers,\n- every work package must declare the estimation method used and its confidence level — an estimate with no declared method is reported as \"unverifiable estimate\", not as a definitive figure,\n- do not assign a resource above its declared capacity without explicitly flagging it as overallocation — never leave it implicit in the allocation table,\n- if team capacity or scope information is missing to plan with confidence, stop and request the missing information instead of assuming undeclared capacity or scope.\n\nOutput:\n0. JSON metadata block (keys: status, work_package_count, critical_path_duration_days, overallocated_resources_count, confidence_score [0.0 to 1.0]).\n1. WBS: Deliverable | Work package | Owner (role) | Estimate | Estimation method | Confidence\n2. Dependencies: Work package | Depends on | Dependency type | Risk if delayed\n3. Schedule with critical path: Work package | Start | End | On critical path? | Slack\n4. Resource allocation: Resource (role/person) | Assigned packages | Total load vs. capacity | Overallocated?\n5. Validation against the deadline: date resulting from the schedule, gap against the target date (if any), trade-off options if there's a gap.\n6. Assumptions and information gaps pending confirmation before approving the plan."
+      },
+      "formulas": {
+        "es": [
+          "Usa el prompt de plan de trabajo del proyecto y adáptalo a:\n- repositorio/proyecto: [NOMBRE O URL]\n- Project Charter: [REFERENCIA A 00-D-01]\n- alcance y entregables principales: [LISTA]\n- equipo disponible: [ROLES Y CAPACIDAD]\n- documentos a revisar: Project Charter, arquitectura inicial (00-D-02) si existe\n- objetivo puntual de salida: EDT, cronograma con ruta crítica y asignación de recursos\n- nivel de profundidad: alto"
+        ],
+        "en": [
+          "Use the project work plan prompt and adapt it to:\n- repository/project: [NAME OR URL]\n- Project Charter: [REFERENCE TO 00-D-01]\n- scope and main deliverables: [LIST]\n- available team: [ROLES AND CAPACITY]\n- documents to review: Project Charter, initial architecture (00-D-02) if it exists\n- specific output objective: WBS, schedule with critical path, and resource allocation\n- depth level: high"
+        ]
+      },
+      "contract": {
+        "es": {
+          "type": "diseño",
+          "expected_risk": "alto — el cronograma y la asignación de recursos resultantes condicionan compromisos de fecha ante el patrocinador y la carga de trabajo del equipo; una estimación optimista o una sobreasignación de recursos no detectada se descubre típicamente tarde, cuando ya es costosa de corregir",
+          "required_inputs": "Project Charter aprobado (`00-D-01`), alcance y entregables principales, equipo disponible (roles, capacidad, calendario), fecha límite o ventana objetivo si existe, dependencias externas conocidas (otros equipos, proveedores, aprobaciones)",
+          "allowed_tools": "ninguna de ejecución — el prompt produce un documento de planeación (EDT, cronograma, tabla de asignación); no crea issues, milestones ni eventos de calendario reales",
+          "permitted_autonomy": "A1 — Proponer (cronograma y asignación de recursos quedan marcados como propuesta hasta aprobación del patrocinador o equipo)",
+          "stop_criteria": "si la fecha límite declarada no es alcanzable con el equipo y alcance dados, no ajustar las estimaciones para que \"encajen\" — reportarlo explícitamente como conflicto con las opciones de trade-off; si falta información de capacidad del equipo, detener y solicitarla antes de asignar recursos",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada entregable de la EDT tiene estimación con método declarado, cada dependencia entre entregables está listada, la ruta crítica está identificada explícitamente, y cualquier sobreasignación de un recurso queda señalada con la fila y el recurso afectado",
+          "recommended_next_prompt": "`05-02-riesgos-implementacion` para profundizar en riesgos de ejecución del cronograma; `05-01-plan-implementacion` cuando cada entregable de la EDT entre a su fase de diseño/implementación individual",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "05-02-riesgos-implementacion",
+            "05-01-plan-implementacion"
+          ]
+        },
+        "en": {
+          "type": "design",
+          "expected_risk": "high — the resulting schedule and resource allocation condition date commitments to the sponsor and the team's workload; an optimistic estimate or an undetected resource overallocation is typically discovered late, when it's already expensive to fix",
+          "required_inputs": "approved Project Charter (`00-D-01`), scope and main deliverables, available team (roles, capacity, calendar), deadline or target window if it exists, known external dependencies (other teams, vendors, approvals)",
+          "allowed_tools": "none for execution — the prompt produces a planning document (WBS, schedule, allocation table); it does not create real issues, milestones, or calendar events",
+          "permitted_autonomy": "A1 — Propose (schedule and resource allocation remain marked as a proposal until approved by the sponsor or team)",
+          "stop_criteria": "if the declared deadline is not achievable with the given team and scope, do not adjust the estimates to \"make it fit\" — report it explicitly as a conflict with the trade-off options; if team capacity information is missing, stop and request it before allocating resources",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every WBS deliverable has an estimate with a declared method, every dependency between deliverables is listed, the critical path is explicitly identified, and any resource overallocation is flagged with the row and the affected resource",
+          "recommended_next_prompt": "`05-02-riesgos-implementacion` to go deeper into schedule-execution risks; `05-01-plan-implementacion` once each WBS deliverable enters its individual design/implementation phase",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "05-02-riesgos-implementacion",
+            "05-01-plan-implementacion"
+          ]
+        }
+      },
+      "recommended_next_prompt_ids": [
+        "05-02-riesgos-implementacion",
+        "05-01-plan-implementacion"
+      ]
+    },
+    {
       "id": "01-01-arranque-comprension-repositorio",
       "section": "01",
       "title": {
@@ -1650,6 +1728,86 @@
       "recommended_next_prompt_ids": [
         "02-04-triage-backlog-github",
         "04-01-diseno-solucion"
+      ]
+    },
+    {
+      "id": "02-06-requerimientos-no-funcionales",
+      "section": "02",
+      "title": {
+        "es": "2.6 — Especificación de requerimientos no funcionales",
+        "en": "2.6 — Non-functional requirements specification"
+      },
+      "description": {
+        "es": "Prompt para catalogar y documentar formalmente los requerimientos no funcionales (RNF) del sistema o del cambio: rendimiento, disponibilidad, escalabilidad, seguridad, usabilidad, mantenibilidad, portabilidad y compliance — cada uno numerado, con umbral medible y método de verificación. Complementa el catálogo de requerimientos funcionales que ya producen `02-05`/`04-03`, que no cubren esta categoría.\n\nCuándo usarlo: después de tener los requerimientos funcionales definidos (`02-05`) o la arquitectura tentativa (`00-D-02`), y antes del diseño de solución (`04-01`) — los RNF condicionan decisiones de diseño que son costosas de revertir si se descubren tarde.",
+        "en": ""
+      },
+      "template": {
+        "es": "Objetivo:\nCataloga y documenta formalmente los requerimientos no funcionales del sistema o del cambio, con umbral medible y método de verificación para cada uno.\n\nEntradas:\n- contexto del sistema o cambio: [DESCRIPCIÓN]\n- requerimientos funcionales ya definidos: [PEGAR O \"no definidos aún\"]\n- restricciones de negocio conocidas: [SLA contractual, compliance (GDPR/HIPAA/PCI/ISO), presupuesto de infraestructura, o \"ninguna declarada\"]\n- arquitectura o stack tentativo: [PEGAR O \"no definido aún\"]\n- categorías a priorizar: [ej. TODAS, o un subconjunto: rendimiento, disponibilidad, escalabilidad, seguridad, usabilidad, mantenibilidad, portabilidad, compliance]\n\nActividades:\n1. Para cada categoría de RNF aplicable (rendimiento, disponibilidad/confiabilidad, escalabilidad, seguridad, usabilidad/accesibilidad, mantenibilidad, portabilidad, compliance/regulatorio, observabilidad), determina si el contexto la hace relevante — omite categorías no aplicables con una línea explicando por qué, no las ignores en silencio.\n2. Para cada RNF relevante, define: identificador (RNF-XXX), categoría, descripción, umbral medible (número + unidad + condición), método de verificación (qué prueba o métrica lo confirma), prioridad (crítico/alto/medio/bajo), y origen (declarado por negocio / inferido de RF / inferido de compliance aplicable).\n3. Si un RNF no tiene un umbral que el negocio haya fijado, propone uno basado en estándares de la industria para el tipo de sistema, márcalo explícitamente como \"[UMBRAL PROPUESTO — validar con negocio]\", y justifica el número propuesto.\n4. Detecta conflictos entre RNF (ej. máxima seguridad vs. mínima fricción de UX, alta disponibilidad vs. presupuesto de infraestructura limitado) y decláralos explícitamente con las opciones de trade-off, sin resolver el conflicto por tu cuenta.\n5. Relaciona cada RNF con los requerimientos funcionales que restringe o condiciona, si existen RF ya definidos.\n\nRestricciones:\n- nunca declares un RNF como \"definido\" si solo tiene una descripción cualitativa sin umbral medible — repórtalo como pendiente de cuantificar,\n- distingue siempre un RNF declarado explícitamente por el negocio de uno que tú infieres o propones — nunca los presentes con el mismo nivel de certeza,\n- no inventes umbrales de compliance regulatorio (p. ej. cifras de una norma específica) sin poder citar la norma exacta — si no la conoces con certeza, márcalo como \"[VERIFICAR CONTRA LA NORMA APLICABLE]\",\n- no resuelvas conflictos entre RNF por tu cuenta (p. ej. eligiendo seguridad sobre UX) — repórtalos como decisión pendiente para el negocio o la arquitectura.\n\nSalida:\n0. Bloque JSON de metadatos (claves: status, nfr_count, categories_covered, unquantified_count, confidence_score [0.0 a 1.0]).\n1. Catálogo de RNF: ID | Categoría | Descripción | Umbral medible | Método de verificación | Prioridad | Origen\n2. RNF pendientes de cuantificar, con la razón de por qué no se pudo fijar un umbral.\n3. Conflictos detectados entre RNF: RNF en conflicto | Naturaleza del trade-off | Opciones | Decisión requerida de\n4. Relación RNF ↔ RF: qué requerimientos funcionales queda restringido por cada RNF crítico.\n5. Categorías omitidas y por qué.",
+        "en": "Objective:\nCatalog and formally document the system or change's non-functional requirements, with a measurable threshold and a verification method for each one.\n\nInputs:\n- system or change context: [DESCRIPTION]\n- functional requirements already defined: [PASTE OR \"not yet defined\"]\n- known business constraints: [contractual SLA, compliance (GDPR/HIPAA/PCI/ISO), infrastructure budget, or \"none declared\"]\n- tentative architecture or stack: [PASTE OR \"not yet defined\"]\n- categories to prioritize: [e.g. ALL, or a subset: performance, availability, scalability, security, usability, maintainability, portability, compliance]\n\nActivities:\n1. For each applicable NFR category (performance, availability/reliability, scalability, security, usability/accessibility, maintainability, portability, compliance/regulatory, observability), determine whether the context makes it relevant — omit non-applicable categories with a one-line explanation of why, do not silently ignore them.\n2. For each relevant NFR, define: identifier (NFR-XXX), category, description, measurable threshold (number + unit + condition), verification method (what test or metric confirms it), priority (critical/high/medium/low), and origin (declared by business / inferred from FR / inferred from applicable compliance).\n3. If an NFR has no threshold set by the business, propose one based on industry standards for this type of system, mark it explicitly as \"[PROPOSED THRESHOLD — validate with business]\", and justify the proposed figure.\n4. Detect conflicts between NFRs (e.g. maximum security vs. minimum UX friction, high availability vs. limited infrastructure budget) and declare them explicitly with the trade-off options, without resolving the conflict on your own.\n5. Relate each NFR to the functional requirements it constrains or conditions, if functional requirements are already defined.\n\nConstraints:\n- never declare an NFR as \"defined\" if it only has a qualitative description with no measurable threshold — report it as pending quantification,\n- always distinguish an NFR explicitly declared by the business from one you infer or propose — never present them with the same level of certainty,\n- do not invent regulatory compliance thresholds (e.g. figures from a specific standard) unless you can cite the exact standard — if you don't know it with certainty, mark it as \"[VERIFY AGAINST THE APPLICABLE STANDARD]\",\n- do not resolve conflicts between NFRs on your own (e.g. choosing security over UX) — report them as a pending decision for the business or the architecture.\n\nOutput:\n0. JSON metadata block (keys: status, nfr_count, categories_covered, unquantified_count, confidence_score [0.0 to 1.0]).\n1. NFR catalog: ID | Category | Description | Measurable threshold | Verification method | Priority | Origin\n2. NFRs pending quantification, with the reason a threshold could not be set.\n3. Conflicts detected between NFRs: Conflicting NFRs | Nature of the trade-off | Options | Decision required from\n4. NFR ↔ FR relationship: which functional requirements are constrained by each critical NFR.\n5. Categories omitted and why."
+      },
+      "formulas": {
+        "es": [
+          "Usa el prompt de requerimientos no funcionales y adáptalo a:\n- repositorio/proyecto: [NOMBRE O URL]\n- contexto del sistema o cambio: [DESCRIPCIÓN]\n- requerimientos funcionales ya definidos: [PEGAR O REFERENCIA]\n- documentos a revisar: Project Charter, arquitectura (00-D-02), compliance aplicable\n- objetivo puntual de salida: catálogo de RNF con umbrales medibles y método de verificación\n- nivel de profundidad: alto"
+        ],
+        "en": [
+          "Use the non-functional requirements prompt and adapt it to:\n- repository/project: [NAME OR URL]\n- system or change context: [DESCRIPTION]\n- functional requirements already defined: [PASTE OR REFERENCE]\n- documents to review: Project Charter, architecture (00-D-02), applicable compliance\n- specific output objective: NFR catalog with measurable thresholds and verification method\n- depth level: high"
+        ]
+      },
+      "contract": {
+        "es": {
+          "type": "análisis",
+          "expected_risk": "medio — un RNF omitido o mal cuantificado (p. ej. \"debe ser rápido\" sin número) deja al diseño y al plan de pruebas sin un criterio verificable, propagando ambigüedad a `04-01`/`07-06`, aunque este prompt no ejecuta ni compromete nada por sí mismo",
+          "required_inputs": "contexto del sistema o cambio, requerimientos funcionales ya definidos (de `02-05`/`04-03`) si existen, restricciones de negocio conocidas (SLA contractual, compliance, presupuesto de infraestructura), arquitectura o stack tentativo si existe (`00-D-02`)",
+          "allowed_tools": "lectura de documentación y código existente — sin ejecución ni cambios",
+          "permitted_autonomy": "A0 — Analizar (catalogar RNF ya declarados o inferibles del contexto); A1 — Proponer (umbrales sugeridos cuando el negocio no los ha fijado, siempre marcados explícitamente como propuesta a validar)",
+          "stop_criteria": "si un RNF no puede expresarse con un umbral medible (número, unidad, condición de prueba), no lo declares como definido — regístralo como \"pendiente de cuantificar\" en vez de inventar una cifra",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada RNF numerado (RNF-XXX) declara categoría, umbral medible o \"pendiente de cuantificar\", método de verificación, y si es una restricción de negocio, de dónde proviene esa restricción",
+          "recommended_next_prompt": "`04-01-diseno-solucion` (los RNF alimentan las restricciones de diseño); `07-06-pruebas-performance-carga` para los RNF de rendimiento/carga",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "04-01-diseno-solucion",
+            "07-06-pruebas-performance-carga"
+          ]
+        },
+        "en": {
+          "type": "analysis",
+          "expected_risk": "medium — an omitted or poorly quantified NFR (e.g. \"must be fast\" with no number) leaves design and the test plan without a verifiable criterion, propagating ambiguity to `04-01`/`07-06`, although this prompt does not execute or commit anything by itself",
+          "required_inputs": "system or change context, functional requirements already defined (from `02-05`/`04-03`) if they exist, known business constraints (contractual SLA, compliance, infrastructure budget), tentative architecture or stack if it exists (`00-D-02`)",
+          "allowed_tools": "reading existing documentation and code — no execution or changes",
+          "permitted_autonomy": "A0 — Analyze (catalog NFRs already stated or inferable from context); A1 — Propose (suggested thresholds when the business hasn't set them, always explicitly marked as a proposal to validate)",
+          "stop_criteria": "if an NFR cannot be expressed with a measurable threshold (number, unit, test condition), do not declare it as defined — register it as \"pending quantification\" instead of inventing a figure",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "each numbered NFR (NFR-XXX) declares category, measurable threshold or \"pending quantification\", verification method, and if it's a business constraint, where that constraint comes from",
+          "recommended_next_prompt": "`04-01-diseno-solucion` (NFRs feed the design constraints); `07-06-pruebas-performance-carga` for performance/load NFRs",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "04-01-diseno-solucion",
+            "07-06-pruebas-performance-carga"
+          ]
+        }
+      },
+      "recommended_next_prompt_ids": [
+        "04-01-diseno-solucion",
+        "07-06-pruebas-performance-carga"
       ]
     },
     {
