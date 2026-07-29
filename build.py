@@ -4280,19 +4280,39 @@ def build_precios_page():
         # checkout roto -- solo avisa que el pago aún no está disponible.
         'var SUPABASE_URL="https://sqdzoreqfatpdainlhrm.supabase.co";\n'
         'var SUPABASE_ANON_KEY="sb_publishable_qLmbKA8tlIUdW4xzmB1Z-w_kN3ygt7j";\n'
-        'var PADDLE_CLIENT_TOKEN="test_679f65fd7ded3bfb059cd4d67a4";\n'
-        'var PADDLE_PRICE_ID="pri_01kymshm1eh9bqq049qkn3qk24";\n'
-        'var PADDLE_ENVIRONMENT="sandbox";\n'
-        # Sandbox mientras se prueba -- cambiar a "production" (y el
-        # PADDLE_CLIENT_TOKEN y PADDLE_PRICE_ID de la cuenta productiva)
-        # antes de cobrar de verdad.
+        # ── PASAR A PRODUCCIÓN (cobro REAL) ──────────────────────────────
+        # Pasos, en orden:
+        #   1) En Paddle (modo Live), crea el producto/precio de $1 USD/mes y
+        #      copia su Price ID -> pégalo en PADDLE_LIVE_PRICE_ID.
+        #   2) En Paddle (Live), copia tu client-side token ("live_...") ->
+        #      pégalo en PADDLE_LIVE_CLIENT_TOKEN.
+        #   3) Cambia PADDLE_MODE de "sandbox" a "production".
+        #   4) Reconstruye el sitio (build) y despliega.
+        # Mientras PADDLE_MODE siga en "sandbox", NO se cobra dinero real.
+        # Si activas "production" pero dejas algún valor en PENDIENTE_CONFIGURAR,
+        # el botón avisa "pago no disponible" en vez de abrir un checkout roto.
+        'var PADDLE_MODE="sandbox";\n'  # "sandbox" | "production"
+        # -- Credenciales SANDBOX (pruebas, NO cobra dinero real) --
+        'var PADDLE_SANDBOX_CLIENT_TOKEN="test_679f65fd7ded3bfb059cd4d67a4";\n'
+        'var PADDLE_SANDBOX_PRICE_ID="pri_01kymshm1eh9bqq049qkn3qk24";\n'
+        # -- Credenciales PRODUCCIÓN (cobro REAL) -- rellenar antes de activar --
+        'var PADDLE_LIVE_CLIENT_TOKEN="PENDIENTE_CONFIGURAR";\n'  # token "live_..."
+        'var PADDLE_LIVE_PRICE_ID="PENDIENTE_CONFIGURAR";\n'      # Price ID "pri_..." en Live
+        # -- Selección automática según el modo (no editar de aquí para abajo) --
+        'var _pxLive=(PADDLE_MODE==="production");\n'
+        'var PADDLE_ENVIRONMENT=_pxLive?"production":"sandbox";\n'
+        'var PADDLE_CLIENT_TOKEN=_pxLive?PADDLE_LIVE_CLIENT_TOKEN:PADDLE_SANDBOX_CLIENT_TOKEN;\n'
+        'var PADDLE_PRICE_ID=_pxLive?PADDLE_LIVE_PRICE_ID:PADDLE_SANDBOX_PRICE_ID;\n'
         'var _pxUser=null;\n'
+        'function pxConfigPending(){\n'
+        '  return PADDLE_CLIENT_TOKEN==="PENDIENTE_CONFIGURAR"||PADDLE_PRICE_ID==="PENDIENTE_CONFIGURAR";\n'
+        '}\n'
         'function pxSetStatus(es,en){\n'
         '  var el=document.getElementById("px-sub-status");if(!el)return;\n'
         '  el.innerHTML="<span class=\\"fw-lang-es\\">"+es+"</span><span class=\\"fw-lang-en\\">"+en+"</span>";\n'
         '}\n'
         'function pxInitPaddle(){\n'
-        '  if(PADDLE_CLIENT_TOKEN==="PENDIENTE_CONFIGURAR"||typeof Paddle==="undefined")return;\n'
+        '  if(pxConfigPending()||typeof Paddle==="undefined")return;\n'
         '  Paddle.Environment.set(PADDLE_ENVIRONMENT);\n'
         '  Paddle.Initialize({token:PADDLE_CLIENT_TOKEN});\n'
         '}\n'
@@ -4312,7 +4332,7 @@ def build_precios_page():
         '  }).catch(function(){});\n'
         '}\n'
         'function pxStartCheckout(){\n'
-        '  if(PADDLE_CLIENT_TOKEN==="PENDIENTE_CONFIGURAR"){\n'
+        '  if(pxConfigPending()){\n'
         '    pxSetStatus("El pago aún no está disponible — vuelve pronto.","Payment isn\\u2019t available yet — check back soon.");\n'
         '    return;\n'
         '  }\n'
