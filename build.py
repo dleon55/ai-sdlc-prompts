@@ -4300,8 +4300,8 @@ def build_precios_page():
         'var PADDLE_SANDBOX_CLIENT_TOKEN="test_679f65fd7ded3bfb059cd4d67a4";\n'
         'var PADDLE_SANDBOX_PRICE_ID="pri_01kymshm1eh9bqq049qkn3qk24";\n'
         # -- Credenciales PRODUCCIÓN (cobro REAL) -- rellenar antes de activar --
-        'var PADDLE_LIVE_CLIENT_TOKEN="PENDIENTE_CONFIGURAR";\n'  # token "live_..."
-        'var PADDLE_LIVE_PRICE_ID="PENDIENTE_CONFIGURAR";\n'      # Price ID "pri_..." en Live
+        'var PADDLE_LIVE_CLIENT_TOKEN="live_b14bc1b2bb32e870586bc5beb08";\n'
+        'var PADDLE_LIVE_PRICE_ID="pri_01kyqpj55y25a2cc3xvd9tr089";\n'
         # -- Selección automática según el modo (no editar de aquí para abajo) --
         'var _pxLive=(PADDLE_MODE==="production");\n'
         'var PADDLE_ENVIRONMENT=_pxLive?"production":"sandbox";\n'
