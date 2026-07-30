@@ -269,6 +269,70 @@ context.getCurrentLanguage = () => "es";
   const importedProjectV1 = context.loadProjects().find(p => p.name === "Importado v1");
   assert.strictEqual(context.loadPromptState()[importedProjectV1.id], undefined);
 
+  // Modo guiado (issue #138) -- reactiva el proyecto "p1" ya usado en el
+  // bloque de progreso para tener un estado limpio y conocido.
+  storage.clear();
+  context.saveProjects([{ id: "p1", name: "Proyecto", isDefault: true, vars: { repositorio: "org/repo" } }]);
+  storage.set(context.LS_KEY_ACTV, "p1");
+
+  const guidedSeq = context.getGuidedSequence();
+  assert(guidedSeq.length > 50, "getGuidedSequence() debe cubrir prácticamente toda la biblioteca");
+  assert(!guidedSeq.includes("fw"), "'fw' no es un paso de la ruta guiada");
+  // El orden debe coincidir exactamente con el de PROMPT_INFO (mismo orden
+  // curado en que build.py genera las secciones) -- no un orden distinto
+  // derivado de otra fuente.
+  // guidedSeq es un Array del realm interno de la vm (getGuidedSequence()
+  // corre dentro del script cargado en vm.createContext) -- deepStrictEqual
+  // compararía prototipos de Array de dos realms distintos y fallaría
+  // aunque el contenido sea idéntico; JSON.stringify evita ese falso
+  // negativo comparando solo los valores.
+  assert.strictEqual(
+    JSON.stringify(guidedSeq),
+    JSON.stringify(Object.keys(context.PROMPT_INFO).filter(id => id !== "fw"))
+  );
+
+  assert.strictEqual(context.getGuidedPosition(), 0, "posición inicial debe ser 0 sin nada guardado");
+  context.guidedGoTo(3);
+  assert.strictEqual(context.getGuidedPosition(), 3);
+  context.guidedNext();
+  assert.strictEqual(context.getGuidedPosition(), 4);
+  context.guidedPrev();
+  context.guidedPrev();
+  assert.strictEqual(context.getGuidedPosition(), 2);
+
+  // No debe salirse de los límites de la secuencia en ningún sentido.
+  context.guidedGoTo(-5);
+  assert.strictEqual(context.getGuidedPosition(), 0);
+  context.guidedGoTo(guidedSeq.length + 50);
+  assert.strictEqual(context.getGuidedPosition(), guidedSeq.length - 1);
+
+  // guidedJumpToFirstUnused() debe encontrar el primer prompt no usado.
+  context.guidedGoTo(0);
+  context.markPromptsUsed([guidedSeq[0], guidedSeq[1]]);
+  context.guidedJumpToFirstUnused();
+  assert.strictEqual(context.getGuidedPosition(), 2, "debe saltar al primer prompt aún no usado (índice 2)");
+
+  // renderGuidedStep() no debe lanzar sin los contenedores en el DOM...
+  elements.delete("guided-body");
+  elements.delete("guided-prev-btn");
+  elements.delete("guided-next-btn");
+  context.renderGuidedStep(0);
+
+  // ...y sí debe poblar el body y deshabilitar "Anterior" en el primer paso.
+  const guidedBody = { innerHTML: "", appendChild(node) { this.children = (this.children || []); this.children.push(node); } };
+  const prevBtn = { disabled: false };
+  const nextBtn = { disabled: false };
+  elements.set("guided-body", guidedBody);
+  elements.set("guided-prev-btn", prevBtn);
+  elements.set("guided-next-btn", nextBtn);
+  context.renderGuidedStep(0);
+  assert.strictEqual(prevBtn.disabled, true, "en el primer paso, 'Anterior' debe estar deshabilitado");
+  assert.strictEqual(nextBtn.disabled, false);
+  assert(guidedBody.children && guidedBody.children.length >= 3, "debe agregar overall/step/title al body");
+
+  context.renderGuidedStep(guidedSeq.length - 1);
+  assert.strictEqual(nextBtn.disabled, true, "en el último paso, 'Siguiente' debe estar deshabilitado");
+
   console.log("runtime variable tests: ok");
 })().catch(err => {
   console.error(err);
