@@ -191,7 +191,7 @@
           "stop_criteria": "si la metodología candidata requiere condiciones que el equipo declarado no cumple (ej. SCRUM completo con equipo de una persona), señalar la alerta explícitamente en vez de recomendarla sin reservas",
           "expected_output": "ver `## Salida esperada`",
           "minimum_evidence": "el diagrama de branches es consistente con la metodología recomendada; las tablas de Definition of Ready y Definition of Done cubren explícitamente tanto el trabajo humano como el de agentes IA",
-          "recommended_next_prompt": "`00-B-01-scaffolding-repositorio` si aún no existe estructura de repositorio; `00-B-03-github-configuracion` para aplicar la estrategia de branches en protecciones reales de GitHub",
+          "recommended_next_prompt": "`00-B-01-scaffolding-repositorio` si aún no existe estructura de repositorio; `00-B-03-github-configuracion` para aplicar la estrategia de branches en protecciones reales de GitHub; `17-08-retrospectiva-equipo-sprint` al cierre del primer sprint/iteración, para ejecutar la ceremonia de retrospectiva definida aquí",
           "type_tags": [
             "design"
           ],
@@ -203,7 +203,8 @@
           ],
           "recommended_next_prompt_ids": [
             "00-B-01-scaffolding-repositorio",
-            "00-B-03-github-configuracion"
+            "00-B-03-github-configuracion",
+            "17-08-retrospectiva-equipo-sprint"
           ]
         },
         "en": {
@@ -215,7 +216,7 @@
           "stop_criteria": "if the candidate methodology requires conditions the declared team does not meet (e.g., full SCRUM with a one-person team), state the alert explicitly instead of recommending it without reservations",
           "expected_output": "see `## Expected Output`",
           "minimum_evidence": "the branch flow diagram is consistent with the recommended methodology; the Definition of Ready and Definition of Done tables explicitly cover both human and AI agent work",
-          "recommended_next_prompt": "`00-B-01-scaffolding-repositorio` if no repository structure exists yet; `00-B-03-github-configuracion` to apply the branch strategy in real GitHub protections",
+          "recommended_next_prompt": "`00-B-01-scaffolding-repositorio` if no repository structure exists yet; `00-B-03-github-configuracion` to apply the branch strategy in real GitHub protections; `17-08-retrospectiva-equipo-sprint` at the close of the first sprint/iteration, to run the retrospective ceremony defined here",
           "type_tags": [
             "design"
           ],
@@ -227,7 +228,8 @@
           ],
           "recommended_next_prompt_ids": [
             "00-B-01-scaffolding-repositorio",
-            "00-B-03-github-configuracion"
+            "00-B-03-github-configuracion",
+            "17-08-retrospectiva-equipo-sprint"
           ]
         }
       }
@@ -6608,6 +6610,64 @@
           ],
           "permitted_autonomy_tags": [
             "A0"
+          ],
+          "recommended_next_prompt_ids": [
+            "11-03-deuda-tecnica"
+          ]
+        }
+      }
+    },
+    {
+      "id": "17-08-retrospectiva-equipo-sprint",
+      "section": "17",
+      "title": {
+        "es": "17.8 — Retrospectiva de equipo por sprint/iteración",
+        "en": "17.8 — Team retrospective per sprint/iteration"
+      },
+      "contract": {
+        "es": {
+          "type": "análisis",
+          "expected_risk": "medio — una retrospectiva que omite o suaviza problemas reales del proceso, o cuyas acciones de mejora nunca se les da seguimiento en el siguiente ciclo, hace que los mismos problemas se repitan sprint tras sprint sin que nadie lo note; el prompt no ejecuta ningún cambio de proceso ni de herramientas por sí mismo",
+          "required_inputs": "qué pasó en el sprint/iteración actual (según lo reportado por el equipo, no inferido), retrospectiva(s) anterior(es) con sus acciones de mejora pendientes, si existen",
+          "allowed_tools": "ninguna de ejecución — lectura de retrospectivas previas y de lo reportado por el equipo; produce un documento de retrospectiva, no modifica proceso, configuración ni herramientas",
+          "permitted_autonomy": "A0 — Analizar; A1 — Proponer (acciones de mejora priorizadas)",
+          "stop_criteria": "no inventar problemas, logros o causas raíz que el equipo no reportó explícitamente — si algo no fue mencionado por el equipo, no se incluye como si lo hubiera sido; si una acción de mejora de la retrospectiva anterior nunca se completó, reportarlo explícitamente en vez de omitirlo",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada acción de mejora de la retrospectiva anterior aparece con su estado real (completada/parcial/no iniciada); todo patrón reportado como recurrente cita en qué retrospectivas anteriores ya apareció",
+          "recommended_next_prompt": "repetir este mismo prompt al cierre del siguiente sprint/iteración, retomando las acciones de mejora pendientes; `11-03-deuda-tecnica` si la retrospectiva revela deuda técnica no registrada formalmente",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "11-03-deuda-tecnica"
+          ]
+        },
+        "en": {
+          "type": "analysis",
+          "expected_risk": "medium — a retrospective that omits or softens real process problems, or whose improvement actions are never followed up on in the next cycle, lets the same problems repeat sprint after sprint unnoticed; the prompt does not execute any process or tooling change by itself",
+          "required_inputs": "what happened in the current sprint/iteration (as reported by the team, not inferred), previous retrospective(s) with their pending improvement actions, if any",
+          "allowed_tools": "none for execution — reading previous retrospectives and what the team reported; produces a retrospective document, does not modify process, configuration, or tooling",
+          "permitted_autonomy": "A0 — Analyze; A1 — Propose (prioritized improvement actions)",
+          "stop_criteria": "do not invent problems, wins, or root causes the team did not explicitly report — if something wasn't mentioned by the team, it isn't included as if it had been; if a previous retrospective's improvement action was never completed, report it explicitly instead of omitting it",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every improvement action from the previous retrospective appears with its real status (completed/partial/not started); every issue reported as recurring cites which previous retrospectives it already appeared in",
+          "recommended_next_prompt": "repeat this same prompt at the close of the next sprint/iteration, picking up pending improvement actions; `11-03-deuda-tecnica` if the retrospective reveals technical debt not formally logged",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
           ],
           "recommended_next_prompt_ids": [
             "11-03-deuda-tecnica"
