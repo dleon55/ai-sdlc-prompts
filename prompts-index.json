@@ -691,6 +691,62 @@
       }
     },
     {
+      "id": "00-D-05-viabilidad-business-case",
+      "section": "00",
+      "title": {
+        "es": "0-D.5 — Estudio de viabilidad y business case: ¿deberíamos hacer este proyecto?",
+        "en": "0-D.5 — Feasibility study and business case: should we even do this project?"
+      },
+      "contract": {
+        "es": {
+          "type": "análisis",
+          "expected_risk": "alto — la recomendación de go/no-go de este análisis condiciona si se invierte presupuesto y tiempo del equipo en formalizar el proyecto; un análisis optimista o sesgado puede justificar proyectos que no debieron aprobarse, aunque el prompt no ejecuta ni compromete nada por sí mismo",
+          "required_inputs": "idea o iniciativa en bruto, contexto de negocio, restricciones conocidas (presupuesto máximo, plazo, recursos disponibles), alternativas ya consideradas si existen",
+          "allowed_tools": "ninguna de ejecución — lectura de contexto y documentación existente; produce un documento de análisis, no ejecuta ni aprueba nada",
+          "permitted_autonomy": "A1 — Proponer",
+          "stop_criteria": "si no puede estimarse ni el costo ni el beneficio con un mínimo de confianza, no forzar una recomendación go/no-go — declarar \"viabilidad no determinable con la información disponible\" en vez de inventar una cifra",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada dimensión de viabilidad (técnica, económica, operativa, legal/regulatoria) tiene un veredicto explícito con justificación citada; las alternativas descartadas, incluida \"no hacer nada\", están documentadas",
+          "recommended_next_prompt": "`00-D-01-project-charter` si el veredicto es GO o GO condicionado",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "00-D-01-project-charter"
+          ]
+        },
+        "en": {
+          "type": "analysis",
+          "expected_risk": "high — this analysis's go/no-go recommendation conditions whether budget and team time get invested in formalizing the project; an optimistic or biased analysis can justify projects that shouldn't have been approved, although the prompt does not execute or commit anything by itself",
+          "required_inputs": "raw idea or initiative, business context, known constraints (maximum budget, deadline, available resources), alternatives already considered if any",
+          "allowed_tools": "none for execution — reading existing context and documentation; produces an analysis document, does not execute or approve anything",
+          "permitted_autonomy": "A1 — Propose",
+          "stop_criteria": "if neither cost nor benefit can be estimated with minimal confidence, do not force a go/no-go recommendation — declare \"feasibility not determinable with available information\" instead of inventing a figure",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "each feasibility dimension (technical, economic, operational, legal/regulatory) has an explicit, cited verdict; discarded alternatives, including \"doing nothing\", are documented",
+          "recommended_next_prompt": "`00-D-01-project-charter` if the verdict is GO or conditional GO",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "00-D-01-project-charter"
+          ]
+        }
+      }
+    },
+    {
       "id": "01-01-arranque-comprension-repositorio",
       "section": "01",
       "title": {
@@ -1206,6 +1262,64 @@
           "recommended_next_prompt_ids": [
             "04-01-diseno-solucion",
             "07-06-pruebas-performance-carga"
+          ]
+        }
+      }
+    },
+    {
+      "id": "02-07-matriz-trazabilidad-requerimientos",
+      "section": "02",
+      "title": {
+        "es": "2.7 — Matriz de trazabilidad de requerimientos del proyecto completo",
+        "en": "2.7 — Whole-project requirements traceability matrix"
+      },
+      "contract": {
+        "es": {
+          "type": "análisis",
+          "expected_risk": "medio — una matriz desactualizada o incompleta da una falsa sensación de cobertura completa cuando en realidad hay requerimientos sin diseño/implementación/prueba, o funcionalidad construida sin respaldo formal; el prompt no ejecuta ni modifica nada por sí mismo",
+          "required_inputs": "lista de requerimientos de negocio del proyecto (o issues ya analizados con `02-05`), diseños asociados, PRs/implementaciones relacionadas, resultados de prueba disponibles",
+          "allowed_tools": "lectura de issues, diseños, código y resultados de prueba existentes — sin ejecutar pruebas nuevas ni modificar nada",
+          "permitted_autonomy": "A0 — Analizar (agregar trazabilidad ya evidenciable); A1 — Proponer (marcar huecos y priorizarlos)",
+          "stop_criteria": "si un requerimiento no puede vincularse a ninguna evidencia de diseño, código o prueba, no lo marques como \"cubierto\" — repórtalo explícitamente como huérfano",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada requerimiento del proyecto aparece exactamente una vez en la matriz con su estado de cobertura citado en cada etapa (requerimiento → diseño → implementación → prueba)",
+          "recommended_next_prompt": "`08-02-cumplimiento-requerimiento` para profundizar en un requerimiento específico marcado como incompleto o huérfano",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "08-02-cumplimiento-requerimiento"
+          ]
+        },
+        "en": {
+          "type": "analysis",
+          "expected_risk": "medium — an outdated or incomplete matrix gives a false sense of complete coverage when in reality there are requirements missing design/implementation/test, or functionality built with no formal backing; the prompt does not execute or modify anything by itself",
+          "required_inputs": "list of the project's business requirements (or issues already analyzed with `02-05`), associated designs, related implementations/PRs, available test results",
+          "allowed_tools": "reading existing issues, designs, code, and test results — no new tests executed and nothing modified",
+          "permitted_autonomy": "A0 — Analyze (aggregate already-evidenceable traceability); A1 — Propose (flag and prioritize gaps)",
+          "stop_criteria": "if a requirement cannot be linked to any design, code, or test evidence, do not mark it as \"covered\" — explicitly report it as orphaned",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every requirement in the project appears exactly once in the matrix with its cited coverage status at each stage (requirement → design → implementation → test)",
+          "recommended_next_prompt": "`08-02-cumplimiento-requerimiento` to dig deeper into a specific requirement flagged as incomplete or orphaned",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "08-02-cumplimiento-requerimiento"
           ]
         }
       }
@@ -3797,6 +3911,120 @@
       }
     },
     {
+      "id": "10-05-documentacion-api-publica",
+      "section": "10",
+      "title": {
+        "es": "10.5 — Documentación pública de API para desarrolladores externos",
+        "en": "10.5 — Public API documentation for external developers"
+      },
+      "contract": {
+        "es": {
+          "type": "documentación",
+          "expected_risk": "bajo-medio — documentación pública incorrecta o desactualizada genera tickets de soporte y fricción de adopción para integradores externos, pero el prompt no ejecuta ni modifica la API en sí",
+          "required_inputs": "contrato de API ya implementado (referencia a `04-06` o especificación real), audiencia objetivo (desarrolladores externos/partners/clientes), ejemplos de uso reales si existen",
+          "allowed_tools": "lectura del contrato y del código de la API existente — sin ejecutar nada",
+          "permitted_autonomy": "A1 — Proponer",
+          "stop_criteria": "si el comportamiento a documentar no puede verificarse contra la implementación real (el contrato de diseño quedó desactualizado respecto al código), detente y señala la discrepancia en vez de documentar el diseño teórico como si fuera el comportamiento real",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada endpoint documentado incluye ejemplo de request/response verificado, mecanismo de autenticación, y al menos un ejemplo de error con causa y acción recomendada",
+          "recommended_next_prompt": "`10-03-release-changelog` cuando la API tenga una nueva versión que anunciar a los consumidores",
+          "type_tags": [
+            "documentation"
+          ],
+          "expected_risk_tags": [
+            "low",
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "10-03-release-changelog"
+          ]
+        },
+        "en": {
+          "type": "documentation",
+          "expected_risk": "low-medium — incorrect or outdated public documentation generates support tickets and adoption friction for external integrators, but the prompt does not execute or modify the API itself",
+          "required_inputs": "already implemented API contract (reference to `04-06` or real specification), target audience (external developers/partners/customers), real usage examples if available",
+          "allowed_tools": "reading the contract and the existing API code — no execution",
+          "permitted_autonomy": "A1 — Propose",
+          "stop_criteria": "if the behavior to be documented cannot be verified against the real implementation (the design contract has drifted from the code), stop and flag the discrepancy instead of documenting the theoretical design as if it were real behavior",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every documented endpoint includes a verified request/response example, the authentication mechanism, and at least one error example with cause and recommended action",
+          "recommended_next_prompt": "`10-03-release-changelog` when the API has a new version to announce to consumers",
+          "type_tags": [
+            "documentation"
+          ],
+          "expected_risk_tags": [
+            "low",
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "10-03-release-changelog"
+          ]
+        }
+      }
+    },
+    {
+      "id": "10-06-materiales-capacitacion-rollout",
+      "section": "10",
+      "title": {
+        "es": "10.6 — Materiales de capacitación y plan de rollout para usuarios finales",
+        "en": "10.6 — End-user training materials and rollout plan"
+      },
+      "contract": {
+        "es": {
+          "type": "documentación",
+          "expected_risk": "medio — una capacitación insuficiente o un rollout mal comunicado puede generar resistencia a la adopción, tickets de soporte evitables, o uso incorrecto de una funcionalidad crítica de negocio; el prompt no envía comunicaciones reales ni ejecuta el rollout",
+          "required_inputs": "descripción de la funcionalidad o sistema a lanzar, audiencia de usuarios finales (roles, nivel técnico, tamaño del grupo), canal de comunicación disponible, fecha de lanzamiento",
+          "allowed_tools": "lectura de documentación del producto — sin ejecutar nada ni enviar ninguna comunicación real",
+          "permitted_autonomy": "A1 — Proponer",
+          "stop_criteria": "si no se conoce el nivel técnico o el tamaño de la audiencia, detente y solicítalo antes de proponer el formato de capacitación — un video corto y una guía escrita no sirven igual para 5 usuarios expertos que para 500 usuarios no técnicos",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada material propuesto declara la audiencia objetivo y el formato elegido con su razón; el plan de rollout declara fecha, canal y responsable de cada comunicación",
+          "recommended_next_prompt": "`17-06-reporte-estado-stakeholders` para comunicar el avance del rollout a stakeholders internos",
+          "type_tags": [
+            "documentation"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "17-06-reporte-estado-stakeholders"
+          ]
+        },
+        "en": {
+          "type": "documentation",
+          "expected_risk": "medium — insufficient training or a poorly communicated rollout can generate adoption resistance, avoidable support tickets, or incorrect use of a business-critical feature; the prompt does not send real communications or execute the rollout",
+          "required_inputs": "description of the feature or system being launched, end-user audience (roles, technical level, approximate group size), available communication channel, launch date",
+          "allowed_tools": "reading product documentation — no execution and no real communication sent",
+          "permitted_autonomy": "A1 — Propose",
+          "stop_criteria": "if the technical level or audience size is unknown, stop and request it before proposing the training format — a short video and a written guide don't work the same for 5 expert users as for 500 non-technical ones",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "each proposed material declares its target audience and chosen format with a reason; the rollout plan declares the date, channel, and owner of each communication",
+          "recommended_next_prompt": "`17-06-reporte-estado-stakeholders` to communicate rollout progress to internal stakeholders",
+          "type_tags": [
+            "documentation"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "17-06-reporte-estado-stakeholders"
+          ]
+        }
+      }
+    },
+    {
       "id": "11-01-troubleshooting",
       "section": "11",
       "title": {
@@ -5144,6 +5372,66 @@
       }
     },
     {
+      "id": "13-09-dpia-privacidad-datos",
+      "section": "13",
+      "title": {
+        "es": "13.9 — Evaluación de impacto de privacidad de datos (DPIA)",
+        "en": "13.9 — Data Privacy Impact Assessment (DPIA)"
+      },
+      "contract": {
+        "es": {
+          "type": "análisis",
+          "expected_risk": "alto — una DPIA incompleta puede dejar pasar a producción un procesamiento de datos sin base legal válida o sin mecanismo real para ejercer derechos del titular, con exposición regulatoria real (multas GDPR/CCPA/leyes locales de protección de datos); el prompt no ejecuta ni aprueba nada por sí mismo",
+          "required_inputs": "descripción de los datos personales/sensibles procesados, propósito del procesamiento, base legal propuesta, terceros involucrados (procesadores/subencargados), ubicación geográfica de los usuarios y del almacenamiento",
+          "allowed_tools": "lectura de documentación y diseño existente — sin ejecución",
+          "permitted_autonomy": "A0 — Analizar; A1 — Proponer (base legal sugerida, controles de mitigación)",
+          "stop_criteria": "si no puede determinarse una base legal válida para el procesamiento, no asumas una — repórtalo como bloqueante que requiere decisión legal antes de continuar",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada categoría de dato personal declara propósito, base legal, plazo de retención y mecanismo de ejercicio de derechos (acceso/rectificación/eliminación)",
+          "recommended_next_prompt": "`13-04-threat-modeling` para los controles de seguridad técnicos que protegen los datos identificados aquí; `13-08-gestion-secretos-credenciales` si el procesamiento involucra credenciales",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "13-04-threat-modeling",
+            "13-08-gestion-secretos-credenciales"
+          ]
+        },
+        "en": {
+          "type": "analysis",
+          "expected_risk": "high — an incomplete DPIA can let a data-processing activity reach production with no valid legal basis or no real mechanism for exercising data-subject rights, with real regulatory exposure (GDPR/CCPA/local data-protection law fines); the prompt does not execute or approve anything by itself",
+          "required_inputs": "description of the personal/sensitive data processed, purpose of the processing, proposed legal basis, third parties involved (processors/sub-processors), geographic location of users and of storage",
+          "allowed_tools": "reading existing documentation and design — no execution",
+          "permitted_autonomy": "A0 — Analyze; A1 — Propose (suggested legal basis, mitigation controls)",
+          "stop_criteria": "if a valid legal basis for the processing cannot be determined, do not assume one — report it as blocking, requiring a legal decision before proceeding",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "each personal data category declares purpose, legal basis, retention period, and a rights-exercise mechanism (access/rectification/deletion)",
+          "recommended_next_prompt": "`13-04-threat-modeling` for the technical security controls protecting the data identified here; `13-08-gestion-secretos-credenciales` if the processing involves credentials",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "13-04-threat-modeling",
+            "13-08-gestion-secretos-credenciales"
+          ]
+        }
+      }
+    },
+    {
       "id": "14-01-monorepo-workspaces-dependencias",
       "section": "14",
       "title": {
@@ -6199,6 +6487,62 @@
           "recommended_next_prompt_ids": [
             "05-02-riesgos-implementacion",
             "17-04-reporte-capacidad-equipo"
+          ]
+        }
+      }
+    },
+    {
+      "id": "17-07-revision-exito-post-lanzamiento",
+      "section": "17",
+      "title": {
+        "es": "17.7 — Revisión de éxito post-lanzamiento: realización de beneficios contra el Project Charter",
+        "en": "17.7 — Post-launch success review: benefits realization against the Project Charter"
+      },
+      "contract": {
+        "es": {
+          "type": "análisis",
+          "expected_risk": "medio — una revisión de éxito sesgada u omitida deja a la organización sin aprendizaje real sobre si sus inversiones de proyecto generan el valor prometido, repitiendo los mismos errores de estimación de beneficios en futuros proyectos; el prompt no ejecuta ni recolecta datos nuevos",
+          "required_inputs": "Project Charter original con objetivos/KPIs declarados (`00-D-01`), datos reales de uso/adopción/negocio desde el lanzamiento, ventana de tiempo transcurrida",
+          "allowed_tools": "lectura de documentación y datos ya recolectados — sin ejecutar análisis de datos en vivo ni instrumentación nueva",
+          "permitted_autonomy": "A0 — Analizar",
+          "stop_criteria": "si un KPI del Charter no puede medirse con los datos disponibles, no inventes un valor aproximado — repórtalo como \"no medible\" y señala qué instrumentación faltaría para poder medirlo la próxima vez",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada objetivo/KPI declarado en el Charter aparece en la revisión con su valor real medido (o \"no medible\" con la razón) y un veredicto de cumplido/parcial/no cumplido",
+          "recommended_next_prompt": "`11-03-deuda-tecnica` si la revisión revela deuda técnica que quedó pendiente del proyecto original",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0"
+          ],
+          "recommended_next_prompt_ids": [
+            "11-03-deuda-tecnica"
+          ]
+        },
+        "en": {
+          "type": "analysis",
+          "expected_risk": "medium — a biased or skipped success review leaves the organization with no real learning about whether its project investments generate the promised value, repeating the same benefit-estimation mistakes in future projects; the prompt does not execute or collect new data",
+          "required_inputs": "original Project Charter with declared objectives/KPIs (`00-D-01`), real usage/adoption/business data since launch, elapsed time window",
+          "allowed_tools": "reading existing documentation and already-collected data — no live data analysis or new instrumentation executed",
+          "permitted_autonomy": "A0 — Analyze",
+          "stop_criteria": "if a Charter KPI cannot be measured with available data, do not invent an approximate value — report it as \"not measurable\" and flag what instrumentation would be needed to measure it next time",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every objective/KPI declared in the Charter appears in the review with its real measured value (or \"not measurable\" with the reason) and a met/partial/not-met verdict",
+          "recommended_next_prompt": "`11-03-deuda-tecnica` if the review reveals technical debt left pending from the original project",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0"
+          ],
+          "recommended_next_prompt_ids": [
+            "11-03-deuda-tecnica"
           ]
         }
       }

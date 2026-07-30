@@ -21,7 +21,13 @@ Extrae magic numbers del código de pruebas para mantenibilidad.
 # checklist de progreso + personalización + resultados de IA + modo guiado
 # (nuevo modal, CSS y funciones JS) -- crecimiento de funcionalidad real, no
 # bloat; con margen moderado para crecimiento futuro.
-MAX_INDEX_SIZE_KB = 1650
+# Elevado de 1650 a 1720 KB al agregar 6 prompts nuevos x ES/EN (107 -> 113)
+# cerrando la auditoría final de completitud: viabilidad/business case,
+# matriz de trazabilidad de requerimientos de todo el proyecto, DPIA de
+# privacidad de datos, documentación pública de API, capacitación/rollout
+# para usuarios finales, y revisión de éxito post-lanzamiento -- crecimiento
+# de contenido real, no bloat; con margen moderado para crecimiento futuro.
+MAX_INDEX_SIZE_KB = 1720
 MIN_INDEX_SIZE_KB = 100   # Mínimo esperado para contenido válido
 
 # Cobertura de prompts
