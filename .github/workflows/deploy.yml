@@ -98,6 +98,19 @@ jobs:
         run: |
           mkdir -p dist
           cp index.html dist/index.html
+          # Bug real corregido (auditoría de UX): el botón principal de la
+          # landing ("Explorar prompts") enlaza a /app, ruteado client-side
+          # por JS leyendo location.pathname (ver index.html). En
+          # producción (GCP), nginx_prompts.conf hace
+          # `try_files $uri $uri/ /index.html` y /app sirve index.html sin
+          # problema. GitHub Pages no soporta ese rewrite -- sin un
+          # 404.html, /app devolvía un 404 real de GitHub y el botón
+          # principal quedaba roto en ese entorno. GitHub Pages sirve
+          # 404.html (con status 404) para cualquier ruta no encontrada,
+          # y como es una copia idéntica de index.html, el mismo JS de
+          # ruteo client-side toma el control y muestra la app con
+          # normalidad -- truco estándar de SPA en GitHub Pages.
+          cp index.html dist/404.html
           cp precios.html dist/precios.html
           cp terminos.html dist/terminos.html
           cp privacidad.html dist/privacidad.html

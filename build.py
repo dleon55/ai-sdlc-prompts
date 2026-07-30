@@ -1148,6 +1148,11 @@ body.ms-mode .sec-check { display: block; }
   border-radius: 4px; transition: color .12s, background .12s;
 }
 .proj-action-btn:hover { color: var(--tx); background: var(--bg3); }
+/* Gap real corregido (auditoría de UX): el botón de eliminar ya tenía la
+   clase proj-action-danger, pero sin ninguna regla de :not(:hover) tenía
+   el mismo color que activar/predeterminar/duplicar/exportar en reposo --
+   la única diferencia (color rojo) solo aparecía ya con el mouse encima. */
+.proj-action-danger { color: #f87171; }
 .proj-action-danger:hover { color: #f87171; background: rgba(248,113,113,.12); }
 .proj-add-btn {
   background: #0e7490; color: #fff; border: none; border-radius: 8px;
@@ -1778,6 +1783,16 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
 @media (max-width: 640px) {
   .var-float { right: .85rem; }
   .var-float-dropdown { width: min(320px, calc(100vw - 1.7rem)); }
+  /* Bug real corregido (auditoría de UX): .ms-bar se centraba con
+     `left: 50%; transform: translateX(-50%)` y `white-space: nowrap`, sin
+     ningún límite de ancho -- en un viewport de 375px su contenido
+     intrínseco (444px medidos) se salía ~35px por ambos lados, dejando el
+     contador de seleccionados y el botón "Limpiar selección" inalcanzables. */
+  .ms-bar {
+    left: .75rem; right: .75rem; transform: none;
+    width: auto; max-width: none;
+    white-space: normal; justify-content: space-between;
+  }
 }
 """
 
@@ -1892,6 +1907,16 @@ function confirmDeleteProject(id, name) {
   deleteProject(id);
   renderProjectsModal();
   renderProjectSelector();
+  // Bug real corregido (auditoría de UX -- cambio entre proyectos): al
+  // borrar el proyecto ACTIVO, deleteProject() ya recalcula cuál queda
+  // activo, pero el panel de variables (inputs en el DOM) seguía mostrando
+  // los valores del proyecto recién eliminado -- si el usuario editaba
+  // cualquier campo después, syncProjectFromPanel() leía esos valores
+  // obsoletos y sobrescribía silenciosamente las variables del proyecto
+  // sobreviviente. syncPanelToProject() vuelve a poblar el DOM desde el
+  // proyecto realmente activo tras el borrado.
+  syncPanelToProject();
+  updateLivePreview();
 }
 
 function duplicateProject(id) {
@@ -3111,12 +3136,6 @@ Object.keys(TOKEN_REGISTRY).forEach(function(field) {
   VAR_MAP[field] = TOKEN_REGISTRY[field].aliases.slice();
 });
 
-function replaceToken(text, token, value) {
-  var escaped = token.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&');
-  text = text.replace(new RegExp('\\\\[' + escaped + '\\\\]', 'g'), function() { return value; });
-  return text.replace(new RegExp('\\\\{\\\\{' + escaped + '\\\\}\\\\}', 'g'), function() { return value; });
-}
-
 function parseAdditionalVars(raw) {
   var result = {};
   (raw || '').split(/\\r?\\n/).forEach(function(line) {
@@ -3141,39 +3160,77 @@ function hasActiveVars() {
 
 function resolvePrompt(template, options) {
   options = options || {};
-  var text = template || '';
+  var originalText = template || '';
   // valuesOverride: snapshot completo ya resuelto (ver updateLivePreview) --
   // evita releer y re-parsear localStorage en cada llamada cuando el
   // llamador ya llamó getVarValues() una vez para muchos prompts. options.values
   // sigue soportando el override parcial existente (se fusiona con el valor
   // en vivo de localStorage), sin cambiar ese comportamiento.
   var v = options.valuesOverride || Object.assign({}, getVarValues(), options.values || {});
-  var replaced = [];
+  var additional = parseAdditionalVars(v.adicionales);
+
+  var tokenToValue = {};
   Object.keys(VAR_MAP).forEach(function(field) {
     var val = (v[field] || '').trim();
     if (!val) return;
-    VAR_MAP[field].forEach(function(token) {
-      var before = text;
-      text = replaceToken(text, token, val);
-      if (text !== before && replaced.indexOf(token) === -1) replaced.push(token);
+    VAR_MAP[field].forEach(function(token) { tokenToValue[token] = val; });
+  });
+  Object.keys(additional).forEach(function(token) { tokenToValue[token] = additional[token]; });
+
+  // Sustitución en UNA sola pasada de regex sobre el texto ORIGINAL. Bug
+  // real corregido: la versión anterior hacía un .replace() encadenado
+  // campo por campo, reescaneando el texto YA sustituido en cada paso -- si
+  // el valor de un campo contenía literalmente el token de OTRO campo
+  // procesado después (ej. repositorio = "mi-repo [STACK]"), ese texto
+  // recién insertado volvía a sustituirse con el valor de `stack`,
+  // corrompiendo silenciosamente lo que el usuario escribió. Con una sola
+  // pasada sobre el texto original, un valor ya insertado nunca se
+  // vuelve a escanear.
+  var replaced = [];
+  var text = originalText;
+  var tokens = Object.keys(tokenToValue);
+  if (tokens.length) {
+    var escaped = tokens.map(function(t) { return t.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&'); });
+    var rx = new RegExp('\\\\[(' + escaped.join('|') + ')\\\\]|\\\\{\\\\{(' + escaped.join('|') + ')\\\\}\\\\}', 'g');
+    text = originalText.replace(rx, function(match, bracketToken, braceToken) {
+      var token = bracketToken !== undefined ? bracketToken : braceToken;
+      if (replaced.indexOf(token) === -1) replaced.push(token);
+      return tokenToValue[token];
     });
+  }
+
+  // unresolvedRequired/unresolvedOptional para campos CONOCIDOS (TOKEN_REGISTRY)
+  // se derivan de si el campo quedó vacío y su token aparece en la plantilla
+  // ORIGINAL -- no de re-escanear el texto ya sustituido. Bug real
+  // corregido: si un campo requerido se llenaba con un valor que coincidía
+  // literalmente con su propio token (ej. entrada = "[ENTRADA PRINCIPAL]"),
+  // el texto sustituido seguía conteniendo ese literal y el escaneo
+  // posterior lo marcaba como "sin resolver" pese a que el campo sí tenía
+  // un valor -- bloqueaba el copiado sin necesidad real.
+  var unresolvedRequired = [];
+  var unresolvedOptional = [];
+  Object.keys(TOKEN_REGISTRY).forEach(function(field) {
+    var val = (v[field] || '').trim();
+    if (val) return;
+    var presentToken = VAR_MAP[field].filter(function(token) {
+      return originalText.indexOf('[' + token + ']') !== -1 || originalText.indexOf('{{' + token + '}}') !== -1;
+    })[0];
+    if (!presentToken) return;
+    (TOKEN_REGISTRY[field].required ? unresolvedRequired : unresolvedOptional).push(presentToken);
   });
-  var additional = parseAdditionalVars(v.adicionales);
-  Object.keys(additional).forEach(function(token) {
-    var before = text;
-    text = replaceToken(text, token, additional[token]);
-    if (text !== before && replaced.indexOf(token) === -1) replaced.push(token);
+  // Placeholders desconocidos (sin campo registrado en TOKEN_REGISTRY) que
+  // sigan presentes tras la sustitución -- ningún campo de VAR_MAP los cubre,
+  // así que sí se detectan re-escaneando el texto final.
+  findUnresolvedPlaceholders(text).forEach(function(token) {
+    if (getTokenField(token)) return; // ya evaluado arriba por campo conocido
+    unresolvedOptional.push(token);
   });
-  var unresolved = findUnresolvedPlaceholders(text);
+
   return {
     text: text,
     replacedTokens: replaced,
-    unresolvedRequired: unresolved.filter(function(token) {
-      return getTokenField(token) && TOKEN_REGISTRY[getTokenField(token)].required;
-    }),
-    unresolvedOptional: unresolved.filter(function(token) {
-      return !getTokenField(token) || !TOKEN_REGISTRY[getTokenField(token)].required;
-    })
+    unresolvedRequired: unresolvedRequired,
+    unresolvedOptional: unresolvedOptional
   };
 }
 
@@ -3436,17 +3493,23 @@ function updatePlaceholders(lang) {
     tSelect.options[9].text = lang === 'en' ? 'other' : 'otro';
     tSelect.options[9].value = lang === 'en' ? 'other' : 'otro';
   }
+  // Gap real corregido (auditoría de UX): los códigos A0-A3 solo se
+  // explicaban una vez, en el modal de onboarding -- un usuario que lo
+  // saltó o lo cerró no tenía forma de conectar este selector (antes solo
+  // prosa, sin código) con los chips de filtro o las badges de cada card,
+  // que sí muestran "A0"/"A1"/etc. Se antepone el código A0-A3 al texto en
+  // ambos idiomas para que el selector sea auto-explicativo.
   var aSelect = document.getElementById('vf-autonomia');
   if (aSelect && aSelect.options.length > 4) {
     aSelect.options[0].text = lang === 'en' ? '-- select --' : '-- seleccionar --';
-    aSelect.options[1].text = lang === 'en' ? 'analysis only' : 'solo análisis';
-    aSelect.options[1].value = lang === 'en' ? 'analysis only' : 'solo análisis';
-    aSelect.options[2].text = lang === 'en' ? 'analysis + proposal' : 'análisis + propuesta';
-    aSelect.options[2].value = lang === 'en' ? 'analysis + proposal' : 'análisis + propuesta';
-    aSelect.options[3].text = lang === 'en' ? 'controlled execution' : 'ejecución controlada';
-    aSelect.options[3].value = lang === 'en' ? 'controlled execution' : 'ejecución controlada';
-    aSelect.options[4].text = lang === 'en' ? 'autonomous execution' : 'ejecución autónoma';
-    aSelect.options[4].value = lang === 'en' ? 'autonomous execution' : 'ejecución autónoma';
+    aSelect.options[1].text = lang === 'en' ? 'A0 — analysis only' : 'A0 — solo análisis';
+    aSelect.options[1].value = lang === 'en' ? 'A0 — analysis only' : 'A0 — solo análisis';
+    aSelect.options[2].text = lang === 'en' ? 'A1 — analysis + proposal' : 'A1 — análisis + propuesta';
+    aSelect.options[2].value = lang === 'en' ? 'A1 — analysis + proposal' : 'A1 — análisis + propuesta';
+    aSelect.options[3].text = lang === 'en' ? 'A2 — controlled execution' : 'A2 — ejecución controlada';
+    aSelect.options[3].value = lang === 'en' ? 'A2 — controlled execution' : 'A2 — ejecución controlada';
+    aSelect.options[4].text = lang === 'en' ? 'A3 — autonomous execution' : 'A3 — ejecución autónoma';
+    aSelect.options[4].value = lang === 'en' ? 'A3 — autonomous execution' : 'A3 — ejecución autónoma';
   }
   
   var inputs = {
@@ -3465,7 +3528,8 @@ function updatePlaceholders(lang) {
     'qv-referencia': { es: 'Número, URL o resumen corto', en: 'Number, URL or short summary' },
     'qv-rama-actual': { es: 'feature/mi-rama', en: 'feature/my-branch' },
     'qv-rama-destino': { es: 'main / develop', en: 'main / develop' },
-    'qv-modulo': { es: 'Nombre del módulo o funcionalidad', en: 'Module or process name' }
+    'qv-modulo': { es: 'Nombre del módulo o funcionalidad', en: 'Module or process name' },
+    'ob-email-input': { es: 'tu@correo.com', en: 'you@email.com' }
   };
   
   Object.keys(inputs).forEach(function(id) {
@@ -3497,6 +3561,22 @@ function setLanguage(lang) {
   if (typeof gtag === 'function') {
     gtag('event', 'language_change', { 'language': lang });
   }
+
+  // Gap real corregido (auditoría de UX): los chips de filtro A0-A3 no
+  // tenían ningún tooltip que explicara el código -- la única explicación
+  // vivía en el modal de onboarding (un overlay que se descarta y no
+  // vuelve a mostrarse). Se agrega un title accesible en ambos idiomas.
+  var AUTONOMY_CHIP_TITLES = {
+    A0: { es: 'A0 — Analizar: solo lectura, sin cambios', en: 'A0 — Analyze: read-only, no changes' },
+    A1: { es: 'A1 — Proponer: plan o diff, sin aplicarlo', en: 'A1 — Propose: plan or diff, not applied' },
+    A2: { es: 'A2 — Ejecutar controlado: editar y validar en rama aislada', en: 'A2 — Execute controlled: edit and validate on an isolated branch' },
+    A3: { es: 'A3 — Publicar: commit, push, PR o despliegue', en: 'A3 — Publish: commit, push, PR, or deploy' }
+  };
+  document.querySelectorAll('.facet-chip[data-kind="autonomy"]').forEach(function(chip) {
+    var code = chip.getAttribute('data-value');
+    var titles = AUTONOMY_CHIP_TITLES[code];
+    if (titles) chip.setAttribute('title', titles[lang] || titles.es);
+  });
 
   // Traducir input placeholder de búsqueda
   var searchInput = document.querySelector('.search-wrap input');
@@ -4581,11 +4661,21 @@ document.addEventListener('DOMContentLoaded', function() {
       if (e.target === feedbackWallOverlay) closeFeedbackWall();
     });
   }
+  // Bug real corregido (auditoría de UX): el modal de modo guiado (🧭) se
+  // agregó después de este listener y quedó fuera tanto del cierre por
+  // Escape como del cierre por clic-fuera que ya tienen todos los demás
+  // overlays -- solo el botón ✕ lo cerraba.
+  var guidedModalOverlay = document.getElementById('guided-modal');
+  if (guidedModalOverlay) {
+    guidedModalOverlay.addEventListener('click', function(e) {
+      if (e.target === guidedModalOverlay) closeGuidedModal();
+    });
+  }
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
       closeInfo(); closeVarPanel(); closeVarFloat(); closeProjectsModal();
       closeProjQuick(); closeOnboarding(true); closeMenu(); closeLanguageDropdown();
-      closeRegisterWall(); closeFeedbackWall();
+      closeRegisterWall(); closeFeedbackWall(); closeGuidedModal();
     }
     trapFocusInModal(e);
   });
@@ -6338,10 +6428,10 @@ def build():
         '<label for="vf-autonomia"><span class="fw-lang-es">Nivel de autonomía IA</span><span class="fw-lang-en">AI autonomy level</span></label>'
         '<select id="vf-autonomia" onchange="syncProjectFromPanel();updateVarsBadge();">'
         '<option value="">-- seleccionar --</option>'
-        '<option>solo análisis</option>'
-        '<option>análisis + propuesta</option>'
-        '<option>ejecución controlada</option>'
-        '<option>ejecución autónoma</option>'
+        '<option>A0 — solo análisis</option>'
+        '<option>A1 — análisis + propuesta</option>'
+        '<option>A2 — ejecución controlada</option>'
+        '<option>A3 — ejecución autónoma</option>'
         '</select>'
         '<div class="var-tags">'
         '<span class="var-tag"><span class="fw-lang-es">[NIVEL DE AUTONOMÍA]</span><span class="fw-lang-en">[AUTONOMY LEVEL]</span></span>'
@@ -6584,19 +6674,25 @@ def build():
         ' on each card explains when and how to use that prompt.</p>\n'
         '      </div>\n'
         '      <div class="ob-step" id="ob-step-4">\n'
-        '        <div class="ob-step-badge"><span class="ob-step-badge-dot">5</span>\u00a0Rec\u00edbe nuevos prompts gratis</div>\n'
-        '        <h3>Mantente al tanto de cada actualizaci\u00f3n</h3>\n'
-        '        <p>Cada mes publicamos nuevos prompts y mejoras al framework.\n'
+        '        <div class="ob-step-badge"><span class="ob-step-badge-dot">5</span>\u00a0<span class="fw-lang-es">Rec\u00edbe nuevos prompts gratis</span><span class="fw-lang-en">Get new prompts for free</span></div>\n'
+        '        <h3 class="fw-lang-es">Mantente al tanto de cada actualizaci\u00f3n</h3>\n'
+        '        <h3 class="fw-lang-en">Stay on top of every update</h3>\n'
+        '        <p class="fw-lang-es">Cada mes publicamos nuevos prompts y mejoras al framework.\n'
         'D\u00e9janos tu email y ser\u00e1s el primero en saber.</p>\n'
+        '        <p class="fw-lang-en">Every month we publish new prompts and framework improvements.\n'
+        'Leave us your email and be the first to know.</p>\n'
         '        <form class="ob-email-form" onsubmit="submitObEmail();return false;">\n'
-        '          <label for="ob-email-input">Correo electr\u00f3nico</label>\n'
+        '          <label class="fw-lang-es" for="ob-email-input">Correo electr\u00f3nico</label>\n'
+        '          <label class="fw-lang-en" for="ob-email-input">Email address</label>\n'
         '          <input class="ob-email-input" id="ob-email-input" type="email"'
         ' placeholder="tu@correo.com" autocomplete="email" required>\n'
         '          <button class="ob-email-submit" id="ob-email-submit-btn" type="submit">\n'
-        '            \u2709\ufe0f Recibir nuevos prompts gratis\n'
+        '            <span class="fw-lang-es">\u2709\ufe0f Recibir nuevos prompts gratis</span>'
+        '<span class="fw-lang-en">\u2709\ufe0f Get new prompts for free</span>\n'
         '          </button>\n'
         '        </form>\n'
-        '        <p class="ob-email-note">Sin spam. Cancelar en cualquier momento.</p>\n'
+        '        <p class="ob-email-note fw-lang-es">Sin spam. Cancelar en cualquier momento.</p>\n'
+        '        <p class="ob-email-note fw-lang-en">No spam. Unsubscribe anytime.</p>\n'
         '      </div>\n'
         '    </div>\n'
         '    <div class="ob-progress">\n'
