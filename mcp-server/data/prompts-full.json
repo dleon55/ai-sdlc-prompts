@@ -1032,6 +1032,161 @@
       ]
     },
     {
+      "id": "00-D-03-plan-trabajo-proyecto",
+      "section": "00",
+      "title": {
+        "es": "0-D.3 — Plan de trabajo del proyecto: cronograma, EDT y asignación de recursos",
+        "en": "0-D.3 — Project work plan: schedule, WBS, and resource allocation"
+      },
+      "description": {
+        "es": "Prompt para elaborar el plan de trabajo de todo el proyecto: estructura de desglose del trabajo (EDT/WBS), estimación por fase o entregable, dependencias, cronograma con ruta crítica y asignación de recursos. Es el plan a nivel de proyecto completo — distinto de `05-01-plan-implementacion`, que planifica la ejecución de un cambio o feature ya diseñado dentro de un componente existente.\n\nCuándo usarlo: después de aprobar el Project Charter (`00-D-01`) y, si ya existe, el stack/arquitectura inicial (`00-D-02`) — antes de iniciar la ejecución del proyecto, para tener un cronograma y una asignación de recursos que el equipo o patrocinador pueda aprobar.",
+        "en": ""
+      },
+      "template": {
+        "es": "Objetivo:\nElabora el plan de trabajo completo del proyecto: estructura de desglose del trabajo (EDT/WBS), estimación, dependencias, cronograma con ruta crítica y asignación de recursos.\n\nEntradas:\n- Project Charter aprobado: [PEGAR O REFERENCIA A 00-D-01]\n- alcance y entregables principales: [LISTA O DESCRIPCIÓN]\n- equipo disponible: [ROLES, CAPACIDAD POR PERSONA (horas/semana), CALENDARIO/AUSENCIAS CONOCIDAS]\n- fecha límite o ventana objetivo: [FECHA O \"no declarada aún\"]\n- dependencias externas conocidas: [OTROS EQUIPOS, PROVEEDORES, APROBACIONES REQUERIDAS, O \"ninguna declarada\"]\n\nActividades:\n1. ESTRUCTURA DE DESGLOSE DEL TRABAJO (EDT/WBS)\n   Descompón el alcance en entregables y, dentro de cada entregable, en paquetes de trabajo lo bastante pequeños para estimar con confianza (regla general: ningún paquete debe exceder ~2 semanas de esfuerzo; si lo excede, descompónlo más). Cada paquete de trabajo debe tener un responsable único identificable (rol, no necesariamente persona nombrada).\n\n2. ESTIMACIÓN\n   Para cada paquete de trabajo, estima el esfuerzo con un método declarado explícitamente (analogía con trabajo similar previo, juicio experto, descomposición PERT de tres puntos, u otro) — nunca presentes una cifra sin indicar de dónde sale. Declara el nivel de confianza de cada estimación (alto/medio/bajo) según la información disponible al momento de estimar.\n\n3. DEPENDENCIAS\n   Identifica dependencias entre paquetes de trabajo (secuenciales, de recursos compartidos, externas) y clasifícalas por tipo. Señala explícitamente las dependencias externas (fuera del control directo del equipo) porque son las de mayor riesgo para el cronograma.\n\n4. CRONOGRAMA Y RUTA CRÍTICA\n   A partir de las estimaciones y dependencias, construye el cronograma y calcula la ruta crítica (la secuencia de paquetes de trabajo que determina la duración mínima del proyecto). Señala explícitamente cuánta holgura (slack) tiene cada paquete fuera de la ruta crítica.\n\n5. ASIGNACIÓN DE RECURSOS\n   Asigna cada paquete de trabajo a un rol o persona según la capacidad declarada. Detecta y señala explícitamente cualquier sobreasignación (un recurso comprometido más allá de su capacidad declarada en una misma ventana de tiempo) — no la resuelvas por tu cuenta reasignando o recortando alcance sin indicarlo como una decisión pendiente.\n\n6. VALIDACIÓN CONTRA FECHA LÍMITE\n   Si existe una fecha límite u objetivo declarado, compárala contra la fecha resultante del cronograma. Si el cronograma no alcanza la fecha, no comprimas las estimaciones para forzar que encaje — presenta las opciones reales de trade-off (reducir alcance, sumar recursos, extender fecha, aceptar el riesgo de comprimir sin margen) para que el patrocinador decida.\n\nRestricciones:\n- nunca ajustes una estimación a la baja únicamente para que el cronograma alcance una fecha límite declarada — si hay una brecha, repórtala explícitamente con las opciones de trade-off, no la ocultes comprimiendo números,\n- todo paquete de trabajo debe declarar el método de estimación usado y su nivel de confianza — una estimación sin método declarado se reporta como \"estimación no verificable\", no como cifra definitiva,\n- no asignes un recurso por encima de su capacidad declarada sin señalarlo explícitamente como sobreasignación — nunca lo dejes implícito en la tabla de asignación,\n- si falta información de capacidad del equipo o de alcance para poder planear con confianza, detente y solicita la información faltante en vez de asumir una capacidad o un alcance no declarados.\n\nSalida:\n0. Bloque JSON de metadatos (claves: status, work_package_count, critical_path_duration_days, overallocated_resources_count, confidence_score [0.0 a 1.0]).\n1. EDT/WBS: Entregable | Paquete de trabajo | Responsable (rol) | Estimación | Método de estimación | Confianza\n2. Dependencias: Paquete de trabajo | Depende de | Tipo de dependencia | Riesgo si se retrasa\n3. Cronograma con ruta crítica: Paquete de trabajo | Inicio | Fin | ¿En ruta crítica? | Holgura\n4. Asignación de recursos: Recurso (rol/persona) | Paquetes asignados | Carga total vs. capacidad | ¿Sobreasignado?\n5. Validación contra fecha límite: fecha resultante del cronograma, brecha contra la fecha objetivo (si existe), opciones de trade-off si hay brecha.\n6. Supuestos y vacíos de información pendientes de confirmar antes de aprobar el plan.",
+        "en": "Objective:\nBuild the complete project work plan: work breakdown structure (WBS), estimation, dependencies, schedule with critical path, and resource allocation.\n\nInputs:\n- approved Project Charter: [PASTE OR REFERENCE TO 00-D-01]\n- scope and main deliverables: [LIST OR DESCRIPTION]\n- available team: [ROLES, CAPACITY PER PERSON (hours/week), KNOWN CALENDAR/ABSENCES]\n- deadline or target window: [DATE OR \"not yet declared\"]\n- known external dependencies: [OTHER TEAMS, VENDORS, REQUIRED APPROVALS, OR \"none declared\"]\n\nActivities:\n1. WORK BREAKDOWN STRUCTURE (WBS)\n   Decompose the scope into deliverables and, within each deliverable, into work packages small enough to estimate with confidence (rule of thumb: no package should exceed ~2 weeks of effort; if it does, decompose it further). Each work package must have a single identifiable owner (role, not necessarily a named person).\n\n2. ESTIMATION\n   For each work package, estimate the effort with an explicitly declared method (analogy with similar prior work, expert judgment, three-point PERT decomposition, or other) — never present a figure without indicating where it comes from. Declare the confidence level of each estimate (high/medium/low) based on the information available at estimation time.\n\n3. DEPENDENCIES\n   Identify dependencies between work packages (sequential, shared-resource, external) and classify them by type. Explicitly flag external dependencies (outside the team's direct control) because they carry the highest schedule risk.\n\n4. SCHEDULE AND CRITICAL PATH\n   From the estimates and dependencies, build the schedule and calculate the critical path (the sequence of work packages that determines the project's minimum duration). Explicitly flag how much slack each package outside the critical path has.\n\n5. RESOURCE ALLOCATION\n   Assign each work package to a role or person according to declared capacity. Detect and explicitly flag any overallocation (a resource committed beyond its declared capacity within the same time window) — do not resolve it on your own by reassigning or cutting scope without flagging it as a pending decision.\n\n6. VALIDATION AGAINST THE DEADLINE\n   If a deadline or target exists, compare it against the date resulting from the schedule. If the schedule doesn't meet the date, do not compress the estimates to force a fit — present the real trade-off options (reduce scope, add resources, extend the date, accept the risk of compressing with no margin) for the sponsor to decide.\n\nConstraints:\n- never lower an estimate solely to make the schedule meet a declared deadline — if there's a gap, report it explicitly with the trade-off options, don't hide it by compressing numbers,\n- every work package must declare the estimation method used and its confidence level — an estimate with no declared method is reported as \"unverifiable estimate\", not as a definitive figure,\n- do not assign a resource above its declared capacity without explicitly flagging it as overallocation — never leave it implicit in the allocation table,\n- if team capacity or scope information is missing to plan with confidence, stop and request the missing information instead of assuming undeclared capacity or scope.\n\nOutput:\n0. JSON metadata block (keys: status, work_package_count, critical_path_duration_days, overallocated_resources_count, confidence_score [0.0 to 1.0]).\n1. WBS: Deliverable | Work package | Owner (role) | Estimate | Estimation method | Confidence\n2. Dependencies: Work package | Depends on | Dependency type | Risk if delayed\n3. Schedule with critical path: Work package | Start | End | On critical path? | Slack\n4. Resource allocation: Resource (role/person) | Assigned packages | Total load vs. capacity | Overallocated?\n5. Validation against the deadline: date resulting from the schedule, gap against the target date (if any), trade-off options if there's a gap.\n6. Assumptions and information gaps pending confirmation before approving the plan."
+      },
+      "formulas": {
+        "es": [
+          "Usa el prompt de plan de trabajo del proyecto y adáptalo a:\n- repositorio/proyecto: [NOMBRE O URL]\n- Project Charter: [REFERENCIA A 00-D-01]\n- alcance y entregables principales: [LISTA]\n- equipo disponible: [ROLES Y CAPACIDAD]\n- documentos a revisar: Project Charter, arquitectura inicial (00-D-02) si existe\n- objetivo puntual de salida: EDT, cronograma con ruta crítica y asignación de recursos\n- nivel de profundidad: alto"
+        ],
+        "en": [
+          "Use the project work plan prompt and adapt it to:\n- repository/project: [NAME OR URL]\n- Project Charter: [REFERENCE TO 00-D-01]\n- scope and main deliverables: [LIST]\n- available team: [ROLES AND CAPACITY]\n- documents to review: Project Charter, initial architecture (00-D-02) if it exists\n- specific output objective: WBS, schedule with critical path, and resource allocation\n- depth level: high"
+        ]
+      },
+      "contract": {
+        "es": {
+          "type": "diseño",
+          "expected_risk": "alto — el cronograma y la asignación de recursos resultantes condicionan compromisos de fecha ante el patrocinador y la carga de trabajo del equipo; una estimación optimista o una sobreasignación de recursos no detectada se descubre típicamente tarde, cuando ya es costosa de corregir",
+          "required_inputs": "Project Charter aprobado (`00-D-01`), alcance y entregables principales, equipo disponible (roles, capacidad, calendario), fecha límite o ventana objetivo si existe, dependencias externas conocidas (otros equipos, proveedores, aprobaciones)",
+          "allowed_tools": "ninguna de ejecución — el prompt produce un documento de planeación (EDT, cronograma, tabla de asignación); no crea issues, milestones ni eventos de calendario reales",
+          "permitted_autonomy": "A1 — Proponer (cronograma y asignación de recursos quedan marcados como propuesta hasta aprobación del patrocinador o equipo)",
+          "stop_criteria": "si la fecha límite declarada no es alcanzable con el equipo y alcance dados, no ajustar las estimaciones para que \"encajen\" — reportarlo explícitamente como conflicto con las opciones de trade-off; si falta información de capacidad del equipo, detener y solicitarla antes de asignar recursos",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada entregable de la EDT tiene estimación con método declarado, cada dependencia entre entregables está listada, la ruta crítica está identificada explícitamente, y cualquier sobreasignación de un recurso queda señalada con la fila y el recurso afectado",
+          "recommended_next_prompt": "`05-02-riesgos-implementacion` para profundizar en riesgos de ejecución del cronograma; `05-01-plan-implementacion` cuando cada entregable de la EDT entre a su fase de diseño/implementación individual",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "05-02-riesgos-implementacion",
+            "05-01-plan-implementacion"
+          ]
+        },
+        "en": {
+          "type": "design",
+          "expected_risk": "high — the resulting schedule and resource allocation condition date commitments to the sponsor and the team's workload; an optimistic estimate or an undetected resource overallocation is typically discovered late, when it's already expensive to fix",
+          "required_inputs": "approved Project Charter (`00-D-01`), scope and main deliverables, available team (roles, capacity, calendar), deadline or target window if it exists, known external dependencies (other teams, vendors, approvals)",
+          "allowed_tools": "none for execution — the prompt produces a planning document (WBS, schedule, allocation table); it does not create real issues, milestones, or calendar events",
+          "permitted_autonomy": "A1 — Propose (schedule and resource allocation remain marked as a proposal until approved by the sponsor or team)",
+          "stop_criteria": "if the declared deadline is not achievable with the given team and scope, do not adjust the estimates to \"make it fit\" — report it explicitly as a conflict with the trade-off options; if team capacity information is missing, stop and request it before allocating resources",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every WBS deliverable has an estimate with a declared method, every dependency between deliverables is listed, the critical path is explicitly identified, and any resource overallocation is flagged with the row and the affected resource",
+          "recommended_next_prompt": "`05-02-riesgos-implementacion` to go deeper into schedule-execution risks; `05-01-plan-implementacion` once each WBS deliverable enters its individual design/implementation phase",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "05-02-riesgos-implementacion",
+            "05-01-plan-implementacion"
+          ]
+        }
+      },
+      "recommended_next_prompt_ids": [
+        "05-02-riesgos-implementacion",
+        "05-01-plan-implementacion"
+      ]
+    },
+    {
+      "id": "00-D-04-registro-riesgos-proyecto",
+      "section": "00",
+      "title": {
+        "es": "0-D.4 — Registro de riesgos del proyecto (RAID): riesgos, supuestos, incidentes y dependencias",
+        "en": "0-D.4 — Project risk register (RAID): risks, assumptions, issues and dependencies"
+      },
+      "description": {
+        "es": "Prompt para construir y mantener el registro de riesgos de todo el proyecto siguiendo el formato RAID (Risks, Assumptions, Issues, Dependencies): riesgos potenciales con probabilidad/impacto, supuestos sobre los que se apoya el plan, incidentes ya materializados que requieren resolución, y dependencias externas que pueden bloquear el cronograma. Es el registro a nivel de todo el proyecto — distinto de `05-02-riesgos-implementacion`, que analiza los riesgos de un cambio o feature puntual ya diseñado.\n\nCuándo usarlo: junto con el Project Charter (`00-D-01`) y el plan de trabajo (`00-D-03`), al inicio del proyecto, y revisado periódicamente (cada hito o cada sprint) durante toda la ejecución — un registro de riesgos que solo se llena una vez al inicio pierde su valor.",
+        "en": ""
+      },
+      "template": {
+        "es": "Objetivo:\nConstruye el registro de riesgos de todo el proyecto en formato RAID: riesgos, supuestos, incidentes ya materializados y dependencias externas, con clasificación, responsable y plan de acción para cada uno.\n\nEntradas:\n- Project Charter: [PEGAR O REFERENCIA A 00-D-01]\n- stack/arquitectura inicial: [PEGAR O REFERENCIA A 00-D-02, O \"no definida aún\"]\n- plan de trabajo: [PEGAR O REFERENCIA A 00-D-03, O \"no definido aún\"]\n- restricciones de negocio conocidas: [PRESUPUESTO, PLAZO, COMPLIANCE, U \"ninguna declarada\"]\n- historial de riesgos materializados en proyectos similares: [DESCRIPCIÓN O \"no disponible\"]\n\nActividades:\n1. RIESGOS (R)\n   Identifica riesgos potenciales del proyecto por categoría: técnico, de negocio, de recursos/personal, de cronograma, de terceros/proveedores, regulatorio/compliance, financiero. Para cada uno: identificador (R-XXX), categoría, descripción, probabilidad (baja/media/alta), impacto (bajo/medio/alto), responsable (owner), mitigación, contingencia, y estado (abierto/mitigado/cerrado/materializado). Basa probabilidad e impacto en evidencia citada (historial, Charter, restricciones) — si no hay evidencia suficiente, decláralo como \"riesgo no evaluable con la información disponible\" en vez de asumir que es bajo.\n\n2. SUPUESTOS (A)\n   Identifica los supuestos sobre los que se apoya el Charter y el plan de trabajo (técnicos, de negocio, de recursos, de mercado). Para cada uno: identificador (A-XXX), descripción, qué pasa si resulta falso (impacto de la invalidación), cómo y cuándo se validará, y estado (validado/pendiente de validar/invalidado).\n\n3. INCIDENTES (I)\n   Registra problemas ya materializados (no hipotéticos) que requieren resolución activa ahora mismo — a diferencia de los riesgos, que son potenciales. Para cada uno: identificador (I-XXX), descripción, impacto actual, responsable, fecha límite de resolución, y estado.\n\n4. DEPENDENCIAS (D)\n   Identifica dependencias externas al control directo del equipo del proyecto: otros equipos, proveedores, aprobaciones regulatorias o de negocio, infraestructura compartida. Para cada una: identificador (D-XXX), descripción, tipo (interna/externa), a qué actividad o hito bloquea, fecha en que se necesita resuelta, y estado.\n\n5. PRIORIZACIÓN Y ESCALAMIENTO\n   Prioriza los riesgos por severidad (probabilidad × impacto) y señala explícitamente cuáles requieren decisión o escalamiento del patrocinador antes de continuar. Nunca resuelvas por tu cuenta un riesgo alto sin mitigación viable — repórtalo como decisión pendiente.\n\n6. CADENCIA DE REVISIÓN\n   Propón una cadencia de revisión de este registro (semanal/quincenal/por hito) proporcional al riesgo esperado del proyecto declarado en el Charter.\n\nRestricciones:\n- nunca clasifiques un riesgo como bajo solo porque falta evidencia en contra — si no hay información suficiente para evaluarlo, decláralo como \"riesgo no evaluable con la información disponible\",\n- ningún riesgo alto puede quedar sin mitigación o contingencia explícitas en la salida — si no existe una mitigación viable, decláralo bloqueante en vez de omitirlo o minimizarlo,\n- distingue siempre un riesgo, supuesto, incidente o dependencia declarado explícitamente por el negocio/Charter de uno que tú infieres — nunca los presentes con el mismo nivel de certeza,\n- no confundas este registro de proyecto con el análisis de riesgos de una implementación puntual (`05-02`) — si detectas un riesgo que aplica solo a un cambio específico ya en diseño, señala que corresponde a `05-02` en vez de mezclarlo aquí,\n- si no existe Project Charter de referencia, detente y solicítalo antes de construir el registro sobre supuestos propios.\n\nSalida:\n0. Bloque JSON de metadatos (claves: status, risk_count, high_risk_unmitigated_count, open_issues_count, confidence_score [0.0 a 1.0]).\n1. Riesgos (R): ID | Categoría | Descripción | Probabilidad | Impacto | Responsable | Mitigación | Contingencia | Estado\n2. Supuestos (A): ID | Descripción | Impacto si resulta falso | Cómo/cuándo se valida | Estado\n3. Incidentes (I): ID | Descripción | Impacto actual | Responsable | Fecha límite | Estado\n4. Dependencias (D): ID | Descripción | Tipo | Bloquea a | Fecha necesaria | Estado\n5. Riesgos altos sin mitigación viable — bloqueantes para el patrocinador.\n6. Cadencia de revisión recomendada.",
+        "en": "Objective:\nBuild the whole-project risk register in RAID format: risks, assumptions, issues already materialized, and external dependencies, with classification, owner, and action plan for each.\n\nInputs:\n- Project Charter: [PASTE OR REFERENCE TO 00-D-01]\n- initial stack/architecture: [PASTE OR REFERENCE TO 00-D-02, OR \"not yet defined\"]\n- work plan: [PASTE OR REFERENCE TO 00-D-03, OR \"not yet defined\"]\n- known business constraints: [BUDGET, DEADLINE, COMPLIANCE, OR \"none declared\"]\n- history of materialized risks from similar projects: [DESCRIPTION OR \"not available\"]\n\nActivities:\n1. RISKS (R)\n   Identify potential project risks by category: technical, business, resources/staffing, schedule, third parties/vendors, regulatory/compliance, financial. For each: identifier (R-XXX), category, description, probability (low/medium/high), impact (low/medium/high), owner, mitigation, contingency, and status (open/mitigated/closed/materialized). Base probability and impact on cited evidence (history, Charter, constraints) — if there isn't enough evidence, declare it as \"risk not evaluable with available information\" instead of assuming it's low.\n\n2. ASSUMPTIONS (A)\n   Identify the assumptions the Charter and work plan rest on (technical, business, resource, market). For each: identifier (A-XXX), description, what happens if it turns out false (impact of invalidation), how and when it will be validated, and status (validated/pending validation/invalidated).\n\n3. ISSUES (I)\n   Record problems already materialized (not hypothetical) that require active resolution right now — unlike risks, which are potential. For each: identifier (I-XXX), description, current impact, owner, resolution deadline, and status.\n\n4. DEPENDENCIES (D)\n   Identify dependencies external to the project team's direct control: other teams, vendors, regulatory or business approvals, shared infrastructure. For each: identifier (D-XXX), description, type (internal/external), which activity or milestone it blocks, date by which it's needed, and status.\n\n5. PRIORITIZATION AND ESCALATION\n   Prioritize risks by severity (probability × impact) and explicitly flag which ones require a sponsor decision or escalation before continuing. Never resolve a high risk with no viable mitigation on your own — report it as a pending decision.\n\n6. REVIEW CADENCE\n   Propose a review cadence for this register (weekly/biweekly/per milestone) proportional to the risk level declared in the Charter.\n\nConstraints:\n- never classify a risk as low just because evidence against it is missing — if there isn't enough information to evaluate it, declare it as \"risk not evaluable with available information\",\n- no high risk may be left without explicit mitigation or contingency in the output — if no viable mitigation exists, declare it blocking instead of omitting or minimizing it,\n- always distinguish a risk, assumption, issue, or dependency explicitly declared by the business/Charter from one you infer — never present them with the same level of certainty,\n- do not confuse this project register with the risk analysis of a single implementation (`05-02`) — if you detect a risk that applies only to a specific change already in design, flag that it belongs in `05-02` instead of mixing it in here,\n- if there is no reference Project Charter, stop and request it before building the register on your own assumptions.\n\nOutput:\n0. JSON metadata block (keys: status, risk_count, high_risk_unmitigated_count, open_issues_count, confidence_score [0.0 to 1.0]).\n1. Risks (R): ID | Category | Description | Probability | Impact | Owner | Mitigation | Contingency | Status\n2. Assumptions (A): ID | Description | Impact if false | How/when validated | Status\n3. Issues (I): ID | Description | Current impact | Owner | Deadline | Status\n4. Dependencies (D): ID | Description | Type | Blocks | Date needed | Status\n5. High risks with no viable mitigation — blockers for the sponsor.\n6. Recommended review cadence."
+      },
+      "formulas": {
+        "es": [
+          "Usa el prompt de registro de riesgos del proyecto (RAID) y adáptalo a:\n- repositorio/proyecto: [NOMBRE O URL]\n- Project Charter: [REFERENCIA A 00-D-01]\n- plan de trabajo: [REFERENCIA A 00-D-03, O \"no definido aún\"]\n- documentos a revisar: Project Charter, arquitectura inicial (00-D-02), plan de trabajo (00-D-03)\n- objetivo puntual de salida: registro RAID completo con riesgos altos priorizados\n- nivel de profundidad: alto"
+        ],
+        "en": [
+          "Use the project risk register (RAID) prompt and adapt it to:\n- repository/project: [NAME OR URL]\n- Project Charter: [REFERENCE TO 00-D-01]\n- work plan: [REFERENCE TO 00-D-03, OR \"not yet defined\"]\n- documents to review: Project Charter, initial architecture (00-D-02), work plan (00-D-03)\n- specific output objective: complete RAID register with prioritized high risks\n- depth level: high"
+        ]
+      },
+      "contract": {
+        "es": {
+          "type": "análisis",
+          "expected_risk": "alto — este registro es el insumo que el patrocinador usa para decisiones de go/no-go y de inversión en mitigación; un riesgo alto omitido o mal clasificado a nivel de proyecto completo puede materializarse sin que nadie lo haya visto venir, con impacto en fecha, presupuesto o alcance, aunque el prompt no ejecuta ni compromete nada por sí mismo",
+          "required_inputs": "Project Charter (`00-D-01`), stack/arquitectura inicial (`00-D-02`) si existe, plan de trabajo (`00-D-03`) si existe, restricciones de negocio conocidas, historial de riesgos materializados en proyectos similares si existe",
+          "allowed_tools": "ninguna de ejecución — lectura de documentación existente; produce un documento de registro (RAID log), no aplica ninguna mitigación por sí mismo",
+          "permitted_autonomy": "A0 — Analizar (riesgos, supuestos, incidentes y dependencias ya declarados o evidentes en el contexto); A1 — Proponer (mitigaciones, riesgos inferidos no declarados explícitamente por el negocio, siempre marcados como propuesta)",
+          "stop_criteria": "si un riesgo queda clasificado como alto (probabilidad alta o impacto alto) sin una mitigación viable, no lo minimices ni lo dejes implícito — decláralo explícitamente como bloqueante para aprobar el Charter o el plan de trabajo",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada riesgo (R-XXX) declara categoría, probabilidad, impacto, mitigación y contingencia; cada supuesto (A-XXX) declara qué pasa si resulta falso y cómo se validará; cada incidente (I-XXX) y dependencia (D-XXX) declara responsable y estado",
+          "recommended_next_prompt": "`05-02-riesgos-implementacion` cuando cada feature o cambio individual del proyecto entre a su fase de diseño/implementación — ese prompt cubre el riesgo específico de ESE cambio, no reemplaza este registro de proyecto",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "05-02-riesgos-implementacion"
+          ]
+        },
+        "en": {
+          "type": "analysis",
+          "expected_risk": "high — this register is the input the sponsor uses for go/no-go and mitigation-investment decisions; a high risk omitted or misclassified at the whole-project level can materialize with no one having seen it coming, impacting date, budget, or scope, although the prompt does not execute or commit anything by itself",
+          "required_inputs": "Project Charter (`00-D-01`), initial stack/architecture (`00-D-02`) if it exists, work plan (`00-D-03`) if it exists, known business constraints, history of materialized risks from similar projects if available",
+          "allowed_tools": "none for execution — reads existing documentation; produces a register document (RAID log), does not apply any mitigation by itself",
+          "permitted_autonomy": "A0 — Analyze (risks, assumptions, issues, and dependencies already declared or evident in context); A1 — Propose (mitigations, inferred risks not explicitly declared by the business, always marked as a proposal)",
+          "stop_criteria": "if a risk is classified as high (high probability or high impact) with no viable mitigation, do not minimize it or leave it implicit — declare it explicitly as blocking approval of the Charter or the work plan",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "each risk (R-XXX) declares category, probability, impact, mitigation, and contingency; each assumption (A-XXX) declares what happens if it turns out false and how it will be validated; each issue (I-XXX) and dependency (D-XXX) declares an owner and a status",
+          "recommended_next_prompt": "`05-02-riesgos-implementacion` once each individual feature or change in the project enters its design/implementation phase — that prompt covers the specific risk of THAT change, it does not replace this project register",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "05-02-riesgos-implementacion"
+          ]
+        }
+      },
+      "recommended_next_prompt_ids": [
+        "05-02-riesgos-implementacion"
+      ]
+    },
+    {
       "id": "01-01-arranque-comprension-repositorio",
       "section": "01",
       "title": {
@@ -1653,6 +1808,86 @@
       ]
     },
     {
+      "id": "02-06-requerimientos-no-funcionales",
+      "section": "02",
+      "title": {
+        "es": "2.6 — Especificación de requerimientos no funcionales",
+        "en": "2.6 — Non-functional requirements specification"
+      },
+      "description": {
+        "es": "Prompt para catalogar y documentar formalmente los requerimientos no funcionales (RNF) del sistema o del cambio: rendimiento, disponibilidad, escalabilidad, seguridad, usabilidad, mantenibilidad, portabilidad y compliance — cada uno numerado, con umbral medible y método de verificación. Complementa el catálogo de requerimientos funcionales que ya producen `02-05`/`04-03`, que no cubren esta categoría.\n\nCuándo usarlo: después de tener los requerimientos funcionales definidos (`02-05`) o la arquitectura tentativa (`00-D-02`), y antes del diseño de solución (`04-01`) — los RNF condicionan decisiones de diseño que son costosas de revertir si se descubren tarde.",
+        "en": ""
+      },
+      "template": {
+        "es": "Objetivo:\nCataloga y documenta formalmente los requerimientos no funcionales del sistema o del cambio, con umbral medible y método de verificación para cada uno.\n\nEntradas:\n- contexto del sistema o cambio: [DESCRIPCIÓN]\n- requerimientos funcionales ya definidos: [PEGAR O \"no definidos aún\"]\n- restricciones de negocio conocidas: [SLA contractual, compliance (GDPR/HIPAA/PCI/ISO), presupuesto de infraestructura, o \"ninguna declarada\"]\n- arquitectura o stack tentativo: [PEGAR O \"no definido aún\"]\n- categorías a priorizar: [ej. TODAS, o un subconjunto: rendimiento, disponibilidad, escalabilidad, seguridad, usabilidad, mantenibilidad, portabilidad, compliance]\n\nActividades:\n1. Para cada categoría de RNF aplicable (rendimiento, disponibilidad/confiabilidad, escalabilidad, seguridad, usabilidad/accesibilidad, mantenibilidad, portabilidad, compliance/regulatorio, observabilidad), determina si el contexto la hace relevante — omite categorías no aplicables con una línea explicando por qué, no las ignores en silencio.\n2. Para cada RNF relevante, define: identificador (RNF-XXX), categoría, descripción, umbral medible (número + unidad + condición), método de verificación (qué prueba o métrica lo confirma), prioridad (crítico/alto/medio/bajo), y origen (declarado por negocio / inferido de RF / inferido de compliance aplicable).\n3. Si un RNF no tiene un umbral que el negocio haya fijado, propone uno basado en estándares de la industria para el tipo de sistema, márcalo explícitamente como \"[UMBRAL PROPUESTO — validar con negocio]\", y justifica el número propuesto.\n4. Detecta conflictos entre RNF (ej. máxima seguridad vs. mínima fricción de UX, alta disponibilidad vs. presupuesto de infraestructura limitado) y decláralos explícitamente con las opciones de trade-off, sin resolver el conflicto por tu cuenta.\n5. Relaciona cada RNF con los requerimientos funcionales que restringe o condiciona, si existen RF ya definidos.\n\nRestricciones:\n- nunca declares un RNF como \"definido\" si solo tiene una descripción cualitativa sin umbral medible — repórtalo como pendiente de cuantificar,\n- distingue siempre un RNF declarado explícitamente por el negocio de uno que tú infieres o propones — nunca los presentes con el mismo nivel de certeza,\n- no inventes umbrales de compliance regulatorio (p. ej. cifras de una norma específica) sin poder citar la norma exacta — si no la conoces con certeza, márcalo como \"[VERIFICAR CONTRA LA NORMA APLICABLE]\",\n- no resuelvas conflictos entre RNF por tu cuenta (p. ej. eligiendo seguridad sobre UX) — repórtalos como decisión pendiente para el negocio o la arquitectura.\n\nSalida:\n0. Bloque JSON de metadatos (claves: status, nfr_count, categories_covered, unquantified_count, confidence_score [0.0 a 1.0]).\n1. Catálogo de RNF: ID | Categoría | Descripción | Umbral medible | Método de verificación | Prioridad | Origen\n2. RNF pendientes de cuantificar, con la razón de por qué no se pudo fijar un umbral.\n3. Conflictos detectados entre RNF: RNF en conflicto | Naturaleza del trade-off | Opciones | Decisión requerida de\n4. Relación RNF ↔ RF: qué requerimientos funcionales queda restringido por cada RNF crítico.\n5. Categorías omitidas y por qué.",
+        "en": "Objective:\nCatalog and formally document the system or change's non-functional requirements, with a measurable threshold and a verification method for each one.\n\nInputs:\n- system or change context: [DESCRIPTION]\n- functional requirements already defined: [PASTE OR \"not yet defined\"]\n- known business constraints: [contractual SLA, compliance (GDPR/HIPAA/PCI/ISO), infrastructure budget, or \"none declared\"]\n- tentative architecture or stack: [PASTE OR \"not yet defined\"]\n- categories to prioritize: [e.g. ALL, or a subset: performance, availability, scalability, security, usability, maintainability, portability, compliance]\n\nActivities:\n1. For each applicable NFR category (performance, availability/reliability, scalability, security, usability/accessibility, maintainability, portability, compliance/regulatory, observability), determine whether the context makes it relevant — omit non-applicable categories with a one-line explanation of why, do not silently ignore them.\n2. For each relevant NFR, define: identifier (NFR-XXX), category, description, measurable threshold (number + unit + condition), verification method (what test or metric confirms it), priority (critical/high/medium/low), and origin (declared by business / inferred from FR / inferred from applicable compliance).\n3. If an NFR has no threshold set by the business, propose one based on industry standards for this type of system, mark it explicitly as \"[PROPOSED THRESHOLD — validate with business]\", and justify the proposed figure.\n4. Detect conflicts between NFRs (e.g. maximum security vs. minimum UX friction, high availability vs. limited infrastructure budget) and declare them explicitly with the trade-off options, without resolving the conflict on your own.\n5. Relate each NFR to the functional requirements it constrains or conditions, if functional requirements are already defined.\n\nConstraints:\n- never declare an NFR as \"defined\" if it only has a qualitative description with no measurable threshold — report it as pending quantification,\n- always distinguish an NFR explicitly declared by the business from one you infer or propose — never present them with the same level of certainty,\n- do not invent regulatory compliance thresholds (e.g. figures from a specific standard) unless you can cite the exact standard — if you don't know it with certainty, mark it as \"[VERIFY AGAINST THE APPLICABLE STANDARD]\",\n- do not resolve conflicts between NFRs on your own (e.g. choosing security over UX) — report them as a pending decision for the business or the architecture.\n\nOutput:\n0. JSON metadata block (keys: status, nfr_count, categories_covered, unquantified_count, confidence_score [0.0 to 1.0]).\n1. NFR catalog: ID | Category | Description | Measurable threshold | Verification method | Priority | Origin\n2. NFRs pending quantification, with the reason a threshold could not be set.\n3. Conflicts detected between NFRs: Conflicting NFRs | Nature of the trade-off | Options | Decision required from\n4. NFR ↔ FR relationship: which functional requirements are constrained by each critical NFR.\n5. Categories omitted and why."
+      },
+      "formulas": {
+        "es": [
+          "Usa el prompt de requerimientos no funcionales y adáptalo a:\n- repositorio/proyecto: [NOMBRE O URL]\n- contexto del sistema o cambio: [DESCRIPCIÓN]\n- requerimientos funcionales ya definidos: [PEGAR O REFERENCIA]\n- documentos a revisar: Project Charter, arquitectura (00-D-02), compliance aplicable\n- objetivo puntual de salida: catálogo de RNF con umbrales medibles y método de verificación\n- nivel de profundidad: alto"
+        ],
+        "en": [
+          "Use the non-functional requirements prompt and adapt it to:\n- repository/project: [NAME OR URL]\n- system or change context: [DESCRIPTION]\n- functional requirements already defined: [PASTE OR REFERENCE]\n- documents to review: Project Charter, architecture (00-D-02), applicable compliance\n- specific output objective: NFR catalog with measurable thresholds and verification method\n- depth level: high"
+        ]
+      },
+      "contract": {
+        "es": {
+          "type": "análisis",
+          "expected_risk": "medio — un RNF omitido o mal cuantificado (p. ej. \"debe ser rápido\" sin número) deja al diseño y al plan de pruebas sin un criterio verificable, propagando ambigüedad a `04-01`/`07-06`, aunque este prompt no ejecuta ni compromete nada por sí mismo",
+          "required_inputs": "contexto del sistema o cambio, requerimientos funcionales ya definidos (de `02-05`/`04-03`) si existen, restricciones de negocio conocidas (SLA contractual, compliance, presupuesto de infraestructura), arquitectura o stack tentativo si existe (`00-D-02`)",
+          "allowed_tools": "lectura de documentación y código existente — sin ejecución ni cambios",
+          "permitted_autonomy": "A0 — Analizar (catalogar RNF ya declarados o inferibles del contexto); A1 — Proponer (umbrales sugeridos cuando el negocio no los ha fijado, siempre marcados explícitamente como propuesta a validar)",
+          "stop_criteria": "si un RNF no puede expresarse con un umbral medible (número, unidad, condición de prueba), no lo declares como definido — regístralo como \"pendiente de cuantificar\" en vez de inventar una cifra",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada RNF numerado (RNF-XXX) declara categoría, umbral medible o \"pendiente de cuantificar\", método de verificación, y si es una restricción de negocio, de dónde proviene esa restricción",
+          "recommended_next_prompt": "`04-01-diseno-solucion` (los RNF alimentan las restricciones de diseño); `07-06-pruebas-performance-carga` para los RNF de rendimiento/carga",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "04-01-diseno-solucion",
+            "07-06-pruebas-performance-carga"
+          ]
+        },
+        "en": {
+          "type": "analysis",
+          "expected_risk": "medium — an omitted or poorly quantified NFR (e.g. \"must be fast\" with no number) leaves design and the test plan without a verifiable criterion, propagating ambiguity to `04-01`/`07-06`, although this prompt does not execute or commit anything by itself",
+          "required_inputs": "system or change context, functional requirements already defined (from `02-05`/`04-03`) if they exist, known business constraints (contractual SLA, compliance, infrastructure budget), tentative architecture or stack if it exists (`00-D-02`)",
+          "allowed_tools": "reading existing documentation and code — no execution or changes",
+          "permitted_autonomy": "A0 — Analyze (catalog NFRs already stated or inferable from context); A1 — Propose (suggested thresholds when the business hasn't set them, always explicitly marked as a proposal to validate)",
+          "stop_criteria": "if an NFR cannot be expressed with a measurable threshold (number, unit, test condition), do not declare it as defined — register it as \"pending quantification\" instead of inventing a figure",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "each numbered NFR (NFR-XXX) declares category, measurable threshold or \"pending quantification\", verification method, and if it's a business constraint, where that constraint comes from",
+          "recommended_next_prompt": "`04-01-diseno-solucion` (NFRs feed the design constraints); `07-06-pruebas-performance-carga` for performance/load NFRs",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "04-01-diseno-solucion",
+            "07-06-pruebas-performance-carga"
+          ]
+        }
+      },
+      "recommended_next_prompt_ids": [
+        "04-01-diseno-solucion",
+        "07-06-pruebas-performance-carga"
+      ]
+    },
+    {
       "id": "03-01-incidentes-github",
       "section": "03",
       "title": {
@@ -2190,6 +2425,162 @@
       },
       "recommended_next_prompt_ids": [
         "09-06-coordinacion-breaking-changes"
+      ]
+    },
+    {
+      "id": "04-06-diseno-contrato-api",
+      "section": "04",
+      "title": {
+        "es": "4.6 — Diseño de contrato de API: endpoints, esquemas y semántica de interfaz",
+        "en": "4.6 — API contract design: endpoints, schemas, and interface semantics"
+      },
+      "description": {
+        "es": "Prompt para diseñar el contrato de una API nueva (o un conjunto nuevo de endpoints/operaciones) desde cero: convenciones, catálogo de operaciones con sus esquemas de request/response, matriz de errores, autenticación/autorización por operación y reglas transversales (paginación, idempotencia, rate limiting). Produce la especificación del contrato, no el código que lo implementa.\n\nCuándo usarlo: después del diseño de solución (`04-01`) cuando este expone una API nueva, o como paso independiente cuando el requerimiento es explícitamente diseñar una interfaz. Distinto de `04-05-versionado-deprecacion-api`, que evoluciona el contrato de una API ya existente: este prompt diseña el contrato desde cero, antes de que exista ningún consumidor.",
+        "en": ""
+      },
+      "template": {
+        "es": "Objetivo:\nDiseña el contrato completo de la API o del conjunto de endpoints/operaciones descrito: convenciones, catálogo de operaciones con esquemas de request/response, matriz de errores, autenticación/autorización y reglas transversales.\n\nEntradas:\n- diseño de solución relacionado: [PEGAR O REFERENCIA A 04-01, O \"no existe aún\"]\n- casos de uso relacionados: [PEGAR O REFERENCIA A 04-03, O \"no existen aún\"]\n- consumidores previstos: [INTERNOS / EXTERNOS / AMBOS]\n- estilo de API: [REST / GraphQL / gRPC / OTRO]\n- convenciones existentes del proyecto: [PEGAR O \"ninguna, es la primera API del proyecto\"]\n\nActividades:\n1. CONVENCIONES GENERALES\n   Define o reutiliza las convenciones del contrato: naming (camelCase/snake_case), plural/singular en rutas o tipos, formato de fecha/hora y zona horaria, estrategia de versionado desde el día uno (aunque sea v1 implícito). Si el proyecto ya tiene una API previa, reutiliza sus convenciones; cualquier apartamiento debe declararse explícitamente como desviación, no introducirse en silencio.\n\n2. CATÁLOGO DE OPERACIONES\n   Para cada operación (endpoint REST, query/mutation GraphQL, RPC gRPC, según el estilo elegido): propósito, método+ruta u operación equivalente, esquema de request (parámetros, query, body) con tipo y si es requerido u opcional, esquema de response de éxito, y matriz de errores (código + condición que lo dispara + payload de error). Ninguna operación puede quedar sin su matriz de errores.\n\n3. AUTENTICACIÓN Y AUTORIZACIÓN\n   Para cada operación, define si es pública, requiere autenticación, o requiere un rol/scope específico. Si la política requerida para una operación sensible no está clara, márcala explícitamente como \"[DECISIÓN PENDIENTE: verificar con seguridad]\" en vez de asumir un nivel de acceso.\n\n4. REGLAS TRANSVERSALES\n   Define paginación (cursor vs. offset y por qué), filtrado y ordenamiento soportados, rate limiting, idempotencia en operaciones de escritura (¿se requiere una idempotency key?), y formato uniforme de fecha/hora.\n\n5. CONSISTENCIA CON CONVENCIONES EXISTENTES\n   Si el proyecto ya expone otra API, compara el nuevo contrato contra sus convenciones y señala cualquier inconsistencia detectada — no la resuelvas en silencio adoptando un estilo distinto sin declararlo.\n\n6. DECISIONES PENDIENTES\n   Señala explícitamente con \"[DECISIÓN PENDIENTE: razón]\" cualquier aspecto que el negocio o seguridad aún no ha definido (ej. límites exactos de rate limiting, política de retención de datos expuestos).\n\nRestricciones:\n- ninguna operación puede quedar sin su comportamiento de error definido (código + payload) — una operación sin camino de error declarado se reporta como incompleta, no se omite silenciosamente,\n- no inventes convenciones nuevas si el proyecto ya tiene un estilo establecido — reutilízalo; si te apartas de él, decláralo explícitamente como una desviación a validar,\n- no asumas por omisión el nivel de autenticación/autorización de una operación sensible — si no está claro, márcalo como \"[DECISIÓN PENDIENTE: verificar con seguridad]\",\n- este prompt produce una especificación de contrato en texto (estilo OpenAPI/schema descriptivo); no genera código, no configura infraestructura de gateway ni despliega nada.\n\nSalida:\n0. Bloque JSON de metadatos (claves: status, endpoint_count, pending_decisions_count, confidence_score [0.0 a 1.0]).\n1. Convenciones generales del contrato.\n2. Catálogo de operaciones: Operación | Método/ruta o equivalente | Auth requerida | Request schema | Response (éxito) | Matriz de errores\n3. Reglas transversales: paginación, filtrado/ordenamiento, rate limiting, idempotencia, formato de fecha/hora.\n4. Desviaciones respecto a convenciones existentes del proyecto (si las hay).\n5. Decisiones pendientes de validar con negocio o seguridad.",
+        "en": "Objective:\nDesign the complete contract of the API or set of endpoints/operations described: conventions, catalog of operations with request/response schemas, error matrix, authentication/authorization, and cross-cutting rules.\n\nInputs:\n- related solution design: [PASTE OR REFERENCE TO 04-01, OR \"doesn't exist yet\"]\n- related use cases: [PASTE OR REFERENCE TO 04-03, OR \"don't exist yet\"]\n- intended consumers: [INTERNAL / EXTERNAL / BOTH]\n- API style: [REST / GraphQL / gRPC / OTHER]\n- existing project conventions: [PASTE OR \"none, this is the project's first API\"]\n\nActivities:\n1. GENERAL CONVENTIONS\n   Define or reuse the contract's conventions: naming (camelCase/snake_case), plural/singular in paths or types, date/time format and timezone, versioning strategy from day one (even if implicitly v1). If the project already has a prior API, reuse its conventions; any departure must be explicitly declared as a deviation, not introduced silently.\n\n2. OPERATIONS CATALOG\n   For each operation (REST endpoint, GraphQL query/mutation, gRPC RPC, depending on the chosen style): purpose, method+path or equivalent operation, request schema (parameters, query, body) with type and whether required or optional, success response schema, and error matrix (code + condition that triggers it + error payload). No operation may be left without its error matrix.\n\n3. AUTHENTICATION AND AUTHORIZATION\n   For each operation, define whether it is public, requires authentication, or requires a specific role/scope. If the required policy for a sensitive operation is unclear, mark it explicitly as \"[PENDING DECISION: verify with security]\" instead of assuming an access level.\n\n4. CROSS-CUTTING RULES\n   Define pagination (cursor vs. offset and why), supported filtering and sorting, rate limiting, idempotency on write operations (is an idempotency key required?), and a uniform date/time format.\n\n5. CONSISTENCY WITH EXISTING CONVENTIONS\n   If the project already exposes another API, compare the new contract against its conventions and flag any inconsistency detected — do not resolve it silently by adopting a different style without declaring it.\n\n6. PENDING DECISIONS\n   Explicitly flag with \"[PENDING DECISION: reason]\" any aspect the business or security team hasn't defined yet (e.g. exact rate-limiting thresholds, retention policy for exposed data).\n\nConstraints:\n- no operation may be left without its error behavior defined (code + payload) — an operation with no declared error path is reported as incomplete, never silently omitted,\n- do not invent new conventions if the project already has an established style — reuse it; if you depart from it, explicitly declare it as a deviation to validate,\n- do not assume by default the authentication/authorization level of a sensitive operation — if unclear, mark it as \"[PENDING DECISION: verify with security]\",\n- this prompt produces a text contract specification (OpenAPI-style/descriptive schema); it does not generate code, configure gateway infrastructure, or deploy anything.\n\nOutput:\n0. JSON metadata block (keys: status, endpoint_count, pending_decisions_count, confidence_score [0.0 to 1.0]).\n1. General contract conventions.\n2. Operations catalog: Operation | Method/path or equivalent | Auth required | Request schema | Response (success) | Error matrix\n3. Cross-cutting rules: pagination, filtering/sorting, rate limiting, idempotency, date/time format.\n4. Deviations from existing project conventions (if any).\n5. Decisions pending validation with business or security."
+      },
+      "formulas": {
+        "es": [
+          "Usa el prompt de diseño de contrato de API y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA OBJETIVO]\n- componentes: [SERVICIO(S) QUE EXPONDRÁN LA API]\n- documentos a revisar: diseño de solución (04-01), casos de uso (04-03), convenciones de API existentes\n- objetivo puntual de salida: catálogo de endpoints con esquemas de request/response y matriz de errores\n- nivel de profundidad: alto"
+        ],
+        "en": [
+          "Use the API contract design prompt and adapt it to:\n- repository: [NAME OR URL]\n- issue or requirement: [REFERENCE]\n- branch: [TARGET BRANCH]\n- components: [SERVICE(S) THAT WILL EXPOSE THE API]\n- documents to review: solution design (04-01), use cases (04-03), existing API conventions\n- specific output objective: endpoint catalog with request/response schemas and error matrix\n- depth level: high"
+        ]
+      },
+      "contract": {
+        "es": {
+          "type": "diseño",
+          "expected_risk": "medio — un contrato mal diseñado (inconsistente, sin manejo de errores completo, sin estrategia de paginación o versionado desde el inicio) es costoso de corregir una vez que existen consumidores reales integrados; el prompt no implementa ni despliega nada por sí mismo",
+          "required_inputs": "diseño de solución (`04-01`) si existe, casos de uso relacionados (`04-03`) si existen, consumidores previstos (internos/externos), estilo de API (REST/GraphQL/gRPC/otro), convenciones ya existentes en el proyecto si las hay",
+          "allowed_tools": "lectura de diseño, casos de uso y contratos existentes — sin ejecución ni cambios; produce una especificación de contrato en texto, no código ni configuración de gateway",
+          "permitted_autonomy": "A1 — Proponer",
+          "stop_criteria": "si el estilo de API (REST/GraphQL/gRPC) no está definido y no puede inferirse de convenciones ya existentes en el proyecto, preguntar antes de asumir uno; ninguna operación puede quedar sin su matriz de errores definida",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada operación del catálogo declara método/ruta (o su equivalente en el estilo elegido), autenticación requerida, esquema de request, esquema de response de éxito y matriz de errores; toda desviación de una convención ya existente en el proyecto queda declarada explícitamente",
+          "recommended_next_prompt": "`04-05-versionado-deprecacion-api` cuando este contrato deba evolucionar más adelante; `05-01-plan-implementacion` para planificar la construcción; `07-02-pruebas-integracion` para diseñar las pruebas del contrato",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "04-05-versionado-deprecacion-api",
+            "05-01-plan-implementacion",
+            "07-02-pruebas-integracion"
+          ]
+        },
+        "en": {
+          "type": "design",
+          "expected_risk": "medium — a poorly designed contract (inconsistent, without a complete error-handling story, without a pagination or versioning strategy from the start) is expensive to fix once real consumers are integrated; the prompt does not implement or deploy anything by itself",
+          "required_inputs": "related solution design (`04-01`) if it exists, related use cases (`04-03`) if they exist, intended consumers (internal/external), API style (REST/GraphQL/gRPC/other), existing project conventions if any",
+          "allowed_tools": "reading design, use cases, and existing contracts — no execution or changes; produces a text contract specification, not code or gateway configuration",
+          "permitted_autonomy": "A1 — Propose",
+          "stop_criteria": "if the API style (REST/GraphQL/gRPC) is not defined and cannot be inferred from existing project conventions, ask before assuming one; no operation may be left without its error matrix defined",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every operation in the catalog declares method/path (or its equivalent in the chosen style), required authentication, request schema, success response schema, and error matrix; every deviation from an existing project convention is explicitly declared",
+          "recommended_next_prompt": "`04-05-versionado-deprecacion-api` when this contract needs to evolve later; `05-01-plan-implementacion` to plan the build; `07-02-pruebas-integracion` to design the contract's tests",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "04-05-versionado-deprecacion-api",
+            "05-01-plan-implementacion",
+            "07-02-pruebas-integracion"
+          ]
+        }
+      },
+      "recommended_next_prompt_ids": [
+        "04-05-versionado-deprecacion-api",
+        "05-01-plan-implementacion",
+        "07-02-pruebas-integracion"
+      ]
+    },
+    {
+      "id": "04-07-diseno-modelo-datos",
+      "section": "04",
+      "title": {
+        "es": "4.7 — Diseño detallado de modelo de datos: entidades, relaciones y esquema",
+        "en": "4.7 — Detailed data model design: entities, relationships, and schema"
+      },
+      "description": {
+        "es": "Prompt para diseñar el esquema de datos detallado de una feature o proyecto: entidades con sus campos y tipos, relaciones con cardinalidad y política de borrado, nivel de normalización, índices justificados por patrón de consulta, y estrategia de evolución. Produce el diseño del esquema, no el script de migración ejecutable.\n\nCuándo usarlo: durante la fase de diseño (después de `04-01`, en paralelo o después de `04-03`), cuando el cambio o proyecto requiere un modelo de datos nuevo o una extensión significativa del existente — antes de escribir la migración real. Distinto de `00-D-02-stack-arquitectura-inicial`, que solo esboza el modelo de datos a alto nivel (máximo 10 entidades, sin detalle de campos ni índices), y de `08-05-revision-migracion-esquema-bd`, que audita la seguridad de una migración ya escrita (bloqueos, compatibilidad, reversibilidad): este prompt diseña el esquema detallado en sí.",
+        "en": ""
+      },
+      "template": {
+        "es": "Objetivo:\nDiseña el esquema de datos detallado para el dominio o cambio descrito: entidades, campos, relaciones, normalización, índices e integridad, con la justificación de cada decisión.\n\nEntradas:\n- entidades y relaciones del dominio: [DESCRIPCIÓN, O REFERENCIA A 04-01/04-03]\n- motor de base de datos: [RELACIONAL (Postgres/MySQL/...) / DOCUMENTAL (MongoDB/...) / OTRO]\n- volumen y patrón de acceso esperado: [LECTURAS VS ESCRITURAS, CONSULTAS FRECUENTES, VOLUMEN APROXIMADO]\n- modelo de datos existente (si se extiende uno): [PEGAR O \"modelo nuevo, sin esquema previo\"]\n\nActividades:\n1. ENTIDADES\n   Para cada entidad del dominio, define sus campos: nombre, tipo, nullabilidad, valor por defecto y restricciones (unique, check). No omitas campos de auditoría básicos (creación/actualización) salvo que el dominio justifique explícitamente su ausencia.\n\n2. RELACIONES\n   Para cada relación entre entidades, define cardinalidad (1:1, 1:N, N:M), llave foránea, y política de borrado (cascade/restrict/set null) — justifica la elección de la política de borrado citando el impacto de negocio, nunca la dejes en el valor por defecto del motor sin decisión consciente.\n\n3. NORMALIZACIÓN\n   Evalúa el nivel de normalización apropiado (hasta 3FN por defecto) y justifica cualquier desnormalización deliberada citando el patrón de acceso que la motiva (ej. columna calculada para evitar un JOIN costoso en una consulta de alta frecuencia).\n\n4. ÍNDICES\n   Propone índices basados en los patrones de consulta declarados (filtros, joins, ordenamientos frecuentes). Nunca propongas un índice sin poder citar la consulta específica que lo justifica.\n\n5. INTEGRIDAD Y RESTRICCIONES\n   Define constraints a nivel de base de datos (not null, unique, check, foreign key) que deben existir independientemente de cualquier validación en la capa de aplicación.\n\n6. ESTRATEGIA DE EVOLUCIÓN\n   Señala cómo se espera que este esquema crezca (campos que probablemente se agreguen, riesgo de romper compatibilidad), y define la estrategia de soft delete vs. hard delete y de auditoría (created_at/updated_at, versión, actor) si aplica al dominio.\n\nRestricciones:\n- no propongas un índice sin poder citar el patrón de consulta específico que lo justifica — un índice sin justificación es deuda técnica, no optimización,\n- toda relación debe declarar explícitamente su política de borrado (cascade/restrict/set null) — nunca la dejes implícita o \"por defecto del motor\" sin una decisión consciente y justificada,\n- si el motor de base de datos o el patrón de acceso esperado no se conoce, detente y solicítalo — no asumas un motor ni un patrón de lectura/escritura por defecto,\n- este prompt entrega el diseño del esquema; no genera el script de migración ejecutable ni lo ejecuta contra ningún ambiente — eso corresponde a la implementación y a la revisión posterior con `08-05`.\n\nSalida:\n0. Bloque JSON de metadatos (claves: status, entity_count, relationship_count, index_count, confidence_score [0.0 a 1.0]).\n1. Catálogo de entidades: Entidad | Campo | Tipo | Nullable | Default | Restricciones\n2. Relaciones: Entidad origen | Entidad destino | Cardinalidad | Llave foránea | Política de borrado\n3. Índices propuestos: Índice | Campos | Justificación (patrón de consulta)\n4. Desnormalizaciones deliberadas (si las hay) y su justificación.\n5. Estrategia de evolución, soft/hard delete y auditoría.",
+        "en": "Objective:\nDesign the detailed data schema for the described domain or change: entities, fields, relationships, normalization, indexes, and integrity, with justification for each decision.\n\nInputs:\n- domain entities and relationships: [DESCRIPTION, OR REFERENCE TO 04-01/04-03]\n- database engine: [RELATIONAL (Postgres/MySQL/...) / DOCUMENT (MongoDB/...) / OTHER]\n- expected volume and access pattern: [READS VS. WRITES, FREQUENT QUERIES, APPROXIMATE VOLUME]\n- existing data model (if extending one): [PASTE OR \"new model, no prior schema\"]\n\nActivities:\n1. ENTITIES\n   For each domain entity, define its fields: name, type, nullability, default value, and constraints (unique, check). Don't omit basic audit fields (creation/update) unless the domain explicitly justifies their absence.\n\n2. RELATIONSHIPS\n   For each relationship between entities, define cardinality (1:1, 1:N, N:M), foreign key, and delete policy (cascade/restrict/set null) — justify the delete-policy choice by citing business impact, never leave it at the engine's default with no conscious decision.\n\n3. NORMALIZATION\n   Assess the appropriate normalization level (up to 3NF by default) and justify any deliberate denormalization by citing the access pattern that motivates it (e.g. a computed column to avoid an expensive JOIN in a high-frequency query).\n\n4. INDEXES\n   Propose indexes based on the declared query patterns (filters, joins, frequent sorts). Never propose an index without being able to cite the specific query that justifies it.\n\n5. INTEGRITY AND CONSTRAINTS\n   Define database-level constraints (not null, unique, check, foreign key) that must exist independently of any validation in the application layer.\n\n6. EVOLUTION STRATEGY\n   Flag how this schema is expected to grow (fields likely to be added, risk of breaking compatibility), and define the soft-delete vs. hard-delete strategy and auditing (created_at/updated_at, version, actor) if applicable to the domain.\n\nConstraints:\n- do not propose an index without being able to cite the specific query pattern that justifies it — an index with no justification is technical debt, not optimization,\n- every relationship must explicitly declare its delete policy (cascade/restrict/set null) — never leave it implicit or \"the engine's default\" without a conscious, justified decision,\n- if the database engine or the expected access pattern is unknown, stop and request it — do not assume a default engine or read/write pattern,\n- this prompt delivers the schema design; it does not generate the executable migration script or run it against any environment — that belongs to implementation and the subsequent review with `08-05`.\n\nOutput:\n0. JSON metadata block (keys: status, entity_count, relationship_count, index_count, confidence_score [0.0 to 1.0]).\n1. Entity catalog: Entity | Field | Type | Nullable | Default | Constraints\n2. Relationships: Source entity | Target entity | Cardinality | Foreign key | Delete policy\n3. Proposed indexes: Index | Fields | Justification (query pattern)\n4. Deliberate denormalizations (if any) and their justification.\n5. Evolution strategy, soft/hard delete, and auditing."
+      },
+      "formulas": {
+        "es": [
+          "Usa el prompt de diseño de modelo de datos y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- issue o requerimiento: [REFERENCIA]\n- rama: [RAMA OBJETIVO]\n- componentes: [SERVICIO(S) / MÓDULO(S) QUE USARÁN ESTE ESQUEMA]\n- documentos a revisar: diseño de solución (04-01), casos de uso (04-03), esquema actual si se extiende uno\n- objetivo puntual de salida: esquema detallado con entidades, relaciones, índices y política de borrado\n- nivel de profundidad: alto"
+        ],
+        "en": [
+          "Use the data model design prompt and adapt it to:\n- repository: [NAME OR URL]\n- issue or requirement: [REFERENCE]\n- branch: [TARGET BRANCH]\n- components: [SERVICE(S) / MODULE(S) THAT WILL USE THIS SCHEMA]\n- documents to review: solution design (04-01), use cases (04-03), current schema if extending one\n- specific output objective: detailed schema with entities, relationships, indexes, and delete policy\n- depth level: high"
+        ]
+      },
+      "contract": {
+        "es": {
+          "type": "diseño",
+          "expected_risk": "alto — el esquema de datos es una de las decisiones más costosas de revertir una vez que hay datos reales en producción (migraciones destructivas, downtime, pérdida de integridad); el prompt no ejecuta ninguna migración ni modifica ninguna base de datos",
+          "required_inputs": "entidades y relaciones del dominio (o el diseño de solución `04-01` / casos de uso `04-03` de los que inferirlas), motor de base de datos (relacional/documental/otro), volumen y patrón de acceso esperado (lecturas vs. escrituras, consultas frecuentes), modelo de datos existente si se está extendiendo uno",
+          "allowed_tools": "lectura del esquema actual y documentación relacionada — sin ejecutar migraciones ni modificar la base de datos; produce el diseño, no el script de migración",
+          "permitted_autonomy": "A1 — Proponer",
+          "stop_criteria": "si el motor de base de datos o el patrón de acceso esperado no se conoce, detener y solicitarlo antes de proponer un esquema — la normalización y la estrategia de índices dependen directamente de esa información",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada entidad declara sus campos con tipo y nullabilidad; cada relación declara cardinalidad y política de borrado; cada índice propuesto está justificado por un patrón de consulta citado, no por intuición",
+          "recommended_next_prompt": "`08-05-revision-migracion-esquema-bd` una vez el script de migración esté escrito a partir de este diseño",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "08-05-revision-migracion-esquema-bd"
+          ]
+        },
+        "en": {
+          "type": "design",
+          "expected_risk": "high — the data schema is one of the most expensive decisions to reverse once real data exists in production (destructive migrations, downtime, loss of integrity); the prompt does not execute any migration or modify any database",
+          "required_inputs": "domain entities and relationships (or the solution design `04-01` / use cases `04-03` to infer them from), database engine (relational/document/other), expected volume and access pattern (reads vs. writes, frequent queries), existing data model if extending one",
+          "allowed_tools": "reading the current schema and related documentation — no migrations executed and no database modified; produces the design, not the migration script",
+          "permitted_autonomy": "A1 — Propose",
+          "stop_criteria": "if the database engine or the expected access pattern is unknown, stop and request it before proposing a schema — normalization and indexing strategy depend directly on that information",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "each entity declares its fields with type and nullability; each relationship declares cardinality and delete policy; each proposed index is justified by a cited query pattern, not by intuition",
+          "recommended_next_prompt": "`08-05-revision-migracion-esquema-bd` once the migration script is written from this design",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "08-05-revision-migracion-esquema-bd"
+          ]
+        }
+      },
+      "recommended_next_prompt_ids": [
+        "08-05-revision-migracion-esquema-bd"
       ]
     },
     {
@@ -3719,6 +4110,81 @@
       },
       "recommended_next_prompt_ids": [
         "13-08-gestion-secretos-credenciales"
+      ]
+    },
+    {
+      "id": "07-15-plan-maestro-pruebas",
+      "section": "07",
+      "title": {
+        "es": "7.15 — Plan maestro de pruebas: estrategia de QA del proyecto",
+        "en": "7.15 — Master test plan: project QA strategy"
+      },
+      "description": {
+        "es": "Prompt para definir la estrategia de pruebas de todo el proyecto o release: alcance y objetivos de calidad, niveles de prueba con su cobertura objetivo, ambientes y datos, roles y responsabilidades, criterios de entrada/salida del ciclo de pruebas, y manejo de defectos durante el ciclo. Amarra el enfoque global de QA antes de diseñar pruebas individuales por tipo.\n\nCuándo usarlo: al inicio de un proyecto (después de `07-00`, detección del stack de pruebas) o al planificar un release/hito mayor, antes de diseñar pruebas individuales por tipo (`07-01` a `07-06`). Distinto de `07-00` (que solo detecta el stack técnico de pruebas) y de los prompts `07-01` a `07-14` (que diseñan/implementan un tipo de prueba puntual): este prompt define el enfoque global — qué se prueba, con qué profundidad, en qué ambiente, y cuándo un release se considera listo desde QA.",
+        "en": ""
+      },
+      "template": {
+        "es": "Objetivo:\nDefine la estrategia de pruebas de todo el proyecto o release: alcance, niveles de prueba con cobertura objetivo, ambientes, roles, criterios de entrada/salida y manejo de defectos durante el ciclo.\n\nEntradas:\n- perfil de stack de pruebas: [PEGAR O REFERENCIA A 07-00, O \"no detectado aún\"]\n- alcance del proyecto o release: [DESCRIPCIÓN]\n- requerimientos no funcionales relevantes: [PEGAR O REFERENCIA A 02-06, O \"no definidos aún\"]\n- restricciones de tiempo/recursos de QA: [DESCRIPCIÓN O \"ninguna declarada\"]\n- ambientes disponibles: [DEV / QA / STAGING / PROD, Y CUÁLES EXISTEN REALMENTE]\n\nActividades:\n1. ALCANCE Y OBJETIVOS DE CALIDAD\n   Define qué se va a probar (componentes o flujos críticos) y qué queda explícitamente fuera de alcance para este ciclo, con la razón — nunca dejes un área fuera de alcance sin justificación explícita.\n\n2. NIVELES DE PRUEBA Y COBERTURA OBJETIVO\n   Para cada nivel aplicable (unitaria, integración, E2E, humo, performance/carga, seguridad, accesibilidad), define el objetivo de cobertura (porcentaje o alcance cualitativo), si se prueba manual o automatizado, y por qué esa elección para ese nivel específico. Justifica la cobertura objetivo contra el riesgo del componente: un componente crítico de negocio no puede tener el mismo objetivo que uno cosmético sin decirlo explícitamente.\n\n3. AMBIENTES Y DATOS\n   Define qué ambiente corresponde a cada nivel de prueba y la estrategia de datos de prueba (referencia a `07-14-gestion-datos-prueba` si aplica).\n\n4. ROLES Y RESPONSABILIDADES\n   Define quién diseña, implementa y mantiene cada nivel de prueba (desarrollador, QA dedicado, agente IA) — ningún nivel puede quedar sin responsable asignado.\n\n5. CRITERIOS DE ENTRADA Y SALIDA\n   Define qué debe cumplirse antes de iniciar el ciclo de pruebas de un release (entrada) y qué debe cumplirse para considerarlo listo para producción (salida). Todo criterio debe ser verificable objetivamente (métrica, checklist, resultado de pipeline) — nunca un criterio subjetivo como \"se ve bien\" o \"parece estable\".\n\n6. GESTIÓN DE DEFECTOS DURANTE EL CICLO\n   Define qué severidad de defecto bloquea un release y cuál se puede posponer, y quién tiene autoridad para tomar esa decisión.\n\n7. HERRAMIENTAS Y PIPELINE\n   Define en qué punto del pipeline CI/CD corre cada nivel de prueba (local, PR, pre-merge, pre-deploy, post-deploy), referenciando el stack detectado en `07-00`.\n\nRestricciones:\n- no declares una cobertura objetivo sin justificarla contra el riesgo del componente — toda diferencia de exigencia entre componentes debe quedar explícita, no implícita,\n- todo criterio de entrada o salida debe ser verificable objetivamente (métrica, checklist, resultado de pipeline) — nunca aceptes un criterio subjetivo sin forma de confirmarlo,\n- si falta el perfil de stack de pruebas (`07-00`) o el alcance del proyecto/release, detente y solicítalo antes de proponer la estrategia,\n- distingue explícitamente qué niveles de prueba ya existen (y con qué cobertura real, si es verificable) de los que se proponen desde cero — nunca los presentes como si ya estuvieran implementados.\n\nSalida:\n0. Bloque JSON de metadatos (claves: status, test_levels_covered, entry_criteria_count, exit_criteria_count, confidence_score [0.0 a 1.0]).\n1. Alcance y objetivos de calidad, con exclusiones justificadas.\n2. Niveles de prueba y cobertura objetivo: Nivel | Cobertura objetivo | Manual/Automatizado | Responsable | Ambiente | Punto en el pipeline\n3. Criterios de entrada del ciclo de pruebas.\n4. Criterios de salida (Definition of Done de QA).\n5. Gestión de defectos durante el ciclo: severidad que bloquea vs. severidad que se puede posponer, y quién decide.\n6. Vacíos y siguientes pasos pendientes de confirmar.",
+        "en": "Objective:\nDefine the testing strategy for the whole project or release: scope, test levels with target coverage, environments, roles, entry/exit criteria, and defect handling during the cycle.\n\nInputs:\n- test-stack profile: [PASTE OR REFERENCE TO 07-00, OR \"not yet detected\"]\n- project or release scope: [DESCRIPTION]\n- relevant non-functional requirements: [PASTE OR REFERENCE TO 02-06, OR \"not yet defined\"]\n- QA time/resource constraints: [DESCRIPTION OR \"none declared\"]\n- available environments: [DEV / QA / STAGING / PROD, AND WHICH ONES ACTUALLY EXIST]\n\nActivities:\n1. SCOPE AND QUALITY OBJECTIVES\n   Define what will be tested (critical components or flows) and what is explicitly out of scope for this cycle, with the reason — never leave an area out of scope without an explicit justification.\n\n2. TEST LEVELS AND TARGET COVERAGE\n   For each applicable level (unit, integration, E2E, smoke, performance/load, security, accessibility), define the coverage target (percentage or qualitative scope), whether it's manual or automated, and why that choice for that specific level. Justify the target coverage against the component's risk: a business-critical component cannot have the same target as a cosmetic one without saying so explicitly.\n\n3. ENVIRONMENTS AND DATA\n   Define which environment corresponds to each test level and the test-data strategy (reference `07-14-gestion-datos-prueba` if applicable).\n\n4. ROLES AND RESPONSIBILITIES\n   Define who designs, implements, and maintains each test level (developer, dedicated QA, AI agent) — no level may be left without an assigned owner.\n\n5. ENTRY AND EXIT CRITERIA\n   Define what must be true before starting a release's test cycle (entry) and what must be true to consider it ready for production (exit). Every criterion must be objectively verifiable (metric, checklist, pipeline result) — never a subjective criterion like \"it looks fine\" or \"seems stable\".\n\n6. DEFECT MANAGEMENT DURING THE CYCLE\n   Define which defect severity blocks a release and which can be postponed, and who has the authority to make that call.\n\n7. TOOLS AND PIPELINE\n   Define at which point in the CI/CD pipeline each test level runs (local, PR, pre-merge, pre-deploy, post-deploy), referencing the stack detected in `07-00`.\n\nConstraints:\n- do not declare a target coverage without justifying it against the component's risk — any difference in rigor between components must be explicit, never implicit,\n- every entry or exit criterion must be objectively verifiable (metric, checklist, pipeline result) — never accept a subjective criterion with no way to confirm it,\n- if the test-stack profile (`07-00`) or the project/release scope is missing, stop and request it before proposing the strategy,\n- explicitly distinguish which test levels already exist (and with what real coverage, if verifiable) from those proposed from scratch — never present them as already implemented.\n\nOutput:\n0. JSON metadata block (keys: status, test_levels_covered, entry_criteria_count, exit_criteria_count, confidence_score [0.0 to 1.0]).\n1. Scope and quality objectives, with justified exclusions.\n2. Test levels and target coverage: Level | Target coverage | Manual/Automated | Owner | Environment | Pipeline stage\n3. Test-cycle entry criteria.\n4. Exit criteria (QA Definition of Done).\n5. Defect management during the cycle: severity that blocks vs. severity that can be postponed, and who decides.\n6. Gaps and pending next steps."
+      },
+      "formulas": {
+        "es": [
+          "Usa el prompt de plan maestro de pruebas y adáptalo a:\n- repositorio/proyecto: [NOMBRE O URL]\n- alcance del proyecto o release: [DESCRIPCIÓN]\n- perfil de stack de pruebas: [REFERENCIA A 07-00]\n- documentos a revisar: perfil de stack (07-00), requerimientos no funcionales (02-06)\n- objetivo puntual de salida: estrategia de QA completa con niveles, cobertura y criterios de entrada/salida\n- nivel de profundidad: alto"
+        ],
+        "en": [
+          "Use the master test plan prompt and adapt it to:\n- repository/project: [NAME OR URL]\n- project or release scope: [DESCRIPTION]\n- test-stack profile: [REFERENCE TO 07-00]\n- documents to review: stack profile (07-00), non-functional requirements (02-06)\n- specific output objective: complete QA strategy with levels, coverage, and entry/exit criteria\n- depth level: high"
+        ]
+      },
+      "contract": {
+        "es": {
+          "type": "diseño",
+          "expected_risk": "medio — una estrategia de pruebas incompleta (sin criterios de salida claros, sin cobertura por nivel definida) no bloquea nada por sí misma, pero deja que features salgan a producción sin un criterio objetivo de \"listo\", propagando riesgo de calidad de forma silenciosa hasta que se materializa en producción",
+          "required_inputs": "perfil de stack de pruebas (`07-00`) si existe, alcance del proyecto o release, requerimientos no funcionales relevantes (`02-06`) si existen, restricciones de tiempo/recursos de QA, ambientes disponibles",
+          "allowed_tools": "lectura de documentación y configuración existente — sin ejecución de pruebas ni cambios; produce el documento de estrategia",
+          "permitted_autonomy": "A1 — Proponer",
+          "stop_criteria": "si no puede definirse un criterio de salida objetivo y verificable para al menos los niveles críticos (unitaria, integración, E2E de los flujos core), no declares la estrategia como completa — repórtalo como vacío pendiente en vez de rellenarlo con un criterio subjetivo",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada nivel de prueba (unitaria/integración/E2E/humo/performance/seguridad/accesibilidad) declara cobertura objetivo, responsable y punto en el pipeline; los criterios de entrada y salida del ciclo de pruebas están definidos explícitamente y son verificables",
+          "recommended_next_prompt": "`07-01-pruebas-unitarias` (y los prompts `07-02` a `07-06` correspondientes) para diseñar cada tipo de prueba conforme a esta estrategia",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "07-01-pruebas-unitarias"
+          ]
+        },
+        "en": {
+          "type": "design",
+          "expected_risk": "medium — an incomplete test strategy (no clear exit criteria, no defined per-level coverage) doesn't block anything by itself, but lets features reach production with no objective \"done\" criterion, silently propagating quality risk until it materializes in production",
+          "required_inputs": "test-stack profile (`07-00`) if it exists, project or release scope, relevant non-functional requirements (`02-06`) if they exist, QA time/resource constraints, available environments",
+          "allowed_tools": "reading existing documentation and configuration — no test execution or changes; produces the strategy document",
+          "permitted_autonomy": "A1 — Propose",
+          "stop_criteria": "if an objective, verifiable exit criterion cannot be defined for at least the critical levels (unit, integration, E2E of the core flows), do not declare the strategy complete — report it as a pending gap instead of filling it with a subjective criterion",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "each test level (unit/integration/E2E/smoke/performance/security/accessibility) declares target coverage, an owner, and its point in the pipeline; the test-cycle entry and exit criteria are explicitly defined and verifiable",
+          "recommended_next_prompt": "`07-01-pruebas-unitarias` (and the corresponding `07-02` through `07-06` prompts) to design each test type according to this strategy",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "07-01-pruebas-unitarias"
+          ]
+        }
+      },
+      "recommended_next_prompt_ids": [
+        "07-01-pruebas-unitarias"
       ]
     },
     {

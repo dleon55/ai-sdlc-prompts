@@ -575,6 +575,122 @@
       }
     },
     {
+      "id": "00-D-03-plan-trabajo-proyecto",
+      "section": "00",
+      "title": {
+        "es": "0-D.3 — Plan de trabajo del proyecto: cronograma, EDT y asignación de recursos",
+        "en": "0-D.3 — Project work plan: schedule, WBS, and resource allocation"
+      },
+      "contract": {
+        "es": {
+          "type": "diseño",
+          "expected_risk": "alto — el cronograma y la asignación de recursos resultantes condicionan compromisos de fecha ante el patrocinador y la carga de trabajo del equipo; una estimación optimista o una sobreasignación de recursos no detectada se descubre típicamente tarde, cuando ya es costosa de corregir",
+          "required_inputs": "Project Charter aprobado (`00-D-01`), alcance y entregables principales, equipo disponible (roles, capacidad, calendario), fecha límite o ventana objetivo si existe, dependencias externas conocidas (otros equipos, proveedores, aprobaciones)",
+          "allowed_tools": "ninguna de ejecución — el prompt produce un documento de planeación (EDT, cronograma, tabla de asignación); no crea issues, milestones ni eventos de calendario reales",
+          "permitted_autonomy": "A1 — Proponer (cronograma y asignación de recursos quedan marcados como propuesta hasta aprobación del patrocinador o equipo)",
+          "stop_criteria": "si la fecha límite declarada no es alcanzable con el equipo y alcance dados, no ajustar las estimaciones para que \"encajen\" — reportarlo explícitamente como conflicto con las opciones de trade-off; si falta información de capacidad del equipo, detener y solicitarla antes de asignar recursos",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada entregable de la EDT tiene estimación con método declarado, cada dependencia entre entregables está listada, la ruta crítica está identificada explícitamente, y cualquier sobreasignación de un recurso queda señalada con la fila y el recurso afectado",
+          "recommended_next_prompt": "`05-02-riesgos-implementacion` para profundizar en riesgos de ejecución del cronograma; `05-01-plan-implementacion` cuando cada entregable de la EDT entre a su fase de diseño/implementación individual",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "05-02-riesgos-implementacion",
+            "05-01-plan-implementacion"
+          ]
+        },
+        "en": {
+          "type": "design",
+          "expected_risk": "high — the resulting schedule and resource allocation condition date commitments to the sponsor and the team's workload; an optimistic estimate or an undetected resource overallocation is typically discovered late, when it's already expensive to fix",
+          "required_inputs": "approved Project Charter (`00-D-01`), scope and main deliverables, available team (roles, capacity, calendar), deadline or target window if it exists, known external dependencies (other teams, vendors, approvals)",
+          "allowed_tools": "none for execution — the prompt produces a planning document (WBS, schedule, allocation table); it does not create real issues, milestones, or calendar events",
+          "permitted_autonomy": "A1 — Propose (schedule and resource allocation remain marked as a proposal until approved by the sponsor or team)",
+          "stop_criteria": "if the declared deadline is not achievable with the given team and scope, do not adjust the estimates to \"make it fit\" — report it explicitly as a conflict with the trade-off options; if team capacity information is missing, stop and request it before allocating resources",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every WBS deliverable has an estimate with a declared method, every dependency between deliverables is listed, the critical path is explicitly identified, and any resource overallocation is flagged with the row and the affected resource",
+          "recommended_next_prompt": "`05-02-riesgos-implementacion` to go deeper into schedule-execution risks; `05-01-plan-implementacion` once each WBS deliverable enters its individual design/implementation phase",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "05-02-riesgos-implementacion",
+            "05-01-plan-implementacion"
+          ]
+        }
+      }
+    },
+    {
+      "id": "00-D-04-registro-riesgos-proyecto",
+      "section": "00",
+      "title": {
+        "es": "0-D.4 — Registro de riesgos del proyecto (RAID): riesgos, supuestos, incidentes y dependencias",
+        "en": "0-D.4 — Project risk register (RAID): risks, assumptions, issues and dependencies"
+      },
+      "contract": {
+        "es": {
+          "type": "análisis",
+          "expected_risk": "alto — este registro es el insumo que el patrocinador usa para decisiones de go/no-go y de inversión en mitigación; un riesgo alto omitido o mal clasificado a nivel de proyecto completo puede materializarse sin que nadie lo haya visto venir, con impacto en fecha, presupuesto o alcance, aunque el prompt no ejecuta ni compromete nada por sí mismo",
+          "required_inputs": "Project Charter (`00-D-01`), stack/arquitectura inicial (`00-D-02`) si existe, plan de trabajo (`00-D-03`) si existe, restricciones de negocio conocidas, historial de riesgos materializados en proyectos similares si existe",
+          "allowed_tools": "ninguna de ejecución — lectura de documentación existente; produce un documento de registro (RAID log), no aplica ninguna mitigación por sí mismo",
+          "permitted_autonomy": "A0 — Analizar (riesgos, supuestos, incidentes y dependencias ya declarados o evidentes en el contexto); A1 — Proponer (mitigaciones, riesgos inferidos no declarados explícitamente por el negocio, siempre marcados como propuesta)",
+          "stop_criteria": "si un riesgo queda clasificado como alto (probabilidad alta o impacto alto) sin una mitigación viable, no lo minimices ni lo dejes implícito — decláralo explícitamente como bloqueante para aprobar el Charter o el plan de trabajo",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada riesgo (R-XXX) declara categoría, probabilidad, impacto, mitigación y contingencia; cada supuesto (A-XXX) declara qué pasa si resulta falso y cómo se validará; cada incidente (I-XXX) y dependencia (D-XXX) declara responsable y estado",
+          "recommended_next_prompt": "`05-02-riesgos-implementacion` cuando cada feature o cambio individual del proyecto entre a su fase de diseño/implementación — ese prompt cubre el riesgo específico de ESE cambio, no reemplaza este registro de proyecto",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "05-02-riesgos-implementacion"
+          ]
+        },
+        "en": {
+          "type": "analysis",
+          "expected_risk": "high — this register is the input the sponsor uses for go/no-go and mitigation-investment decisions; a high risk omitted or misclassified at the whole-project level can materialize with no one having seen it coming, impacting date, budget, or scope, although the prompt does not execute or commit anything by itself",
+          "required_inputs": "Project Charter (`00-D-01`), initial stack/architecture (`00-D-02`) if it exists, work plan (`00-D-03`) if it exists, known business constraints, history of materialized risks from similar projects if available",
+          "allowed_tools": "none for execution — reads existing documentation; produces a register document (RAID log), does not apply any mitigation by itself",
+          "permitted_autonomy": "A0 — Analyze (risks, assumptions, issues, and dependencies already declared or evident in context); A1 — Propose (mitigations, inferred risks not explicitly declared by the business, always marked as a proposal)",
+          "stop_criteria": "if a risk is classified as high (high probability or high impact) with no viable mitigation, do not minimize it or leave it implicit — declare it explicitly as blocking approval of the Charter or the work plan",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "each risk (R-XXX) declares category, probability, impact, mitigation, and contingency; each assumption (A-XXX) declares what happens if it turns out false and how it will be validated; each issue (I-XXX) and dependency (D-XXX) declares an owner and a status",
+          "recommended_next_prompt": "`05-02-riesgos-implementacion` once each individual feature or change in the project enters its design/implementation phase — that prompt covers the specific risk of THAT change, it does not replace this project register",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "05-02-riesgos-implementacion"
+          ]
+        }
+      }
+    },
+    {
       "id": "01-01-arranque-comprension-repositorio",
       "section": "01",
       "title": {
@@ -1035,6 +1151,66 @@
       }
     },
     {
+      "id": "02-06-requerimientos-no-funcionales",
+      "section": "02",
+      "title": {
+        "es": "2.6 — Especificación de requerimientos no funcionales",
+        "en": "2.6 — Non-functional requirements specification"
+      },
+      "contract": {
+        "es": {
+          "type": "análisis",
+          "expected_risk": "medio — un RNF omitido o mal cuantificado (p. ej. \"debe ser rápido\" sin número) deja al diseño y al plan de pruebas sin un criterio verificable, propagando ambigüedad a `04-01`/`07-06`, aunque este prompt no ejecuta ni compromete nada por sí mismo",
+          "required_inputs": "contexto del sistema o cambio, requerimientos funcionales ya definidos (de `02-05`/`04-03`) si existen, restricciones de negocio conocidas (SLA contractual, compliance, presupuesto de infraestructura), arquitectura o stack tentativo si existe (`00-D-02`)",
+          "allowed_tools": "lectura de documentación y código existente — sin ejecución ni cambios",
+          "permitted_autonomy": "A0 — Analizar (catalogar RNF ya declarados o inferibles del contexto); A1 — Proponer (umbrales sugeridos cuando el negocio no los ha fijado, siempre marcados explícitamente como propuesta a validar)",
+          "stop_criteria": "si un RNF no puede expresarse con un umbral medible (número, unidad, condición de prueba), no lo declares como definido — regístralo como \"pendiente de cuantificar\" en vez de inventar una cifra",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada RNF numerado (RNF-XXX) declara categoría, umbral medible o \"pendiente de cuantificar\", método de verificación, y si es una restricción de negocio, de dónde proviene esa restricción",
+          "recommended_next_prompt": "`04-01-diseno-solucion` (los RNF alimentan las restricciones de diseño); `07-06-pruebas-performance-carga` para los RNF de rendimiento/carga",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "04-01-diseno-solucion",
+            "07-06-pruebas-performance-carga"
+          ]
+        },
+        "en": {
+          "type": "analysis",
+          "expected_risk": "medium — an omitted or poorly quantified NFR (e.g. \"must be fast\" with no number) leaves design and the test plan without a verifiable criterion, propagating ambiguity to `04-01`/`07-06`, although this prompt does not execute or commit anything by itself",
+          "required_inputs": "system or change context, functional requirements already defined (from `02-05`/`04-03`) if they exist, known business constraints (contractual SLA, compliance, infrastructure budget), tentative architecture or stack if it exists (`00-D-02`)",
+          "allowed_tools": "reading existing documentation and code — no execution or changes",
+          "permitted_autonomy": "A0 — Analyze (catalog NFRs already stated or inferable from context); A1 — Propose (suggested thresholds when the business hasn't set them, always explicitly marked as a proposal to validate)",
+          "stop_criteria": "if an NFR cannot be expressed with a measurable threshold (number, unit, test condition), do not declare it as defined — register it as \"pending quantification\" instead of inventing a figure",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "each numbered NFR (NFR-XXX) declares category, measurable threshold or \"pending quantification\", verification method, and if it's a business constraint, where that constraint comes from",
+          "recommended_next_prompt": "`04-01-diseno-solucion` (NFRs feed the design constraints); `07-06-pruebas-performance-carga` for performance/load NFRs",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "04-01-diseno-solucion",
+            "07-06-pruebas-performance-carga"
+          ]
+        }
+      }
+    },
+    {
       "id": "03-01-incidentes-github",
       "section": "03",
       "title": {
@@ -1432,6 +1608,122 @@
           ],
           "recommended_next_prompt_ids": [
             "09-06-coordinacion-breaking-changes"
+          ]
+        }
+      }
+    },
+    {
+      "id": "04-06-diseno-contrato-api",
+      "section": "04",
+      "title": {
+        "es": "4.6 — Diseño de contrato de API: endpoints, esquemas y semántica de interfaz",
+        "en": "4.6 — API contract design: endpoints, schemas, and interface semantics"
+      },
+      "contract": {
+        "es": {
+          "type": "diseño",
+          "expected_risk": "medio — un contrato mal diseñado (inconsistente, sin manejo de errores completo, sin estrategia de paginación o versionado desde el inicio) es costoso de corregir una vez que existen consumidores reales integrados; el prompt no implementa ni despliega nada por sí mismo",
+          "required_inputs": "diseño de solución (`04-01`) si existe, casos de uso relacionados (`04-03`) si existen, consumidores previstos (internos/externos), estilo de API (REST/GraphQL/gRPC/otro), convenciones ya existentes en el proyecto si las hay",
+          "allowed_tools": "lectura de diseño, casos de uso y contratos existentes — sin ejecución ni cambios; produce una especificación de contrato en texto, no código ni configuración de gateway",
+          "permitted_autonomy": "A1 — Proponer",
+          "stop_criteria": "si el estilo de API (REST/GraphQL/gRPC) no está definido y no puede inferirse de convenciones ya existentes en el proyecto, preguntar antes de asumir uno; ninguna operación puede quedar sin su matriz de errores definida",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada operación del catálogo declara método/ruta (o su equivalente en el estilo elegido), autenticación requerida, esquema de request, esquema de response de éxito y matriz de errores; toda desviación de una convención ya existente en el proyecto queda declarada explícitamente",
+          "recommended_next_prompt": "`04-05-versionado-deprecacion-api` cuando este contrato deba evolucionar más adelante; `05-01-plan-implementacion` para planificar la construcción; `07-02-pruebas-integracion` para diseñar las pruebas del contrato",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "04-05-versionado-deprecacion-api",
+            "05-01-plan-implementacion",
+            "07-02-pruebas-integracion"
+          ]
+        },
+        "en": {
+          "type": "design",
+          "expected_risk": "medium — a poorly designed contract (inconsistent, without a complete error-handling story, without a pagination or versioning strategy from the start) is expensive to fix once real consumers are integrated; the prompt does not implement or deploy anything by itself",
+          "required_inputs": "related solution design (`04-01`) if it exists, related use cases (`04-03`) if they exist, intended consumers (internal/external), API style (REST/GraphQL/gRPC/other), existing project conventions if any",
+          "allowed_tools": "reading design, use cases, and existing contracts — no execution or changes; produces a text contract specification, not code or gateway configuration",
+          "permitted_autonomy": "A1 — Propose",
+          "stop_criteria": "if the API style (REST/GraphQL/gRPC) is not defined and cannot be inferred from existing project conventions, ask before assuming one; no operation may be left without its error matrix defined",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every operation in the catalog declares method/path (or its equivalent in the chosen style), required authentication, request schema, success response schema, and error matrix; every deviation from an existing project convention is explicitly declared",
+          "recommended_next_prompt": "`04-05-versionado-deprecacion-api` when this contract needs to evolve later; `05-01-plan-implementacion` to plan the build; `07-02-pruebas-integracion` to design the contract's tests",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "04-05-versionado-deprecacion-api",
+            "05-01-plan-implementacion",
+            "07-02-pruebas-integracion"
+          ]
+        }
+      }
+    },
+    {
+      "id": "04-07-diseno-modelo-datos",
+      "section": "04",
+      "title": {
+        "es": "4.7 — Diseño detallado de modelo de datos: entidades, relaciones y esquema",
+        "en": "4.7 — Detailed data model design: entities, relationships, and schema"
+      },
+      "contract": {
+        "es": {
+          "type": "diseño",
+          "expected_risk": "alto — el esquema de datos es una de las decisiones más costosas de revertir una vez que hay datos reales en producción (migraciones destructivas, downtime, pérdida de integridad); el prompt no ejecuta ninguna migración ni modifica ninguna base de datos",
+          "required_inputs": "entidades y relaciones del dominio (o el diseño de solución `04-01` / casos de uso `04-03` de los que inferirlas), motor de base de datos (relacional/documental/otro), volumen y patrón de acceso esperado (lecturas vs. escrituras, consultas frecuentes), modelo de datos existente si se está extendiendo uno",
+          "allowed_tools": "lectura del esquema actual y documentación relacionada — sin ejecutar migraciones ni modificar la base de datos; produce el diseño, no el script de migración",
+          "permitted_autonomy": "A1 — Proponer",
+          "stop_criteria": "si el motor de base de datos o el patrón de acceso esperado no se conoce, detener y solicitarlo antes de proponer un esquema — la normalización y la estrategia de índices dependen directamente de esa información",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada entidad declara sus campos con tipo y nullabilidad; cada relación declara cardinalidad y política de borrado; cada índice propuesto está justificado por un patrón de consulta citado, no por intuición",
+          "recommended_next_prompt": "`08-05-revision-migracion-esquema-bd` una vez el script de migración esté escrito a partir de este diseño",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "08-05-revision-migracion-esquema-bd"
+          ]
+        },
+        "en": {
+          "type": "design",
+          "expected_risk": "high — the data schema is one of the most expensive decisions to reverse once real data exists in production (destructive migrations, downtime, loss of integrity); the prompt does not execute any migration or modify any database",
+          "required_inputs": "domain entities and relationships (or the solution design `04-01` / use cases `04-03` to infer them from), database engine (relational/document/other), expected volume and access pattern (reads vs. writes, frequent queries), existing data model if extending one",
+          "allowed_tools": "reading the current schema and related documentation — no migrations executed and no database modified; produces the design, not the migration script",
+          "permitted_autonomy": "A1 — Propose",
+          "stop_criteria": "if the database engine or the expected access pattern is unknown, stop and request it before proposing a schema — normalization and indexing strategy depend directly on that information",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "each entity declares its fields with type and nullability; each relationship declares cardinality and delete policy; each proposed index is justified by a cited query pattern, not by intuition",
+          "recommended_next_prompt": "`08-05-revision-migracion-esquema-bd` once the migration script is written from this design",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "08-05-revision-migracion-esquema-bd"
           ]
         }
       }
@@ -2574,6 +2866,62 @@
           ],
           "recommended_next_prompt_ids": [
             "13-08-gestion-secretos-credenciales"
+          ]
+        }
+      }
+    },
+    {
+      "id": "07-15-plan-maestro-pruebas",
+      "section": "07",
+      "title": {
+        "es": "7.15 — Plan maestro de pruebas: estrategia de QA del proyecto",
+        "en": "7.15 — Master test plan: project QA strategy"
+      },
+      "contract": {
+        "es": {
+          "type": "diseño",
+          "expected_risk": "medio — una estrategia de pruebas incompleta (sin criterios de salida claros, sin cobertura por nivel definida) no bloquea nada por sí misma, pero deja que features salgan a producción sin un criterio objetivo de \"listo\", propagando riesgo de calidad de forma silenciosa hasta que se materializa en producción",
+          "required_inputs": "perfil de stack de pruebas (`07-00`) si existe, alcance del proyecto o release, requerimientos no funcionales relevantes (`02-06`) si existen, restricciones de tiempo/recursos de QA, ambientes disponibles",
+          "allowed_tools": "lectura de documentación y configuración existente — sin ejecución de pruebas ni cambios; produce el documento de estrategia",
+          "permitted_autonomy": "A1 — Proponer",
+          "stop_criteria": "si no puede definirse un criterio de salida objetivo y verificable para al menos los niveles críticos (unitaria, integración, E2E de los flujos core), no declares la estrategia como completa — repórtalo como vacío pendiente en vez de rellenarlo con un criterio subjetivo",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada nivel de prueba (unitaria/integración/E2E/humo/performance/seguridad/accesibilidad) declara cobertura objetivo, responsable y punto en el pipeline; los criterios de entrada y salida del ciclo de pruebas están definidos explícitamente y son verificables",
+          "recommended_next_prompt": "`07-01-pruebas-unitarias` (y los prompts `07-02` a `07-06` correspondientes) para diseñar cada tipo de prueba conforme a esta estrategia",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "07-01-pruebas-unitarias"
+          ]
+        },
+        "en": {
+          "type": "design",
+          "expected_risk": "medium — an incomplete test strategy (no clear exit criteria, no defined per-level coverage) doesn't block anything by itself, but lets features reach production with no objective \"done\" criterion, silently propagating quality risk until it materializes in production",
+          "required_inputs": "test-stack profile (`07-00`) if it exists, project or release scope, relevant non-functional requirements (`02-06`) if they exist, QA time/resource constraints, available environments",
+          "allowed_tools": "reading existing documentation and configuration — no test execution or changes; produces the strategy document",
+          "permitted_autonomy": "A1 — Propose",
+          "stop_criteria": "if an objective, verifiable exit criterion cannot be defined for at least the critical levels (unit, integration, E2E of the core flows), do not declare the strategy complete — report it as a pending gap instead of filling it with a subjective criterion",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "each test level (unit/integration/E2E/smoke/performance/security/accessibility) declares target coverage, an owner, and its point in the pipeline; the test-cycle entry and exit criteria are explicitly defined and verifiable",
+          "recommended_next_prompt": "`07-01-pruebas-unitarias` (and the corresponding `07-02` through `07-06` prompts) to design each test type according to this strategy",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "07-01-pruebas-unitarias"
           ]
         }
       }
