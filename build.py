@@ -1690,7 +1690,13 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   border-top: 1px solid var(--bdr); padding: 1.2rem 2rem;
   display: flex; align-items: center; justify-content: space-between;
   background: var(--bg2); font-size: .72rem; color: var(--tx3);
+  flex-wrap: wrap; gap: .75rem;
 }
+/* Enlaces legales exigidos por la verificacion de Paddle. Se centran
+   en el hueco del footer y colapsan a bloque propio en movil. */
+.landing-footer-legal { display: flex; flex-wrap: wrap; gap: 1rem; }
+.landing-footer-legal a { color: var(--tx3); text-decoration: none; }
+.landing-footer-legal a:hover { color: var(--tx2); text-decoration: underline; }
 
 /* ══════════════  BOTTOM RIGHT FLOATING CONTROLS  ══════════════ */
 .bottom-right-floats {
@@ -4686,6 +4692,16 @@ def get_landing_html(n):
         f'  </section>\n'
         f'  <footer class="landing-footer">\n'
         f'    <span>{ls["footer_copyright"]}</span>\n'
+        # Enlaces legales: Paddle exige que el dominio donde corre el
+        # checkout enlace a t\u00e9rminos, privacidad y reembolsos para
+        # aprobar la verificaci\u00f3n de la cuenta. Van en el footer de la
+        # landing, que es la primera pantalla que ve un revisor.
+        f'    <span class="landing-footer-legal">\n'
+        f'      <a href="/terminos.html">{ls["footer_terms"]}</a>\n'
+        f'      <a href="/privacidad.html">{ls["footer_privacy"]}</a>\n'
+        f'      <a href="/reembolsos.html">{ls["footer_refunds"]}</a>\n'
+        f'      <a href="/precios.html">{ls["footer_pricing"]}</a>\n'
+        f'    </span>\n'
         f'    <a class="landing-cta-secondary" style="font-size:.72rem;padding:.25rem .75rem;" href="https://lionsystems.com.mx" target="_blank" rel="noopener">lionsystems.com.mx \u2197</a>\n'
         f'  </footer>\n'
         f'</div>\n'
@@ -4904,6 +4920,563 @@ def build_precios_page():
         'pxInitAuth();\n'
         '</script>\n'
         '</body>\n</html>\n'
+    )
+
+
+# ══════════════════════════════════════════════════════════════════
+#  PÁGINAS LEGALES (términos, privacidad, reembolsos)
+#
+#  Paddle exige, para verificar la cuenta y habilitar cobros reales,
+#  que el dominio donde corre el checkout enlace a términos de
+#  servicio, aviso de privacidad y política de reembolsos públicos.
+#  Antes de esto no existía ninguna de las tres: nginx tiene un
+#  fallback SPA (try_files ... /index.html), asi que rutas como
+#  /terminos.html devolvían 200 sirviendo la home -- parecían existir
+#  sin existir, que es peor que un 404 honesto para un revisor.
+#
+#  Generador propio en vez de reutilizar el shell de
+#  build_precios_page(): comparten estética pero no código, para no
+#  acoplar tres páginas de prosa a la página que tiene la lógica de
+#  checkout de Paddle.
+# ══════════════════════════════════════════════════════════════════
+
+# Correo de contacto legal / soporte. Se toma el que ya está
+# publicado en lionsystems.com.mx. Cambiar aquí si se habilita una
+# dirección dedicada de soporte -- aparece en las tres páginas.
+LEGAL_CONTACT_EMAIL = "dleon5555@gmail.com"
+
+# Fecha de última actualización que se muestra en las tres páginas.
+# Se actualiza a mano cuando cambie el contenido legal, no en cada
+# build: una fecha que se mueve sola no significa nada para nadie.
+LEGAL_LAST_UPDATED_ES = "29 de julio de 2026"
+LEGAL_LAST_UPDATED_EN = "July 29, 2026"
+
+LEGAL_OUTPUT_FILES = {
+    "terminos": Path(__file__).parent / "terminos.html",
+    "privacidad": Path(__file__).parent / "privacidad.html",
+    "reembolsos": Path(__file__).parent / "reembolsos.html",
+}
+
+
+def _legal_shell(slug, title_es, title_en, desc, h1_es, h1_en, body_html):
+    """Envuelve el contenido de una página legal en el mismo shell visual
+    que precios.html: detección de idioma síncrona en <head> (evita el
+    parpadeo de idioma), tokens de color compartidos, botón de idioma y
+    el mecanismo fw-lang-es/fw-lang-en."""
+    url = "https://prompts.lionsystems.com.mx/%s.html" % slug
+    return (
+        '<!DOCTYPE html>\n<html lang="es" data-lang="es">\n<head>\n'
+        '<meta charset="UTF-8">\n'
+        # Mismo script de idioma que precios.html y por la misma razón:
+        # correr al final del <body> pintaría todo en español primero.
+        '<script>(function(){'
+        'var k="AI_SDLC_language",l;'
+        'try{var s=localStorage.getItem(k);if(s==="es"||s==="en")l=s;}catch(e){}'
+        'if(!l){var n=((navigator.language||"")+"").split("-")[0].toLowerCase();l=(n==="en")?"en":"es";}'
+        'document.documentElement.lang=l;document.documentElement.setAttribute("data-lang",l);'
+        '})();</script>\n'
+        '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n'
+        '<title>' + title_es + ' / ' + title_en + '</title>\n'
+        '<meta name="description" content="' + desc + '">\n'
+        '<meta name="robots" content="index,follow">\n'
+        '<meta name="theme-color" content="#0f172a">\n'
+        '<link rel="canonical" href="' + url + '">\n'
+        '<link rel="alternate" hreflang="es" href="' + url + '">\n'
+        '<link rel="alternate" hreflang="en" href="' + url + '">\n'
+        '<link rel="alternate" hreflang="x-default" href="' + url + '">\n'
+        '<link rel="icon" type="image/png" href="https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png">\n'
+        '<style>\n'
+        ':root{--bg:#080b14;--bg2:#0f1220;--bg3:#161929;--bdr:#1f2340;--tx:#dde1f5;--tx2:#8892c0;'
+        '--tx3:#7b86b8;--grn:#22c55e;--warn:#f59e0b;}\n'
+        '*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}\n'
+        'html[lang="es"] .fw-lang-en{display:none !important;}\n'
+        'html[lang="en"] .fw-lang-es{display:none !important;}\n'
+        'html{scroll-behavior:smooth;}\n'
+        'body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;'
+        'background:var(--bg);color:var(--tx);font-size:15px;line-height:1.7;min-height:100vh;}\n'
+        'header{display:flex;align-items:center;justify-content:space-between;'
+        'padding:1rem 1.5rem;border-bottom:1px solid var(--bdr);background:var(--bg2);}\n'
+        '.px-logo{font-weight:700;letter-spacing:.015em;text-decoration:none;'
+        'background:linear-gradient(90deg,#818cf8,#c084fc);-webkit-background-clip:text;'
+        '-webkit-text-fill-color:transparent;font-size:1rem;}\n'
+        '.px-lang-btn{background:var(--bg3);border:1px solid var(--bdr);color:var(--tx2);'
+        'border-radius:6px;padding:.4rem .8rem;font-size:.8rem;cursor:pointer;}\n'
+        'main{max-width:720px;margin:0 auto;padding:3rem 1.5rem 4rem;}\n'
+        'h1{font-size:1.75rem;font-weight:700;margin-bottom:.35rem;}\n'
+        '.lg-updated{color:var(--tx3);font-size:.8rem;margin-bottom:2.5rem;}\n'
+        'h2{font-size:1.05rem;font-weight:600;margin:2rem 0 .6rem;color:var(--tx);}\n'
+        'p{color:var(--tx2);margin-bottom:.8rem;}\n'
+        'ul{margin:0 0 1rem 1.2rem;color:var(--tx2);}\n'
+        'li{margin-bottom:.4rem;}\n'
+        'strong{color:var(--tx);}\n'
+        'a{color:#a5b4fc;}\n'
+        '.lg-box{background:var(--bg2);border:1px solid var(--bdr);border-radius:12px;'
+        'padding:1.25rem 1.5rem;margin:1.5rem 0;}\n'
+        '.lg-box.lg-key{border-color:rgba(34,197,94,.35);background:rgba(34,197,94,.06);}\n'
+        '.lg-nav{margin-top:3rem;padding-top:1.5rem;border-top:1px solid var(--bdr);'
+        'display:flex;flex-wrap:wrap;gap:1rem;font-size:.8rem;}\n'
+        '.lg-nav a{color:var(--tx3);text-decoration:none;}\n'
+        '.lg-nav a:hover{color:var(--tx2);}\n'
+        '</style>\n</head>\n<body>\n'
+        '<header>\n'
+        '  <a class="px-logo" href="/">AI-SDLC Pro</a>\n'
+        '  <button class="px-lang-btn" onclick="lgToggleLang()">'
+        '<span class="fw-lang-es">EN</span><span class="fw-lang-en">ES</span></button>\n'
+        '</header>\n'
+        '<main>\n'
+        '  <h1><span class="fw-lang-es">' + h1_es + '</span>'
+        '<span class="fw-lang-en">' + h1_en + '</span></h1>\n'
+        '  <p class="lg-updated">'
+        '<span class="fw-lang-es">Última actualización: ' + LEGAL_LAST_UPDATED_ES + '</span>'
+        '<span class="fw-lang-en">Last updated: ' + LEGAL_LAST_UPDATED_EN + '</span></p>\n'
+        + body_html +
+        '  <nav class="lg-nav">\n'
+        '    <a href="/"><span class="fw-lang-es">← Biblioteca de prompts</span>'
+        '<span class="fw-lang-en">← Prompt library</span></a>\n'
+        '    <a href="/precios.html"><span class="fw-lang-es">Precios</span>'
+        '<span class="fw-lang-en">Pricing</span></a>\n'
+        '    <a href="/terminos.html"><span class="fw-lang-es">Términos</span>'
+        '<span class="fw-lang-en">Terms</span></a>\n'
+        '    <a href="/privacidad.html"><span class="fw-lang-es">Privacidad</span>'
+        '<span class="fw-lang-en">Privacy</span></a>\n'
+        '    <a href="/reembolsos.html"><span class="fw-lang-es">Reembolsos</span>'
+        '<span class="fw-lang-en">Refunds</span></a>\n'
+        '  </nav>\n'
+        '</main>\n'
+        '<script>\n'
+        'var LG_I18N_KEY="AI_SDLC_language";\n'
+        'function lgToggleLang(){\n'
+        '  var c=document.documentElement.getAttribute("data-lang")||"es";\n'
+        '  var n=(c==="es")?"en":"es";\n'
+        '  document.documentElement.lang=n;document.documentElement.setAttribute("data-lang",n);\n'
+        '  try{localStorage.setItem(LG_I18N_KEY,n);}catch(e){}\n'
+        '}\n'
+        '</script>\n'
+        '</body>\n</html>\n'
+    )
+
+
+def _lg_section(h_es, h_en, blocks):
+    """Una sección: encabezado bilingüe + bloques. Cada bloque es
+    ('p'|'ul', contenido_es, contenido_en); para 'ul' el contenido es
+    una lista de <li>."""
+    out = ('  <h2><span class="fw-lang-es">' + h_es + '</span>'
+           '<span class="fw-lang-en">' + h_en + '</span></h2>\n')
+    for kind, es, en in blocks:
+        if kind == 'p':
+            out += ('  <p class="fw-lang-es">' + es + '</p>\n'
+                    '  <p class="fw-lang-en">' + en + '</p>\n')
+        else:
+            out += '  <ul class="fw-lang-es">\n'
+            for item in es:
+                out += '    <li>' + item + '</li>\n'
+            out += '  </ul>\n  <ul class="fw-lang-en">\n'
+            for item in en:
+                out += '    <li>' + item + '</li>\n'
+            out += '  </ul>\n'
+    return out
+
+
+def build_terminos_page():
+    """Términos y condiciones. Punto clave para la verificación de Paddle:
+    Paddle actúa como Merchant of Record, o sea que el vendedor legal
+    frente al cliente es Paddle, no LionSystems. Los términos deben
+    reflejarlo -- presentarnos como el cobrador directo contradiría el
+    recibo que el cliente efectivamente recibe."""
+    mail = LEGAL_CONTACT_EMAIL
+    body = (
+        _lg_section(
+            'Quién opera este servicio', 'Who operates this service',
+            [('p',
+              'AI-SDLC Pro es un producto de <strong>LionSystems</strong> '
+              '(<a href="https://lionsystems.com.mx" target="_blank" rel="noopener">lionsystems.com.mx</a>), '
+              'operado desde México. Al usar el sitio o suscribirte aceptas estos términos.',
+              'AI-SDLC Pro is a product of <strong>LionSystems</strong> '
+              '(<a href="https://lionsystems.com.mx" target="_blank" rel="noopener">lionsystems.com.mx</a>), '
+              'operated from Mexico. By using the site or subscribing you accept these terms.')]
+        )
+        + _lg_section(
+            'Qué es AI-SDLC Pro', 'What AI-SDLC Pro is',
+            [('p',
+              'Una biblioteca de prompts estructurados para dirigir agentes de IA en las fases del ciclo '
+              'de desarrollo de software. Lo que entregamos es <strong>texto</strong>: los prompts y el '
+              'framework que los acompaña. No ejecutamos modelos de IA ni revendemos acceso a ellos — el '
+              'modelo que uses (Copilot, Claude, Cursor, Windsurf u otro) lo contratas por separado con su '
+              'proveedor, y sus costos y términos son ajenos a nosotros.',
+              'A library of structured prompts for directing AI agents across the phases of the software '
+              'development lifecycle. What we deliver is <strong>text</strong>: the prompts and the '
+              'accompanying framework. We do not run AI models or resell access to them — whichever model '
+              'you use (Copilot, Claude, Cursor, Windsurf or another) you contract separately with its '
+              'provider, and its costs and terms are outside our scope.')]
+        )
+        + _lg_section(
+            'Cuenta y acceso', 'Account and access',
+            [('ul',
+              ['Puedes copiar hasta 10 prompts sin crear cuenta.',
+               'A partir de ahí se requiere iniciar sesión con GitHub.',
+               'Iniciar sesión otorga una semana de acceso completo, renovable con una breve '
+               'retroalimentación mientras dure el periodo de piloto.',
+               'La suscripción de pago elimina el muro de prueba.',
+               'Eres responsable de la actividad de tu cuenta.'],
+              ['You can copy up to 10 prompts without creating an account.',
+               'Beyond that, signing in with GitHub is required.',
+               'Signing in grants one week of full access, renewable with brief feedback for as long as '
+               'the pilot period runs.',
+               'A paid subscription removes the trial wall.',
+               'You are responsible for activity on your account.'])]
+        )
+        + _lg_section(
+            'Suscripción, precio y renovación', 'Subscription, price and renewal',
+            [('p',
+              'El plan Individual cuesta <strong>1 USD al mes</strong>. Es un precio introductorio del '
+              'periodo de piloto y puede cambiar; si cambia, te avisaremos antes de que aplique a tu '
+              'siguiente cobro y podrás cancelar sin penalización.',
+              'The Individual plan costs <strong>1 USD per month</strong>. This is an introductory pilot '
+              'price and may change; if it does, we will notify you before it applies to your next charge '
+              'and you may cancel without penalty.'),
+             ('p',
+              'La suscripción se <strong>renueva automáticamente cada mes</strong> hasta que la canceles. '
+              'Puedes cancelarla en cualquier momento y conservas el acceso hasta el final del periodo ya '
+              'pagado.',
+              'The subscription <strong>renews automatically each month</strong> until you cancel. You may '
+              'cancel at any time and keep access until the end of the period already paid for.'),
+             ('p',
+              'Los pagos los procesa <strong>Paddle.com Market Limited</strong>, que actúa como '
+              '<strong>Merchant of Record</strong>. Esto significa que Paddle es el vendedor legal frente a '
+              'ti: emite el recibo, cobra y remite los impuestos que correspondan según tu país, y aparece '
+              'como tal en tu estado de cuenta. Al completar el pago aceptas también los '
+              '<a href="https://www.paddle.com/legal/terms" target="_blank" rel="noopener">términos de '
+              'Paddle</a> para esa transacción.',
+              'Payments are processed by <strong>Paddle.com Market Limited</strong>, acting as '
+              '<strong>Merchant of Record</strong>. This means Paddle is the legal seller to you: it issues '
+              'the receipt, collects and remits any applicable taxes for your country, and appears as such '
+              'on your statement. By completing payment you also accept '
+              '<a href="https://www.paddle.com/legal/terms" target="_blank" rel="noopener">Paddle’s '
+              'terms</a> for that transaction.')]
+        )
+        + _lg_section(
+            'Cancelación y reembolsos', 'Cancellation and refunds',
+            [('p',
+              'Ofrecemos <strong>14 días de reembolso sin preguntas</strong> desde el primer cobro. Los '
+              'detalles, cómo solicitarlo y qué pasa después de esos 14 días están en la '
+              '<a href="/reembolsos.html">política de reembolsos</a>, que forma parte de estos términos.',
+              'We offer a <strong>14-day, no-questions-asked refund</strong> from the first charge. The '
+              'details, how to request it and what happens after those 14 days are in the '
+              '<a href="/reembolsos.html">refund policy</a>, which forms part of these terms.')]
+        )
+        + _lg_section(
+            'Qué puedes hacer con los prompts', 'What you may do with the prompts',
+            [('p',
+              'Mientras tu suscripción esté activa te otorgamos una licencia personal, no exclusiva y no '
+              'transferible para usar los prompts en tu trabajo, incluido trabajo comercial y para clientes. '
+              'Lo que produzcas usándolos es tuyo.',
+              'While your subscription is active we grant you a personal, non-exclusive, non-transferable '
+              'licence to use the prompts in your work, including commercial and client work. Whatever you '
+              'produce using them is yours.'),
+             ('p',
+              'Lo que no está permitido: redistribuir, revender o publicar la biblioteca (completa o en '
+              'parte sustancial), compartir tu acceso con terceros, o crear un producto cuyo valor principal '
+              'sea revender estos prompts.',
+              'What is not permitted: redistributing, reselling or publishing the library (in whole or in '
+              'substantial part), sharing your access with third parties, or building a product whose main '
+              'value is reselling these prompts.')]
+        )
+        + _lg_section(
+            'Disponibilidad y responsabilidad', 'Availability and liability',
+            [('p',
+              'El servicio se ofrece "tal cual". Hacemos un esfuerzo razonable por mantenerlo disponible, '
+              'pero no garantizamos operación ininterrumpida ni libre de errores.',
+              'The service is provided "as is". We make reasonable efforts to keep it available, but we do '
+              'not guarantee uninterrupted or error-free operation.'),
+             ('p',
+              'Los prompts son herramientas de dirección para agentes de IA: <strong>el resultado depende '
+              'del modelo que uses y de tu criterio profesional</strong>. Revisa siempre lo que un agente '
+              'produzca antes de llevarlo a producción. No respondemos por decisiones técnicas, de negocio '
+              'o de seguridad tomadas a partir de salidas de IA. En la medida que la ley lo permita, nuestra '
+              'responsabilidad total se limita al monto que hayas pagado en los últimos 12 meses.',
+              'The prompts are steering tools for AI agents: <strong>the outcome depends on the model you '
+              'use and on your professional judgement</strong>. Always review what an agent produces before '
+              'taking it to production. We are not liable for technical, business or security decisions made '
+              'from AI outputs. To the extent permitted by law, our total liability is limited to the amount '
+              'you paid in the last 12 months.')]
+        )
+        + _lg_section(
+            'Cambios y ley aplicable', 'Changes and governing law',
+            [('p',
+              'Podemos actualizar estos términos. Si el cambio es relevante para una suscripción activa te '
+              'avisaremos por correo antes de que aplique. La fecha de arriba indica la última versión.',
+              'We may update these terms. If a change materially affects an active subscription we will '
+              'notify you by email before it applies. The date above indicates the latest version.'),
+             ('p',
+              'Estos términos se rigen por las leyes de los Estados Unidos Mexicanos.',
+              'These terms are governed by the laws of the United Mexican States.')]
+        )
+        + _lg_section(
+            'Contacto', 'Contact',
+            [('p',
+              'Para cualquier duda sobre estos términos: <a href="mailto:' + mail + '">' + mail + '</a>.',
+              'For any question about these terms: <a href="mailto:' + mail + '">' + mail + '</a>.')]
+        )
+    )
+    return _legal_shell(
+        'terminos',
+        'Términos y condiciones — AI-SDLC Pro', 'Terms and Conditions — AI-SDLC Pro',
+        'Términos y condiciones de AI-SDLC Pro: suscripción de 1 USD al mes, renovación, cancelación, '
+        'licencia de uso de los prompts y Paddle como Merchant of Record.',
+        'Términos y condiciones', 'Terms and Conditions',
+        body,
+    )
+
+
+def build_privacidad_page():
+    """Aviso de privacidad. Redactado para la LFPDPPP mexicana (derechos
+    ARCO explícitos) porque LionSystems opera desde México, y listando a
+    los encargados reales que se pueden verificar en el código:
+    Supabase (auth + base de datos), Paddle (pagos), Google Analytics."""
+    mail = LEGAL_CONTACT_EMAIL
+    body = (
+        _lg_section(
+            'Quién es el responsable', 'Who is the data controller',
+            [('p',
+              '<strong>LionSystems</strong>, operando desde Ciudad de México, es responsable del '
+              'tratamiento de los datos personales que recabamos a través de '
+              'prompts.lionsystems.com.mx. Este aviso explica qué recabamos, para qué, con quién lo '
+              'compartimos y cómo ejercer tus derechos.',
+              '<strong>LionSystems</strong>, operating from Mexico City, is the controller for the personal '
+              'data we collect through prompts.lionsystems.com.mx. This notice explains what we collect, '
+              'why, who we share it with and how to exercise your rights.')]
+        )
+        + _lg_section(
+            'Qué datos recabamos', 'What data we collect',
+            [('ul',
+              ['<strong>Si no creas cuenta:</strong> un contador local en tu navegador de cuántos prompts '
+               'has copiado, y métricas de uso agregadas y anónimas. No te identificamos.',
+               '<strong>Al iniciar sesión con GitHub:</strong> tu identificador de usuario y tu correo '
+               'electrónico, que GitHub nos comparte al autorizar. No obtenemos tu contraseña de GitHub ni '
+               'accedemos a tus repositorios.',
+               '<strong>Uso del producto:</strong> qué prompts copias y cuándo, para saber qué contenido '
+               'es útil y priorizar el que sigue.',
+               '<strong>Retroalimentación:</strong> la calificación y el comentario que envíes al renovar '
+               'tu periodo de prueba.',
+               '<strong>Si te suscribes:</strong> el estado de tu suscripción (activa, cancelada, vencida) '
+               'y el identificador que nos da Paddle.'],
+              ['<strong>If you do not create an account:</strong> a local counter in your browser of how '
+               'many prompts you have copied, plus aggregated, anonymous usage metrics. We do not identify '
+               'you.',
+               '<strong>When you sign in with GitHub:</strong> your user identifier and email address, '
+               'which GitHub shares with us upon authorisation. We do not receive your GitHub password and '
+               'do not access your repositories.',
+               '<strong>Product usage:</strong> which prompts you copy and when, so we know which content '
+               'is useful and what to prioritise next.',
+               '<strong>Feedback:</strong> the rating and comment you submit when renewing your trial '
+               'period.',
+               '<strong>If you subscribe:</strong> your subscription status (active, cancelled, expired) '
+               'and the identifier Paddle gives us.'])]
+        )
+        + _lg_section(
+            'Pagos: no vemos tu tarjeta', 'Payments: we never see your card',
+            [('p',
+              'El cobro lo procesa <strong>Paddle</strong> como Merchant of Record. Los datos de tu '
+              'tarjeta se capturan y almacenan en la infraestructura de Paddle: <strong>nunca pasan por '
+              'nuestros servidores ni los podemos ver</strong>. De la transacción solo recibimos un aviso '
+              'de que tu suscripción quedó activa, cancelada o vencida. El manejo que Paddle hace de esos '
+              'datos se rige por su '
+              '<a href="https://www.paddle.com/legal/privacy" target="_blank" rel="noopener">aviso de '
+              'privacidad</a>.',
+              'Payment is processed by <strong>Paddle</strong> as Merchant of Record. Your card details are '
+              'captured and stored on Paddle’s infrastructure: <strong>they never pass through our '
+              'servers and we cannot see them</strong>. From the transaction we only receive a notification '
+              'that your subscription became active, cancelled or expired. Paddle’s handling of that '
+              'data is governed by its '
+              '<a href="https://www.paddle.com/legal/privacy" target="_blank" rel="noopener">privacy '
+              'notice</a>.')]
+        )
+        + _lg_section(
+            'Para qué usamos los datos', 'What we use the data for',
+            [('ul',
+              ['Darte acceso a la biblioteca y reconocer tu sesión.',
+               'Saber si tu periodo de prueba o tu suscripción están vigentes.',
+               'Entender qué prompts se usan más, para decidir qué contenido crear.',
+               'Responderte si nos escribes.'],
+              ['Giving you access to the library and recognising your session.',
+               'Knowing whether your trial or subscription is current.',
+               'Understanding which prompts are used most, to decide what content to create.',
+               'Replying if you contact us.'])]
+        )
+        + _lg_section(
+            'Con quién los compartimos', 'Who we share them with',
+            [('p',
+              'No vendemos tus datos ni los compartimos con anunciantes. Los encargados que los tratan por '
+              'nuestra cuenta son:',
+              'We do not sell your data or share it with advertisers. The processors handling data on our '
+              'behalf are:'),
+             ('ul',
+              ['<strong>Supabase</strong> — autenticación y base de datos donde vive tu cuenta y el estado '
+               'de tu suscripción.',
+               '<strong>Paddle</strong> — procesamiento del pago, como se describe arriba.',
+               '<strong>GitHub</strong> — únicamente como proveedor de identidad al iniciar sesión.',
+               '<strong>Google Analytics</strong> — métricas de uso agregadas del sitio.',
+               '<strong>Google Cloud</strong> — hospedaje del sitio.'],
+              ['<strong>Supabase</strong> — authentication and the database holding your account and '
+               'subscription status.',
+               '<strong>Paddle</strong> — payment processing, as described above.',
+               '<strong>GitHub</strong> — solely as identity provider when you sign in.',
+               '<strong>Google Analytics</strong> — aggregated site usage metrics.',
+               '<strong>Google Cloud</strong> — site hosting.'])]
+        )
+        + _lg_section(
+            'Cookies y almacenamiento local', 'Cookies and local storage',
+            [('p',
+              'Usamos el almacenamiento local de tu navegador para recordar tu idioma, tu contador de '
+              'copias y tu sesión. Google Analytics instala sus propias cookies de medición. Puedes borrar '
+              'todo esto desde tu navegador; si lo haces, perderás la sesión y las preferencias guardadas.',
+              'We use your browser’s local storage to remember your language, your copy counter and '
+              'your session. Google Analytics sets its own measurement cookies. You can clear all of this '
+              'from your browser; if you do, you will lose your session and saved preferences.')]
+        )
+        + _lg_section(
+            'Cuánto tiempo los conservamos', 'How long we keep them',
+            [('p',
+              'Conservamos los datos de tu cuenta mientras exista. Si pides que la eliminemos, borramos tus '
+              'datos personales salvo lo que debamos retener por obligación fiscal o contable de los '
+              'cobros ya realizados — esos registros los conserva Paddle como vendedor de registro.',
+              'We keep your account data for as long as the account exists. If you ask us to delete it, we '
+              'erase your personal data except what we must retain for tax or accounting obligations on '
+              'charges already made — those records are held by Paddle as seller of record.')]
+        )
+        + _lg_section(
+            'Tus derechos ARCO', 'Your rights',
+            [('p',
+              'Conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares, '
+              'puedes solicitar en cualquier momento el <strong>Acceso</strong>, <strong>Rectificación</strong>, '
+              '<strong>Cancelación</strong> u <strong>Oposición</strong> al tratamiento de tus datos, así como '
+              'revocar tu consentimiento.',
+              'Under Mexico’s Federal Law on Protection of Personal Data Held by Private Parties, you may '
+              'at any time request <strong>access</strong>, <strong>rectification</strong>, '
+              '<strong>erasure</strong> or <strong>objection</strong> regarding the processing of your data, '
+              'and withdraw your consent.'),
+             ('p',
+              'Escríbenos a <a href="mailto:' + mail + '">' + mail + '</a> desde el correo de tu cuenta, '
+              'indicando qué derecho quieres ejercer. Respondemos dentro de 20 días hábiles.',
+              'Email us at <a href="mailto:' + mail + '">' + mail + '</a> from your account address, stating '
+              'which right you wish to exercise. We respond within 20 business days.')]
+        )
+        + _lg_section(
+            'Cambios a este aviso', 'Changes to this notice',
+            [('p',
+              'Si modificamos este aviso publicaremos la nueva versión en esta misma dirección y '
+              'actualizaremos la fecha de arriba. Si el cambio es sustancial y tienes cuenta, te avisaremos '
+              'por correo.',
+              'If we amend this notice we will publish the new version at this same address and update the '
+              'date above. If the change is substantial and you have an account, we will notify you by '
+              'email.')]
+        )
+    )
+    return _legal_shell(
+        'privacidad',
+        'Aviso de privacidad — AI-SDLC Pro', 'Privacy Notice — AI-SDLC Pro',
+        'Aviso de privacidad de AI-SDLC Pro: qué datos recabamos, encargados (Supabase, Paddle, GitHub), '
+        'y cómo ejercer tus derechos ARCO.',
+        'Aviso de privacidad', 'Privacy Notice',
+        body,
+    )
+
+
+def build_reembolsos_page():
+    """Política de reembolsos: 14 días sin preguntas, decidido por el
+    dueño del producto. Es el documento que Paddle revisa con más
+    atención en la verificación, y el que faltaba por completo."""
+    mail = LEGAL_CONTACT_EMAIL
+    body = (
+        '  <div class="lg-box lg-key">\n'
+        '    <p class="fw-lang-es" style="margin:0;"><strong>14 días, sin preguntas.</strong> Si te '
+        'suscribes y no te convence, escríbenos dentro de los 14 días naturales siguientes a tu primer '
+        'cobro y te devolvemos el importe completo. No tienes que explicar por qué.</p>\n'
+        '    <p class="fw-lang-en" style="margin:0;"><strong>14 days, no questions asked.</strong> If you '
+        'subscribe and it is not for you, email us within 14 calendar days of your first charge and we '
+        'refund the full amount. You do not have to explain why.</p>\n'
+        '  </div>\n'
+        + _lg_section(
+            'Cómo solicitarlo', 'How to request it',
+            [('p',
+              'Escribe a <a href="mailto:' + mail + '">' + mail + '</a> desde el correo con el que te '
+              'suscribiste, con el asunto "Reembolso". No necesitas motivo ni formulario. Si tienes a mano '
+              'el número de recibo que te envió Paddle, adjuntarlo lo agiliza, pero no es obligatorio.',
+              'Email <a href="mailto:' + mail + '">' + mail + '</a> from the address you subscribed with, '
+              'with the subject "Refund". No reason or form required. If you have the receipt number Paddle '
+              'sent you, including it speeds things up, but it is not mandatory.')]
+        )
+        + _lg_section(
+            'Cuánto tarda', 'How long it takes',
+            [('ul',
+              ['Confirmamos tu solicitud en un máximo de 2 días hábiles.',
+               'El reembolso lo ejecuta <strong>Paddle</strong>, que procesó el cobro original, hacia el '
+               'mismo método de pago que usaste.',
+               'Según tu banco, el dinero suele reflejarse entre 5 y 10 días hábiles después. Ese tiempo '
+               'depende del banco, no de nosotros ni de Paddle.'],
+              ['We confirm your request within 2 business days at most.',
+               'The refund is issued by <strong>Paddle</strong>, which processed the original charge, back '
+               'to the same payment method you used.',
+               'Depending on your bank, the money typically appears 5 to 10 business days later. That '
+               'timing is up to your bank, not to us or Paddle.'])]
+        )
+        + _lg_section(
+            'Después de los 14 días', 'After the 14 days',
+            [('p',
+              'Pasada la ventana de 14 días no hacemos reembolsos por meses ya consumidos ni prorrateos de '
+              'un mes en curso. Lo que sí puedes hacer en cualquier momento es <strong>cancelar</strong>: '
+              'dejas de ser cobrado a partir del siguiente ciclo y conservas el acceso completo hasta que '
+              'termine el periodo que ya pagaste.',
+              'After the 14-day window we do not refund months already used, nor prorate a month in '
+              'progress. What you can do at any time is <strong>cancel</strong>: you stop being charged '
+              'from the next cycle and keep full access until the period you already paid for ends.'),
+             ('p',
+              'Como el plan es mensual y cuesta 1 USD, cancelar a tiempo evita cualquier cobro que no '
+              'quieras. Si se te pasó y te cobraron un mes que no pensabas usar, escríbenos: no lo '
+              'devolvemos por política, pero lo revisamos caso por caso.',
+              'Since the plan is monthly and costs 1 USD, cancelling in time avoids any charge you do not '
+              'want. If it slipped by and you were charged for a month you did not intend to use, email us: '
+              'it is outside the policy, but we review these case by case.')]
+        )
+        + _lg_section(
+            'Cómo cancelar', 'How to cancel',
+            [('p',
+              'Desde el enlace de gestión de suscripción que incluye el correo de recibo de Paddle, o '
+              'escribiéndonos a <a href="mailto:' + mail + '">' + mail + '</a> y lo cancelamos por ti. '
+              'Cancelar no borra tu cuenta: vuelves al acceso de prueba.',
+              'Through the subscription management link included in Paddle’s receipt email, or by '
+              'emailing us at <a href="mailto:' + mail + '">' + mail + '</a> and we will cancel it for you. '
+              'Cancelling does not delete your account: you return to trial access.')]
+        )
+        + _lg_section(
+            'Cobros duplicados o fallas del servicio', 'Duplicate charges or service failures',
+            [('p',
+              'Estos casos quedan <strong>fuera</strong> del límite de 14 días y se devuelven íntegros '
+              'siempre: cobros duplicados por error, cobros posteriores a una cancelación confirmada, y '
+              'periodos en los que el servicio estuvo inaccesible por una falla nuestra. Escríbenos y lo '
+              'resolvemos.',
+              'These cases fall <strong>outside</strong> the 14-day limit and are always refunded in full: '
+              'duplicate charges made in error, charges after a confirmed cancellation, and periods when '
+              'the service was unavailable due to a failure on our side. Email us and we will sort it out.')]
+        )
+        + _lg_section(
+            'Contacto', 'Contact',
+            [('p',
+              'Todo lo relacionado con reembolsos: <a href="mailto:' + mail + '">' + mail + '</a>. '
+              'También puedes contactar directamente a Paddle, que emitió tu recibo, desde '
+              '<a href="https://paddle.net" target="_blank" rel="noopener">paddle.net</a>.',
+              'Anything refund-related: <a href="mailto:' + mail + '">' + mail + '</a>. You may also '
+              'contact Paddle directly, which issued your receipt, at '
+              '<a href="https://paddle.net" target="_blank" rel="noopener">paddle.net</a>.')]
+        )
+    )
+    return _legal_shell(
+        'reembolsos',
+        'Política de reembolsos — AI-SDLC Pro', 'Refund Policy — AI-SDLC Pro',
+        'Política de reembolsos de AI-SDLC Pro: 14 días sin preguntas desde el primer cobro, cómo '
+        'solicitarlo y cómo cancelar la suscripción.',
+        'Política de reembolsos', 'Refund Policy',
+        body,
     )
 
 
@@ -6109,6 +6682,18 @@ def build():
 
     PRECIOS_OUTPUT_FILE.write_text(build_precios_page(), encoding="utf-8")
     print(f"OK  -> {PRECIOS_OUTPUT_FILE.name}")
+
+    # Páginas legales requeridas por la verificación de Paddle. Se
+    # escriben siempre junto a precios.html porque el checkout no puede
+    # habilitarse sin ellas.
+    for slug, builder in (
+        ("terminos", build_terminos_page),
+        ("privacidad", build_privacidad_page),
+        ("reembolsos", build_reembolsos_page),
+    ):
+        target = LEGAL_OUTPUT_FILES[slug]
+        target.write_text(builder(), encoding="utf-8")
+        print(f"OK  -> {target.name}")
 
 
 if __name__ == "__main__":

@@ -17,4 +17,28 @@
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
+  <url>
+    <loc>https://prompts.lionsystems.com.mx/terminos.html</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://prompts.lionsystems.com.mx/terminos.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://prompts.lionsystems.com.mx/terminos.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://prompts.lionsystems.com.mx/terminos.html"/>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://prompts.lionsystems.com.mx/privacidad.html</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://prompts.lionsystems.com.mx/privacidad.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://prompts.lionsystems.com.mx/privacidad.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://prompts.lionsystems.com.mx/privacidad.html"/>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://prompts.lionsystems.com.mx/reembolsos.html</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://prompts.lionsystems.com.mx/reembolsos.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://prompts.lionsystems.com.mx/reembolsos.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://prompts.lionsystems.com.mx/reembolsos.html"/>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
 </urlset>

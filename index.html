@@ -1286,7 +1286,13 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   border-top: 1px solid var(--bdr); padding: 1.2rem 2rem;
   display: flex; align-items: center; justify-content: space-between;
   background: var(--bg2); font-size: .72rem; color: var(--tx3);
+  flex-wrap: wrap; gap: .75rem;
 }
+/* Enlaces legales exigidos por la verificacion de Paddle. Se centran
+   en el hueco del footer y colapsan a bloque propio en movil. */
+.landing-footer-legal { display: flex; flex-wrap: wrap; gap: 1rem; }
+.landing-footer-legal a { color: var(--tx3); text-decoration: none; }
+.landing-footer-legal a:hover { color: var(--tx2); text-decoration: underline; }
 
 /* ══════════════  BOTTOM RIGHT FLOATING CONTROLS  ══════════════ */
 .bottom-right-floats {
@@ -1431,6 +1437,12 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   </section>
   <footer class="landing-footer">
     <span>AI-SDLC Pro © 2025 LionSystems</span>
+    <span class="landing-footer-legal">
+      <a href="/terminos.html">Términos</a>
+      <a href="/privacidad.html">Privacidad</a>
+      <a href="/reembolsos.html">Reembolsos</a>
+      <a href="/precios.html">Precios</a>
+    </span>
     <a class="landing-cta-secondary" style="font-size:.72rem;padding:.25rem .75rem;" href="https://lionsystems.com.mx" target="_blank" rel="noopener">lionsystems.com.mx ↗</a>
   </footer>
 </div>

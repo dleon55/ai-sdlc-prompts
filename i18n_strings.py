@@ -254,6 +254,10 @@ LANDING_STRINGS = {
         'final_title': 'Empieza a dirigir tus agentes IA hoy',
         'final_subtitle': 'Acceso gratuito. Sin registro. Sin tarjeta de crédito.',
         'footer_copyright': 'AI-SDLC Pro © 2025 LionSystems',
+        'footer_terms': 'Términos',
+        'footer_privacy': 'Privacidad',
+        'footer_refunds': 'Reembolsos',
+        'footer_pricing': 'Precios',
     },
     'en': {
         'page_title': 'AI-SDLC Pro — Software Engineering Prompt Library',
@@ -282,6 +286,10 @@ LANDING_STRINGS = {
         'final_title': 'Start directing your AI agents today',
         'final_subtitle': 'Free access. No registration. No credit card required.',
         'footer_copyright': 'AI-SDLC Pro © 2025 LionSystems',
+        'footer_terms': 'Terms',
+        'footer_privacy': 'Privacy',
+        'footer_refunds': 'Refunds',
+        'footer_pricing': 'Pricing',
     }
 }
 
