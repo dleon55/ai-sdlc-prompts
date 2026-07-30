@@ -6769,6 +6769,84 @@
       ]
     },
     {
+      "id": "11-15-plan-recuperacion-desastres-continuidad",
+      "section": "11",
+      "title": {
+        "es": "11.15 — Plan de recuperación ante desastres y continuidad de negocio (DR/BCP)",
+        "en": "11.15 — Disaster recovery and business continuity plan (DR/BCP)"
+      },
+      "description": {
+        "es": "Prompt para diseñar el plan de recuperación ante desastres (Disaster Recovery) y continuidad de negocio de un sistema: validación de objetivos de RTO/RPO, secuenciación de recuperación de dependencias, procedimiento de failover, cadencia de pruebas de backup-restore, y criterios de activación del plan ante una pérdida catastrófica (pérdida de centro de datos/región, ransomware, corrupción masiva de datos). Distinto de `11-04-incident-response`, que atiende un incidente ya en curso de alcance acotado, y de `11-09-runbook-rollback`, que revierte un solo despliegue reciente — este prompt prepara y valida la capacidad de recuperación completa del sistema ante un escenario de pérdida total, antes de que ocurra.\n\nCuándo usarlo: al definir la arquitectura inicial de un sistema crítico (después de `00-D-02`, donde se declaran los objetivos de RPO/RTO), periódicamente para validar que la capacidad real de recuperación sigue cumpliendo esos objetivos, o al preparar la primera prueba formal de recuperación (drill) de un sistema que nunca ha sido probado.",
+        "en": ""
+      },
+      "template": {
+        "es": "Objetivo:\nDiseña el plan de recuperación ante desastres y continuidad de negocio del sistema: validación de RTO/RPO, secuencia de recuperación de dependencias, procedimiento de failover, cadencia de pruebas de backup-restore y criterios de activación.\n\nEntradas:\n- objetivos de RTO/RPO declarados: [PEGAR O REFERENCIA A 00-D-02, O \"no declarados aún\"]\n- arquitectura del sistema y dependencias críticas: [PEGAR O REFERENCIA A 04-01]\n- mecanismo de backup/replicación actual: [DESCRIPCIÓN, O \"no existe backup formal\"]\n- última prueba de restauración realizada: [FECHA Y RESULTADO, O \"nunca probado\"]\n\nActividades:\n1. ESCENARIOS DE DESASTRE EN ALCANCE\n   Define los escenarios catastróficos cubiertos por este plan (pérdida de centro de datos/región, ransomware/corrupción masiva de datos, pérdida del proveedor de nube, borrado accidental irreversible) — no asumas que todos los escenarios se recuperan igual; distingue si alguno queda explícitamente fuera de alcance y por qué.\n\n2. VALIDACIÓN DE RTO/RPO\n   Para cada escenario, estima el RTO (tiempo de recuperación) y RPO (pérdida de datos máxima tolerable) *reales* alcanzables con el mecanismo de backup/replicación actual, comparándolos contra el objetivo declarado — no repitas el objetivo declarado como si fuera la capacidad real sin verificarlo. Si existe una brecha entre el objetivo y la capacidad real, repórtala explícitamente con el tamaño de la brecha.\n\n3. SECUENCIA DE RECUPERACIÓN DE DEPENDENCIAS\n   Lista las dependencias críticas del sistema (bases de datos, colas, servicios externos, secretos/credenciales, DNS) y define el orden en que deben recuperarse — no asumas que todas se recuperan en paralelo sin conflicto; señala qué dependencia bloquea a cuáles.\n\n4. PROCEDIMIENTO DE FAILOVER\n   Define los pasos concretos para activar el sitio/región/entorno de recuperación, incluyendo quién tiene autoridad para declarar el desastre y activar el plan, y cómo se redirige el tráfico real de usuarios.\n\n5. CADENCIA DE PRUEBAS (DRILLS)\n   Define con qué frecuencia se debe probar la restauración real de backups y, si aplica, un failover completo simulado (tabletop o técnico) — un plan de DR nunca probado se reporta como \"no validado\", no como \"listo\".\n\n6. CRITERIOS DE ACTIVACIÓN Y DESACTIVACIÓN\n   Define qué condición objetiva activa formalmente el plan (vs. tratarlo como un incidente normal de `11-04`) y qué condición confirma que la operación normal puede retomarse (failback).\n\n7. COMUNICACIÓN DE CRISIS\n   Define qué stakeholders deben ser notificados al activar el plan, por qué canal, y con qué cadencia de actualización mientras dura la recuperación.\n\nRestricciones:\n- nunca declares un RTO/RPO como \"cumplido\" sin verificar la capacidad real del mecanismo de backup/replicación actual — un objetivo sin verificación se reporta como no validado, no como alcanzado,\n- toda dependencia crítica debe aparecer en la secuencia de recuperación con su propio RTO/RPO estimado — no agrupes dependencias distintas bajo una sola estimación genérica,\n- si el sistema nunca ha tenido una prueba real de restauración, decláralo explícitamente como riesgo abierto de alta severidad, no lo omitas ni asumas que el backup funciona porque existe,\n- este prompt diseña el plan y el procedimiento de prueba; no ejecuta ninguna restauración, failover ni prueba de recuperación real,\n- si no se conocen los objetivos de RTO/RPO ni la arquitectura de dependencias del sistema, detente y solicítalos antes de proponer el plan.\n\nSalida:\n0. Bloque JSON de metadatos (claves: status, scenarios_covered_count, rto_rpo_gaps_count, never_tested, confidence_score [0.0 a 1.0]).\n1. Escenarios de desastre en alcance (y explícitamente fuera de alcance).\n2. RTO/RPO objetivo vs. capacidad real estimada, por escenario, con brechas señaladas.\n3. Secuencia de recuperación de dependencias críticas, con orden y bloqueos.\n4. Procedimiento de failover: pasos, autoridad de activación, redirección de tráfico.\n5. Cadencia de pruebas de backup-restore y de failover simulado.\n6. Criterios de activación y de failback (retorno a operación normal).\n7. Plan de comunicación de crisis.",
+        "en": "Objective:\nDesign the system's disaster recovery and business continuity plan: RTO/RPO validation, dependency-recovery sequencing, failover procedure, backup-restore testing cadence, and activation criteria.\n\nInputs:\n- declared RTO/RPO objectives: [PASTE OR REFERENCE TO 00-D-02, OR \"not declared yet\"]\n- system architecture and critical dependencies: [PASTE OR REFERENCE TO 04-01]\n- current backup/replication mechanism: [DESCRIPTION, OR \"no formal backup exists\"]\n- last restore test performed: [DATE AND RESULT, OR \"never tested\"]\n\nActivities:\n1. DISASTER SCENARIOS IN SCOPE\n   Define the catastrophic scenarios covered by this plan (data-center/region loss, ransomware/massive data corruption, cloud-provider loss, irreversible accidental deletion) — don't assume every scenario recovers the same way; state whether any scenario is explicitly out of scope and why.\n\n2. RTO/RPO VALIDATION\n   For each scenario, estimate the *real* achievable RTO (recovery time) and RPO (maximum tolerable data loss) with the current backup/replication mechanism, comparing them against the declared objective — don't repeat the declared objective as if it were the verified real capability. If a gap exists between the objective and the real capability, report it explicitly with the size of the gap.\n\n3. DEPENDENCY RECOVERY SEQUENCING\n   List the system's critical dependencies (databases, queues, external services, secrets/credentials, DNS) and define the order in which they must be recovered — don't assume all of them recover in parallel with no conflict; flag which dependency blocks which.\n\n4. FAILOVER PROCEDURE\n   Define the concrete steps to activate the recovery site/region/environment, including who has authority to declare the disaster and activate the plan, and how real user traffic gets redirected.\n\n5. TESTING CADENCE (DRILLS)\n   Define how often real backup restoration must be tested and, if applicable, a full simulated failover (tabletop or technical) — a never-tested DR plan is reported as \"not validated\", not as \"ready\".\n\n6. ACTIVATION AND DEACTIVATION CRITERIA\n   Define the objective condition that formally activates the plan (vs. treating it as a normal `11-04` incident) and the condition confirming that normal operation can resume (failback).\n\n7. CRISIS COMMUNICATION\n   Define which stakeholders must be notified upon activation, through which channel, and at what update cadence while recovery is underway.\n\nConstraints:\n- never declare an RTO/RPO as \"met\" without verifying the real capability of the current backup/replication mechanism — an unverified objective is reported as not validated, not as achieved,\n- every critical dependency must appear in the recovery sequence with its own estimated RTO/RPO — don't group distinct dependencies under one generic estimate,\n- if the system has never had a real restore test, explicitly declare it as a high-severity open risk — don't omit it or assume the backup works just because it exists,\n- this prompt designs the plan and the test procedure; it does not execute any real restore, failover, or recovery test,\n- if the system's RTO/RPO objectives or dependency architecture are unknown, stop and request them before proposing the plan.\n\nOutput:\n0. JSON metadata block (keys: status, scenarios_covered_count, rto_rpo_gaps_count, never_tested, confidence_score [0.0 to 1.0]).\n1. Disaster scenarios in scope (and explicitly out of scope).\n2. Target vs. real estimated RTO/RPO per scenario, with gaps flagged.\n3. Critical-dependency recovery sequence, with order and blockers.\n4. Failover procedure: steps, activation authority, traffic redirection.\n5. Backup-restore and simulated-failover testing cadence.\n6. Activation and failback criteria (return to normal operation).\n7. Crisis communication plan."
+      },
+      "formulas": {
+        "es": [
+          "Usa el prompt de plan de recuperación ante desastres y continuidad de negocio y adáptalo a:\n- repositorio/proyecto: [NOMBRE O URL]\n- objetivos de RTO/RPO: [REFERENCIA A 00-D-02, O \"no declarados aún\"]\n- arquitectura y dependencias críticas: [REFERENCIA A 04-01]\n- documentos a revisar: mecanismo de backup actual, resultado de la última prueba de restauración\n- objetivo puntual de salida: plan de DR/BCP con RTO/RPO validado y cadencia de pruebas\n- nivel de profundidad: alto"
+        ],
+        "en": [
+          "Use the disaster recovery and business continuity plan prompt and adapt it to:\n- repository/project: [NAME OR URL]\n- RTO/RPO objectives: [REFERENCE TO 00-D-02, OR \"not declared yet\"]\n- architecture and critical dependencies: [REFERENCE TO 04-01]\n- documents to review: current backup mechanism, result of the last restore test\n- specific output objective: DR/BCP plan with validated RTO/RPO and testing cadence\n- depth level: high"
+        ]
+      },
+      "contract": {
+        "es": {
+          "type": "diseño",
+          "expected_risk": "alto — un plan de DR no probado o con objetivos de RTO/RPO no validados against la capacidad real de recuperación da una falsa sensación de resiliencia hasta que ocurre el desastre real; el prompt no ejecuta ninguna restauración, failover ni prueba de recuperación por sí mismo",
+          "required_inputs": "objetivos de RTO/RPO declarados (`00-D-02` u otra fuente), arquitectura del sistema y sus dependencias críticas, mecanismo de backup actual (si existe), última prueba de restauración realizada (si alguna)",
+          "allowed_tools": "ninguna de ejecución — lectura de documentación y arquitectura existentes; produce un documento de plan y un procedimiento de prueba, no ejecuta ninguna restauración ni failover real",
+          "permitted_autonomy": "A1 — Proponer",
+          "stop_criteria": "si no puede confirmarse que el RTO/RPO objetivo es alcanzable con el mecanismo de backup/replicación actual, no declarar el sistema \"recuperable\" — marcarlo como brecha de capacidad y reportar el RTO/RPO real estimado en su lugar",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada dependencia crítica del sistema aparece en la secuencia de recuperación con su propio RTO/RPO estimado; toda brecha entre el objetivo declarado y la capacidad real de recuperación se reporta explícitamente, no se asume cerrada",
+          "recommended_next_prompt": "`11-07-sre-postmortem-runbook` si un drill o una activación real del plan revela fallas que requieren postmortem; `00-D-04-registro-riesgos-proyecto` para registrar como riesgo abierto cualquier brecha de capacidad de recuperación no cerrada",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "11-07-sre-postmortem-runbook",
+            "00-D-04-registro-riesgos-proyecto"
+          ]
+        },
+        "en": {
+          "type": "design",
+          "expected_risk": "high — an untested DR plan, or one whose RTO/RPO objectives were never validated against real recovery capability, gives a false sense of resilience until the real disaster occurs; the prompt does not execute any restore, failover, or recovery test by itself",
+          "required_inputs": "declared RTO/RPO objectives (`00-D-02` or another source), system architecture and its critical dependencies, current backup mechanism (if any), last restore test performed (if any)",
+          "allowed_tools": "none for execution — reading existing documentation and architecture; produces a plan document and a test procedure, does not execute any real restore or failover",
+          "permitted_autonomy": "A1 — Propose",
+          "stop_criteria": "if it cannot be confirmed that the target RTO/RPO is achievable with the current backup/replication mechanism, do not declare the system \"recoverable\" — flag it as a capability gap and report the real estimated RTO/RPO instead",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every critical dependency of the system appears in the recovery sequence with its own estimated RTO/RPO; any gap between the declared objective and the real recovery capability is reported explicitly, never assumed closed",
+          "recommended_next_prompt": "`11-07-sre-postmortem-runbook` if a drill or a real activation of the plan reveals failures requiring a postmortem; `00-D-04-registro-riesgos-proyecto` to log any unclosed recovery-capability gap as an open risk",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "11-07-sre-postmortem-runbook",
+            "00-D-04-registro-riesgos-proyecto"
+          ]
+        }
+      },
+      "recommended_next_prompt_ids": [
+        "11-07-sre-postmortem-runbook",
+        "00-D-04-registro-riesgos-proyecto"
+      ]
+    },
+    {
       "id": "12-orquestador",
       "section": "12",
       "title": {

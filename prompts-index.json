@@ -4864,6 +4864,64 @@
       }
     },
     {
+      "id": "11-15-plan-recuperacion-desastres-continuidad",
+      "section": "11",
+      "title": {
+        "es": "11.15 — Plan de recuperación ante desastres y continuidad de negocio (DR/BCP)",
+        "en": "11.15 — Disaster recovery and business continuity plan (DR/BCP)"
+      },
+      "contract": {
+        "es": {
+          "type": "diseño",
+          "expected_risk": "alto — un plan de DR no probado o con objetivos de RTO/RPO no validados against la capacidad real de recuperación da una falsa sensación de resiliencia hasta que ocurre el desastre real; el prompt no ejecuta ninguna restauración, failover ni prueba de recuperación por sí mismo",
+          "required_inputs": "objetivos de RTO/RPO declarados (`00-D-02` u otra fuente), arquitectura del sistema y sus dependencias críticas, mecanismo de backup actual (si existe), última prueba de restauración realizada (si alguna)",
+          "allowed_tools": "ninguna de ejecución — lectura de documentación y arquitectura existentes; produce un documento de plan y un procedimiento de prueba, no ejecuta ninguna restauración ni failover real",
+          "permitted_autonomy": "A1 — Proponer",
+          "stop_criteria": "si no puede confirmarse que el RTO/RPO objetivo es alcanzable con el mecanismo de backup/replicación actual, no declarar el sistema \"recuperable\" — marcarlo como brecha de capacidad y reportar el RTO/RPO real estimado en su lugar",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada dependencia crítica del sistema aparece en la secuencia de recuperación con su propio RTO/RPO estimado; toda brecha entre el objetivo declarado y la capacidad real de recuperación se reporta explícitamente, no se asume cerrada",
+          "recommended_next_prompt": "`11-07-sre-postmortem-runbook` si un drill o una activación real del plan revela fallas que requieren postmortem; `00-D-04-registro-riesgos-proyecto` para registrar como riesgo abierto cualquier brecha de capacidad de recuperación no cerrada",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "11-07-sre-postmortem-runbook",
+            "00-D-04-registro-riesgos-proyecto"
+          ]
+        },
+        "en": {
+          "type": "design",
+          "expected_risk": "high — an untested DR plan, or one whose RTO/RPO objectives were never validated against real recovery capability, gives a false sense of resilience until the real disaster occurs; the prompt does not execute any restore, failover, or recovery test by itself",
+          "required_inputs": "declared RTO/RPO objectives (`00-D-02` or another source), system architecture and its critical dependencies, current backup mechanism (if any), last restore test performed (if any)",
+          "allowed_tools": "none for execution — reading existing documentation and architecture; produces a plan document and a test procedure, does not execute any real restore or failover",
+          "permitted_autonomy": "A1 — Propose",
+          "stop_criteria": "if it cannot be confirmed that the target RTO/RPO is achievable with the current backup/replication mechanism, do not declare the system \"recoverable\" — flag it as a capability gap and report the real estimated RTO/RPO instead",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every critical dependency of the system appears in the recovery sequence with its own estimated RTO/RPO; any gap between the declared objective and the real recovery capability is reported explicitly, never assumed closed",
+          "recommended_next_prompt": "`11-07-sre-postmortem-runbook` if a drill or a real activation of the plan reveals failures requiring a postmortem; `00-D-04-registro-riesgos-proyecto` to log any unclosed recovery-capability gap as an open risk",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "11-07-sre-postmortem-runbook",
+            "00-D-04-registro-riesgos-proyecto"
+          ]
+        }
+      }
+    },
+    {
       "id": "12-orquestador",
       "section": "12",
       "title": {
