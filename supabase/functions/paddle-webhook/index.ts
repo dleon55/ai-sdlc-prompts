@@ -57,6 +57,7 @@ function timingSafeEqual(a: string, b: string): boolean {
 // gate -- el resto (canceled, past_due, paused) cae de vuelta al muro de
 // prueba gratuita normal.
 const ACTIVE_STATUSES = new Set(["active", "trialing"]);
+const MAX_SIGNATURE_AGE_SECONDS = 300;
 
 Deno.serve(async (req) => {
   if (req.method !== "POST") {
@@ -65,18 +66,22 @@ Deno.serve(async (req) => {
 
   const rawBody = await req.text();
   const signatureHeader = req.headers.get("Paddle-Signature") ?? "";
-  const parts = Object.fromEntries(
-    signatureHeader.split(";").map((p) => p.split("=") as [string, string]),
-  );
-  const ts = parts["ts"];
-  const h1 = parts["h1"];
+  const parts = signatureHeader.split(";").map((part) => part.trim().split("=", 2));
+  const ts = parts.find(([key]) => key === "ts")?.[1];
+  const signatures = parts.filter(([key]) => key === "h1").map(([, value]) => value);
 
-  if (!ts || !h1 || !PADDLE_WEBHOOK_SECRET) {
+  if (!ts || signatures.length === 0 || !PADDLE_WEBHOOK_SECRET) {
     return new Response("Missing signature", { status: 401 });
   }
 
+  const timestamp = Number(ts);
+  const now = Math.floor(Date.now() / 1000);
+  if (!Number.isInteger(timestamp) || Math.abs(now - timestamp) > MAX_SIGNATURE_AGE_SECONDS) {
+    return new Response("Expired signature", { status: 408 });
+  }
+
   const expected = await hmacHex(PADDLE_WEBHOOK_SECRET, `${ts}:${rawBody}`);
-  if (!timingSafeEqual(expected, h1)) {
+  if (!signatures.some((signature) => timingSafeEqual(expected, signature))) {
     return new Response("Invalid signature", { status: 401 });
   }
 
@@ -88,11 +93,12 @@ Deno.serve(async (req) => {
   }
 
   const eventType: string = payload.event_type ?? "";
+  const eventId: string = payload.event_id ?? "";
   const data = payload.data ?? {};
+  const occurredAt: string = payload.occurred_at ?? "";
 
-  if (!eventType.startsWith("subscription.")) {
-    // Otros eventos (transaction.*, etc.) no son relevantes para el gate.
-    return new Response("Ignored", { status: 200 });
+  if (!eventId || !occurredAt || Number.isNaN(Date.parse(occurredAt))) {
+    return new Response("Missing or invalid event metadata", { status: 400 });
   }
 
   const userId: string | undefined = data.custom_data?.user_id;
@@ -101,42 +107,24 @@ Deno.serve(async (req) => {
   const status: string = ACTIVE_STATUSES.has(data.status) ? "active" : (data.status ?? "unknown");
   const currentPeriodEnd: string | null = data.current_billing_period?.ends_at ?? null;
 
-  if (!paddleSubscriptionId) {
+  if (eventType.startsWith("subscription.") && !paddleSubscriptionId) {
     return new Response("Missing subscription id", { status: 400 });
   }
 
-  if (userId) {
-    // subscription.created siempre trae el custom_data que mandamos en el
-    // checkout -- este es el único punto donde correlacionamos la
-    // suscripción de Paddle con el usuario real de Supabase.
-    const { error } = await supabase.from("subscriptions").upsert({
-      user_id: userId,
-      paddle_subscription_id: paddleSubscriptionId,
-      paddle_customer_id: paddleCustomerId,
-      status,
-      current_period_end: currentPeriodEnd,
-      updated_at: new Date().toISOString(),
-    });
-    if (error) {
-      console.error("upsert por user_id fallo:", error);
-      return new Response("DB error", { status: 500 });
-    }
-  } else {
-    // subscription.updated/canceled no siempre repiten custom_data --
-    // actualizamos por paddle_subscription_id, que ya vinculamos antes.
-    const { error } = await supabase
-      .from("subscriptions")
-      .update({
-        status,
-        current_period_end: currentPeriodEnd,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("paddle_subscription_id", paddleSubscriptionId);
-    if (error) {
-      console.error("update por paddle_subscription_id fallo:", error);
-      return new Response("DB error", { status: 500 });
-    }
+  const { data: applied, error } = await supabase.rpc("apply_paddle_subscription_event", {
+    p_event_id: eventId,
+    p_event_type: eventType,
+    p_occurred_at: occurredAt,
+    p_user_id: userId ?? null,
+    p_subscription_id: paddleSubscriptionId ?? null,
+    p_customer_id: paddleCustomerId ?? null,
+    p_status: status,
+    p_current_period_end: currentPeriodEnd,
+  });
+  if (error) {
+    console.error("webhook event transaction failed:", error);
+    return new Response("DB error", { status: 500 });
   }
 
-  return new Response("OK", { status: 200 });
+  return new Response(applied ? "OK" : "Already processed", { status: 200 });
 });

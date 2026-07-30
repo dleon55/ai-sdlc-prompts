@@ -128,6 +128,16 @@ def _copy_and_read_clipboard(page, pid, lang="es"):
     return page.evaluate("navigator.clipboard.readText()")
 
 
+def _canonical_newlines(text):
+    """El portapapeles de Chromium en Windows convierte LF a CRLF.
+
+    La aplicación conserva el contenido; las pruebas comparan el texto con
+    saltos de línea canónicos para no confundir una convención de plataforma
+    con pérdida de datos durante la sustitución o el copiado.
+    """
+    return text.replace("\r\n", "\n").replace("\r", "\n")
+
+
 # ─────────────────────  Copia individual + sustitución  ─────────────────────
 
 def test_single_copy_matches_variable_panel_value_verbatim(app_page):
@@ -137,7 +147,9 @@ def test_single_copy_matches_variable_panel_value_verbatim(app_page):
     special = "Línea1 <b>&\"'$/tag\nLínea2 ñ 日本語 emoji:🚀"
     _set_variable(app_page, "vf-entrada", special)
     clip = _copy_and_read_clipboard(app_page, "02-05-analisis-integral-requerimientos", "es")
-    assert special in clip, "El valor especial no sobrevivió verbatim en el portapapeles"
+    assert _canonical_newlines(special) in _canonical_newlines(clip), (
+        "El valor especial no sobrevivió en el portapapeles"
+    )
 
 
 def test_single_copy_preview_equals_clipboard_content(app_page):
@@ -152,7 +164,7 @@ def test_single_copy_preview_equals_clipboard_content(app_page):
     clip = _copy_and_read_clipboard(app_page, pid, "es")
     # El portapapeles antepone el framework; el preview no. El cuerpo del
     # prompt (preview) debe estar íntegro dentro del portapapeles.
-    assert preview.strip() in clip
+    assert _canonical_newlines(preview).strip() in _canonical_newlines(clip)
     assert special in preview
     assert special in clip
 

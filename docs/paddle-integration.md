@@ -13,10 +13,17 @@ recibir el webhook de Paddle.
 
 ## 1. Ejecutar el SQL
 
-En el SQL Editor de Supabase, después de `trial_gate.sql`, pega y ejecuta
+Para una instalación nueva, en el SQL Editor de Supabase, después de
+`trial_gate.sql`, pega y ejecuta
 [`supabase/subscriptions.sql`](../supabase/subscriptions.sql) completo —
 crea la tabla `subscriptions` y reemplaza `check_trial_status()` con la
 versión que revisa suscripción primero.
+
+Para una instalación que ya ejecutó ese script, aplica solamente
+[`supabase/migrations/20260730_paddle_webhook_idempotency.sql`](../supabase/migrations/20260730_paddle_webhook_idempotency.sql).
+La migración también registra la fecha del último evento y encapsula el
+procesamiento en una función SQL atómica: reintentos concurrentes no aplican
+dos veces un cobro y eventos atrasados no sustituyen un estado más reciente.
 
 **Verificación de seguridad**: en **Database → Tables → subscriptions**,
 confirma que aparece con **RLS habilitado** y **una sola política**, de
@@ -56,12 +63,18 @@ https://sqdzoreqfatpdainlhrm.supabase.co/functions/v1/paddle-webhook
    `supabase secrets set`), agrega: nombre `PADDLE_WEBHOOK_SECRET`, valor el
    secreto que copiaste. Este NO va en GitHub ni en el repo.
 
-## 5. Configurar el client-side token (para que el botón "Suscribirme" funcione)
+## 5. Configurar el checkout por ambiente
 
 1. En Paddle: **Developer Tools → Authentication → Client-side tokens**.
 2. Genera uno para el ambiente correspondiente (Sandbox primero).
-3. Reemplaza el valor `PENDIENTE_CONFIGURAR` de `PADDLE_CLIENT_TOKEN` en
-   `build.py` (función `build_precios_page()`) por ese token real.
+3. En GitHub: `Settings > Secrets and variables > Actions > Variables`, crea
+   `PADDLE_ENVIRONMENT=sandbox`, `PADDLE_CLIENT_TOKEN=<token test_...>` y
+   `PADDLE_PRICE_ID=<pri_...>` para pruebas. Son valores públicos de
+   Paddle.js, no API keys ni secretos.
+4. El build lee esas variables y valida que los tokens `test_` solo se usen
+   con `sandbox`. Para producción usa un token `live_`, un precio live y
+   `PADDLE_ENVIRONMENT=production`; si falta alguno, el build falla en lugar
+   de publicar un checkout ambiguo.
 
 Mientras ese valor siga en `PENDIENTE_CONFIGURAR`, el botón "Suscribirme"
 no intenta abrir un checkout roto — solo avisa "el pago aún no está
@@ -80,10 +93,10 @@ disponible", igual que Supabase antes de tener sus claves reales.
    `status = 'active'`.
 4. Recarga la app — ya no debe pedirte registrarte ni mostrar el muro de
    prueba vencida.
-5. Solo cuando todo lo anterior funcione en Sandbox, repite los pasos 4-5
-   en la cuenta **productiva** de Paddle (nuevo client-side token, nuevo
-   webhook, nuevo `PADDLE_WEBHOOK_SECRET`, y el `PADDLE_PRICE_ID`/
-   `PADDLE_ENVIRONMENT="production"` en `build.py`).
+5. Solo cuando todo lo anterior funcione en Sandbox, crea entidades separadas
+   en la cuenta **productiva** de Paddle: token `live_`, precio live, destino
+   webhook live y `PADDLE_WEBHOOK_SECRET` live en Supabase. Configura el
+   dominio aprobado y el default payment link en Paddle antes del deploy.
 
 ## Notas de diseño
 
@@ -98,3 +111,9 @@ disponible", igual que Supabase antes de tener sus claves reales.
 - **`PADDLE_WEBHOOK_SECRET` vive solo en Supabase, nunca en GitHub ni en el
   repo** — no cambia en cada deploy, así que no tiene sentido como secreto
   de CI.
+- **Protección de webhooks**: la función rechaza firmas vencidas y registra
+  `event_id` para reconocer reintentos. La transacción SQL bloquea el evento
+  y conserva `last_event_occurred_at` para resistir concurrencia y entregas
+  fuera de orden. En instalaciones existentes, ejecuta la migración
+  `20260730_paddle_webhook_idempotency.sql` antes de desplegar la función; sin
+  ella el webhook responderá con error.
