@@ -70,14 +70,25 @@ jobs:
         with:
           node-version: "22"
 
-      - name: Build index.html
+      - name: Build index.html (PR sandbox)
+        if: github.event_name == 'pull_request'
         env:
-          # Valores publicos de Paddle. Los PR siempre generan sandbox; main
-          # solo genera checkout live cuando las variables se configuran.
-          PADDLE_ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && vars.PADDLE_ENVIRONMENT || 'sandbox' }}
-          PADDLE_CLIENT_TOKEN: ${{ github.ref == 'refs/heads/main' && vars.PADDLE_CLIENT_TOKEN || 'PENDIENTE_CONFIGURAR' }}
-          PADDLE_PRICE_ID: ${{ github.ref == 'refs/heads/main' && vars.PADDLE_PRICE_ID || 'PENDIENTE_CONFIGURAR' }}
+          PADDLE_ENVIRONMENT: sandbox
+          PADDLE_CLIENT_TOKEN: PENDIENTE_CONFIGURAR
+          PADDLE_PRICE_ID: PENDIENTE_CONFIGURAR
         run: python build.py
+
+      - name: Build index.html (main Live)
+        if: github.event_name != 'pull_request'
+        env:
+          PADDLE_ENVIRONMENT: ${{ vars.PADDLE_ENVIRONMENT }}
+          PADDLE_CLIENT_TOKEN: ${{ vars.PADDLE_CLIENT_TOKEN }}
+          PADDLE_PRICE_ID: ${{ vars.PADDLE_PRICE_ID }}
+        run: |
+          [ "$PADDLE_ENVIRONMENT" = "production" ] || { echo "ERROR: production requires PADDLE_ENVIRONMENT=production"; exit 1; }
+          case "$PADDLE_CLIENT_TOKEN" in live_*) ;; *) echo "ERROR: production requires a live Paddle client token"; exit 1 ;; esac
+          case "$PADDLE_PRICE_ID" in pri_*) ;; *) echo "ERROR: production requires a Paddle price identifier"; exit 1 ;; esac
+          python build.py
 
       - name: QA gate - validate prompts
         run: python verify_clean.py
