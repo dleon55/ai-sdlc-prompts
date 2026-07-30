@@ -6387,6 +6387,84 @@
       ]
     },
     {
+      "id": "11-14-migracion-cutover-plataforma",
+      "section": "11",
+      "title": {
+        "es": "11.14 — Plan de migración y cutover de plataforma o sistema legacy",
+        "en": "11.14 — Platform or legacy system migration and cutover plan"
+      },
+      "description": {
+        "es": "Prompt para diseñar el plan de migración de una plataforma, sistema o stack antiguo a uno nuevo: estrategia de migración de datos (big-bang vs. incremental, dual-write, backfill), secuenciación del cutover de tráfico (todo-o-nada vs. progresivo), verificación de consistencia entre el sistema origen y el destino, y plan de rollback específico de la migración. Es el paso que ocurre antes de poder decomisionar el sistema origen con `11-11-plan-decomiso-sistema-legacy`, y es distinto de `08-05-revision-migracion-esquema-bd`, que solo revisa la seguridad de un cambio de esquema de base de datos ya escrito — este prompt diseña el movimiento completo de una aplicación, sus datos y su tráfico entre dos sistemas.\n\nCuándo usarlo: cuando se decide mover una aplicación, sus datos o su tráfico de un sistema/stack/nube antiguo a uno nuevo (upgrade mayor de stack, migración de nube, consolidación de sistemas, monolito→microservicios) — antes de ejecutar cualquier cutover real, y como paso previo obligatorio a `11-11` si el objetivo final es apagar el sistema origen.",
+        "en": ""
+      },
+      "template": {
+        "es": "Objetivo:\nDiseña el plan de migración y cutover de un sistema, plataforma o stack antiguo a uno nuevo, con estrategia de migración de datos, secuenciación del corte de tráfico, verificación de consistencia y plan de rollback específico de la migración.\n\nEntradas:\n- sistema origen: [DESCRIPCIÓN, STACK, VOLUMEN DE DATOS APROXIMADO]\n- sistema destino: [DESCRIPCIÓN, STACK, O REFERENCIA A 00-D-02/04-01]\n- razón de la migración: [UPGRADE DE STACK / MIGRACIÓN DE NUBE / CONSOLIDACIÓN / MONOLITO→MICROSERVICIOS / OTRO]\n- downtime tolerable: [VENTANA MÁXIMA ACEPTABLE, O \"cero downtime requerido\"]\n- dependientes conocidos del sistema origen: [PEGAR O REFERENCIA AL INVENTARIO DE 11-11, O \"no inventariados aún\"]\n\nActividades:\n1. INVENTARIO DE ALCANCE\n   Define qué migra (datos, funcionalidad, integraciones, usuarios/tenants) y qué queda explícitamente fuera de esta fase de migración, con la razón — no dejes ningún componente del sistema origen sin una decisión explícita de si migra o no.\n\n2. ESTRATEGIA DE MIGRACIÓN DE DATOS\n   Define big-bang (corte único de todos los datos) vs. incremental (por lotes, por tenant, por región); si es incremental, define el orden. Si el sistema debe seguir operando durante la migración, define la estrategia de dual-write (escribir a ambos sistemas simultáneamente) o de sincronización continua, y el mecanismo de backfill de datos históricos previos al inicio de la migración.\n\n3. VERIFICACIÓN DE CONSISTENCIA\n   Define cómo se confirmará, con evidencia concreta (conteo de registros, checksums, muestreo, reconciliación), que los datos en el sistema destino son consistentes con el origen antes de cortar tráfico. Nunca declares consistencia lograda sin un método de verificación citado; define también el umbral de discrepancia aceptable, si alguno.\n\n4. ESTRATEGIA DE CUTOVER\n   Define todo-o-nada vs. progresivo (canary por segmento de usuario, tenant o región). Si es progresivo, define el criterio de avance objetivo entre etapas y quién tiene autoridad para decidir avanzar a la siguiente etapa.\n\n5. PLAN DE ROLLBACK ESPECÍFICO DE LA MIGRACIÓN\n   Distinto de un rollback de un solo despliegue: define cómo revertir el corte de tráfico hacia el sistema origen si el destino falla después del cutover, incluyendo qué pasa con los datos escritos en el destino durante la ventana en que estuvo activo (se pierden, se reconcilían hacia el origen, u otro). Si no existe una estrategia de rollback viable para alguna etapa, decláralo como riesgo abierto en vez de omitirlo.\n\n6. CRITERIOS DE ÉXITO Y CIERRE\n   Define qué confirma que la migración está completa (sistema destino sirviendo el 100% del tráfico de forma estable, sin errores de reconciliación pendientes). Este es el punto en el que el sistema origen queda candidato para `11-11-plan-decomiso-sistema-legacy`.\n\n7. COMUNICACIÓN\n   Define qué stakeholders o equipos deben ser notificados antes, durante y después del cutover, y por qué canal.\n\nRestricciones:\n- nunca declares \"migración completa\" sin un criterio de verificación de consistencia de datos citado y confirmado — una migración sin verificación se reporta como no verificable, no como exitosa,\n- toda etapa del cutover progresivo debe declarar su propio criterio de avance y su propio plan de rollback — no asumas que el rollback de la última etapa cubre a las etapas anteriores,\n- no propongas cortar tráfico al 100% en un solo paso si el downtime tolerable declarado es \"cero\" y no existe estrategia de dual-write o sincronización continua — señala esa contradicción explícitamente en vez de ignorarla,\n- este prompt diseña el plan; no ejecuta ninguna migración de datos, no corta tráfico real ni modifica configuración de infraestructura,\n- si faltan datos de dependientes del sistema origen (usuarios, integraciones, otros servicios), detente y solicita el inventario — o ejecuta primero la fase de inventario de `11-11` — antes de proponer el plan.\n\nSalida:\n0. Bloque JSON de metadatos (claves: status, migration_strategy, cutover_stages_count, unmitigated_rollback_risks_count, confidence_score [0.0 a 1.0]).\n1. Inventario de alcance: qué migra, qué no, y por qué.\n2. Estrategia de migración de datos: método, backfill, dual-write si aplica.\n3. Plan de verificación de consistencia: método, umbral aceptable de discrepancia.\n4. Plan de cutover: etapas, criterio de avance por etapa, responsable de la decisión.\n5. Plan de rollback por etapa.\n6. Criterios de éxito y cierre (listo para `11-11`).\n7. Plan de comunicación.",
+        "en": "Objective:\nDesign the migration and cutover plan for moving an old system, platform, or stack to a new one, with a data migration strategy, traffic cutover sequencing, consistency verification, and a rollback plan specific to the migration.\n\nInputs:\n- source system: [DESCRIPTION, STACK, APPROXIMATE DATA VOLUME]\n- target system: [DESCRIPTION, STACK, OR REFERENCE TO 00-D-02/04-01]\n- reason for migration: [STACK UPGRADE / CLOUD MIGRATION / CONSOLIDATION / MONOLITH→MICROSERVICES / OTHER]\n- tolerable downtime: [MAXIMUM ACCEPTABLE WINDOW, OR \"zero downtime required\"]\n- known dependents of the source system: [PASTE OR REFERENCE TO THE 11-11 INVENTORY, OR \"not yet inventoried\"]\n\nActivities:\n1. SCOPE INVENTORY\n   Define what migrates (data, functionality, integrations, users/tenants) and what is explicitly left out of this migration phase, with the reason — don't leave any source-system component without an explicit decision on whether it migrates or not.\n\n2. DATA MIGRATION STRATEGY\n   Define big-bang (single cutover of all data) vs. incremental (by batch, tenant, or region); if incremental, define the order. If the system must keep operating during the migration, define the dual-write strategy (writing to both systems simultaneously) or continuous sync, and the backfill mechanism for historical data predating the start of migration.\n\n3. CONSISTENCY VERIFICATION\n   Define how it will be confirmed, with concrete evidence (record counts, checksums, sampling, reconciliation), that data in the target system is consistent with the source before cutting over traffic. Never declare consistency achieved without a cited verification method; also define the acceptable discrepancy threshold, if any.\n\n4. CUTOVER STRATEGY\n   Define all-at-once vs. progressive (canary by user segment, tenant, or region). If progressive, define the objective advancement criterion between stages and who has authority to decide advancing to the next stage.\n\n5. ROLLBACK PLAN SPECIFIC TO THE MIGRATION\n   Distinct from a single deployment's rollback: define how to revert traffic back to the source system if the target fails after cutover, including what happens to data written to the target during the window it was active (it's lost, reconciled back to the source, or other). If no viable rollback strategy exists for a given stage, declare it as an open risk instead of omitting it.\n\n6. SUCCESS AND CLOSURE CRITERIA\n   Define what confirms the migration is complete (target system stably serving 100% of traffic, with no pending reconciliation errors). This is the point at which the source system becomes a candidate for `11-11-plan-decomiso-sistema-legacy`.\n\n7. COMMUNICATION\n   Define which stakeholders or teams must be notified before, during, and after cutover, and through which channel.\n\nConstraints:\n- never declare \"migration complete\" without a cited and confirmed data-consistency verification criterion — a migration with no verification is reported as unverifiable, not as successful,\n- every stage of a progressive cutover must declare its own advancement criterion and its own rollback plan — don't assume the last stage's rollback covers earlier stages,\n- do not propose cutting over 100% of traffic in a single step if the declared tolerable downtime is \"zero\" and there is no dual-write or continuous-sync strategy — flag that contradiction explicitly instead of ignoring it,\n- this prompt designs the plan; it does not execute any data migration, cut over real traffic, or modify infrastructure configuration,\n- if data about the source system's dependents (users, integrations, other services) is missing, stop and request the inventory — or run the inventory phase of `11-11` first — before proposing the plan.\n\nOutput:\n0. JSON metadata block (keys: status, migration_strategy, cutover_stages_count, unmitigated_rollback_risks_count, confidence_score [0.0 to 1.0]).\n1. Scope inventory: what migrates, what doesn't, and why.\n2. Data migration strategy: method, backfill, dual-write if applicable.\n3. Consistency verification plan: method, acceptable discrepancy threshold.\n4. Cutover plan: stages, advancement criterion per stage, decision owner.\n5. Rollback plan per stage.\n6. Success and closure criteria (ready for `11-11`).\n7. Communication plan."
+      },
+      "formulas": {
+        "es": [
+          "Usa el prompt de migración y cutover de plataforma y adáptalo a:\n- repositorio/proyecto: [NOMBRE O URL]\n- sistema origen: [DESCRIPCIÓN Y STACK]\n- sistema destino: [DESCRIPCIÓN Y STACK, O REFERENCIA A 00-D-02/04-01]\n- downtime tolerable: [VENTANA MÁXIMA ACEPTABLE]\n- documentos a revisar: arquitectura destino, inventario de dependientes (11-11) si existe\n- objetivo puntual de salida: plan de migración y cutover con verificación de consistencia y rollback por etapa\n- nivel de profundidad: alto"
+        ],
+        "en": [
+          "Use the platform migration and cutover prompt and adapt it to:\n- repository/project: [NAME OR URL]\n- source system: [DESCRIPTION AND STACK]\n- target system: [DESCRIPTION AND STACK, OR REFERENCE TO 00-D-02/04-01]\n- tolerable downtime: [MAXIMUM ACCEPTABLE WINDOW]\n- documents to review: target architecture, dependents inventory (11-11) if it exists\n- specific output objective: migration and cutover plan with consistency verification and per-stage rollback\n- depth level: high"
+        ]
+      },
+      "contract": {
+        "es": {
+          "type": "diseño",
+          "expected_risk": "alto — una migración mal secuenciada puede causar pérdida de datos, downtime no planeado o inconsistencia entre sistemas si el corte de tráfico ocurre antes de que el backfill o la verificación estén completos; el prompt no ejecuta ninguna migración de datos ni mueve tráfico real por sí mismo",
+          "required_inputs": "sistema origen y destino (descripción, stack, volumen de datos), arquitectura de destino si existe (`00-D-02`/`04-01`), restricciones de downtime tolerable, dependientes conocidos del sistema origen (inventario de `11-11` si existe)",
+          "allowed_tools": "ninguna de ejecución — lectura de documentación y arquitectura existentes; produce un documento de plan, no ejecuta ninguna migración de datos ni corte de tráfico",
+          "permitted_autonomy": "A1 — Proponer",
+          "stop_criteria": "si no puede confirmarse una estrategia de verificación de consistencia de datos entre origen y destino, no declarar el plan de cutover como listo para ejecutar — marcarlo como bloqueante en vez de asumir consistencia",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada etapa del cutover declara criterio de avance verificable y plan de rollback específico; la estrategia de migración de datos declara el método de verificación de consistencia usado",
+          "recommended_next_prompt": "`11-11-plan-decomiso-sistema-legacy` una vez el cutover se completó y el sistema origen ya no recibe tráfico; `11-09-runbook-rollback` para el rollback de un solo despliegue puntual dentro del plan de cutover, si aplica",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "11-11-plan-decomiso-sistema-legacy",
+            "11-09-runbook-rollback"
+          ]
+        },
+        "en": {
+          "type": "design",
+          "expected_risk": "high — a poorly sequenced migration can cause data loss, unplanned downtime, or inconsistency between systems if traffic is cut over before backfill or verification are complete; the prompt does not execute any data migration or move real traffic by itself",
+          "required_inputs": "source and target systems (description, stack, data volume), target architecture if it exists (`00-D-02`/`04-01`), tolerable downtime constraints, known dependents of the source system (`11-11` inventory if it exists)",
+          "allowed_tools": "none for execution — reading existing documentation and architecture; produces a plan document, does not execute any data migration or traffic cutover",
+          "permitted_autonomy": "A1 — Propose",
+          "stop_criteria": "if a data-consistency verification strategy between source and target cannot be confirmed, do not declare the cutover plan ready to execute — mark it blocking instead of assuming consistency",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "each cutover stage declares a verifiable advancement criterion and a specific rollback plan; the data migration strategy declares the consistency-verification method used",
+          "recommended_next_prompt": "`11-11-plan-decomiso-sistema-legacy` once cutover is complete and the source system no longer receives traffic; `11-09-runbook-rollback` for a single deployment's rollback within the cutover plan, if applicable",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "11-11-plan-decomiso-sistema-legacy",
+            "11-09-runbook-rollback"
+          ]
+        }
+      },
+      "recommended_next_prompt_ids": [
+        "11-11-plan-decomiso-sistema-legacy",
+        "11-09-runbook-rollback"
+      ]
+    },
+    {
       "id": "12-orquestador",
       "section": "12",
       "title": {
