@@ -1011,6 +1011,22 @@ body.ms-mode .sec-check { display: block; }
 .modal-next-link:hover { background: #0f172a; border-color: #6366f1; color: #a5b4fc; }
 .modal-next-link::after { content: '\\2192'; margin-left: auto; opacity: .6; }
 
+/* Estado de uso por (proyecto, prompt) en el modal de info (issue #139) */
+.modal-progress-wrap {
+  display: flex; align-items: center; justify-content: space-between; gap: .6rem;
+  padding: .5rem .7rem; background: var(--bg3); border: 1px solid var(--bdr);
+  border-radius: 6px; border-left: 3px solid var(--tx3); margin-bottom: .6rem;
+}
+.modal-progress-wrap.used { border-left-color: var(--grn); }
+.modal-progress-status { font-size: .72rem; color: var(--tx2); }
+.modal-progress-wrap.used .modal-progress-status { color: var(--grn); font-weight: 600; }
+.modal-progress-toggle {
+  flex-shrink: 0; padding: .22rem .6rem; background: var(--bg4); border: 1px solid var(--bdr2);
+  border-radius: 5px; color: var(--tx2); font-size: .68rem; cursor: pointer;
+  font-weight: 600; font-family: inherit; transition: all .12s;
+}
+.modal-progress-toggle:hover { background: #6366f1; border-color: #6366f1; color: #fff; }
+
 /* Resalta brevemente la tarjeta destino al navegar desde "siguiente
    prompt recomendado" (issue #94) -- sin esto, el scrollIntoView por sí
    solo no deja claro cuál tarjeta es la que se acaba de abrir entre
@@ -1038,6 +1054,26 @@ body.ms-mode .sec-check { display: block; }
   white-space: nowrap; font-family: inherit; transition: border-color .12s, color .12s;
 }
 .proj-mgr-btn:hover { border-color: #06b6d4; color: #06b6d4; }
+
+/* Barra de progreso agregada del proyecto activo (issue #139) -- vacía
+   (display: none implícito por .innerHTML = '') hasta que haya un
+   proyecto activo con PROMPT_INFO cargado. */
+.proj-progress-summary {
+  padding: 8px 14px; border-bottom: 1px solid var(--bdr);
+}
+.proj-progress-summary:empty { display: none; padding: 0; border-bottom: none; }
+.proj-progress-label {
+  font-size: .7rem; color: var(--tx2); margin-bottom: 4px;
+  display: flex; align-items: baseline; gap: 4px;
+}
+.proj-progress-pct { color: var(--tx3); font-size: .66rem; }
+.proj-progress-bar {
+  height: 5px; border-radius: 3px; background: var(--bg4); overflow: hidden;
+}
+.proj-progress-fill {
+  height: 100%; background: linear-gradient(90deg, #06b6d4, #6366f1);
+  border-radius: 3px; transition: width .25s ease;
+}
 
 /* Modal de proyectos */
 #proj-modal {
@@ -1904,7 +1940,7 @@ function initSupabaseAuth() {
     _sbUser = (res && res.data && res.data.session) ? res.data.session.user : null;
     _authStateResolved = true;
     renderAuthUI();
-    if (_sbUser) pullCloudProjects();
+    if (_sbUser) { pullCloudProjects(); pullCloudPromptState(); }
   }).catch(function() {
     // Si getSession() llega a rechazar en vez de resolver, _authStateResolved
     // debe quedar en true de todas formas -- de lo contrario checkCopyGate()
@@ -1917,7 +1953,7 @@ function initSupabaseAuth() {
     _sbUser = session ? session.user : null;
     _authStateResolved = true;
     renderAuthUI();
-    if (_sbUser) pullCloudProjects();
+    if (_sbUser) { pullCloudProjects(); pullCloudPromptState(); }
   });
 }
 
@@ -2039,6 +2075,163 @@ function deleteProjectFromCloud(id) {
   try {
     client.from('projects').delete().eq('id', id).then(function() {}).catch(function() {});
   } catch (e) {}
+}
+
+/* ══════════  PROGRESO POR (PROYECTO, PROMPT)  ══════════
+   Ver supabase/project_prompt_state.sql (issues #137/#138/#139/#140, Fase 0).
+   Esta Fase 1 (#139) solo usa la columna used_at -- checklist de progreso:
+   qué prompts ya se usaron en el proyecto activo. Mismo patrón que projects:
+   localStorage como caché/fuente de verdad para usuarios anónimos, sync a
+   Supabase (tabla project_prompt_state) solo si hay sesión, fire-and-forget
+   para no afectar el flujo de copiado si la escritura a la nube falla o
+   tarda (mismo principio que trackPromptCopy()). */
+
+var LS_KEY_PROMPT_STATE = 'AI_SDLC_v1_project_prompt_state';
+
+function loadPromptState() {
+  try {
+    var raw = localStorage.getItem(LS_KEY_PROMPT_STATE);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) { return {}; }
+}
+
+function savePromptState(state) {
+  try { localStorage.setItem(LS_KEY_PROMPT_STATE, JSON.stringify(state)); } catch (e) {}
+}
+
+function isPromptUsedInActiveProject(pid) {
+  var active = getActiveProject();
+  if (!active) return null;
+  var state = loadPromptState();
+  var proj = state[active.id];
+  return (proj && proj[pid] && proj[pid].usedAt) || null;
+}
+
+// Registra el uso de uno o más prompts en el proyecto activo. Solo guarda
+// la PRIMERA vez -- no sobrescribe used_at en copias repetidas, para que
+// "usado" refleje cuándo se ejecutó por primera vez, no la última copia.
+// El framework ('fw') no es un prompt de checklist y se ignora.
+function markPromptsUsed(promptIds) {
+  var active = getActiveProject();
+  if (!active || !promptIds || !promptIds.length) return;
+  var state = loadPromptState();
+  var proj = state[active.id] || (state[active.id] = {});
+  var nowIso = new Date().toISOString();
+  var newlyUsed = [];
+  promptIds.forEach(function(pid) {
+    if (pid === 'fw') return;
+    if (!proj[pid] || !proj[pid].usedAt) {
+      proj[pid] = { usedAt: nowIso };
+      newlyUsed.push(pid);
+    }
+  });
+  if (!newlyUsed.length) return;
+  savePromptState(state);
+  pushPromptStateToCloud(active.id, newlyUsed, nowIso);
+  refreshProjectProgressUI();
+}
+
+// Alternar manualmente desde el modal de información -- por si el usuario
+// ejecutó el prompt fuera de la herramienta, o quiere revertir una marca.
+function togglePromptUsedManually(pid) {
+  var active = getActiveProject();
+  if (!active) return;
+  var state = loadPromptState();
+  var proj = state[active.id] || (state[active.id] = {});
+  if (proj[pid] && proj[pid].usedAt) {
+    delete proj[pid];
+    savePromptState(state);
+    pushPromptStateDeleteToCloud(active.id, [pid]);
+  } else {
+    proj[pid] = { usedAt: new Date().toISOString() };
+    savePromptState(state);
+    pushPromptStateToCloud(active.id, [pid], proj[pid].usedAt);
+  }
+  refreshProjectProgressUI();
+  openInfoLang(pid, getCurrentLanguage()); // re-renderiza el modal para reflejar el nuevo estado
+}
+
+function pushPromptStateToCloud(projectId, promptIds, usedAtIso) {
+  var client = getSupabaseClient();
+  if (!client || !_sbUser || !promptIds || !promptIds.length) return;
+  var rows = promptIds.map(function(pid) {
+    return { project_id: projectId, prompt_id: pid, used_at: usedAtIso };
+  });
+  try {
+    client.from('project_prompt_state').upsert(rows, { onConflict: 'project_id,prompt_id' })
+      .then(function() {}).catch(function() {});
+  } catch (e) {}
+}
+
+function pushPromptStateDeleteToCloud(projectId, promptIds) {
+  var client = getSupabaseClient();
+  if (!client || !_sbUser || !promptIds || !promptIds.length) return;
+  try {
+    client.from('project_prompt_state').delete()
+      .eq('project_id', projectId).in('prompt_id', promptIds)
+      .then(function() {}).catch(function() {});
+  } catch (e) {}
+}
+
+// Espejo de pullCloudProjects(): al iniciar sesión, la nube pasa a ser la
+// fuente de verdad también para el estado de progreso. Trae el estado de
+// TODOS los proyectos del usuario en una sola consulta (la tabla no se
+// filtra por project_id porque RLS ya limita el resultado a lo que el
+// usuario puede ver vía su relación con projects).
+function pullCloudPromptState() {
+  var client = getSupabaseClient();
+  if (!client || !_sbUser) return;
+  client.from('project_prompt_state').select('project_id,prompt_id,used_at')
+    .then(function(res) {
+      if (!res || res.error || !res.data) return;
+      var state = {};
+      res.data.forEach(function(row) {
+        if (!row.used_at) return;
+        var proj = state[row.project_id] || (state[row.project_id] = {});
+        proj[row.prompt_id] = { usedAt: row.used_at };
+      });
+      savePromptState(state);
+      refreshProjectProgressUI();
+    }).catch(function() {});
+}
+
+// Cuenta, por sección, cuántos prompts del proyecto activo ya se usaron.
+// PROMPT_INFO ya trae la sección de cada prompt (ver build.py, info_data).
+function computeProjectProgress() {
+  var active = getActiveProject();
+  if (!active || typeof PROMPT_INFO === 'undefined') return null;
+  var state = loadPromptState();
+  var proj = state[active.id] || {};
+  var bySection = {};
+  var totalUsed = 0, totalCount = 0;
+  Object.keys(PROMPT_INFO).forEach(function(pid) {
+    if (pid === 'fw') return;
+    var sec = PROMPT_INFO[pid].section || '?';
+    var bucket = bySection[sec] || (bySection[sec] = { used: 0, total: 0 });
+    bucket.total++; totalCount++;
+    if (proj[pid] && proj[pid].usedAt) { bucket.used++; totalUsed++; }
+  });
+  return { bySection: bySection, totalUsed: totalUsed, totalCount: totalCount };
+}
+
+// Actualiza la barra de progreso agregada del panel de variables. Se llama
+// al cambiar de proyecto (syncPanelToProject), al marcar un prompt como
+// usado (markPromptsUsed/togglePromptUsedManually) y al sincronizar desde
+// la nube (pullCloudPromptState) -- no-op silencioso si el contenedor no
+// está en el DOM (ej. panel aún no renderizado).
+function refreshProjectProgressUI() {
+  var el = document.getElementById('proj-progress-summary');
+  if (!el) return;
+  var progress = computeProjectProgress();
+  if (!progress || !progress.totalCount) { el.innerHTML = ''; return; }
+  var lang = getCurrentLanguage();
+  var pct = Math.round((progress.totalUsed / progress.totalCount) * 100);
+  var label = lang === 'en'
+    ? progress.totalUsed + ' / ' + progress.totalCount + ' prompts used in this project'
+    : progress.totalUsed + ' / ' + progress.totalCount + ' prompts usados en este proyecto';
+  el.innerHTML =
+    '<div class="proj-progress-label">' + label + ' <span class="proj-progress-pct">(' + pct + '%)</span></div>' +
+    '<div class="proj-progress-bar"><div class="proj-progress-fill" style="width:' + pct + '%"></div></div>';
 }
 
 /* ══════════  MURO DE REGISTRO / PRUEBA / FEEDBACK  ══════════
@@ -2385,6 +2578,7 @@ function syncPanelToProject() {
   syncQuickVarInputs();
   updateVarsBadge();
   updateContextualVariablePanel();
+  refreshProjectProgressUI();
 }
 
 function syncProjectFromPanel() {
@@ -3205,13 +3399,14 @@ function copyResolvedText(resolved, btn) {
         ? list.length + ' required placeholder(s) still unfilled: ' + list.slice(0, 3).join(', ') + (list.length > 3 ? '…' : '')
         : list.length + ' placeholder(s) obligatorios sin llenar: ' + list.slice(0, 3).join(', ') + (list.length > 3 ? '…' : '');
       var actionLabel = lang === 'en' ? 'Copy anyway' : 'Copiar de todas formas';
-      showToast(msg, 'warn', actionLabel, function() { trackPromptCopy(resolved.promptIds); doCopy(resolved.text, btn); });
+      showToast(msg, 'warn', actionLabel, function() { trackPromptCopy(resolved.promptIds); markPromptsUsed(resolved.promptIds); doCopy(resolved.text, btn); });
       return;
     }
     if (resolved.unresolvedOptional && resolved.unresolvedOptional.length) {
       showUnresolvedWarning(resolved);
     }
     trackPromptCopy(resolved.promptIds);
+    markPromptsUsed(resolved.promptIds);
     doCopy(resolved.text, btn);
   });
 }
@@ -3341,6 +3536,42 @@ function openInfoLang(pid, lang) {
   if (descEl && descSec) {
     descSec.style.display = desc ? '' : 'none';
     descEl.textContent = desc || '';
+  }
+
+  // Estado de uso en el proyecto activo (issue #139) -- solo se muestra si
+  // hay un proyecto activo; el framework ('fw') no participa del checklist.
+  var progressEl = document.getElementById('modal-progress-section');
+  if (progressEl) {
+    progressEl.innerHTML = '';
+    var active = (typeof getActiveProject === 'function') ? getActiveProject() : null;
+    if (active && pid !== 'fw') {
+      var usedAt = isPromptUsedInActiveProject(pid);
+      var wrap = document.createElement('div');
+      wrap.className = 'modal-progress-wrap' + (usedAt ? ' used' : '');
+      var status = document.createElement('span');
+      status.className = 'modal-progress-status';
+      if (usedAt) {
+        var d = new Date(usedAt);
+        var dateLabel = isNaN(d.getTime()) ? '' : d.toLocaleDateString(lang === 'en' ? 'en-US' : 'es-MX');
+        status.textContent = lang === 'en'
+          ? '✓ Used in "' + active.name + '"' + (dateLabel ? ' · ' + dateLabel : '')
+          : '✓ Usado en "' + active.name + '"' + (dateLabel ? ' · ' + dateLabel : '');
+      } else {
+        status.textContent = lang === 'en'
+          ? 'Not marked as used in "' + active.name + '" yet'
+          : 'Aún no marcado como usado en "' + active.name + '"';
+      }
+      var toggleBtn = document.createElement('button');
+      toggleBtn.className = 'modal-progress-toggle';
+      toggleBtn.type = 'button';
+      toggleBtn.textContent = usedAt
+        ? (lang === 'en' ? 'Mark as not used' : 'Marcar como no usado')
+        : (lang === 'en' ? 'Mark as used' : 'Marcar como usado');
+      toggleBtn.addEventListener('click', function() { togglePromptUsedManually(pid); });
+      wrap.appendChild(status);
+      wrap.appendChild(toggleBtn);
+      progressEl.appendChild(wrap);
+    }
   }
 
   var formulas = lang === 'en' ? info.formulas_en : info.formulas_es;
@@ -4448,6 +4679,11 @@ def build():
                 "desc_es":  p.get("description_es", ""), "desc_en": p.get("description_en", ""),
                 "formulas_es": p.get("formulas_es", []), "formulas_en": p.get("formulas_en", []),
                 "next_ids": next_ids,
+                # sección del prompt (ej. "07", "00-D") -- issue #139, checklist de
+                # progreso por proyecto: el frontend agrupa el conteo de prompts
+                # usados por sección a partir de este campo, sin tener que
+                # recalcular la pertenencia de cada prompt del lado del cliente.
+                "section": sk,
             }
     prompt_info_js = "var PROMPT_INFO = " + json.dumps(info_data, ensure_ascii=False) + ";"
 
@@ -4920,6 +5156,7 @@ def build():
         '</div>'
         '<button class="proj-mgr-btn" onclick="openProjectsModal()" title="Gestionar proyectos / Manage projects" aria-label="Gestionar proyectos / Manage projects">&#x2699;</button>'
         '</div>\n'
+        '  <div id="proj-progress-summary" class="proj-progress-summary"></div>\n'
         '  <div class="var-panel-body">\n'
         '    <div class="var-context-status" id="var-context-status"></div>\n'
 
@@ -5234,6 +5471,7 @@ def build():
         '<h3>Descripci\u00f3n y cu\u00e1ndo usarlo</h3>'
         '<p class="modal-desc" id="modal-desc"></p>'
         '</div>\n'
+        '      <div id="modal-progress-section"></div>\n'
         '      <div id="modal-formulas"></div>\n'
         '      <div id="modal-next-section"></div>\n'
         '    </div>\n'

@@ -144,6 +144,47 @@ context.getCurrentLanguage = () => "es";
     "a\\'b&quot;c&amp;d\\\\e"
   );
 
+  // Checklist de progreso por proyecto (issue #139) -- p1 sigue activo desde
+  // el bloque anterior. computeProjectProgress() depende de PROMPT_INFO
+  // (embebido en el mismo script generado), así que debe existir de verdad,
+  // no un stub -- si build.py deja de emitir el campo "section" por prompt,
+  // esta prueba lo detecta.
+  assert(context.PROMPT_INFO && Object.keys(context.PROMPT_INFO).length > 50,
+    "PROMPT_INFO no está poblado en el script generado");
+  const anyPid = Object.keys(context.PROMPT_INFO).find(id => id !== "fw");
+  assert(context.PROMPT_INFO[anyPid].section, `PROMPT_INFO['${anyPid}'] no trae 'section'`);
+
+  elements.delete("proj-progress-summary"); // fuerza el camino "contenedor ausente" primero
+  context.refreshProjectProgressUI(); // no debe lanzar aunque el contenedor no exista
+
+  assert.strictEqual(context.isPromptUsedInActiveProject(anyPid), null);
+  context.markPromptsUsed([anyPid, "fw"]); // "fw" nunca debe contarse
+  const usedAtFirst = context.isPromptUsedInActiveProject(anyPid);
+  assert(usedAtFirst, "markPromptsUsed no registró el prompt como usado");
+
+  const progress = context.computeProjectProgress();
+  assert.strictEqual(progress.totalUsed, 1);
+  assert(progress.totalCount > 50);
+  const secOfPid = context.PROMPT_INFO[anyPid].section;
+  assert.strictEqual(progress.bySection[secOfPid].used, 1);
+
+  // Re-copiar el mismo prompt no debe pisar la marca de tiempo de la
+  // primera vez -- "usado" refleja cuándo se ejecutó por primera vez.
+  context.markPromptsUsed([anyPid]);
+  assert.strictEqual(context.isPromptUsedInActiveProject(anyPid), usedAtFirst);
+
+  // Alternar manualmente debe des-marcarlo.
+  context.togglePromptUsedManually(anyPid);
+  assert.strictEqual(context.isPromptUsedInActiveProject(anyPid), null);
+  assert.strictEqual(context.computeProjectProgress().totalUsed, 0);
+
+  // refreshProjectProgressUI() sí debe poblar el contenedor cuando existe.
+  const progressContainer = { innerHTML: "" };
+  elements.set("proj-progress-summary", progressContainer);
+  context.markPromptsUsed([anyPid]);
+  assert(progressContainer.innerHTML.includes("proj-progress-fill"),
+    "refreshProjectProgressUI() no actualizó el contenedor existente");
+
   console.log("runtime variable tests: ok");
 })().catch(err => {
   console.error(err);
