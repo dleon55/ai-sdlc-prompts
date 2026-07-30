@@ -1038,6 +1038,32 @@ body.ms-mode .sec-check { display: block; }
 .modal-text-field:focus { outline: none; border-color: #6366f1; }
 .modal-text-field::placeholder { color: var(--tx3); }
 
+/* Modal de ruta guiada (issue #138) */
+.guided-overall { font-size: .72rem; color: var(--tx2); margin-bottom: .3rem; }
+.guided-step-label { font-size: .68rem; color: var(--tx3); margin-bottom: .6rem; }
+.guided-title {
+  font-size: .95rem; font-weight: 700; color: var(--tx);
+  padding: .7rem .85rem; background: var(--bg3); border: 1px solid var(--bdr);
+  border-radius: 8px; border-left: 3px solid var(--tx3); margin-bottom: .8rem;
+}
+.guided-title.used { border-left-color: var(--grn); color: var(--grn); }
+.guided-nav { display: flex; gap: .5rem; margin-bottom: .6rem; }
+.guided-nav button {
+  flex: 1; padding: .5rem .6rem; background: var(--bg4); border: 1px solid var(--bdr2);
+  border-radius: 6px; color: var(--tx2); font-size: .74rem; font-weight: 600;
+  cursor: pointer; font-family: inherit; transition: all .12s;
+}
+.guided-nav button:hover:not(:disabled) { background: #6366f1; border-color: #6366f1; color: #fff; }
+.guided-nav button:disabled { opacity: .4; cursor: not-allowed; }
+#guided-open-btn { background: #6366f1; border-color: #6366f1; color: #fff; }
+#guided-open-btn:hover { background: #4f46e5; border-color: #4f46e5; }
+.guided-resume-btn {
+  width: 100%; padding: .4rem .6rem; background: none; border: 1px dashed var(--bdr2);
+  border-radius: 6px; color: var(--tx3); font-size: .68rem; cursor: pointer;
+  font-family: inherit; transition: all .12s;
+}
+.guided-resume-btn:hover { border-color: #06b6d4; color: #06b6d4; }
+
 /* Resalta brevemente la tarjeta destino al navegar desde "siguiente
    prompt recomendado" (issue #94) -- sin esto, el scrollIntoView por sí
    solo no deja claro cuál tarjeta es la que se acaba de abrir entre
@@ -2327,6 +2353,136 @@ function refreshProjectProgressUI() {
   el.innerHTML =
     '<div class="proj-progress-label">' + label + ' <span class="proj-progress-pct">(' + pct + '%)</span></div>' +
     '<div class="proj-progress-bar"><div class="proj-progress-fill" style="width:' + pct + '%"></div></div>';
+}
+
+/* ══════════  MODO GUIADO / RUTA DE PROYECTO  ══════════
+   Issue #138, depende de la Fase 1 (#139, used_at). Decisión de diseño: la
+   ruta NO deriva un orden a partir del grafo de "siguiente prompt
+   recomendado" -- ese grafo puede tener ramas o ciclos (ej. el enrutamiento
+   dinámico de 12-orquestador) y no define un único "siguiente" sin una
+   heurística arbitraria de desempate. En vez de eso, usa como columna
+   vertebral el orden curado en que build.py ya genera las secciones (00-D
+   → 01 → 02 → ... → 17, el ciclo de vida completo del framework) -- el
+   enlace de "siguiente prompt recomendado" del modal de info
+   (modal-next-section, ya existente) sigue disponible como atajo paralelo
+   para saltar hacia adelante cuando aplica al contexto puntual. */
+
+var LS_KEY_GUIDED_POS = 'AI_SDLC_v1_guided_position';
+
+// Object.keys(PROMPT_INFO) preserva el orden de inserción del objeto
+// generado en build.py (info_data se puebla iterando sections.items(), que
+// a su vez itera los .md ya ordenados alfabéticamente por nombre de
+// archivo) -- por eso refleja fielmente el orden curado del sitio sin
+// necesidad de una estructura de datos nueva.
+function getGuidedSequence() {
+  if (typeof PROMPT_INFO === 'undefined') return [];
+  return Object.keys(PROMPT_INFO).filter(function(pid) { return pid !== 'fw'; });
+}
+
+function getGuidedPosition() {
+  var active = getActiveProject();
+  if (!active) return 0;
+  try {
+    var raw = localStorage.getItem(LS_KEY_GUIDED_POS);
+    var map = raw ? JSON.parse(raw) : {};
+    return map[active.id] || 0;
+  } catch (e) { return 0; }
+}
+
+function setGuidedPosition(index) {
+  var active = getActiveProject();
+  if (!active) return;
+  try {
+    var raw = localStorage.getItem(LS_KEY_GUIDED_POS);
+    var map = raw ? JSON.parse(raw) : {};
+    map[active.id] = index;
+    localStorage.setItem(LS_KEY_GUIDED_POS, JSON.stringify(map));
+  } catch (e) {}
+}
+
+function openGuidedModal() {
+  var modal = document.getElementById('guided-modal');
+  if (!modal) return;
+  var active = getActiveProject();
+  if (!active) { openProjectsModal(); return; } // sin proyecto activo no hay ruta que trazar
+  _lastFocusedBeforeModal = document.activeElement;
+  renderGuidedStep(getGuidedPosition());
+  modal.classList.add('open');
+  var closeBtn = modal.querySelector('.modal-close-btn');
+  if (closeBtn) closeBtn.focus();
+}
+
+function closeGuidedModal() {
+  var modal = document.getElementById('guided-modal');
+  if (modal) modal.classList.remove('open');
+  if (_lastFocusedBeforeModal) _lastFocusedBeforeModal.focus();
+}
+
+function guidedGoTo(index) {
+  var seq = getGuidedSequence();
+  if (!seq.length) return;
+  var clamped = Math.max(0, Math.min(index, seq.length - 1));
+  setGuidedPosition(clamped);
+  renderGuidedStep(clamped);
+}
+
+function guidedNext() { guidedGoTo(getGuidedPosition() + 1); }
+function guidedPrev() { guidedGoTo(getGuidedPosition() - 1); }
+
+// Salta al primer prompt de la secuencia que el proyecto activo todavía no
+// marcó como usado -- "retomar donde me quedé". Si ya se usaron todos, se
+// queda en el último paso.
+function guidedJumpToFirstUnused() {
+  var seq = getGuidedSequence();
+  if (!seq.length) return;
+  var active = getActiveProject();
+  var state = active ? loadPromptState() : {};
+  var proj = (active && state[active.id]) || {};
+  var idx = seq.findIndex(function(pid) { return !(proj[pid] && proj[pid].usedAt); });
+  guidedGoTo(idx === -1 ? seq.length - 1 : idx);
+}
+
+function renderGuidedStep(index) {
+  var body = document.getElementById('guided-body');
+  if (!body) return;
+  body.innerHTML = '';
+  var seq = getGuidedSequence();
+  if (!seq.length) return;
+  var lang = getCurrentLanguage();
+  var pid = seq[index];
+  var info = PROMPT_INFO[pid];
+  if (!info) return;
+  var usedAt = isPromptUsedInActiveProject(pid);
+  var progress = computeProjectProgress();
+
+  var overall = document.createElement('div');
+  overall.className = 'guided-overall';
+  if (progress) {
+    var pct = progress.totalCount ? Math.round((progress.totalUsed / progress.totalCount) * 100) : 0;
+    overall.textContent = (lang === 'en'
+      ? progress.totalUsed + ' / ' + progress.totalCount + ' prompts used'
+      : progress.totalUsed + ' / ' + progress.totalCount + ' prompts usados') + ' (' + pct + '%)';
+  }
+
+  var stepLabel = document.createElement('div');
+  stepLabel.className = 'guided-step-label';
+  stepLabel.textContent = (index + 1) + ' / ' + seq.length + ' — ' +
+    (lang === 'en' ? 'section ' : 'sección ') + (info.section || '?');
+
+  var title = document.createElement('div');
+  title.className = 'guided-title' + (usedAt ? ' used' : '');
+  title.textContent = (usedAt ? '✓ ' : '') + ((lang === 'en' ? info.title_en : info.title_es) || pid);
+
+  body.appendChild(overall);
+  body.appendChild(stepLabel);
+  body.appendChild(title);
+
+  var prevBtn = document.getElementById('guided-prev-btn');
+  var nextBtn = document.getElementById('guided-next-btn');
+  if (prevBtn) prevBtn.disabled = (index <= 0);
+  if (nextBtn) nextBtn.disabled = (index >= seq.length - 1);
+  var openBtn = document.getElementById('guided-open-btn');
+  if (openBtn) openBtn.onclick = function() { closeGuidedModal(); goToPrompt(pid, lang); };
 }
 
 /* ══════════  MURO DE REGISTRO / PRUEBA / FEEDBACK  ══════════
@@ -5331,6 +5487,7 @@ def build():
         '<span style="color:var(--tx3);flex-shrink:0;"><span class="fw-lang-es">Proyecto\u00a0</span><span class="fw-lang-en">Project\u00a0</span></span>'
         '<span id="vp-proj-name" style="color:#7dd3fc;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>'
         '</div>'
+        '<button class="proj-mgr-btn" onclick="openGuidedModal()" title="Ruta de proyecto / Project route" aria-label="Ruta de proyecto / Project route">&#x1F9ED;</button>'
         '<button class="proj-mgr-btn" onclick="openProjectsModal()" title="Gestionar proyectos / Manage projects" aria-label="Gestionar proyectos / Manage projects">&#x2699;</button>'
         '</div>\n'
         '  <div id="proj-progress-summary" class="proj-progress-summary"></div>\n'
@@ -5653,6 +5810,41 @@ def build():
         '      <div id="modal-ai-output-section"></div>\n'
         '      <div id="modal-formulas"></div>\n'
         '      <div id="modal-next-section"></div>\n'
+        '    </div>\n'
+        '  </div>\n'
+        '</div>\n'
+
+        # ── Modal de ruta guiada (issue #138) ──
+        # Recorre el orden curado del framework (00-D → 01 → 02 → ... → 17,
+        # el mismo en que build.py genera las secciones -- ver getGuidedSequence()
+        # en JS) en vez de derivar un orden del grafo de "siguiente prompt
+        # recomendado": ese grafo puede tener ramas o ciclos (ej. el
+        # enrutamiento dinámico de 12-orquestador) y no define un único
+        # "siguiente" sin una heurística arbitraria de desempate. El enlace de
+        # "siguiente prompt recomendado" ya existente en el modal de info
+        # (modal-next-section) sigue disponible como atajo paralelo.
+        '<div class="modal-overlay" id="guided-modal" role="dialog" aria-modal="true" aria-labelledby="guided-modal-title">\n'
+        '  <div class="modal-box">\n'
+        '    <div class="modal-hdr">\n'
+        '      <span class="modal-hdr-icon">'
+        '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="1.8">'
+        '<circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/>'
+        '</svg></span>\n'
+        '      <h2 id="guided-modal-title"><span class="fw-lang-es">Ruta de proyecto</span><span class="fw-lang-en">Project route</span></h2>\n'
+        '      <button class="modal-close-btn" onclick="closeGuidedModal()" aria-label="Cerrar / Close">&#x2715;</button>\n'
+        '    </div>\n'
+        '    <div class="modal-body">\n'
+        '      <div id="guided-body"></div>\n'
+        '      <div class="guided-nav">\n'
+        '        <button id="guided-prev-btn" type="button" onclick="guidedPrev()">'
+        '<span class="fw-lang-es">&larr; Anterior</span><span class="fw-lang-en">&larr; Previous</span></button>\n'
+        '        <button id="guided-open-btn" type="button">'
+        '<span class="fw-lang-es">Abrir</span><span class="fw-lang-en">Open</span></button>\n'
+        '        <button id="guided-next-btn" type="button" onclick="guidedNext()">'
+        '<span class="fw-lang-es">Siguiente &rarr;</span><span class="fw-lang-en">Next &rarr;</span></button>\n'
+        '      </div>\n'
+        '      <button class="guided-resume-btn" type="button" onclick="guidedJumpToFirstUnused()">'
+        '<span class="fw-lang-es">Ir al primero no usado</span><span class="fw-lang-en">Jump to first unused</span></button>\n'
         '    </div>\n'
         '  </div>\n'
         '</div>\n'

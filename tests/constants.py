@@ -16,7 +16,12 @@ Extrae magic numbers del código de pruebas para mantenibilidad.
 # gaps reales para analistas, testers, PM y mantenimiento/soporte (92 -> 100
 # prompts totales) -- crecimiento de contenido, no bloat; con margen para
 # crecimiento futuro moderado.
-MAX_INDEX_SIZE_KB = 1600
+# Elevado de 1600 a 1650 KB al agregar 7 prompts nuevos x ES/EN (100 -> 107)
+# y la capa de gestión de proyecto completa (issues #137-#140): esquema +
+# checklist de progreso + personalización + resultados de IA + modo guiado
+# (nuevo modal, CSS y funciones JS) -- crecimiento de funcionalidad real, no
+# bloat; con margen moderado para crecimiento futuro.
+MAX_INDEX_SIZE_KB = 1650
 MIN_INDEX_SIZE_KB = 100   # Mínimo esperado para contenido válido
 
 # Cobertura de prompts
