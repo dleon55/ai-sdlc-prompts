@@ -105,6 +105,21 @@ jobs:
           pip install pytest
           python -m pytest tests/ -q
 
+      # Algunas pruebas regeneran archivos estáticos con configuración por
+      # defecto. Antes de crear el artefacto de producción se reconstruyen
+      # explícitamente con la configuración Live validada.
+      - name: Rebuild deploy artifacts (main Live)
+        if: github.event_name != 'pull_request'
+        env:
+          PADDLE_ENVIRONMENT: ${{ vars.PADDLE_ENVIRONMENT }}
+          PADDLE_CLIENT_TOKEN: ${{ vars.PADDLE_CLIENT_TOKEN }}
+          PADDLE_PRICE_ID: ${{ vars.PADDLE_PRICE_ID }}
+        run: |
+          [ "$PADDLE_ENVIRONMENT" = "production" ] || { echo "ERROR: production requires PADDLE_ENVIRONMENT=production"; exit 1; }
+          case "$PADDLE_CLIENT_TOKEN" in live_*) ;; *) echo "ERROR: production requires a live Paddle client token"; exit 1 ;; esac
+          case "$PADDLE_PRICE_ID" in pri_*) ;; *) echo "ERROR: production requires a Paddle price identifier"; exit 1 ;; esac
+          python build.py
+
       # Umbral del smoke test de produccion (job deploy-gcp) derivado del
       # build real, no un numero fijo: evita que vuelva a quedar obsoleto
       # (paso de >=44 a 75 prompts sin que nadie actualizara el smoke test).
