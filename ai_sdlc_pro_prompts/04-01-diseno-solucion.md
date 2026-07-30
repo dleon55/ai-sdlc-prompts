@@ -20,7 +20,7 @@ Prompt para diseñar la solución completa antes de implementar: objetivo, alcan
 | Criterios de detención | si no existe una estrategia de rollback viable para un componente crítico, declararlo como riesgo abierto en el diseño en vez de omitirlo |
 | Salida esperada | ver `## Salida esperada` |
 | Evidencia mínima | cada cambio propuesto por componente debe estar vinculado a un riesgo y su mitigación, y a los hallazgos del análisis previo citado |
-| Siguiente prompt recomendado | `05-01-plan-implementacion`; en paralelo, `04-02-diagramas-mermaid` si el diseño requiere diagramas de arquitectura o flujo antes de continuar |
+| Siguiente prompt recomendado | `05-01-plan-implementacion`; en paralelo, `04-02-diagramas-mermaid` si el diseño requiere diagramas de arquitectura o flujo antes de continuar; `04-06-diseno-contrato-api` y/o `04-07-diseno-modelo-datos` si el diseño incluye una API nueva o un esquema de datos que aún no se detalla |
 
 ---
 

@@ -1165,7 +1165,7 @@
           "stop_criteria": "si no puede confirmarse el cumplimiento de la Definition of Ready (criterios de aceptación, alcance o impacto verificable), marcar el issue resultante como \"no listo\" en vez de presentarlo como Ready",
           "expected_output": "ver `## Salida esperada`",
           "minimum_evidence": "cada afirmación en HECHOS debe corresponder a estado verificado del repositorio; SUPUESTOS y RIESGOS deben quedar declarados por separado, no mezclados con hechos",
-          "recommended_next_prompt": "`02-04-triage-backlog-github` si se generan varios issues a priorizar; `04-01-diseno-solucion` si el issue ya fue creado y se continúa al diseño",
+          "recommended_next_prompt": "`02-04-triage-backlog-github` si se generan varios issues a priorizar; `04-01-diseno-solucion` si el issue ya fue creado y se continúa al diseño; `02-07-matriz-trazabilidad-requerimientos` para agregar este requerimiento a la matriz de trazabilidad de todo el proyecto",
           "type_tags": [
             "analysis"
           ],
@@ -1177,7 +1177,8 @@
           ],
           "recommended_next_prompt_ids": [
             "02-04-triage-backlog-github",
-            "04-01-diseno-solucion"
+            "04-01-diseno-solucion",
+            "02-07-matriz-trazabilidad-requerimientos"
           ]
         },
         "en": {
@@ -1189,7 +1190,7 @@
           "stop_criteria": "if Definition of Ready compliance cannot be confirmed (acceptance criteria, scope, or impact not verifiable), mark the resulting issue as \"not ready\" instead of presenting it as Ready",
           "expected_output": "see `## Expected output`",
           "minimum_evidence": "every statement under FACTS must correspond to verified repository state; ASSUMPTIONS and RISKS must be declared separately, not mixed with facts",
-          "recommended_next_prompt": "`02-04-triage-backlog-github` if several generated issues need prioritization; `04-01-diseno-solucion` if the issue was already created and design work continues",
+          "recommended_next_prompt": "`02-04-triage-backlog-github` if several generated issues need prioritization; `04-01-diseno-solucion` if the issue was already created and design work continues; `02-07-matriz-trazabilidad-requerimientos` to add this requirement to the whole-project traceability matrix",
           "type_tags": [
             "analysis"
           ],
@@ -1201,7 +1202,8 @@
           ],
           "recommended_next_prompt_ids": [
             "02-04-triage-backlog-github",
-            "04-01-diseno-solucion"
+            "04-01-diseno-solucion",
+            "02-07-matriz-trazabilidad-requerimientos"
           ]
         }
       }
@@ -1455,7 +1457,7 @@
           "stop_criteria": "si no existe una estrategia de rollback viable para un componente crítico, declararlo como riesgo abierto en el diseño en vez de omitirlo",
           "expected_output": "ver `## Salida esperada`",
           "minimum_evidence": "cada cambio propuesto por componente debe estar vinculado a un riesgo y su mitigación, y a los hallazgos del análisis previo citado",
-          "recommended_next_prompt": "`05-01-plan-implementacion`; en paralelo, `04-02-diagramas-mermaid` si el diseño requiere diagramas de arquitectura o flujo antes de continuar",
+          "recommended_next_prompt": "`05-01-plan-implementacion`; en paralelo, `04-02-diagramas-mermaid` si el diseño requiere diagramas de arquitectura o flujo antes de continuar; `04-06-diseno-contrato-api` y/o `04-07-diseno-modelo-datos` si el diseño incluye una API nueva o un esquema de datos que aún no se detalla",
           "type_tags": [
             "design"
           ],
@@ -1467,7 +1469,9 @@
           ],
           "recommended_next_prompt_ids": [
             "05-01-plan-implementacion",
-            "04-02-diagramas-mermaid"
+            "04-02-diagramas-mermaid",
+            "04-06-diseno-contrato-api",
+            "04-07-diseno-modelo-datos"
           ]
         },
         "en": {
@@ -1479,7 +1483,7 @@
           "stop_criteria": "if there is no viable rollback strategy for a critical component, state it as an open risk in the design instead of omitting it",
           "expected_output": "see `## Expected output`",
           "minimum_evidence": "every proposed change by component must be linked to a risk and its mitigation, and to cited findings from the prior analysis",
-          "recommended_next_prompt": "`05-01-plan-implementacion`; in parallel, `04-02-diagramas-mermaid` if the design requires architecture or flow diagrams before continuing",
+          "recommended_next_prompt": "`05-01-plan-implementacion`; in parallel, `04-02-diagramas-mermaid` if the design requires architecture or flow diagrams before continuing; `04-06-diseno-contrato-api` and/or `04-07-diseno-modelo-datos` if the design includes a new API or a data schema not yet detailed",
           "type_tags": [
             "design"
           ],
@@ -1491,7 +1495,9 @@
           ],
           "recommended_next_prompt_ids": [
             "05-01-plan-implementacion",
-            "04-02-diagramas-mermaid"
+            "04-02-diagramas-mermaid",
+            "04-06-diseno-contrato-api",
+            "04-07-diseno-modelo-datos"
           ]
         }
       }
@@ -2147,7 +2153,7 @@
           "stop_criteria": "marcar explícitamente \"sin detectar\" en vez de asumir o inventar un framework, comando o convención que no esté respaldado por un archivo real del repositorio",
           "expected_output": "ver `## Salida esperada — Perfil de stack de pruebas`",
           "minimum_evidence": "cada campo del perfil respaldado por una ruta de archivo o comando verificado citado explícitamente, no por inferencia sin fuente",
-          "recommended_next_prompt": "`07-01-pruebas-unitarias` (o directamente `07-07-implementacion-pruebas-unitarias` usando el perfil como contexto)",
+          "recommended_next_prompt": "`07-01-pruebas-unitarias` (o directamente `07-07-implementacion-pruebas-unitarias` usando el perfil como contexto); `07-15-plan-maestro-pruebas` si se necesita primero la estrategia de QA de todo el proyecto antes de diseñar cada tipo de prueba",
           "type_tags": [
             "analysis"
           ],
@@ -2159,7 +2165,8 @@
           ],
           "recommended_next_prompt_ids": [
             "07-01-pruebas-unitarias",
-            "07-07-implementacion-pruebas-unitarias"
+            "07-07-implementacion-pruebas-unitarias",
+            "07-15-plan-maestro-pruebas"
           ]
         },
         "en": {
@@ -2171,7 +2178,7 @@
           "stop_criteria": "explicitly mark a field \"not detected\" instead of assuming or inventing a framework, command, or convention not backed by a real file in the repository",
           "expected_output": "see `## Expected output — Test stack profile`",
           "minimum_evidence": "every field in the profile backed by an explicitly cited file path or verified command, not by an unsourced inference",
-          "recommended_next_prompt": "`07-01-pruebas-unitarias` (or directly `07-07-implementacion-pruebas-unitarias` using the profile as context)",
+          "recommended_next_prompt": "`07-01-pruebas-unitarias` (or directly `07-07-implementacion-pruebas-unitarias` using the profile as context); `07-15-plan-maestro-pruebas` if the whole-project QA strategy is needed first, before designing each test type",
           "type_tags": [
             "analysis"
           ],
@@ -2183,7 +2190,8 @@
           ],
           "recommended_next_prompt_ids": [
             "07-01-pruebas-unitarias",
-            "07-07-implementacion-pruebas-unitarias"
+            "07-07-implementacion-pruebas-unitarias",
+            "07-15-plan-maestro-pruebas"
           ]
         }
       }
@@ -5102,7 +5110,7 @@
           "stop_criteria": "marcar un control como \"⚠️ parcial\" o \"❌ no cumple\" en vez de \"✅ cumple\" si no hay evidencia verificable citada; detener y escalar si se detecta un secreto en código o un control crítico ausente en producción",
           "expected_output": "ver `## Salida esperada`",
           "minimum_evidence": "cada ítem del checklist referencia la evidencia (archivo, pipeline, política) que sustenta el estado marcado",
-          "recommended_next_prompt": "`08-03-remediacion-maestro` para las brechas que requieren cambio de código; `05-01-plan-implementacion` para las que requieren trabajo de diseño o proceso",
+          "recommended_next_prompt": "`08-03-remediacion-maestro` para las brechas que requieren cambio de código; `05-01-plan-implementacion` para las que requieren trabajo de diseño o proceso; `13-05-dast-analisis-dinamico-seguridad` si la revisión detecta que faltan pruebas DAST sobre el entorno en ejecución",
           "type_tags": [
             "validation"
           ],
@@ -5115,7 +5123,8 @@
           ],
           "recommended_next_prompt_ids": [
             "08-03-remediacion-maestro",
-            "05-01-plan-implementacion"
+            "05-01-plan-implementacion",
+            "13-05-dast-analisis-dinamico-seguridad"
           ]
         },
         "en": {
@@ -5127,7 +5136,7 @@
           "stop_criteria": "mark a control as \"⚠️ partial\" or \"❌ non-compliant\" instead of \"✅ compliant\" if there is no citable verifiable evidence; stop and escalate if a secret in code or a missing critical production control is detected",
           "expected_output": "see `## Expected output`",
           "minimum_evidence": "each checklist item references the evidence (file, pipeline, policy) that supports the marked status",
-          "recommended_next_prompt": "`08-03-remediacion-maestro` for gaps that require a code change; `05-01-plan-implementacion` for gaps that require design or process work",
+          "recommended_next_prompt": "`08-03-remediacion-maestro` for gaps that require a code change; `05-01-plan-implementacion` for gaps that require design or process work; `13-05-dast-analisis-dinamico-seguridad` if the review finds DAST testing missing against the running environment",
           "type_tags": [
             "validation"
           ],
@@ -5140,7 +5149,8 @@
           ],
           "recommended_next_prompt_ids": [
             "08-03-remediacion-maestro",
-            "05-01-plan-implementacion"
+            "05-01-plan-implementacion",
+            "13-05-dast-analisis-dinamico-seguridad"
           ]
         }
       }

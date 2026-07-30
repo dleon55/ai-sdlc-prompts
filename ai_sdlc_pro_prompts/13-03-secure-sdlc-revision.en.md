@@ -20,7 +20,7 @@ Prompt to verify that required security controls have been applied in each phase
 | Stop criteria | mark a control as "⚠️ partial" or "❌ non-compliant" instead of "✅ compliant" if there is no citable verifiable evidence; stop and escalate if a secret in code or a missing critical production control is detected |
 | Expected output | see `## Expected output` |
 | Minimum evidence | each checklist item references the evidence (file, pipeline, policy) that supports the marked status |
-| Recommended next prompt | `08-03-remediacion-maestro` for gaps that require a code change; `05-01-plan-implementacion` for gaps that require design or process work |
+| Recommended next prompt | `08-03-remediacion-maestro` for gaps that require a code change; `05-01-plan-implementacion` for gaps that require design or process work; `13-05-dast-analisis-dinamico-seguridad` if the review finds DAST testing missing against the running environment |
 
 ---
 

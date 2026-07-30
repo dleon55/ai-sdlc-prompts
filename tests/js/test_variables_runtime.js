@@ -158,6 +158,19 @@ context.getCurrentLanguage = () => "es";
   context.updateLivePreview();
   assert.strictEqual(preview.textContent, "org/<repo>&$1 módulo/ñ");
 
+  // Regresión: gap real de eficiencia corregido -- updateLivePreview()
+  // ahora filtra por el idioma activo (antes recorría los 228 bloques de
+  // AMBOS idiomas en cada tecla). Con "es" activo, un bloque "-en" no debe
+  // tocarse; el idioma activo sí debe seguir resolviéndose con normalidad.
+  context.RAW_PROMPTS["code-demo-en"] = "[NAME OR URL] [MODULE]";
+  const previewEn = { textContent: "SIN TOCAR" };
+  elements.set("code-demo-en", previewEn);
+  const previewEsAgain = { textContent: "" };
+  elements.set("code-demo-es", previewEsAgain);
+  context.updateLivePreview();
+  assert.strictEqual(previewEn.textContent, "SIN TOCAR", "un bloque del idioma inactivo no debe re-resolverse en cada tecla");
+  assert.strictEqual(previewEsAgain.textContent, "org/<repo>&$1 módulo/ñ", "el bloque del idioma activo sí debe seguir resolviéndose");
+
   storage.clear();
   context.saveProjects([{
     id: "p1",

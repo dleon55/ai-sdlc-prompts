@@ -20,7 +20,7 @@ Prompt to detect and document the active test stack in the repository. Produces 
 | Stop criteria | explicitly mark a field "not detected" instead of assuming or inventing a framework, command, or convention not backed by a real file in the repository |
 | Expected output | see `## Expected output — Test stack profile` |
 | Minimum evidence | every field in the profile backed by an explicitly cited file path or verified command, not by an unsourced inference |
-| Recommended next prompt | `07-01-pruebas-unitarias` (or directly `07-07-implementacion-pruebas-unitarias` using the profile as context) |
+| Recommended next prompt | `07-01-pruebas-unitarias` (or directly `07-07-implementacion-pruebas-unitarias` using the profile as context); `07-15-plan-maestro-pruebas` if the whole-project QA strategy is needed first, before designing each test type |
 
 ---
 
