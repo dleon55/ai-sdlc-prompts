@@ -87,3 +87,24 @@ def test_paddle_webhook_uses_service_role_not_anon_key():
     cliente) -- si usara la anon key, ningún insert/update funcionaría."""
     assert "SUPABASE_SERVICE_ROLE_KEY" in WEBHOOK_FN
     assert "SUPABASE_ANON_KEY" not in WEBHOOK_FN
+
+
+def test_paddle_webhook_rejects_stale_signatures_and_deduplicates_events():
+    assert "MAX_SIGNATURE_AGE_SECONDS" in WEBHOOK_FN
+    assert "Math.abs(now - timestamp)" in WEBHOOK_FN
+    assert "paddle_webhook_events" in SCHEMA
+    assert 'rpc("apply_paddle_subscription_event"' in WEBHOOK_FN
+    assert "Already processed" in WEBHOOK_FN
+
+
+def test_paddle_webhook_events_are_not_client_writable():
+    assert "create table if not exists paddle_webhook_events" in SCHEMA
+    assert "alter table paddle_webhook_events enable row level security" in SCHEMA
+    assert _policies_on_table("paddle_webhook_events") == []
+
+
+def test_paddle_webhook_transaction_is_atomic_and_orders_events():
+    assert "for update" in SCHEMA.lower()
+    assert "last_event_occurred_at" in SCHEMA
+    assert "on conflict (event_id) do nothing" in SCHEMA.lower()
+    assert "revoke execute on function apply_paddle_subscription_event" in SCHEMA.lower()

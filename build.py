@@ -5,6 +5,7 @@ Uso:  cd WEB_PROMPTS && python build.py
 """
 import re
 import json
+import os
 from pathlib import Path
 from collections import defaultdict
 
@@ -15,6 +16,27 @@ OUTPUT_FILE = Path(__file__).parent / "index.html"
 PRECIOS_OUTPUT_FILE = Path(__file__).parent / "precios.html"
 INDEX_OUTPUT_FILE = Path(__file__).parent / "prompts-index.json"
 MCP_DATA_OUTPUT_FILE = Path(__file__).parent / "mcp-server" / "data" / "prompts-full.json"
+PADDLE_DISABLED_VALUE = "PENDIENTE_CONFIGURAR"
+
+
+def paddle_public_config():
+    """Return validated public Paddle.js settings for the generated price page."""
+    environment = os.getenv("PADDLE_ENVIRONMENT", "sandbox").strip().lower() or "sandbox"
+    client_token = os.getenv("PADDLE_CLIENT_TOKEN", PADDLE_DISABLED_VALUE).strip() or PADDLE_DISABLED_VALUE
+    price_id = os.getenv("PADDLE_PRICE_ID", PADDLE_DISABLED_VALUE).strip() or PADDLE_DISABLED_VALUE
+
+    if environment not in {"sandbox", "production"}:
+        raise ValueError("PADDLE_ENVIRONMENT must be sandbox or production")
+    if client_token != PADDLE_DISABLED_VALUE:
+        expected_prefix = "test_" if environment == "sandbox" else "live_"
+        if not re.fullmatch(r"(?:test|live)_[A-Za-z0-9]+", client_token) or not client_token.startswith(expected_prefix):
+            raise ValueError(f"PADDLE_CLIENT_TOKEN must be a {expected_prefix} token for {environment}")
+    if price_id != PADDLE_DISABLED_VALUE and not re.fullmatch(r"pri_[A-Za-z0-9]+", price_id):
+        raise ValueError("PADDLE_PRICE_ID must be a Paddle price identifier")
+    if environment == "production" and (client_token == PADDLE_DISABLED_VALUE or price_id == PADDLE_DISABLED_VALUE):
+        raise ValueError("Production Paddle checkout requires PADDLE_CLIENT_TOKEN and PADDLE_PRICE_ID")
+
+    return {"environment": environment, "client_token": client_token, "price_id": price_id}
 
 def _is_deprecated_or_empty(content):
     """Contenido vacío/insuficiente o marcado DEPRECATED: no debe contarse
@@ -4809,6 +4831,7 @@ def build_precios_page():
     de index.html, reutiliza los mismos tokens de color y el mismo mecanismo
     de idioma (I18N_KEY en localStorage + fw-lang-es/fw-lang-en) para que la
     preferencia de idioma del usuario se mantenga entre ambas páginas."""
+    paddle_config = paddle_public_config()
     return (
         '<!DOCTYPE html>\n<html lang="es" data-lang="es">\n<head>\n'
         '<meta charset="UTF-8">\n'
@@ -4950,12 +4973,9 @@ def build_precios_page():
         # checkout roto -- solo avisa que el pago aún no está disponible.
         'var SUPABASE_URL="https://sqdzoreqfatpdainlhrm.supabase.co";\n'
         'var SUPABASE_ANON_KEY="sb_publishable_qLmbKA8tlIUdW4xzmB1Z-w_kN3ygt7j";\n'
-        'var PADDLE_CLIENT_TOKEN="test_679f65fd7ded3bfb059cd4d67a4";\n'
-        'var PADDLE_PRICE_ID="pri_01kymshm1eh9bqq049qkn3qk24";\n'
-        'var PADDLE_ENVIRONMENT="sandbox";\n'
-        # Sandbox mientras se prueba -- cambiar a "production" (y el
-        # PADDLE_CLIENT_TOKEN y PADDLE_PRICE_ID de la cuenta productiva)
-        # antes de cobrar de verdad.
+        f'var PADDLE_CLIENT_TOKEN={json.dumps(paddle_config["client_token"])};\n'
+        f'var PADDLE_PRICE_ID={json.dumps(paddle_config["price_id"])};\n'
+        f'var PADDLE_ENVIRONMENT={json.dumps(paddle_config["environment"])};\n'
         'var _pxUser=null;\n'
         'function pxSetStatus(es,en){\n'
         '  var el=document.getElementById("px-sub-status");if(!el)return;\n'
@@ -4963,7 +4983,7 @@ def build_precios_page():
         '}\n'
         'function pxInitPaddle(){\n'
         '  if(PADDLE_CLIENT_TOKEN==="PENDIENTE_CONFIGURAR"||typeof Paddle==="undefined")return;\n'
-        '  Paddle.Environment.set(PADDLE_ENVIRONMENT);\n'
+        '  if(PADDLE_ENVIRONMENT==="sandbox")Paddle.Environment.set("sandbox");\n'
         '  Paddle.Initialize({token:PADDLE_CLIENT_TOKEN});\n'
         '}\n'
         'function pxInitAuth(){\n'
@@ -5003,7 +5023,8 @@ def build_precios_page():
         '  }\n'
         '  Paddle.Checkout.open({\n'
         '    items:[{priceId:PADDLE_PRICE_ID,quantity:1}],\n'
-        '    customData:{user_id:_pxUser.id}\n'
+        '    customData:{user_id:_pxUser.id},\n'
+        '    settings:{successUrl:window.location.origin+"/precios.html?checkout=success"}\n'
         '  });\n'
         '}\n'
         'pxInitPaddle();\n'

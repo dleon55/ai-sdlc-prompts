@@ -66,6 +66,12 @@ jobs:
           node-version: "22"
 
       - name: Build index.html
+        env:
+          # Valores publicos de Paddle. Los PR siempre generan sandbox; main
+          # solo genera checkout live cuando las variables se configuran.
+          PADDLE_ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && vars.PADDLE_ENVIRONMENT || 'sandbox' }}
+          PADDLE_CLIENT_TOKEN: ${{ github.ref == 'refs/heads/main' && vars.PADDLE_CLIENT_TOKEN || 'PENDIENTE_CONFIGURAR' }}
+          PADDLE_PRICE_ID: ${{ github.ref == 'refs/heads/main' && vars.PADDLE_PRICE_ID || 'PENDIENTE_CONFIGURAR' }}
         run: python build.py
 
       - name: QA gate - validate prompts
