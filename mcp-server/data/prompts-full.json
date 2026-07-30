@@ -536,7 +536,7 @@
           "stop_criteria": "si la metodología candidata requiere condiciones que el equipo declarado no cumple (ej. SCRUM completo con equipo de una persona), señalar la alerta explícitamente en vez de recomendarla sin reservas",
           "expected_output": "ver `## Salida esperada`",
           "minimum_evidence": "el diagrama de branches es consistente con la metodología recomendada; las tablas de Definition of Ready y Definition of Done cubren explícitamente tanto el trabajo humano como el de agentes IA",
-          "recommended_next_prompt": "`00-B-01-scaffolding-repositorio` si aún no existe estructura de repositorio; `00-B-03-github-configuracion` para aplicar la estrategia de branches en protecciones reales de GitHub",
+          "recommended_next_prompt": "`00-B-01-scaffolding-repositorio` si aún no existe estructura de repositorio; `00-B-03-github-configuracion` para aplicar la estrategia de branches en protecciones reales de GitHub; `17-08-retrospectiva-equipo-sprint` al cierre del primer sprint/iteración, para ejecutar la ceremonia de retrospectiva definida aquí",
           "type_tags": [
             "design"
           ],
@@ -548,7 +548,8 @@
           ],
           "recommended_next_prompt_ids": [
             "00-B-01-scaffolding-repositorio",
-            "00-B-03-github-configuracion"
+            "00-B-03-github-configuracion",
+            "17-08-retrospectiva-equipo-sprint"
           ]
         },
         "en": {
@@ -560,7 +561,7 @@
           "stop_criteria": "if the candidate methodology requires conditions the declared team does not meet (e.g., full SCRUM with a one-person team), state the alert explicitly instead of recommending it without reservations",
           "expected_output": "see `## Expected Output`",
           "minimum_evidence": "the branch flow diagram is consistent with the recommended methodology; the Definition of Ready and Definition of Done tables explicitly cover both human and AI agent work",
-          "recommended_next_prompt": "`00-B-01-scaffolding-repositorio` if no repository structure exists yet; `00-B-03-github-configuracion` to apply the branch strategy in real GitHub protections",
+          "recommended_next_prompt": "`00-B-01-scaffolding-repositorio` if no repository structure exists yet; `00-B-03-github-configuracion` to apply the branch strategy in real GitHub protections; `17-08-retrospectiva-equipo-sprint` at the close of the first sprint/iteration, to run the retrospective ceremony defined here",
           "type_tags": [
             "design"
           ],
@@ -572,13 +573,15 @@
           ],
           "recommended_next_prompt_ids": [
             "00-B-01-scaffolding-repositorio",
-            "00-B-03-github-configuracion"
+            "00-B-03-github-configuracion",
+            "17-08-retrospectiva-equipo-sprint"
           ]
         }
       },
       "recommended_next_prompt_ids": [
         "00-B-01-scaffolding-repositorio",
-        "00-B-03-github-configuracion"
+        "00-B-03-github-configuracion",
+        "17-08-retrospectiva-equipo-sprint"
       ]
     },
     {
@@ -9101,6 +9104,83 @@
           ],
           "permitted_autonomy_tags": [
             "A0"
+          ],
+          "recommended_next_prompt_ids": [
+            "11-03-deuda-tecnica"
+          ]
+        }
+      },
+      "recommended_next_prompt_ids": [
+        "11-03-deuda-tecnica"
+      ]
+    },
+    {
+      "id": "17-08-retrospectiva-equipo-sprint",
+      "section": "17",
+      "title": {
+        "es": "17.8 — Retrospectiva de equipo por sprint/iteración",
+        "en": "17.8 — Team retrospective per sprint/iteration"
+      },
+      "description": {
+        "es": "Prompt para estructurar la retrospectiva de proceso de un equipo al cierre de un sprint o iteración: qué funcionó bien, qué no, patrones que se repiten entre retrospectivas anteriores, y acciones de mejora concretas con responsable y seguimiento. Distinto de `11-07-sre-postmortem-runbook` (post-mortem de un solo incidente técnico), de `17-07-revision-exito-post-lanzamiento` (revisión de KPIs de negocio meses después del lanzamiento, no del proceso del equipo), y de `14-02-psp-tsp-metricas-calidad` (métricas individuales de tiempos/defectos por desarrollador, no una discusión cualitativa de equipo). `00-B-04-metodologia-framework` solo define cuándo y con quién ocurre la ceremonia de retrospectiva; este prompt es el que la ejecuta y produce su resultado.\n\nCuándo usarlo: al cierre de cada sprint o iteración, como insumo estructurado para (o registro posterior de) la reunión de retrospectiva del equipo.",
+        "en": ""
+      },
+      "template": {
+        "es": "Objetivo:\nEstructura la retrospectiva de proceso del equipo al cierre del sprint/iteración actual: qué funcionó bien, qué no, patrones recurrentes entre retrospectivas anteriores, y acciones de mejora priorizadas con responsable y criterio de seguimiento.\n\nEntradas:\n- sprint/iteración actual: [NÚMERO O NOMBRE, FECHAS]\n- qué reportó el equipo sobre este sprint: [PEGAR NOTAS, COMENTARIOS O TRANSCRIPCIÓN DE LA CEREMONIA]\n- retrospectiva(s) anterior(es) con sus acciones de mejora: [PEGAR O REFERENCIA, O \"primera retrospectiva del equipo\"]\n\nActividades:\n1. SEGUIMIENTO DE ACCIONES PREVIAS\n   Para cada acción de mejora de la retrospectiva anterior, reporta su estado real: completada, parcial, o no iniciada — con la evidencia citada (no asumas que se completó solo porque nadie mencionó lo contrario). Una acción sin seguimiento reportado se marca como \"no iniciada\", nunca como \"completada\" por omisión.\n\n2. QUÉ FUNCIONÓ BIEN\n   Lista los aciertos del sprint reportados explícitamente por el equipo, con el motivo de por qué funcionó (para poder repetirlo), no solo la lista.\n\n3. QUÉ NO FUNCIONÓ\n   Lista los problemas reportados explícitamente por el equipo — sin suavizarlos ni generalizarlos más allá de lo que se dijo. Si el equipo reportó un síntoma sin causa raíz clara, repórtalo como \"causa raíz no identificada\", no inventes una.\n\n4. PATRONES RECURRENTES\n   Compara los problemas de este sprint contra las retrospectivas anteriores disponibles — identifica cuáles ya aparecieron antes (citando en qué retrospectiva) y distínguelos de los problemas nuevos de este ciclo. Un problema que se repite 2+ veces sin acción efectiva es una señal de que la acción de mejora anterior no atacó la causa real.\n\n5. ACCIONES DE MEJORA\n   Propón acciones concretas y accionables para el siguiente ciclo, cada una con responsable sugerido y cómo se sabrá si funcionó — no listes buenas intenciones genéricas (\"comunicarnos mejor\") sin un cambio de proceso concreto y verificable.\n\n6. CIERRE\n   Resume el estado general del equipo en el sprint (mejorando / estable / con problemas crecientes) basado únicamente en lo reportado, no en una impresión general.\n\nRestricciones:\n- nunca reportes una acción de mejora anterior como \"completada\" sin evidencia citada de que ocurrió — sin evidencia, se reporta como no verificable,\n- nunca inventes problemas, logros o causas raíz que el equipo no mencionó explícitamente — reporta solo lo reportado,\n- un problema recurrente se cita con las retrospectivas anteriores donde ya apareció, no se presenta como si fuera nuevo,\n- este prompt no ejecuta ningún cambio de proceso, herramienta o configuración por sí mismo — solo produce el documento de retrospectiva,\n- si no existe ninguna retrospectiva anterior, indícalo explícitamente y omite las secciones de seguimiento de acciones previas y patrones recurrentes en vez de inventarlas.\n\nSalida:\n0. Bloque JSON de metadatos (claves: status, previous_actions_completed_count, previous_actions_pending_count, recurring_issues_count, confidence_score [0.0 a 1.0]).\n1. Seguimiento de acciones de la retrospectiva anterior, con estado real.\n2. Qué funcionó bien, con el motivo.\n3. Qué no funcionó, con causa raíz si se identificó.\n4. Patrones recurrentes entre retrospectivas, citando en cuáles ya aparecieron.\n5. Acciones de mejora priorizadas, con responsable sugerido y criterio de verificación.\n6. Cierre: estado general del equipo en el sprint.",
+        "en": "Objective:\nStructure the team's process retrospective at the close of the current sprint/iteration: what worked well, what didn't, patterns recurring across previous retrospectives, and prioritized improvement actions with an owner and follow-up criterion.\n\nInputs:\n- current sprint/iteration: [NUMBER OR NAME, DATES]\n- what the team reported about this sprint: [PASTE NOTES, COMMENTS, OR CEREMONY TRANSCRIPT]\n- previous retrospective(s) with their improvement actions: [PASTE OR REFERENCE, OR \"team's first retrospective\"]\n\nActivities:\n1. PREVIOUS ACTIONS FOLLOW-UP\n   For each improvement action from the previous retrospective, report its real status: completed, partial, or not started — with cited evidence (don't assume it was completed just because no one mentioned otherwise). An action with no reported follow-up is marked \"not started\", never \"completed\" by default.\n\n2. WHAT WORKED WELL\n   List the sprint's wins explicitly reported by the team, with the reason it worked (so it can be repeated), not just the list.\n\n3. WHAT DIDN'T WORK\n   List the problems explicitly reported by the team — without softening or generalizing beyond what was said. If the team reported a symptom with no clear root cause, report it as \"root cause not identified\" — don't invent one.\n\n4. RECURRING PATTERNS\n   Compare this sprint's problems against available previous retrospectives — identify which ones already appeared before (citing which retrospective) and distinguish them from problems that are new to this cycle. A problem repeating 2+ times with no effective action is a signal that the previous improvement action didn't address the real cause.\n\n5. IMPROVEMENT ACTIONS\n   Propose concrete, actionable steps for the next cycle, each with a suggested owner and how success will be known — don't list generic good intentions (\"communicate better\") without a concrete, verifiable process change.\n\n6. CLOSING\n   Summarize the team's overall state this sprint (improving / stable / with growing problems) based only on what was reported, not on a general impression.\n\nConstraints:\n- never report a previous improvement action as \"completed\" without cited evidence that it happened — with no evidence, report it as unverifiable,\n- never invent problems, wins, or root causes the team didn't explicitly mention — report only what was reported,\n- a recurring problem is cited with the previous retrospectives where it already appeared, not presented as if it were new,\n- this prompt does not execute any process, tooling, or configuration change by itself — it only produces the retrospective document,\n- if no previous retrospective exists, state that explicitly and omit the previous-actions-follow-up and recurring-patterns sections instead of inventing them.\n\nOutput:\n0. JSON metadata block (keys: status, previous_actions_completed_count, previous_actions_pending_count, recurring_issues_count, confidence_score [0.0 to 1.0]).\n1. Previous retrospective's action follow-up, with real status.\n2. What worked well, with the reason.\n3. What didn't work, with root cause if identified.\n4. Recurring patterns across retrospectives, citing where they already appeared.\n5. Prioritized improvement actions, with suggested owner and verification criterion.\n6. Closing: the team's overall state this sprint."
+      },
+      "formulas": {
+        "es": [
+          "Usa el prompt de retrospectiva de equipo por sprint y adáptalo a:\n- repositorio/proyecto: [NOMBRE O URL]\n- metodología: [SCRUM / KANBAN / OTRA]\n- sprint/iteración actual: [NÚMERO O NOMBRE, FECHAS]\n- documentos a revisar: notas de la ceremonia de retrospectiva, retrospectiva(s) anterior(es)\n- objetivo puntual de salida: retrospectiva estructurada con seguimiento de acciones y patrones recurrentes\n- nivel de profundidad: medio"
+        ],
+        "en": [
+          "Use the team retrospective per sprint prompt and adapt it to:\n- repository/project: [NAME OR URL]\n- methodology: [SCRUM / KANBAN / OTHER]\n- current sprint/iteration: [NUMBER OR NAME, DATES]\n- documents to review: retrospective ceremony notes, previous retrospective(s)\n- specific output objective: structured retrospective with action follow-up and recurring patterns\n- depth level: medium"
+        ]
+      },
+      "contract": {
+        "es": {
+          "type": "análisis",
+          "expected_risk": "medio — una retrospectiva que omite o suaviza problemas reales del proceso, o cuyas acciones de mejora nunca se les da seguimiento en el siguiente ciclo, hace que los mismos problemas se repitan sprint tras sprint sin que nadie lo note; el prompt no ejecuta ningún cambio de proceso ni de herramientas por sí mismo",
+          "required_inputs": "qué pasó en el sprint/iteración actual (según lo reportado por el equipo, no inferido), retrospectiva(s) anterior(es) con sus acciones de mejora pendientes, si existen",
+          "allowed_tools": "ninguna de ejecución — lectura de retrospectivas previas y de lo reportado por el equipo; produce un documento de retrospectiva, no modifica proceso, configuración ni herramientas",
+          "permitted_autonomy": "A0 — Analizar; A1 — Proponer (acciones de mejora priorizadas)",
+          "stop_criteria": "no inventar problemas, logros o causas raíz que el equipo no reportó explícitamente — si algo no fue mencionado por el equipo, no se incluye como si lo hubiera sido; si una acción de mejora de la retrospectiva anterior nunca se completó, reportarlo explícitamente en vez de omitirlo",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada acción de mejora de la retrospectiva anterior aparece con su estado real (completada/parcial/no iniciada); todo patrón reportado como recurrente cita en qué retrospectivas anteriores ya apareció",
+          "recommended_next_prompt": "repetir este mismo prompt al cierre del siguiente sprint/iteración, retomando las acciones de mejora pendientes; `11-03-deuda-tecnica` si la retrospectiva revela deuda técnica no registrada formalmente",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "11-03-deuda-tecnica"
+          ]
+        },
+        "en": {
+          "type": "analysis",
+          "expected_risk": "medium — a retrospective that omits or softens real process problems, or whose improvement actions are never followed up on in the next cycle, lets the same problems repeat sprint after sprint unnoticed; the prompt does not execute any process or tooling change by itself",
+          "required_inputs": "what happened in the current sprint/iteration (as reported by the team, not inferred), previous retrospective(s) with their pending improvement actions, if any",
+          "allowed_tools": "none for execution — reading previous retrospectives and what the team reported; produces a retrospective document, does not modify process, configuration, or tooling",
+          "permitted_autonomy": "A0 — Analyze; A1 — Propose (prioritized improvement actions)",
+          "stop_criteria": "do not invent problems, wins, or root causes the team did not explicitly report — if something wasn't mentioned by the team, it isn't included as if it had been; if a previous retrospective's improvement action was never completed, report it explicitly instead of omitting it",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every improvement action from the previous retrospective appears with its real status (completed/partial/not started); every issue reported as recurring cites which previous retrospectives it already appeared in",
+          "recommended_next_prompt": "repeat this same prompt at the close of the next sprint/iteration, picking up pending improvement actions; `11-03-deuda-tecnica` if the retrospective reveals technical debt not formally logged",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
           ],
           "recommended_next_prompt_ids": [
             "11-03-deuda-tecnica"

@@ -20,7 +20,7 @@ Prompt para seleccionar, documentar y configurar operativamente la metodología 
 | Criterios de detención | si la metodología candidata requiere condiciones que el equipo declarado no cumple (ej. SCRUM completo con equipo de una persona), señalar la alerta explícitamente en vez de recomendarla sin reservas |
 | Salida esperada | ver `## Salida esperada` |
 | Evidencia mínima | el diagrama de branches es consistente con la metodología recomendada; las tablas de Definition of Ready y Definition of Done cubren explícitamente tanto el trabajo humano como el de agentes IA |
-| Siguiente prompt recomendado | `00-B-01-scaffolding-repositorio` si aún no existe estructura de repositorio; `00-B-03-github-configuracion` para aplicar la estrategia de branches en protecciones reales de GitHub |
+| Siguiente prompt recomendado | `00-B-01-scaffolding-repositorio` si aún no existe estructura de repositorio; `00-B-03-github-configuracion` para aplicar la estrategia de branches en protecciones reales de GitHub; `17-08-retrospectiva-equipo-sprint` al cierre del primer sprint/iteración, para ejecutar la ceremonia de retrospectiva definida aquí |
 
 ---
 

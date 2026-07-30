@@ -1,6 +1,6 @@
 # AI-SDLC Prompts — servidor MCP
 
-Expone la biblioteca de prompts [AI-SDLC Pro](../README.md) (114 prompts, ES/EN) a agentes de IA (Claude Code, Claude Desktop, Cursor, etc.) vía [Model Context Protocol](https://modelcontextprotocol.io), transporte stdio.
+Expone la biblioteca de prompts [AI-SDLC Pro](../README.md) (115 prompts, ES/EN) a agentes de IA (Claude Code, Claude Desktop, Cursor, etc.) vía [Model Context Protocol](https://modelcontextprotocol.io), transporte stdio.
 
 Solo lectura: ningún tool escribe en el repositorio, en GitHub ni en ningún sistema externo. Todo el contenido se sirve desde `data/prompts-full.json`, generado por `python build.py` en la raíz del repo — este servidor nunca parsea Markdown por su cuenta.
 

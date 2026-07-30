@@ -20,7 +20,7 @@ Prompt to select, document, and operationally configure the project methodology 
 | Stop criteria | if the candidate methodology requires conditions the declared team does not meet (e.g., full SCRUM with a one-person team), state the alert explicitly instead of recommending it without reservations |
 | Expected output | see `## Expected Output` |
 | Minimum evidence | the branch flow diagram is consistent with the recommended methodology; the Definition of Ready and Definition of Done tables explicitly cover both human and AI agent work |
-| Recommended next prompt | `00-B-01-scaffolding-repositorio` if no repository structure exists yet; `00-B-03-github-configuracion` to apply the branch strategy in real GitHub protections |
+| Recommended next prompt | `00-B-01-scaffolding-repositorio` if no repository structure exists yet; `00-B-03-github-configuracion` to apply the branch strategy in real GitHub protections; `17-08-retrospectiva-equipo-sprint` at the close of the first sprint/iteration, to run the retrospective ceremony defined here |
 
 ---
 

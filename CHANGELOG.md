@@ -8,6 +8,9 @@ Este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+### Added
+- `17-08-retrospectiva-equipo-sprint` (114 → 115 prompts): retrospectiva de proceso de equipo al cierre de cada sprint/iteración — seguimiento real de las acciones de mejora de la retrospectiva anterior (completada/parcial/no iniciada, con evidencia), qué funcionó y qué no según lo reportado por el equipo, patrones recurrentes citados contra retrospectivas anteriores, y acciones de mejora priorizadas con responsable y criterio de verificación. Distinto de `11-07-sre-postmortem-runbook` (post-mortem de un solo incidente técnico), `17-07-revision-exito-post-lanzamiento` (KPIs de negocio, no proceso de equipo) y `14-02-psp-tsp-metricas-calidad` (métricas individuales, no discusión cualitativa de equipo). `00-B-04-metodologia-framework` ahora lo recomienda como siguiente paso al cierre del primer sprint, cerrando el enlace faltante entre definir la ceremonia y ejecutarla.
+
 ### Fixed
 - Grafo de "siguiente prompt recomendado": `04-01-diseno-solucion` ahora también recomienda `04-06-diseno-contrato-api`/`04-07-diseno-modelo-datos`, `02-05-analisis-integral-requerimientos` ahora también recomienda `02-07-matriz-trazabilidad-requerimientos`, y `07-00-deteccion-stack-pruebas` ahora también recomienda `07-15-plan-maestro-pruebas` — los 3 eran enlaces unidireccionales reales (el prompt downstream los declaraba como entrada, pero nunca eran recomendados como siguiente paso desde el upstream), detectados en una auditoría de metodología/consistencia cruzada.
 - `13-05-dast-analisis-dinamico-seguridad` era un huérfano real en el grafo de recomendaciones (ningún prompt lo recomendaba como siguiente paso, a diferencia de SAST) — ahora `13-03-secure-sdlc-revision` lo recomienda cuando detecta que faltan pruebas DAST.
