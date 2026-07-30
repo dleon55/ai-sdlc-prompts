@@ -278,7 +278,7 @@ def test_search_filters_cards_after_debounce(app_page):
 def test_project_switch_isolates_variables(app_page):
     _set_variable(app_page, "vf-repositorio", "proyecto-A-valor")
 
-    app_page.evaluate("createProject(); renderProjFloat(); renderProjectSelector(); syncPanelToProject();")
+    app_page.evaluate("createProject(); renderProjectSelector(); syncPanelToProject();")
     app_page.wait_for_timeout(150)
     _set_variable(app_page, "vf-repositorio", "proyecto-B-valor")
 
