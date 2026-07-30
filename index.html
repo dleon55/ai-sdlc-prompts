@@ -623,6 +623,17 @@ body.ms-mode .sec-check { display: block; }
 }
 .modal-progress-toggle:hover { background: #6366f1; border-color: #6366f1; color: #fff; }
 
+/* Textareas de personalización (#137) y resultado de IA (#140) en el modal
+   de info -- mismo estilo base, contenido distinto. */
+.modal-text-field {
+  width: 100%; margin-top: .4rem; padding: .55rem .7rem;
+  background: #04050d; border: 1px solid var(--bdr); border-radius: 6px;
+  color: var(--tx); font-family: inherit; font-size: .76rem; line-height: 1.5;
+  resize: vertical; min-height: 60px;
+}
+.modal-text-field:focus { outline: none; border-color: #6366f1; }
+.modal-text-field::placeholder { color: var(--tx3); }
+
 /* Resalta brevemente la tarjeta destino al navegar desde "siguiente
    prompt recomendado" (issue #94) -- sin esto, el scrollIntoView por sí
    solo no deja claro cuál tarjeta es la que se acaba de abrir entre
@@ -13047,6 +13058,8 @@ Output:
     <div class="modal-body">
       <div class="modal-section" id="modal-desc-section"><h3>Descripción y cuándo usarlo</h3><p class="modal-desc" id="modal-desc"></p></div>
       <div id="modal-progress-section"></div>
+      <div id="modal-custom-section"></div>
+      <div id="modal-ai-output-section"></div>
       <div id="modal-formulas"></div>
       <div id="modal-next-section"></div>
     </div>
@@ -13614,37 +13627,73 @@ function markPromptsUsed(promptIds) {
   promptIds.forEach(function(pid) {
     if (pid === 'fw') return;
     if (!proj[pid] || !proj[pid].usedAt) {
-      proj[pid] = { usedAt: nowIso };
+      // Object.assign preserva customAdditions/aiOutput si ya existían para
+      // este (proyecto, prompt) -- nunca los pisa al marcar uso.
+      proj[pid] = Object.assign({}, proj[pid], { usedAt: nowIso });
       newlyUsed.push(pid);
     }
   });
   if (!newlyUsed.length) return;
   savePromptState(state);
-  pushPromptStateToCloud(active.id, newlyUsed, nowIso);
+  pushUsedAtBatchToCloud(active.id, newlyUsed, nowIso);
   refreshProjectProgressUI();
 }
 
 // Alternar manualmente desde el modal de información -- por si el usuario
 // ejecutó el prompt fuera de la herramienta, o quiere revertir una marca.
+// Solo toca used_at -- si el prompt tiene customAdditions o aiOutput
+// guardados, esos campos sobreviven al des-marcarlo como usado.
 function togglePromptUsedManually(pid) {
   var active = getActiveProject();
   if (!active) return;
   var state = loadPromptState();
   var proj = state[active.id] || (state[active.id] = {});
-  if (proj[pid] && proj[pid].usedAt) {
-    delete proj[pid];
-    savePromptState(state);
-    pushPromptStateDeleteToCloud(active.id, [pid]);
+  var entry = Object.assign({}, proj[pid]);
+  if (entry.usedAt) {
+    delete entry.usedAt;
+    pushPromptStateFieldsToCloud(active.id, pid, { used_at: null });
   } else {
-    proj[pid] = { usedAt: new Date().toISOString() };
-    savePromptState(state);
-    pushPromptStateToCloud(active.id, [pid], proj[pid].usedAt);
+    entry.usedAt = new Date().toISOString();
+    pushPromptStateFieldsToCloud(active.id, pid, { used_at: entry.usedAt });
   }
+  setPromptStateEntry(state, active.id, pid, entry);
+  savePromptState(state);
   refreshProjectProgressUI();
   openInfoLang(pid, getCurrentLanguage()); // re-renderiza el modal para reflejar el nuevo estado
 }
 
-function pushPromptStateToCloud(projectId, promptIds, usedAtIso) {
+// Guarda `entry` para (projectId, pid), o elimina la clave por completo si
+// `entry` quedó vacía (ni usedAt, ni customAdditions, ni aiOutput) -- evita
+// acumular objetos `{}` huérfanos en el estado local.
+function setPromptStateEntry(state, projectId, pid, entry) {
+  var proj = state[projectId] || (state[projectId] = {});
+  if (entry.usedAt || entry.customAdditions || entry.aiOutput) {
+    proj[pid] = entry;
+  } else {
+    delete proj[pid];
+  }
+}
+
+// Actualiza cualquier subconjunto de columnas (used_at/custom_additions/
+// ai_output) para una sola fila (project_id, prompt_id). `fields` usa los
+// nombres de columna tal cual la tabla (snake_case); un valor null limpia
+// esa columna sin afectar las otras dos -- el upsert de Postgrest solo
+// toca, tanto al insertar como en el ON CONFLICT, las columnas presentes
+// en el objeto enviado.
+function pushPromptStateFieldsToCloud(projectId, promptId, fields) {
+  var client = getSupabaseClient();
+  if (!client || !_sbUser) return;
+  var row = Object.assign({ project_id: projectId, prompt_id: promptId }, fields);
+  try {
+    client.from('project_prompt_state').upsert([row], { onConflict: 'project_id,prompt_id' })
+      .then(function() {}).catch(function() {});
+  } catch (e) {}
+}
+
+// Variante en lote de pushPromptStateFieldsToCloud, usada por
+// markPromptsUsed cuando una sola copia involucra varios prompt_id (ej.
+// framework + prompt, o multi-select).
+function pushUsedAtBatchToCloud(projectId, promptIds, usedAtIso) {
   var client = getSupabaseClient();
   if (!client || !_sbUser || !promptIds || !promptIds.length) return;
   var rows = promptIds.map(function(pid) {
@@ -13656,36 +13705,84 @@ function pushPromptStateToCloud(projectId, promptIds, usedAtIso) {
   } catch (e) {}
 }
 
-function pushPromptStateDeleteToCloud(projectId, promptIds) {
-  var client = getSupabaseClient();
-  if (!client || !_sbUser || !promptIds || !promptIds.length) return;
-  try {
-    client.from('project_prompt_state').delete()
-      .eq('project_id', projectId).in('prompt_id', promptIds)
-      .then(function() {}).catch(function() {});
-  } catch (e) {}
-}
-
 // Espejo de pullCloudProjects(): al iniciar sesión, la nube pasa a ser la
-// fuente de verdad también para el estado de progreso. Trae el estado de
-// TODOS los proyectos del usuario en una sola consulta (la tabla no se
-// filtra por project_id porque RLS ya limita el resultado a lo que el
-// usuario puede ver vía su relación con projects).
+// fuente de verdad también para el estado de progreso, personalización y
+// resultados de IA. Trae el estado de TODOS los proyectos del usuario en
+// una sola consulta (la tabla no se filtra por project_id porque RLS ya
+// limita el resultado a lo que el usuario puede ver vía su relación con
+// projects).
 function pullCloudPromptState() {
   var client = getSupabaseClient();
   if (!client || !_sbUser) return;
-  client.from('project_prompt_state').select('project_id,prompt_id,used_at')
+  client.from('project_prompt_state').select('project_id,prompt_id,used_at,custom_additions,ai_output')
     .then(function(res) {
       if (!res || res.error || !res.data) return;
       var state = {};
       res.data.forEach(function(row) {
-        if (!row.used_at) return;
+        var entry = {};
+        if (row.used_at) entry.usedAt = row.used_at;
+        if (row.custom_additions) entry.customAdditions = row.custom_additions;
+        if (row.ai_output) entry.aiOutput = row.ai_output;
+        if (!entry.usedAt && !entry.customAdditions && !entry.aiOutput) return;
         var proj = state[row.project_id] || (state[row.project_id] = {});
-        proj[row.prompt_id] = { usedAt: row.used_at };
+        proj[row.prompt_id] = entry;
       });
       savePromptState(state);
       refreshProjectProgressUI();
     }).catch(function() {});
+}
+
+// Lectura genérica de un campo de texto (customAdditions/aiOutput) del
+// prompt en el proyecto activo -- usada para poblar los textarea del modal.
+function getPromptStateField(pid, camelField) {
+  var active = getActiveProject();
+  if (!active) return '';
+  var state = loadPromptState();
+  var entry = state[active.id] && state[active.id][pid];
+  return (entry && entry[camelField]) || '';
+}
+
+// Escritura genérica de un campo de texto -- guarda local + push a la nube
+// en cada `input` del textarea, mismo patrón sin debounce que ya usan las
+// variables del proyecto (ver syncProjectFromPanel()/saveProjects()).
+function savePromptTextField(pid, camelField, dbField, value) {
+  var active = getActiveProject();
+  if (!active) return;
+  var state = loadPromptState();
+  var entry = Object.assign({}, state[active.id] && state[active.id][pid]);
+  if (value) { entry[camelField] = value; } else { delete entry[camelField]; }
+  setPromptStateEntry(state, active.id, pid, entry);
+  savePromptState(state);
+  var fields = {};
+  fields[dbField] = value || null;
+  pushPromptStateFieldsToCloud(active.id, pid, fields);
+}
+
+// #137: adiciones personalizadas -- nunca modifican el prompt canónico, se
+// anexan al texto ya resuelto solo al momento de copiar (ver
+// appendCustomAdditions(), invocada desde copyResolvedText()).
+function saveCustomAdditions(pid, value) { savePromptTextField(pid, 'customAdditions', 'custom_additions', value); }
+
+// #140: resultado de IA pegado manualmente por el usuario -- la
+// herramienta nunca invoca un modelo de IA, solo almacena el texto que el
+// usuario pega aquí después de ejecutar el prompt en su agente.
+function saveAiOutput(pid, value) { savePromptTextField(pid, 'aiOutput', 'ai_output', value); }
+
+// #137: si el proyecto activo tiene adiciones personalizadas guardadas
+// para alguno de los prompt_id de esta copia, se anexan al final del
+// texto ya resuelto -- nunca sustituyen ni se mezclan con el cuerpo
+// canónico del prompt, que copyResolvedText() ya resolvió antes de
+// llamar a esta función.
+function appendCustomAdditions(resolved) {
+  var active = getActiveProject();
+  if (!active || !resolved.promptIds || !resolved.promptIds.length) return resolved.text;
+  var state = loadPromptState();
+  var proj = state[active.id] || {};
+  var extras = resolved.promptIds
+    .map(function(pid) { return proj[pid] && proj[pid].customAdditions; })
+    .filter(Boolean);
+  if (!extras.length) return resolved.text;
+  return resolved.text + '\n\n---\n\n' + extras.join('\n\n---\n\n');
 }
 
 // Cuenta, por sección, cuántos prompts del proyecto activo ya se usaron.
@@ -13874,19 +13971,29 @@ function slugifyProjectName(name) {
     .replace(/[^a-z0-9]+/g, '-').replace(/(^-+|-+$)/g, '') || 'proyecto';
 }
 
+// ai_sdlc_export_version 2 (issues #137/#139/#140): agrega promptState
+// (progreso, adiciones personalizadas y resultados de IA por prompt) junto
+// a las variables ya exportadas desde la v1. importProjects() sigue
+// aceptando exports v1 sin promptState -- ese campo simplemente no existe
+// en el objeto y no se importa nada de progreso, sin romper el resto.
 function exportProject(id) {
   var list = loadProjects() || [];
   var p = list.find(function(x) { return x.id === id; });
   if (!p) return;
-  var payload = { ai_sdlc_export_version: 1, projects: [{ name: p.name, vars: p.vars }] };
+  var state = loadPromptState();
+  var payload = {
+    ai_sdlc_export_version: 2,
+    projects: [{ name: p.name, vars: p.vars, promptState: state[p.id] || {} }]
+  };
   downloadJSON('ai-sdlc-proyecto-' + slugifyProjectName(p.name) + '.json', payload);
 }
 
 function exportAllProjects() {
   var list = loadProjects() || [];
+  var state = loadPromptState();
   var payload = {
-    ai_sdlc_export_version: 1,
-    projects: list.map(function(p) { return { name: p.name, vars: p.vars }; })
+    ai_sdlc_export_version: 2,
+    projects: list.map(function(p) { return { name: p.name, vars: p.vars, promptState: state[p.id] || {} }; })
   };
   downloadJSON('ai-sdlc-proyectos.json', payload);
 }
@@ -13903,19 +14010,28 @@ function importProjects(payload) {
     : null;
   if (!entries || !entries.length) throw new Error('invalid import shape');
   var list = loadProjects() || [];
+  var state = loadPromptState();
   var added = 0;
   entries.forEach(function(entry) {
     if (!entry || typeof entry !== 'object' || typeof entry.vars !== 'object' || !entry.vars) return;
+    var newId = genId();
     list.push({
-      id: genId(),
+      id: newId,
       name: (typeof entry.name === 'string' && entry.name.trim()) ? entry.name.trim() : 'Proyecto importado',
       isDefault: false,
       vars: Object.assign({}, EMPTY_VARS, entry.vars)
     });
+    // Exports v1 no traen promptState -- entry.promptState queda undefined
+    // y simplemente no se importa progreso/personalización/resultados de
+    // IA para ese proyecto, sin romper la importación de sus variables.
+    if (entry.promptState && typeof entry.promptState === 'object') {
+      state[newId] = entry.promptState;
+    }
     added++;
   });
   if (!added) throw new Error('no valid projects in import file');
   saveProjects(list);
+  savePromptState(state);
   return added;
 }
 
@@ -14892,7 +15008,7 @@ function copyResolvedText(resolved, btn) {
         ? list.length + ' required placeholder(s) still unfilled: ' + list.slice(0, 3).join(', ') + (list.length > 3 ? '…' : '')
         : list.length + ' placeholder(s) obligatorios sin llenar: ' + list.slice(0, 3).join(', ') + (list.length > 3 ? '…' : '');
       var actionLabel = lang === 'en' ? 'Copy anyway' : 'Copiar de todas formas';
-      showToast(msg, 'warn', actionLabel, function() { trackPromptCopy(resolved.promptIds); markPromptsUsed(resolved.promptIds); doCopy(resolved.text, btn); });
+      showToast(msg, 'warn', actionLabel, function() { trackPromptCopy(resolved.promptIds); markPromptsUsed(resolved.promptIds); doCopy(appendCustomAdditions(resolved), btn); });
       return;
     }
     if (resolved.unresolvedOptional && resolved.unresolvedOptional.length) {
@@ -14900,7 +15016,7 @@ function copyResolvedText(resolved, btn) {
     }
     trackPromptCopy(resolved.promptIds);
     markPromptsUsed(resolved.promptIds);
-    doCopy(resolved.text, btn);
+    doCopy(appendCustomAdditions(resolved), btn);
   });
 }
 
@@ -15064,6 +15180,69 @@ function openInfoLang(pid, lang) {
       wrap.appendChild(status);
       wrap.appendChild(toggleBtn);
       progressEl.appendChild(wrap);
+    }
+  }
+
+  // Adiciones personalizadas del proyecto activo (issue #137) -- se anexan
+  // al copiar (ver appendCustomAdditions()), nunca modifican el prompt
+  // canónico. Solo se muestra si hay proyecto activo; 'fw' no participa.
+  var customEl = document.getElementById('modal-custom-section');
+  if (customEl) {
+    customEl.innerHTML = '';
+    var activeForCustom = (typeof getActiveProject === 'function') ? getActiveProject() : null;
+    if (activeForCustom && pid !== 'fw') {
+      var customSec = document.createElement('div');
+      customSec.className = 'modal-section';
+      var customH = document.createElement('h3');
+      customH.textContent = lang === 'en' ? 'Custom additions' : 'Adiciones personalizadas';
+      var customNote = document.createElement('p');
+      customNote.className = 'modal-note';
+      customNote.textContent = lang === 'en'
+        ? 'Appended after this prompt only when you copy it — never changes the official prompt text.'
+        : 'Se anexa después de este prompt solo al copiarlo — nunca modifica el texto oficial del prompt.';
+      var customTextarea = document.createElement('textarea');
+      customTextarea.className = 'modal-text-field';
+      customTextarea.rows = 3;
+      customTextarea.placeholder = lang === 'en'
+        ? 'e.g. our team always uses TypeScript strict mode; never touch the billing module without approval…'
+        : 'ej. nuestro equipo siempre usa TypeScript strict mode; nunca tocar el módulo de facturación sin aprobación…';
+      customTextarea.value = getPromptStateField(pid, 'customAdditions');
+      customTextarea.addEventListener('input', function() { saveCustomAdditions(pid, customTextarea.value); });
+      customSec.appendChild(customH);
+      customSec.appendChild(customNote);
+      customSec.appendChild(customTextarea);
+      customEl.appendChild(customSec);
+    }
+  }
+
+  // Resultado de IA pegado manualmente (issue #140) -- solo almacenamiento;
+  // la herramienta nunca invoca ningún modelo de IA por su cuenta.
+  var aiOutputEl = document.getElementById('modal-ai-output-section');
+  if (aiOutputEl) {
+    aiOutputEl.innerHTML = '';
+    var activeForAi = (typeof getActiveProject === 'function') ? getActiveProject() : null;
+    if (activeForAi && pid !== 'fw') {
+      var aiSec = document.createElement('div');
+      aiSec.className = 'modal-section';
+      var aiH = document.createElement('h3');
+      aiH.textContent = lang === 'en' ? 'AI output for this project' : 'Resultado de la IA para este proyecto';
+      var aiNote = document.createElement('p');
+      aiNote.className = 'modal-note';
+      aiNote.textContent = lang === 'en'
+        ? 'Paste here what your AI agent returned after running this prompt — useful input for 10-02-memoria-tecnica or 17-06-reporte-estado-stakeholders.'
+        : 'Pega aquí lo que tu agente de IA devolvió al ejecutar este prompt — insumo útil para 10-02-memoria-tecnica o 17-06-reporte-estado-stakeholders.';
+      var aiTextarea = document.createElement('textarea');
+      aiTextarea.className = 'modal-text-field';
+      aiTextarea.rows = 4;
+      aiTextarea.placeholder = lang === 'en'
+        ? 'Paste the AI response here…'
+        : 'Pega aquí la respuesta de la IA…';
+      aiTextarea.value = getPromptStateField(pid, 'aiOutput');
+      aiTextarea.addEventListener('input', function() { saveAiOutput(pid, aiTextarea.value); });
+      aiSec.appendChild(aiH);
+      aiSec.appendChild(aiNote);
+      aiSec.appendChild(aiTextarea);
+      aiOutputEl.appendChild(aiSec);
     }
   }
 

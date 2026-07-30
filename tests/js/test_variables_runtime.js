@@ -185,6 +185,90 @@ context.getCurrentLanguage = () => "es";
   assert(progressContainer.innerHTML.includes("proj-progress-fill"),
     "refreshProjectProgressUI() no actualizó el contenedor existente");
 
+  // Personalización por proyecto (issue #137) -- las adiciones nunca deben
+  // tocar el texto canónico ya resuelto, solo anexarse al copiar.
+  const pidA = anyPid;
+  const pidB = Object.keys(context.PROMPT_INFO).find(id => id !== "fw" && id !== pidA);
+  assert.strictEqual(context.getPromptStateField(pidA, "customAdditions"), "");
+  context.saveCustomAdditions(pidA, "  siempre usar TypeScript strict mode  ");
+  assert.strictEqual(
+    context.getPromptStateField(pidA, "customAdditions"),
+    "  siempre usar TypeScript strict mode  "
+  );
+
+  const noExtras = context.appendCustomAdditions({ text: "TEXTO BASE", promptIds: [pidB] });
+  assert.strictEqual(noExtras, "TEXTO BASE", "no debe anexar nada si el prompt no tiene adiciones guardadas");
+
+  const withExtras = context.appendCustomAdditions({ text: "TEXTO BASE", promptIds: [pidA, pidB] });
+  assert(withExtras.startsWith("TEXTO BASE"), "el texto base debe ir primero, intacto");
+  assert(
+    withExtras.includes("siempre usar TypeScript strict mode"),
+    "debe anexar la adición personalizada del proyecto activo"
+  );
+
+  // Resultado de IA (issue #140) -- almacenamiento puro, sin invocar ningún
+  // modelo; y no debe pisar customAdditions al guardarse para el mismo pid.
+  context.saveAiOutput(pidA, "## Hallazgos\n- X\n- Y");
+  assert.strictEqual(context.getPromptStateField(pidA, "aiOutput"), "## Hallazgos\n- X\n- Y");
+  assert.strictEqual(
+    context.getPromptStateField(pidA, "customAdditions"),
+    "  siempre usar TypeScript strict mode  ",
+    "guardar aiOutput no debe borrar customAdditions del mismo prompt"
+  );
+
+  // Regresión: togglePromptUsedManually() solo debe tocar used_at -- no
+  // debe borrar customAdditions/aiOutput ya guardados para el mismo prompt
+  // (bug real detectado y corregido antes de este commit: la primera
+  // versión hacía `delete proj[pid]`, perdiendo todo lo demás).
+  context.markPromptsUsed([pidA]);
+  assert(context.isPromptUsedInActiveProject(pidA));
+  context.togglePromptUsedManually(pidA); // des-marca "usado"
+  assert.strictEqual(context.isPromptUsedInActiveProject(pidA), null);
+  assert.strictEqual(
+    context.getPromptStateField(pidA, "customAdditions"),
+    "  siempre usar TypeScript strict mode  ",
+    "des-marcar como usado no debe borrar customAdditions"
+  );
+  assert.strictEqual(
+    context.getPromptStateField(pidA, "aiOutput"),
+    "## Hallazgos\n- X\n- Y",
+    "des-marcar como usado no debe borrar aiOutput"
+  );
+
+  // Guardar un campo vacío limpia solo ese campo, sin afectar los demás.
+  context.saveAiOutput(pidA, "");
+  assert.strictEqual(context.getPromptStateField(pidA, "aiOutput"), "");
+  assert.strictEqual(
+    context.getPromptStateField(pidA, "customAdditions"),
+    "  siempre usar TypeScript strict mode  ",
+    "limpiar aiOutput no debe borrar customAdditions"
+  );
+
+  // Export/import v2 (issues #137/#139/#140): promptState viaja junto con
+  // las variables. Exports v1 (sin promptState) deben seguir importando
+  // sin lanzar y sin crear ningún estado de progreso/personalización.
+  storage.clear();
+  context.saveProjects([{ id: "src", name: "Origen", isDefault: true, vars: { repositorio: "org/x" } }]);
+  const exportedState = { [pidA]: { customAdditions: "adición exportada", usedAt: "2026-01-01T00:00:00.000Z" } };
+  context.savePromptState({ src: exportedState });
+  const addedV2 = context.importProjects({
+    ai_sdlc_export_version: 2,
+    projects: [{ name: "Importado v2", vars: { repositorio: "org/x" }, promptState: exportedState }],
+  });
+  assert.strictEqual(addedV2, 1);
+  const importedProjectV2 = context.loadProjects().find(p => p.name === "Importado v2");
+  assert(importedProjectV2, "el proyecto importado (v2) debe existir");
+  const importedStateV2 = context.loadPromptState()[importedProjectV2.id];
+  assert.strictEqual(importedStateV2[pidA].customAdditions, "adición exportada");
+
+  const addedV1 = context.importProjects({
+    ai_sdlc_export_version: 1,
+    projects: [{ name: "Importado v1", vars: { repositorio: "org/y" } }], // sin promptState, como un export viejo
+  });
+  assert.strictEqual(addedV1, 1, "un export v1 sin promptState debe seguir importándose sin lanzar");
+  const importedProjectV1 = context.loadProjects().find(p => p.name === "Importado v1");
+  assert.strictEqual(context.loadPromptState()[importedProjectV1.id], undefined);
+
   console.log("runtime variable tests: ok");
 })().catch(err => {
   console.error(err);
