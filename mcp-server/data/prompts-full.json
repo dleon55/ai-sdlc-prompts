@@ -1187,6 +1187,81 @@
       ]
     },
     {
+      "id": "00-D-05-viabilidad-business-case",
+      "section": "00",
+      "title": {
+        "es": "0-D.5 — Estudio de viabilidad y business case: ¿deberíamos hacer este proyecto?",
+        "en": "0-D.5 — Feasibility study and business case: should we even do this project?"
+      },
+      "description": {
+        "es": "Prompt para evaluar si una idea o iniciativa vale la pena formalizarse como proyecto, antes de invertir tiempo en redactar el Project Charter: viabilidad técnica, económica, operativa y legal/regulatoria, alternativas consideradas (incluyendo no hacer nada) y una recomendación explícita de go/no-go.\n\nCuándo usarlo: al recibir una idea de proyecto o iniciativa de negocio, antes de `00-D-01-project-charter` — este prompt determina si el proyecto debería formalizarse; el Charter asume que ya se decidió que sí.",
+        "en": ""
+      },
+      "template": {
+        "es": "Objetivo:\nEvalúa si la idea o iniciativa descrita justifica formalizarse como proyecto: viabilidad técnica, económica, operativa y legal/regulatoria, alternativas consideradas y una recomendación explícita de go/no-go.\n\nEntradas:\n- idea o iniciativa: [DESCRIPCIÓN EN BRUTO]\n- contexto de negocio: [POR QUÉ SURGE ESTA IDEA, QUÉ PROBLEMA RESUELVE]\n- restricciones conocidas: [PRESUPUESTO MÁXIMO, PLAZO, RECURSOS DISPONIBLES, O \"no declaradas aún\"]\n- alternativas ya consideradas: [PEGAR O \"ninguna considerada aún\"]\n\nActividades:\n1. VIABILIDAD TÉCNICA\n   Evalúa si existe la tecnología y la capacidad del equipo (actual o adquirible) para ejecutar esta idea. Identifica los riesgos técnicos mayores que podrían hacerla inviable.\n\n2. VIABILIDAD ECONÓMICA\n   Estima el costo aproximado (orden de magnitud, con el método de estimación declarado) y el beneficio esperado (cuantificado si es posible, cualitativo si no). Calcula ROI aproximado o payback period si hay suficiente información; si no la hay, decláralo explícitamente en vez de inventar una cifra.\n\n3. VIABILIDAD OPERATIVA\n   Evalúa si la organización puede operar y mantener el resultado una vez construido: impacto en procesos existentes, capacidad del equipo para sostenerlo en el tiempo, dependencias operativas nuevas que introduce.\n\n4. VIABILIDAD LEGAL/REGULATORIA\n   Identifica restricciones de compliance (regulación de la industria, protección de datos, licenciamiento) que podrían bloquear o encarecer significativamente el proyecto.\n\n5. ALTERNATIVAS CONSIDERADAS\n   Compara al menos: construir (build), comprar/adoptar una solución existente (buy), y no hacer nada — con pros y contras de cada una. \"No hacer nada\" siempre debe evaluarse explícitamente, nunca omitirse por obvio.\n\n6. RECOMENDACIÓN\n   Emite un veredicto: GO / NO-GO / GO CONDICIONADO (con las condiciones específicas que deben cumplirse). Nunca emitas una recomendación sin justificarla contra las 4 dimensiones de viabilidad evaluadas.\n\nRestricciones:\n- nunca declares viabilidad económica sin declarar el método de estimación de costo/beneficio usado — una cifra sin método se reporta como no verificable, no como estimación válida,\n- siempre incluye \"no hacer nada\" como alternativa explícita a comparar, nunca la omitas por parecer obvio,\n- no recomiendes GO si alguna dimensión de viabilidad tiene un riesgo crítico sin mitigación identificada — en ese caso, la recomendación debe ser NO-GO o GO CONDICIONADO a resolver ese riesgo primero,\n- distingue siempre una estimación basada en datos reales de una basada en supuestos — nunca las presentes con el mismo nivel de certeza.\n\nSalida:\n0. Bloque JSON de metadatos (claves: status, feasibility_verdict [\"go\", \"no_go\", \"go_conditional\", \"not_determinable\"], dimensions_evaluated, confidence_score [0.0 a 1.0]).\n1. Viabilidad técnica: capacidad, tecnología, riesgos mayores.\n2. Viabilidad económica: costo estimado, beneficio esperado, ROI/payback si aplica, método de estimación.\n3. Viabilidad operativa: impacto en procesos, capacidad de sostener el resultado.\n4. Viabilidad legal/regulatoria: restricciones identificadas.\n5. Alternativas consideradas: build / buy / no hacer nada, con pros y contras.\n6. Recomendación final: GO / NO-GO / GO CONDICIONADO, con condiciones si aplica.",
+        "en": "Objective:\nEvaluate whether the described idea or initiative justifies being formalized as a project: technical, economic, operational, and legal/regulatory feasibility, alternatives considered, and an explicit go/no-go recommendation.\n\nInputs:\n- idea or initiative: [RAW DESCRIPTION]\n- business context: [WHY THIS IDEA CAME UP, WHAT PROBLEM IT SOLVES]\n- known constraints: [MAXIMUM BUDGET, DEADLINE, AVAILABLE RESOURCES, OR \"not yet declared\"]\n- alternatives already considered: [PASTE OR \"none considered yet\"]\n\nActivities:\n1. TECHNICAL FEASIBILITY\n   Assess whether the technology and team capability (current or acquirable) exist to execute this idea. Identify the major technical risks that could make it infeasible.\n\n2. ECONOMIC FEASIBILITY\n   Estimate the approximate cost (order of magnitude, with the estimation method declared) and the expected benefit (quantified if possible, qualitative if not). Calculate approximate ROI or payback period if there's enough information; if not, declare that explicitly instead of inventing a figure.\n\n3. OPERATIONAL FEASIBILITY\n   Assess whether the organization can operate and maintain the result once built: impact on existing processes, the team's capacity to sustain it over time, new operational dependencies it introduces.\n\n4. LEGAL/REGULATORY FEASIBILITY\n   Identify compliance constraints (industry regulation, data protection, licensing) that could block or significantly increase the cost of the project.\n\n5. ALTERNATIVES CONSIDERED\n   Compare at least: build, buy/adopt an existing solution, and doing nothing — with pros and cons of each. \"Doing nothing\" must always be evaluated explicitly, never skipped as obvious.\n\n6. RECOMMENDATION\n   Issue a verdict: GO / NO-GO / CONDITIONAL GO (with the specific conditions that must be met). Never issue a recommendation without justifying it against the 4 feasibility dimensions evaluated.\n\nConstraints:\n- never declare economic feasibility without declaring the cost/benefit estimation method used — a figure with no method is reported as unverifiable, not as a valid estimate,\n- always include \"doing nothing\" as an explicit alternative to compare, never skip it as obvious,\n- do not recommend GO if any feasibility dimension has a critical unmitigated risk — in that case, the recommendation must be NO-GO or CONDITIONAL GO on resolving that risk first,\n- always distinguish an estimate based on real data from one based on assumptions — never present them with the same level of certainty.\n\nOutput:\n0. JSON metadata block (keys: status, feasibility_verdict [\"go\", \"no_go\", \"go_conditional\", \"not_determinable\"], dimensions_evaluated, confidence_score [0.0 to 1.0]).\n1. Technical feasibility: capability, technology, major risks.\n2. Economic feasibility: estimated cost, expected benefit, ROI/payback if applicable, estimation method.\n3. Operational feasibility: process impact, capacity to sustain the result.\n4. Legal/regulatory feasibility: constraints identified.\n5. Alternatives considered: build / buy / do nothing, with pros and cons.\n6. Final recommendation: GO / NO-GO / CONDITIONAL GO, with conditions if applicable."
+      },
+      "formulas": {
+        "es": [
+          "Usa el prompt de estudio de viabilidad y business case y adáptalo a:\n- repositorio/proyecto: [NOMBRE O URL, SI YA EXISTE]\n- idea o iniciativa: [DESCRIPCIÓN EN BRUTO]\n- contexto de negocio: [POR QUÉ SURGE ESTA IDEA]\n- documentos a revisar: contexto de negocio, restricciones presupuestales conocidas\n- objetivo puntual de salida: recomendación de go/no-go con las 4 dimensiones de viabilidad\n- nivel de profundidad: alto"
+        ],
+        "en": [
+          "Use the feasibility study and business case prompt and adapt it to:\n- repository/project: [NAME OR URL, IF IT ALREADY EXISTS]\n- idea or initiative: [RAW DESCRIPTION]\n- business context: [WHY THIS IDEA CAME UP]\n- documents to review: business context, known budget constraints\n- specific output objective: go/no-go recommendation with the 4 feasibility dimensions\n- depth level: high"
+        ]
+      },
+      "contract": {
+        "es": {
+          "type": "análisis",
+          "expected_risk": "alto — la recomendación de go/no-go de este análisis condiciona si se invierte presupuesto y tiempo del equipo en formalizar el proyecto; un análisis optimista o sesgado puede justificar proyectos que no debieron aprobarse, aunque el prompt no ejecuta ni compromete nada por sí mismo",
+          "required_inputs": "idea o iniciativa en bruto, contexto de negocio, restricciones conocidas (presupuesto máximo, plazo, recursos disponibles), alternativas ya consideradas si existen",
+          "allowed_tools": "ninguna de ejecución — lectura de contexto y documentación existente; produce un documento de análisis, no ejecuta ni aprueba nada",
+          "permitted_autonomy": "A1 — Proponer",
+          "stop_criteria": "si no puede estimarse ni el costo ni el beneficio con un mínimo de confianza, no forzar una recomendación go/no-go — declarar \"viabilidad no determinable con la información disponible\" en vez de inventar una cifra",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada dimensión de viabilidad (técnica, económica, operativa, legal/regulatoria) tiene un veredicto explícito con justificación citada; las alternativas descartadas, incluida \"no hacer nada\", están documentadas",
+          "recommended_next_prompt": "`00-D-01-project-charter` si el veredicto es GO o GO condicionado",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "00-D-01-project-charter"
+          ]
+        },
+        "en": {
+          "type": "analysis",
+          "expected_risk": "high — this analysis's go/no-go recommendation conditions whether budget and team time get invested in formalizing the project; an optimistic or biased analysis can justify projects that shouldn't have been approved, although the prompt does not execute or commit anything by itself",
+          "required_inputs": "raw idea or initiative, business context, known constraints (maximum budget, deadline, available resources), alternatives already considered if any",
+          "allowed_tools": "none for execution — reading existing context and documentation; produces an analysis document, does not execute or approve anything",
+          "permitted_autonomy": "A1 — Propose",
+          "stop_criteria": "if neither cost nor benefit can be estimated with minimal confidence, do not force a go/no-go recommendation — declare \"feasibility not determinable with available information\" instead of inventing a figure",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "each feasibility dimension (technical, economic, operational, legal/regulatory) has an explicit, cited verdict; discarded alternatives, including \"doing nothing\", are documented",
+          "recommended_next_prompt": "`00-D-01-project-charter` if the verdict is GO or conditional GO",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "00-D-01-project-charter"
+          ]
+        }
+      },
+      "recommended_next_prompt_ids": [
+        "00-D-01-project-charter"
+      ]
+    },
+    {
       "id": "01-01-arranque-comprension-repositorio",
       "section": "01",
       "title": {
@@ -1885,6 +1960,83 @@
       "recommended_next_prompt_ids": [
         "04-01-diseno-solucion",
         "07-06-pruebas-performance-carga"
+      ]
+    },
+    {
+      "id": "02-07-matriz-trazabilidad-requerimientos",
+      "section": "02",
+      "title": {
+        "es": "2.7 — Matriz de trazabilidad de requerimientos del proyecto completo",
+        "en": "2.7 — Whole-project requirements traceability matrix"
+      },
+      "description": {
+        "es": "Prompt para mantener una matriz de trazabilidad agregada y viva de todos los requerimientos de un proyecto: qué necesidad de negocio dio origen a cada requerimiento, y si ya tiene diseño, implementación y prueba vinculados. Complementa `08-02-cumplimiento-requerimiento`, que valida el cumplimiento de un issue puntual, no una vista agregada de todo el proyecto.\n\nCuándo usarlo: periódicamente durante la ejecución de un proyecto con múltiples requerimientos ya analizados (`02-05`), para detectar requerimientos huérfanos (sin diseño, código o prueba) o código sin requerimiento formal que lo respalde, antes de que el proyecto se dé por cerrado.",
+        "en": ""
+      },
+      "template": {
+        "es": "Objetivo:\nConstruye y mantén la matriz de trazabilidad agregada de todos los requerimientos del proyecto: vínculo entre cada requerimiento y su diseño, implementación y prueba, identificando huérfanos en cualquier etapa.\n\nEntradas:\n- requerimientos de negocio del proyecto: [PEGAR LISTA O REFERENCIA A 02-05]\n- diseños asociados: [PEGAR O REFERENCIA]\n- implementaciones/PRs relacionados: [PEGAR O REFERENCIA]\n- resultados de prueba disponibles: [PEGAR O REFERENCIA, O \"no disponibles aún\"]\n\nActividades:\n1. INVENTARIO DE REQUERIMIENTOS\n   Lista todos los requerimientos de negocio conocidos del proyecto, con su identificador y una descripción breve.\n\n2. VINCULACIÓN A DISEÑO\n   Para cada requerimiento, verifica si existe un diseño (`04-01` u otro artefacto de diseño) que lo cubra explícitamente. Cita la referencia concreta, no asumas cobertura por similitud.\n\n3. VINCULACIÓN A IMPLEMENTACIÓN\n   Para cada requerimiento, verifica si existe código o un PR que lo implemente. Cita la referencia concreta (commit, PR, archivo).\n\n4. VINCULACIÓN A PRUEBA\n   Para cada requerimiento, verifica si existe evidencia de prueba real — la ausencia de prueba es una brecha aunque el código \"se vea correcto\".\n\n5. IDENTIFICACIÓN DE HUÉRFANOS\n   Señala explícitamente cada requerimiento que carece de vínculo en alguna etapa (diseño, implementación o prueba) — distingue \"aún no implementado\" (esperado en un proyecto en curso) de \"huérfano sin trazabilidad\" (una brecha real que requiere atención).\n\n6. IDENTIFICACIÓN DE CÓDIGO HUÉRFANO\n   Señala funcionalidad implementada que no tiene ningún requerimiento formal vinculado — es una señal de scope creep o de un requerimiento que nunca se documentó formalmente, y debe reportarse, no omitirse.\n\nRestricciones:\n- nunca marques un requerimiento como \"cubierto\" en una etapa sin una referencia concreta citada (diseño, PR, o resultado de prueba específico) — la cobertura sin evidencia se reporta como no verificable,\n- distingue siempre \"no implementado todavía\" (normal en un proyecto en curso, con fecha esperada si se conoce) de \"huérfano sin trazabilidad\" (brecha real que requiere una acción),\n- no ignores ni omitas código o funcionalidad que no tiene requerimiento formal vinculado — repórtalo explícitamente en vez de asumir que está bien documentado en otro lugar,\n- si la lista de requerimientos de negocio del proyecto está incompleta o no existe, detente y solicítala antes de construir la matriz sobre supuestos.\n\nSalida:\n0. Bloque JSON de metadatos (claves: status, requirement_count, orphan_requirements_count, orphan_code_count, confidence_score [0.0 a 1.0]).\n1. Matriz de trazabilidad completa: Requerimiento | Diseño | Implementación | Prueba | Estado\n2. Requerimientos huérfanos (sin cobertura completa), con la etapa donde se rompe la trazabilidad.\n3. Código o funcionalidad sin requerimiento formal vinculado.\n4. Recomendaciones priorizadas para cerrar los huecos detectados.",
+        "en": "Objective:\nBuild and maintain the aggregated traceability matrix for all of the project's requirements: the link between each requirement and its design, implementation, and test, identifying orphans at any stage.\n\nInputs:\n- project business requirements: [PASTE LIST OR REFERENCE TO 02-05]\n- associated designs: [PASTE OR REFERENCE]\n- related implementations/PRs: [PASTE OR REFERENCE]\n- available test results: [PASTE OR REFERENCE, OR \"not yet available\"]\n\nActivities:\n1. REQUIREMENTS INVENTORY\n   List all known business requirements of the project, with their identifier and a brief description.\n\n2. DESIGN LINKAGE\n   For each requirement, verify whether a design (`04-01` or another design artifact) explicitly covers it. Cite the concrete reference, don't assume coverage by similarity.\n\n3. IMPLEMENTATION LINKAGE\n   For each requirement, verify whether code or a PR implements it. Cite the concrete reference (commit, PR, file).\n\n4. TEST LINKAGE\n   For each requirement, verify whether real test evidence exists — absence of a test is a gap even if the code \"looks correct\".\n\n5. ORPHAN IDENTIFICATION\n   Explicitly flag each requirement missing a link at any stage (design, implementation, or test) — distinguish \"not yet implemented\" (expected in an ongoing project) from \"orphaned with no traceability\" (a real gap requiring attention).\n\n6. ORPHAN CODE IDENTIFICATION\n   Flag implemented functionality with no formal requirement linked to it — this is a signal of scope creep or a requirement that was never formally documented, and must be reported, not omitted.\n\nConstraints:\n- never mark a requirement as \"covered\" at a stage without a concrete cited reference (design, PR, or specific test result) — coverage with no evidence is reported as unverifiable,\n- always distinguish \"not yet implemented\" (normal in an ongoing project, with an expected date if known) from \"orphaned with no traceability\" (a real gap requiring action),\n- do not ignore or omit code or functionality with no formal requirement linked — report it explicitly instead of assuming it's documented elsewhere,\n- if the project's business requirements list is incomplete or doesn't exist, stop and request it before building the matrix on assumptions.\n\nOutput:\n0. JSON metadata block (keys: status, requirement_count, orphan_requirements_count, orphan_code_count, confidence_score [0.0 to 1.0]).\n1. Complete traceability matrix: Requirement | Design | Implementation | Test | Status\n2. Orphaned requirements, with the stage where traceability breaks.\n3. Code or functionality with no formal requirement linked.\n4. Prioritized recommendations to close the detected gaps."
+      },
+      "formulas": {
+        "es": [
+          "Usa el prompt de matriz de trazabilidad de requerimientos y adáptalo a:\n- repositorio/proyecto: [NOMBRE O URL]\n- requerimientos de negocio: [PEGAR LISTA O REFERENCIA A 02-05]\n- documentos a revisar: diseños, PRs/implementaciones, resultados de prueba\n- objetivo puntual de salida: matriz de trazabilidad completa con huérfanos identificados\n- nivel de profundidad: alto"
+        ],
+        "en": [
+          "Use the requirements traceability matrix prompt and adapt it to:\n- repository/project: [NAME OR URL]\n- business requirements: [PASTE LIST OR REFERENCE TO 02-05]\n- documents to review: designs, PRs/implementations, test results\n- specific output objective: complete traceability matrix with orphans identified\n- depth level: high"
+        ]
+      },
+      "contract": {
+        "es": {
+          "type": "análisis",
+          "expected_risk": "medio — una matriz desactualizada o incompleta da una falsa sensación de cobertura completa cuando en realidad hay requerimientos sin diseño/implementación/prueba, o funcionalidad construida sin respaldo formal; el prompt no ejecuta ni modifica nada por sí mismo",
+          "required_inputs": "lista de requerimientos de negocio del proyecto (o issues ya analizados con `02-05`), diseños asociados, PRs/implementaciones relacionadas, resultados de prueba disponibles",
+          "allowed_tools": "lectura de issues, diseños, código y resultados de prueba existentes — sin ejecutar pruebas nuevas ni modificar nada",
+          "permitted_autonomy": "A0 — Analizar (agregar trazabilidad ya evidenciable); A1 — Proponer (marcar huecos y priorizarlos)",
+          "stop_criteria": "si un requerimiento no puede vincularse a ninguna evidencia de diseño, código o prueba, no lo marques como \"cubierto\" — repórtalo explícitamente como huérfano",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada requerimiento del proyecto aparece exactamente una vez en la matriz con su estado de cobertura citado en cada etapa (requerimiento → diseño → implementación → prueba)",
+          "recommended_next_prompt": "`08-02-cumplimiento-requerimiento` para profundizar en un requerimiento específico marcado como incompleto o huérfano",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "08-02-cumplimiento-requerimiento"
+          ]
+        },
+        "en": {
+          "type": "analysis",
+          "expected_risk": "medium — an outdated or incomplete matrix gives a false sense of complete coverage when in reality there are requirements missing design/implementation/test, or functionality built with no formal backing; the prompt does not execute or modify anything by itself",
+          "required_inputs": "list of the project's business requirements (or issues already analyzed with `02-05`), associated designs, related implementations/PRs, available test results",
+          "allowed_tools": "reading existing issues, designs, code, and test results — no new tests executed and nothing modified",
+          "permitted_autonomy": "A0 — Analyze (aggregate already-evidenceable traceability); A1 — Propose (flag and prioritize gaps)",
+          "stop_criteria": "if a requirement cannot be linked to any design, code, or test evidence, do not mark it as \"covered\" — explicitly report it as orphaned",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every requirement in the project appears exactly once in the matrix with its cited coverage status at each stage (requirement → design → implementation → test)",
+          "recommended_next_prompt": "`08-02-cumplimiento-requerimiento` to dig deeper into a specific requirement flagged as incomplete or orphaned",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "08-02-cumplimiento-requerimiento"
+          ]
+        }
+      },
+      "recommended_next_prompt_ids": [
+        "08-02-cumplimiento-requerimiento"
       ]
     },
     {
@@ -5348,6 +5500,158 @@
       ]
     },
     {
+      "id": "10-05-documentacion-api-publica",
+      "section": "10",
+      "title": {
+        "es": "10.5 — Documentación pública de API para desarrolladores externos",
+        "en": "10.5 — Public API documentation for external developers"
+      },
+      "description": {
+        "es": "Prompt para producir la documentación pública de referencia de una API ya diseñada e implementada: guía de inicio rápido, referencia de endpoints con ejemplos reales, guías de casos de uso, versionado visible y límites de uso — dirigida a desarrolladores externos que integran contra la API, no a los ingenieros que la construyen. Distinto de `04-06-diseno-contrato-api` (diseño del contrato, para ingenieros, declara explícitamente que no produce documentación) y de `10-01-documentacion-tecnica` (documentación técnica interna del repositorio).\n\nCuándo usarlo: después de que el contrato de API ya está diseñado (`04-06`) e implementado, antes de exponerlo a consumidores externos (partners, clientes, terceros).",
+        "en": ""
+      },
+      "template": {
+        "es": "Objetivo:\nProduce la documentación pública de referencia de la API descrita, dirigida a desarrolladores externos que la integran, verificada contra el comportamiento real de la implementación.\n\nEntradas:\n- contrato de API ya implementado: [PEGAR O REFERENCIA A 04-06 U OTRA ESPECIFICACIÓN]\n- audiencia objetivo: [DESARROLLADORES EXTERNOS / PARTNERS / CLIENTES]\n- ejemplos de uso reales: [PEGAR O \"generar ejemplos representativos\"]\n\nActividades:\n1. GETTING STARTED\n   Documenta cómo autenticarse y un primer request de ejemplo completo, de principio a fin, que un desarrollador externo pueda ejecutar sin contexto adicional.\n\n2. REFERENCIA DE ENDPOINTS\n   Para cada endpoint: descripción en lenguaje claro (sin jerga interna del equipo), parámetros con tipo y si son requeridos, ejemplo real de request y response, y códigos de error con qué significan específicamente para el consumidor.\n\n3. GUÍAS DE CASOS DE USO\n   Más allá de la referencia plana, documenta 2-3 flujos típicos completos paso a paso (ej. \"cómo procesar un reembolso de principio a fin usando esta API\").\n\n4. VERSIONADO Y DEPRECACIÓN VISIBLE\n   Documenta el esquema de versionado vigente y, si hay un cambio de contrato en curso, referencia la estrategia de `04-05-versionado-deprecacion-api` en términos que el consumidor externo entienda (qué debe cambiar y para cuándo).\n\n5. LÍMITES Y CUOTAS\n   Documenta el rate limiting y cualquier cuota de uso en términos que el consumidor externo pueda planificar (ej. \"300 requests/minuto por API key\", no solo el código de error 429).\n\n6. CHANGELOG RECIENTE\n   Resume los cambios recientes de la API relevantes para consumidores externos.\n\nRestricciones:\n- nunca documentes un comportamiento sin verificarlo contra el contrato o el código real — si hay discrepancia entre lo diseñado y lo implementado, señálala explícitamente en vez de documentar la versión \"ideal\" como si fuera el comportamiento real,\n- usa siempre lenguaje dirigido al consumidor externo (qué necesita hacer, qué obtiene como resultado) — nunca jerga interna del equipo o nombres de componentes internos que el consumidor no puede ver,\n- todo código de error documentado debe explicar la causa probable y la acción recomendada para el consumidor, no solo el código HTTP desnudo,\n- nunca publiques credenciales reales, tokens de ejemplo funcionales, ni datos de producción reales en los ejemplos — usa siempre placeholders claramente marcados como tales.\n\nSalida:\n0. Bloque JSON de metadatos (claves: status, endpoints_documented, examples_count, confidence_score [0.0 a 1.0]).\n1. Getting started: autenticación y primer request de ejemplo.\n2. Referencia de endpoints con ejemplos de request/response y errores.\n3. Guías de casos de uso completos.\n4. Versionado y deprecación visible para el consumidor.\n5. Límites y cuotas de uso.\n6. Changelog reciente relevante para consumidores.",
+        "en": "Objective:\nProduce the public reference documentation for the described API, aimed at external developers integrating against it, verified against the implementation's real behavior.\n\nInputs:\n- already implemented API contract: [PASTE OR REFERENCE TO 04-06 OR ANOTHER SPECIFICATION]\n- target audience: [EXTERNAL DEVELOPERS / PARTNERS / CUSTOMERS]\n- real usage examples: [PASTE OR \"generate representative examples\"]\n\nActivities:\n1. GETTING STARTED\n   Document how to authenticate and a complete first example request, end to end, that an external developer can execute with no additional context.\n\n2. ENDPOINT REFERENCE\n   For each endpoint: description in plain language (no internal team jargon), parameters with type and whether required, a real request/response example, and error codes with what they specifically mean for the consumer.\n\n3. USE-CASE GUIDES\n   Beyond the flat reference, document 2-3 complete typical flows step by step (e.g. \"how to process a refund end to end using this API\").\n\n4. VISIBLE VERSIONING AND DEPRECATION\n   Document the current versioning scheme and, if a contract change is underway, reference the `04-05-versionado-deprecacion-api` strategy in terms the external consumer understands (what needs to change and by when).\n\n5. LIMITS AND QUOTAS\n   Document rate limiting and any usage quota in terms the external consumer can plan around (e.g. \"300 requests/minute per API key\", not just the 429 error code).\n\n6. RECENT CHANGELOG\n   Summarize recent API changes relevant to external consumers.\n\nConstraints:\n- never document a behavior without verifying it against the real contract or code — if there's a discrepancy between what was designed and what was implemented, flag it explicitly instead of documenting the \"ideal\" version as if it were real behavior,\n- always use language aimed at the external consumer (what they need to do, what they get back) — never internal team jargon or internal component names the consumer can't see,\n- every documented error code must explain the probable cause and the recommended action for the consumer, not just the bare HTTP code,\n- never publish real credentials, functional example tokens, or real production data in examples — always use clearly marked placeholders.\n\nOutput:\n0. JSON metadata block (keys: status, endpoints_documented, examples_count, confidence_score [0.0 to 1.0]).\n1. Getting started: authentication and first example request.\n2. Endpoint reference with request/response and error examples.\n3. Complete use-case guides.\n4. Versioning and deprecation visible to the consumer.\n5. Usage limits and quotas.\n6. Recent changelog relevant to consumers."
+      },
+      "formulas": {
+        "es": [
+          "Usa el prompt de documentación pública de API y adáptalo a:\n- repositorio: [NOMBRE O URL]\n- componentes: [SERVICIO(S) QUE EXPONEN LA API]\n- documentos a revisar: contrato de API (04-06), código de la API implementada, changelog previo\n- objetivo puntual de salida: documentación de referencia pública lista para publicar\n- nivel de profundidad: alto"
+        ],
+        "en": [
+          "Use the public API documentation prompt and adapt it to:\n- repository: [NAME OR URL]\n- components: [SERVICE(S) EXPOSING THE API]\n- documents to review: API contract (04-06), implemented API code, prior changelog\n- specific output objective: public reference documentation ready to publish\n- depth level: high"
+        ]
+      },
+      "contract": {
+        "es": {
+          "type": "documentación",
+          "expected_risk": "bajo-medio — documentación pública incorrecta o desactualizada genera tickets de soporte y fricción de adopción para integradores externos, pero el prompt no ejecuta ni modifica la API en sí",
+          "required_inputs": "contrato de API ya implementado (referencia a `04-06` o especificación real), audiencia objetivo (desarrolladores externos/partners/clientes), ejemplos de uso reales si existen",
+          "allowed_tools": "lectura del contrato y del código de la API existente — sin ejecutar nada",
+          "permitted_autonomy": "A1 — Proponer",
+          "stop_criteria": "si el comportamiento a documentar no puede verificarse contra la implementación real (el contrato de diseño quedó desactualizado respecto al código), detente y señala la discrepancia en vez de documentar el diseño teórico como si fuera el comportamiento real",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada endpoint documentado incluye ejemplo de request/response verificado, mecanismo de autenticación, y al menos un ejemplo de error con causa y acción recomendada",
+          "recommended_next_prompt": "`10-03-release-changelog` cuando la API tenga una nueva versión que anunciar a los consumidores",
+          "type_tags": [
+            "documentation"
+          ],
+          "expected_risk_tags": [
+            "low",
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "10-03-release-changelog"
+          ]
+        },
+        "en": {
+          "type": "documentation",
+          "expected_risk": "low-medium — incorrect or outdated public documentation generates support tickets and adoption friction for external integrators, but the prompt does not execute or modify the API itself",
+          "required_inputs": "already implemented API contract (reference to `04-06` or real specification), target audience (external developers/partners/customers), real usage examples if available",
+          "allowed_tools": "reading the contract and the existing API code — no execution",
+          "permitted_autonomy": "A1 — Propose",
+          "stop_criteria": "if the behavior to be documented cannot be verified against the real implementation (the design contract has drifted from the code), stop and flag the discrepancy instead of documenting the theoretical design as if it were real behavior",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every documented endpoint includes a verified request/response example, the authentication mechanism, and at least one error example with cause and recommended action",
+          "recommended_next_prompt": "`10-03-release-changelog` when the API has a new version to announce to consumers",
+          "type_tags": [
+            "documentation"
+          ],
+          "expected_risk_tags": [
+            "low",
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "10-03-release-changelog"
+          ]
+        }
+      },
+      "recommended_next_prompt_ids": [
+        "10-03-release-changelog"
+      ]
+    },
+    {
+      "id": "10-06-materiales-capacitacion-rollout",
+      "section": "10",
+      "title": {
+        "es": "10.6 — Materiales de capacitación y plan de rollout para usuarios finales",
+        "en": "10.6 — End-user training materials and rollout plan"
+      },
+      "description": {
+        "es": "Prompt para diseñar los materiales de capacitación y el plan de comunicación de rollout dirigidos a usuarios finales de un sistema o funcionalidad nueva: guías, formato de capacitación según el perfil de audiencia, calendario de comunicación, estrategia de soporte reforzado durante el lanzamiento, y métrica de adopción. Distinto de `17-01-onboarding-tecnico`, que es exclusivamente para ingenieros nuevos que se incorporan al equipo, no para usuarios finales del producto.\n\nCuándo usarlo: antes de lanzar una funcionalidad o sistema nuevo a sus usuarios finales no técnicos, especialmente si implica un cambio de flujo de trabajo existente o afecta a un grupo grande de usuarios.",
+        "en": ""
+      },
+      "template": {
+        "es": "Objetivo:\nDiseña los materiales de capacitación y el plan de comunicación de rollout para los usuarios finales de la funcionalidad o sistema descrito, con estrategia de soporte durante el lanzamiento y métrica de adopción.\n\nEntradas:\n- funcionalidad o sistema a lanzar: [DESCRIPCIÓN]\n- audiencia de usuarios finales: [ROLES, NIVEL TÉCNICO, TAMAÑO APROXIMADO DEL GRUPO]\n- canal de comunicación disponible: [EMAIL, IN-APP, REUNIÓN EN VIVO, INTRANET, U OTRO]\n- fecha de lanzamiento: [FECHA O VENTANA APROXIMADA]\n\nActividades:\n1. PERFIL DE AUDIENCIA\n   Describe quiénes son los usuarios finales, su nivel técnico, y qué les preocupa o qué resistencia es esperable ante este cambio (ej. temor a perder un flujo conocido, curva de aprendizaje, cambio de responsabilidades).\n\n2. MATERIALES DE CAPACITACIÓN\n   Propón el formato de capacitación (guía escrita paso a paso, video corto, FAQ, sesión en vivo) según el perfil de audiencia — nunca elijas un formato por defecto sin justificarlo contra ese perfil.\n\n3. PLAN DE COMUNICACIÓN DE ROLLOUT\n   Define qué se comunica, en qué momento (antes/durante/después del lanzamiento), por qué canal, y quién es responsable de cada mensaje — un calendario concreto, no una intención genérica.\n\n4. ESTRATEGIA DE SOPORTE DURANTE EL ROLLOUT\n   Define el canal de dudas durante la ventana de lanzamiento, quién responde, y si se requiere una ventana de soporte reforzado (más capacidad de respuesta de lo normal) dado el impacto del cambio.\n\n5. PLAN DE COMUNICACIÓN DE ROLLBACK\n   Si el lanzamiento se retrasa o se revierte, define qué se comunica a los usuarios finales y en qué momento — no dejes este escenario sin plan.\n\n6. MÉTRICA DE ADOPCIÓN\n   Define cómo se medirá si los usuarios finales realmente adoptaron el cambio (uso real de la nueva funcionalidad), no solo si recibieron la comunicación.\n\nRestricciones:\n- no asumas el mismo formato de capacitación para audiencias con perfiles técnicos distintos sin justificar la elección contra el perfil descrito,\n- todo plan de comunicación debe declarar responsable y canal para cada mensaje — nunca dejarlo implícito o \"se comunicará después\",\n- si el sistema o funcionalidad tiene impacto en un flujo crítico de negocio, la estrategia de soporte reforzado durante el rollout es obligatoria, no opcional — señala explícitamente si falta esa capacidad,\n- este prompt no envía ninguna comunicación real ni ejecuta el rollout — produce los materiales y el plan para que el equipo los ejecute.\n\nSalida:\n0. Bloque JSON de metadatos (claves: status, audience_profile, materials_count, confidence_score [0.0 a 1.0]).\n1. Perfil de audiencia y resistencia esperada.\n2. Materiales de capacitación propuestos, con formato y justificación por audiencia.\n3. Plan de comunicación de rollout (calendario con canal y responsable).\n4. Estrategia de soporte reforzado durante el rollout.\n5. Plan de comunicación de rollback, si aplica.\n6. Métrica de adopción propuesta.",
+        "en": "Objective:\nDesign the training materials and communication rollout plan for the end users of the described feature or system, with a support strategy during launch and an adoption metric.\n\nInputs:\n- feature or system being launched: [DESCRIPTION]\n- end-user audience: [ROLES, TECHNICAL LEVEL, APPROXIMATE GROUP SIZE]\n- available communication channel: [EMAIL, IN-APP, LIVE MEETING, INTRANET, OR OTHER]\n- launch date: [DATE OR APPROXIMATE WINDOW]\n\nActivities:\n1. AUDIENCE PROFILE\n   Describe who the end users are, their technical level, and what concerns or resistance is expected against this change (e.g. fear of losing a familiar workflow, learning curve, change in responsibilities).\n\n2. TRAINING MATERIALS\n   Propose the training format (step-by-step written guide, short video, FAQ, live session) matched to the audience profile — never default to a format without justifying it against that profile.\n\n3. ROLLOUT COMMUNICATION PLAN\n   Define what gets communicated, at what point (before/during/after launch), through which channel, and who owns each message — a concrete calendar, not a generic intention.\n\n4. SUPPORT STRATEGY DURING ROLLOUT\n   Define the channel for questions during the launch window, who responds, and whether a reinforced-support window (higher-than-normal response capacity) is required given the change's impact.\n\n5. ROLLBACK COMMUNICATION PLAN\n   If the launch is delayed or reverted, define what gets communicated to end users and when — don't leave this scenario without a plan.\n\n6. ADOPTION METRIC\n   Define how it will be measured whether end users actually adopted the change (real use of the new feature), not just whether they received the communication.\n\nConstraints:\n- do not assume the same training format for audiences with different technical profiles without justifying the choice against the described profile,\n- every communication plan must declare an owner and channel for each message — never leave it implicit or \"will be communicated later\",\n- if the system or feature affects a business-critical workflow, a reinforced support strategy during rollout is mandatory, not optional — explicitly flag it if that capacity is missing,\n- this prompt does not send any real communication or execute the rollout — it produces the materials and plan for the team to execute.\n\nOutput:\n0. JSON metadata block (keys: status, audience_profile, materials_count, confidence_score [0.0 to 1.0]).\n1. Audience profile and expected resistance.\n2. Proposed training materials, with format and justification per audience.\n3. Rollout communication plan (calendar with channel and owner).\n4. Reinforced support strategy during rollout.\n5. Rollback communication plan, if applicable.\n6. Proposed adoption metric."
+      },
+      "formulas": {
+        "es": [
+          "Usa el prompt de materiales de capacitación y rollout y adáptalo a:\n- repositorio/proyecto: [NOMBRE O URL]\n- funcionalidad o sistema a lanzar: [DESCRIPCIÓN]\n- audiencia de usuarios finales: [ROLES Y NIVEL TÉCNICO]\n- documentos a revisar: documentación del producto, comunicaciones previas de lanzamientos similares si existen\n- objetivo puntual de salida: materiales de capacitación y plan de rollout completo\n- nivel de profundidad: alto"
+        ],
+        "en": [
+          "Use the end-user training materials and rollout plan prompt and adapt it to:\n- repository/project: [NAME OR URL]\n- feature or system being launched: [DESCRIPTION]\n- end-user audience: [ROLES AND TECHNICAL LEVEL]\n- documents to review: product documentation, communications from similar prior launches if any\n- specific output objective: complete training materials and rollout plan\n- depth level: high"
+        ]
+      },
+      "contract": {
+        "es": {
+          "type": "documentación",
+          "expected_risk": "medio — una capacitación insuficiente o un rollout mal comunicado puede generar resistencia a la adopción, tickets de soporte evitables, o uso incorrecto de una funcionalidad crítica de negocio; el prompt no envía comunicaciones reales ni ejecuta el rollout",
+          "required_inputs": "descripción de la funcionalidad o sistema a lanzar, audiencia de usuarios finales (roles, nivel técnico, tamaño del grupo), canal de comunicación disponible, fecha de lanzamiento",
+          "allowed_tools": "lectura de documentación del producto — sin ejecutar nada ni enviar ninguna comunicación real",
+          "permitted_autonomy": "A1 — Proponer",
+          "stop_criteria": "si no se conoce el nivel técnico o el tamaño de la audiencia, detente y solicítalo antes de proponer el formato de capacitación — un video corto y una guía escrita no sirven igual para 5 usuarios expertos que para 500 usuarios no técnicos",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada material propuesto declara la audiencia objetivo y el formato elegido con su razón; el plan de rollout declara fecha, canal y responsable de cada comunicación",
+          "recommended_next_prompt": "`17-06-reporte-estado-stakeholders` para comunicar el avance del rollout a stakeholders internos",
+          "type_tags": [
+            "documentation"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "17-06-reporte-estado-stakeholders"
+          ]
+        },
+        "en": {
+          "type": "documentation",
+          "expected_risk": "medium — insufficient training or a poorly communicated rollout can generate adoption resistance, avoidable support tickets, or incorrect use of a business-critical feature; the prompt does not send real communications or execute the rollout",
+          "required_inputs": "description of the feature or system being launched, end-user audience (roles, technical level, approximate group size), available communication channel, launch date",
+          "allowed_tools": "reading product documentation — no execution and no real communication sent",
+          "permitted_autonomy": "A1 — Propose",
+          "stop_criteria": "if the technical level or audience size is unknown, stop and request it before proposing the training format — a short video and a written guide don't work the same for 5 expert users as for 500 non-technical ones",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "each proposed material declares its target audience and chosen format with a reason; the rollout plan declares the date, channel, and owner of each communication",
+          "recommended_next_prompt": "`17-06-reporte-estado-stakeholders` to communicate rollout progress to internal stakeholders",
+          "type_tags": [
+            "documentation"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "17-06-reporte-estado-stakeholders"
+          ]
+        }
+      },
+      "recommended_next_prompt_ids": [
+        "17-06-reporte-estado-stakeholders"
+      ]
+    },
+    {
       "id": "11-01-troubleshooting",
       "section": "11",
       "title": {
@@ -7145,6 +7449,86 @@
       ]
     },
     {
+      "id": "13-09-dpia-privacidad-datos",
+      "section": "13",
+      "title": {
+        "es": "13.9 — Evaluación de impacto de privacidad de datos (DPIA)",
+        "en": "13.9 — Data Privacy Impact Assessment (DPIA)"
+      },
+      "description": {
+        "es": "Prompt para evaluar el impacto de privacidad de un procesamiento de datos personales o sensibles nuevo o significativamente modificado: inventario de datos, propósito y base legal, minimización, terceros y transferencias internacionales, mecanismo de derechos del titular, retención y riesgo residual. Complementa `13-04-threat-modeling` (amenazas de seguridad técnicas) y `14-03-iso-moprosoft-compliance` (conformidad de proceso) — ninguno de los dos evalúa base legal ni derechos del titular de los datos.\n\nCuándo usarlo: al diseñar una funcionalidad que procesa datos personales o sensibles nuevos, o antes de un cambio significativo en cómo se procesan datos ya existentes.",
+        "en": ""
+      },
+      "template": {
+        "es": "Objetivo:\nEvalúa el impacto de privacidad del procesamiento de datos personales o sensibles descrito: qué datos, para qué, bajo qué base legal, con qué terceros, con qué mecanismo de derechos del titular, y con qué riesgo residual.\n\nEntradas:\n- datos personales/sensibles procesados: [DESCRIPCIÓN]\n- propósito del procesamiento: [PARA QUÉ SE USAN ESOS DATOS]\n- base legal propuesta: [CONSENTIMIENTO / CONTRATO / INTERÉS LEGÍTIMO / OBLIGACIÓN LEGAL / NO DEFINIDA AÚN]\n- terceros involucrados: [PROCESADORES/SUBENCARGADOS, O \"ninguno\"]\n- ubicación geográfica: [PAÍSES DE LOS USUARIOS Y DEL ALMACENAMIENTO]\n\nActividades:\n1. INVENTARIO DE DATOS\n   Identifica qué datos personales o sensibles se procesan, por categoría (identificación, salud, financieros, biométricos, ubicación, comportamiento, etc.) y su nivel de sensibilidad.\n\n2. PROPÓSITO Y BASE LEGAL\n   Para cada categoría de dato, define para qué se procesa y bajo qué base legal específica (consentimiento, ejecución de contrato, interés legítimo, obligación legal) — nunca asumas una base legal sin justificarla contra el propósito declarado.\n\n3. MINIMIZACIÓN\n   Evalúa si se está recolectando solo lo necesario para el propósito declarado, o si hay sobre-recolección de datos que no se usan.\n\n4. TERCEROS Y TRANSFERENCIAS\n   Identifica qué procesadores o subencargados tienen acceso a los datos, y si hay transferencia internacional con las salvaguardas legales correspondientes (cláusulas contractuales tipo, decisión de adecuación, u otra).\n\n5. DERECHOS DEL TITULAR\n   Define el mecanismo real (no solo la intención declarada) por el cual un usuario puede acceder, corregir, eliminar o exportar sus datos.\n\n6. RETENCIÓN\n   Define el plazo de conservación de cada categoría de dato y el mecanismo de eliminación al vencer ese plazo.\n\n7. RIESGO RESIDUAL\n   Dado el diseño evaluado, identifica si queda algún riesgo de privacidad sin mitigar, y su severidad.\n\nRestricciones:\n- nunca asumas una base legal sin justificación explícita contra el propósito declarado — si no es clara, márcala como \"[DECISIÓN LEGAL PENDIENTE]\" en vez de elegir una por tu cuenta,\n- no declares \"cumplimiento\" de un mecanismo de derechos del titular que solo existe como intención sin implementación real verificable,\n- toda transferencia internacional de datos debe declarar la salvaguarda legal aplicable o marcarse explícitamente como riesgo abierto — nunca asumir que es segura sin esa salvaguarda citada,\n- este prompt no sustituye asesoría legal formal — para decisiones de base legal en jurisdicciones específicas, señala explícitamente que requiere validación de un equipo legal antes de proceder.\n\nSalida:\n0. Bloque JSON de metadatos (claves: status, personal_data_categories, unmitigated_risks_count, confidence_score [0.0 a 1.0]).\n1. Inventario de datos personales/sensibles por categoría.\n2. Propósito y base legal por categoría.\n3. Evaluación de minimización.\n4. Terceros y transferencias internacionales, con salvaguardas.\n5. Mecanismo real de derechos del titular.\n6. Política de retención por categoría.\n7. Riesgo residual identificado.",
+        "en": "Objective:\nAssess the privacy impact of the described personal or sensitive data processing: what data, for what purpose, under what legal basis, with which third parties, with what data-subject rights mechanism, and with what residual risk.\n\nInputs:\n- personal/sensitive data processed: [DESCRIPTION]\n- purpose of the processing: [WHAT THAT DATA IS USED FOR]\n- proposed legal basis: [CONSENT / CONTRACT / LEGITIMATE INTEREST / LEGAL OBLIGATION / NOT YET DEFINED]\n- third parties involved: [PROCESSORS/SUB-PROCESSORS, OR \"none\"]\n- geographic location: [COUNTRIES OF USERS AND OF STORAGE]\n\nActivities:\n1. DATA INVENTORY\n   Identify what personal or sensitive data is processed, by category (identification, health, financial, biometric, location, behavioral, etc.) and its sensitivity level.\n\n2. PURPOSE AND LEGAL BASIS\n   For each data category, define what it's processed for and under what specific legal basis (consent, contract performance, legitimate interest, legal obligation) — never assume a legal basis without justifying it against the declared purpose.\n\n3. MINIMIZATION\n   Assess whether only what's necessary for the declared purpose is being collected, or whether there's over-collection of data that goes unused.\n\n4. THIRD PARTIES AND TRANSFERS\n   Identify which processors or sub-processors have access to the data, and whether there's an international transfer with the corresponding legal safeguards (standard contractual clauses, adequacy decision, or other).\n\n5. DATA-SUBJECT RIGHTS\n   Define the real mechanism (not just the declared intent) by which a user can access, correct, delete, or export their data.\n\n6. RETENTION\n   Define the retention period for each data category and the deletion mechanism once that period expires.\n\n7. RESIDUAL RISK\n   Given the design evaluated, identify whether any privacy risk remains unmitigated, and its severity.\n\nConstraints:\n- never assume a legal basis without explicit justification against the declared purpose — if unclear, mark it as \"[PENDING LEGAL DECISION]\" instead of choosing one on your own,\n- do not declare \"compliance\" for a data-subject rights mechanism that only exists as stated intent with no verifiable real implementation,\n- every international data transfer must declare the applicable legal safeguard or be explicitly flagged as an open risk — never assume it's safe without that cited safeguard,\n- this prompt does not substitute formal legal advice — for legal-basis decisions in specific jurisdictions, explicitly flag that it requires validation from a legal team before proceeding.\n\nOutput:\n0. JSON metadata block (keys: status, personal_data_categories, unmitigated_risks_count, confidence_score [0.0 to 1.0]).\n1. Personal/sensitive data inventory by category.\n2. Purpose and legal basis per category.\n3. Minimization assessment.\n4. Third parties and international transfers, with safeguards.\n5. Real data-subject rights mechanism.\n6. Retention policy per category.\n7. Identified residual risk."
+      },
+      "formulas": {
+        "es": [
+          "Usa el prompt de evaluación de impacto de privacidad (DPIA) y adáptalo a:\n- repositorio/proyecto: [NOMBRE O URL]\n- funcionalidad que procesa datos: [DESCRIPCIÓN]\n- datos personales/sensibles involucrados: [DESCRIPCIÓN]\n- documentos a revisar: diseño de la funcionalidad, política de privacidad vigente, contratos con terceros procesadores\n- objetivo puntual de salida: DPIA completa con base legal y riesgo residual\n- nivel de profundidad: alto"
+        ],
+        "en": [
+          "Use the Data Privacy Impact Assessment (DPIA) prompt and adapt it to:\n- repository/project: [NAME OR URL]\n- feature that processes data: [DESCRIPTION]\n- personal/sensitive data involved: [DESCRIPTION]\n- documents to review: feature design, current privacy policy, contracts with third-party processors\n- specific output objective: complete DPIA with legal basis and residual risk\n- depth level: high"
+        ]
+      },
+      "contract": {
+        "es": {
+          "type": "análisis",
+          "expected_risk": "alto — una DPIA incompleta puede dejar pasar a producción un procesamiento de datos sin base legal válida o sin mecanismo real para ejercer derechos del titular, con exposición regulatoria real (multas GDPR/CCPA/leyes locales de protección de datos); el prompt no ejecuta ni aprueba nada por sí mismo",
+          "required_inputs": "descripción de los datos personales/sensibles procesados, propósito del procesamiento, base legal propuesta, terceros involucrados (procesadores/subencargados), ubicación geográfica de los usuarios y del almacenamiento",
+          "allowed_tools": "lectura de documentación y diseño existente — sin ejecución",
+          "permitted_autonomy": "A0 — Analizar; A1 — Proponer (base legal sugerida, controles de mitigación)",
+          "stop_criteria": "si no puede determinarse una base legal válida para el procesamiento, no asumas una — repórtalo como bloqueante que requiere decisión legal antes de continuar",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada categoría de dato personal declara propósito, base legal, plazo de retención y mecanismo de ejercicio de derechos (acceso/rectificación/eliminación)",
+          "recommended_next_prompt": "`13-04-threat-modeling` para los controles de seguridad técnicos que protegen los datos identificados aquí; `13-08-gestion-secretos-credenciales` si el procesamiento involucra credenciales",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "13-04-threat-modeling",
+            "13-08-gestion-secretos-credenciales"
+          ]
+        },
+        "en": {
+          "type": "analysis",
+          "expected_risk": "high — an incomplete DPIA can let a data-processing activity reach production with no valid legal basis or no real mechanism for exercising data-subject rights, with real regulatory exposure (GDPR/CCPA/local data-protection law fines); the prompt does not execute or approve anything by itself",
+          "required_inputs": "description of the personal/sensitive data processed, purpose of the processing, proposed legal basis, third parties involved (processors/sub-processors), geographic location of users and of storage",
+          "allowed_tools": "reading existing documentation and design — no execution",
+          "permitted_autonomy": "A0 — Analyze; A1 — Propose (suggested legal basis, mitigation controls)",
+          "stop_criteria": "if a valid legal basis for the processing cannot be determined, do not assume one — report it as blocking, requiring a legal decision before proceeding",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "each personal data category declares purpose, legal basis, retention period, and a rights-exercise mechanism (access/rectification/deletion)",
+          "recommended_next_prompt": "`13-04-threat-modeling` for the technical security controls protecting the data identified here; `13-08-gestion-secretos-credenciales` if the processing involves credentials",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A0",
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "13-04-threat-modeling",
+            "13-08-gestion-secretos-credenciales"
+          ]
+        }
+      },
+      "recommended_next_prompt_ids": [
+        "13-04-threat-modeling",
+        "13-08-gestion-secretos-credenciales"
+      ]
+    },
+    {
       "id": "14-01-monorepo-workspaces-dependencias",
       "section": "14",
       "title": {
@@ -8557,6 +8941,81 @@
       "recommended_next_prompt_ids": [
         "05-02-riesgos-implementacion",
         "17-04-reporte-capacidad-equipo"
+      ]
+    },
+    {
+      "id": "17-07-revision-exito-post-lanzamiento",
+      "section": "17",
+      "title": {
+        "es": "17.7 — Revisión de éxito post-lanzamiento: realización de beneficios contra el Project Charter",
+        "en": "17.7 — Post-launch success review: benefits realization against the Project Charter"
+      },
+      "description": {
+        "es": "Prompt para evaluar, semanas o meses después del lanzamiento de un proyecto o feature significativa, si se cumplieron los objetivos y KPIs declarados originalmente en el Project Charter (`00-D-01`) — cierra el círculo entre lo que se prometió y lo que realmente se logró. Distinto de `11-07-sre-postmortem-runbook` (postmortem de un incidente puntual) y de `17-06-reporte-estado-stakeholders` (reporte de estado en vivo durante la ejecución, no una retrospectiva de beneficios).\n\nCuándo usarlo: semanas o meses después del lanzamiento, cuando ya hay datos reales de uso o de negocio disponibles — como cierre formal de un proyecto o como revisión periódica de iniciativas ya lanzadas.",
+        "en": ""
+      },
+      "template": {
+        "es": "Objetivo:\nEvalúa si el proyecto o feature lanzada cumplió los objetivos y KPIs declarados en su Project Charter original, con datos reales medidos, identificando beneficios no previstos y aprendizajes para futuras estimaciones.\n\nEntradas:\n- Project Charter original: [PEGAR O REFERENCIA A 00-D-01]\n- datos reales de uso/adopción/negocio: [PEGAR O REFERENCIA A LAS FUENTES DE DATOS DISPONIBLES]\n- ventana de tiempo transcurrida desde el lanzamiento: [EJ. \"6 semanas\", \"3 meses\"]\n\nActividades:\n1. RECUPERACIÓN DE OBJETIVOS ORIGINALES\n   Cita textualmente los objetivos y KPIs declarados en el Project Charter original — no los reinterpretes con el conocimiento actual del proyecto.\n\n2. MEDICIÓN REAL\n   Para cada objetivo/KPI, mide el valor real alcanzado con los datos disponibles y compáralo contra la meta declarada originalmente.\n\n3. VEREDICTO POR OBJETIVO\n   Clasifica cada uno: cumplido / parcialmente cumplido / no cumplido / no medible (con la razón específica de por qué no es medible).\n\n4. BENEFICIOS NO PREVISTOS\n   Identifica beneficios (positivos o negativos) que se materializaron pero que no estaban en el Charter original.\n\n5. SUPUESTOS INVALIDADOS\n   Identifica qué supuestos del Charter original resultaron falsos en retrospectiva, y qué se aprende de eso para mejorar futuras estimaciones de beneficios.\n\n6. RECOMENDACIÓN DE SEGUIMIENTO\n   Recomienda si se requiere una acción de seguimiento: inversión adicional para cerrar una brecha detectada, instrumentación nueva para poder medir mejor la próxima vez, o cierre del proyecto como exitoso sin acción adicional.\n\nRestricciones:\n- nunca declares un KPI como \"cumplido\" sin un valor medido real citado — si no hay dato disponible, es \"no medible\", nunca un supuesto optimista disfrazado de medición,\n- cita los objetivos originales del Charter textualmente antes de evaluarlos — no los reformules de una manera que facilite declararlos cumplidos,\n- distingue explícitamente un beneficio realmente causado por este proyecto de una mejora coincidente por otra causa — si no puedes atribuir causalidad con confianza razonable, decláralo explícitamente en vez de atribuirlo,\n- no ejecutes ni recolectes datos nuevos — esta revisión es de solo lectura sobre evidencia ya disponible; si falta instrumentación para medir un KPI, repórtalo como hallazgo, no inventes el dato faltante.\n\nSalida:\n0. Bloque JSON de metadatos (claves: status, kpis_evaluated, kpis_met_count, kpis_not_measurable_count, confidence_score [0.0 a 1.0]).\n1. Objetivos/KPIs originales del Charter (cita textual).\n2. Valor real medido por KPI, con la fuente de datos citada.\n3. Veredicto por KPI: cumplido / parcial / no cumplido / no medible.\n4. Beneficios no previstos (positivos y negativos).\n5. Supuestos del Charter que resultaron falsos — aprendizaje para el futuro.\n6. Recomendación de seguimiento.",
+        "en": "Objective:\nEvaluate whether the launched project or feature met the objectives and KPIs declared in its original Project Charter, with real measured data, identifying unforeseen benefits and lessons for future estimates.\n\nInputs:\n- original Project Charter: [PASTE OR REFERENCE TO 00-D-01]\n- real usage/adoption/business data: [PASTE OR REFERENCE TO AVAILABLE DATA SOURCES]\n- elapsed time since launch: [E.G. \"6 weeks\", \"3 months\"]\n\nActivities:\n1. RECOVER ORIGINAL OBJECTIVES\n   Quote the objectives and KPIs declared in the original Project Charter verbatim — don't reinterpret them with the project's current hindsight.\n\n2. REAL MEASUREMENT\n   For each objective/KPI, measure the real value achieved with available data and compare it against the originally declared target.\n\n3. VERDICT PER OBJECTIVE\n   Classify each one: met / partially met / not met / not measurable (with the specific reason it isn't measurable).\n\n4. UNFORESEEN BENEFITS\n   Identify benefits (positive or negative) that materialized but weren't in the original Charter.\n\n5. INVALIDATED ASSUMPTIONS\n   Identify which assumptions from the original Charter turned out false in hindsight, and what's learned from that to improve future benefit estimates.\n\n6. FOLLOW-UP RECOMMENDATION\n   Recommend whether follow-up action is needed: additional investment to close a detected gap, new instrumentation to measure better next time, or closing the project as successful with no further action.\n\nConstraints:\n- never declare a KPI as \"met\" without a cited real measured value — if no data is available, it's \"not measurable\", never an optimistic assumption disguised as a measurement,\n- quote the Charter's original objectives verbatim before evaluating them — don't reword them in a way that makes it easier to declare them met,\n- explicitly distinguish a benefit truly caused by this project from a coincidental improvement from another cause — if causality can't be attributed with reasonable confidence, state that explicitly instead of attributing it,\n- do not execute or collect new data — this review is read-only over already-available evidence; if instrumentation is missing to measure a KPI, report it as a finding, don't invent the missing data.\n\nOutput:\n0. JSON metadata block (keys: status, kpis_evaluated, kpis_met_count, kpis_not_measurable_count, confidence_score [0.0 to 1.0]).\n1. Original Charter objectives/KPIs (verbatim quote).\n2. Real measured value per KPI, with the cited data source.\n3. Verdict per KPI: met / partial / not met / not measurable.\n4. Unforeseen benefits (positive and negative).\n5. Charter assumptions that turned out false — lessons for the future.\n6. Follow-up recommendation."
+      },
+      "formulas": {
+        "es": [
+          "Usa el prompt de revisión de éxito post-lanzamiento y adáptalo a:\n- repositorio/proyecto: [NOMBRE O URL]\n- Project Charter original: [REFERENCIA A 00-D-01]\n- ventana de tiempo transcurrida: [EJ. \"6 semanas\"]\n- documentos a revisar: Project Charter, datos de uso/adopción/negocio disponibles\n- objetivo puntual de salida: revisión de KPIs cumplidos/no cumplidos con aprendizajes\n- nivel de profundidad: alto"
+        ],
+        "en": [
+          "Use the post-launch success review prompt and adapt it to:\n- repository/project: [NAME OR URL]\n- original Project Charter: [REFERENCE TO 00-D-01]\n- elapsed time since launch: [E.G. \"6 weeks\"]\n- documents to review: Project Charter, available usage/adoption/business data\n- specific output objective: review of met/unmet KPIs with lessons learned\n- depth level: high"
+        ]
+      },
+      "contract": {
+        "es": {
+          "type": "análisis",
+          "expected_risk": "medio — una revisión de éxito sesgada u omitida deja a la organización sin aprendizaje real sobre si sus inversiones de proyecto generan el valor prometido, repitiendo los mismos errores de estimación de beneficios en futuros proyectos; el prompt no ejecuta ni recolecta datos nuevos",
+          "required_inputs": "Project Charter original con objetivos/KPIs declarados (`00-D-01`), datos reales de uso/adopción/negocio desde el lanzamiento, ventana de tiempo transcurrida",
+          "allowed_tools": "lectura de documentación y datos ya recolectados — sin ejecutar análisis de datos en vivo ni instrumentación nueva",
+          "permitted_autonomy": "A0 — Analizar",
+          "stop_criteria": "si un KPI del Charter no puede medirse con los datos disponibles, no inventes un valor aproximado — repórtalo como \"no medible\" y señala qué instrumentación faltaría para poder medirlo la próxima vez",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada objetivo/KPI declarado en el Charter aparece en la revisión con su valor real medido (o \"no medible\" con la razón) y un veredicto de cumplido/parcial/no cumplido",
+          "recommended_next_prompt": "`11-03-deuda-tecnica` si la revisión revela deuda técnica que quedó pendiente del proyecto original",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0"
+          ],
+          "recommended_next_prompt_ids": [
+            "11-03-deuda-tecnica"
+          ]
+        },
+        "en": {
+          "type": "analysis",
+          "expected_risk": "medium — a biased or skipped success review leaves the organization with no real learning about whether its project investments generate the promised value, repeating the same benefit-estimation mistakes in future projects; the prompt does not execute or collect new data",
+          "required_inputs": "original Project Charter with declared objectives/KPIs (`00-D-01`), real usage/adoption/business data since launch, elapsed time window",
+          "allowed_tools": "reading existing documentation and already-collected data — no live data analysis or new instrumentation executed",
+          "permitted_autonomy": "A0 — Analyze",
+          "stop_criteria": "if a Charter KPI cannot be measured with available data, do not invent an approximate value — report it as \"not measurable\" and flag what instrumentation would be needed to measure it next time",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "every objective/KPI declared in the Charter appears in the review with its real measured value (or \"not measurable\" with the reason) and a met/partial/not-met verdict",
+          "recommended_next_prompt": "`11-03-deuda-tecnica` if the review reveals technical debt left pending from the original project",
+          "type_tags": [
+            "analysis"
+          ],
+          "expected_risk_tags": [
+            "medium"
+          ],
+          "permitted_autonomy_tags": [
+            "A0"
+          ],
+          "recommended_next_prompt_ids": [
+            "11-03-deuda-tecnica"
+          ]
+        }
+      },
+      "recommended_next_prompt_ids": [
+        "11-03-deuda-tecnica"
       ]
     }
   ]
