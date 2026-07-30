@@ -42,6 +42,7 @@ const context = {
     setItem(key, value) { storage.set(key, String(value)); },
   },
   window: {
+    confirm: () => true, // confirmDeleteProject() lo requiere; siempre confirma en las pruebas
     location: { pathname: "/", search: "", hash: "" },
     history: { replaceState() {}, pushState() {} },
     addEventListener() {},
@@ -77,6 +78,43 @@ assert.strictEqual(
   "org/<repo>&$1|#1034\nsegunda línea|módulo/ñ|apps\\admin|ISO 27001"
 );
 assert.deepStrictEqual(Array.from(resolved.unresolvedRequired), []);
+
+// Regresión: bug real corregido de doble sustitución cruzada. Antes,
+// resolvePrompt() sustituía campo por campo con .replace() encadenado,
+// reescaneando el texto YA sustituido en cada paso -- si el valor de un
+// campo contenía literalmente el placeholder de OTRO campo procesado
+// después, ese texto recién insertado se volvía a sustituir. Aquí
+// "repositorio" contiene literalmente "[MODULO]" y "modulo" se procesa
+// después en VAR_MAP -- el valor de repositorio debe quedar intacto.
+const valuesBeforeRegressionChecks = {
+  repositorio: "org/<repo>&$1",
+  referencia: "#1034\nsegunda línea",
+  modulo: "módulo/ñ",
+  workspace: "apps\\admin",
+  compliance: "ISO 27001",
+};
+setValues({ repositorio: "mi-repo [MODULO]", modulo: "auth-service" });
+const crossField = context.resolvePrompt("[NOMBRE O URL] | [MODULO]");
+assert.strictEqual(
+  crossField.text,
+  "mi-repo [MODULO] | auth-service",
+  "el valor de un campo no debe volver a sustituirse aunque contenga el placeholder literal de otro campo"
+);
+
+// Regresión: bug real corregido de falso bloqueo de "placeholder sin
+// resolver". Antes, si un campo REQUERIDO se llenaba con un valor
+// idéntico a su propio token (ej. entrada = "[ENTRADA PRINCIPAL]"), el
+// texto sustituido seguía conteniendo ese literal y el escaneo posterior
+// lo marcaba como no resuelto pese a que el campo sí tenía un valor.
+setValues({ entrada: "[ENTRADA PRINCIPAL]" });
+const selfLiteral = context.resolvePrompt("Entrada: [ENTRADA PRINCIPAL]");
+assert.strictEqual(selfLiteral.text, "Entrada: [ENTRADA PRINCIPAL]");
+assert.deepStrictEqual(
+  Array.from(selfLiteral.unresolvedRequired),
+  [],
+  "un campo requerido con valor propio no debe marcarse como sin resolver aunque su valor coincida con su placeholder"
+);
+setValues(valuesBeforeRegressionChecks); // restaura el estado que usan las aserciones siguientes
 
 // PLACEHOLDER_IGNORE debe reflejar extract_vars.py IGNORED: [SÍ / NO] es un
 // placeholder de formato (usado en 00-C-01, 00-C-02, 09-04-promotion-checklist),
@@ -332,6 +370,37 @@ context.getCurrentLanguage = () => "es";
 
   context.renderGuidedStep(guidedSeq.length - 1);
   assert.strictEqual(nextBtn.disabled, true, "en el último paso, 'Siguiente' debe estar deshabilitado");
+
+  // Regresión: bug real corregido (auditoría de UX -- cambio entre
+  // proyectos). Al borrar el proyecto ACTIVO, el panel de variables (el
+  // DOM) seguía mostrando los valores del proyecto recién eliminado -- si
+  // el usuario editaba cualquier campo después, syncProjectFromPanel()
+  // leía esos valores obsoletos y sobrescribía el proyecto sobreviviente.
+  storage.clear();
+  context.saveProjects([
+    { id: "alpha", name: "Alpha", isDefault: true, vars: Object.assign({}, context.EMPTY_VARS, { repositorio: "org/alpha" }) },
+    { id: "beta", name: "Beta", isDefault: false, vars: Object.assign({}, context.EMPTY_VARS, { repositorio: "org/beta" }) },
+  ]);
+  storage.set(context.LS_KEY_ACTV, "beta");
+  const repoInput = { value: "", multiple: false };
+  elements.set("vf-repositorio", repoInput);
+  context.syncPanelToProject();
+  assert.strictEqual(repoInput.value, "org/beta", "el panel debe reflejar el proyecto activo (Beta) antes de borrar");
+
+  context.confirmDeleteProject("beta", "Beta");
+  assert.strictEqual(context.getActiveProject().id, "alpha", "tras borrar el proyecto activo, Alpha debe quedar activo");
+  assert.strictEqual(
+    repoInput.value,
+    "org/alpha",
+    "el panel de variables debe resincronizarse al proyecto sobreviviente tras borrar el activo"
+  );
+
+  // Si el panel NO se hubiera resincronizado, este siguiente "editar campo"
+  // habría sobrescrito Alpha con el valor obsoleto de Beta -- confirma que
+  // Alpha queda con el valor recién editado, intacto.
+  repoInput.value = "org/alpha-editado";
+  context.syncProjectFromPanel();
+  assert.strictEqual(context.getActiveProject().vars.repositorio, "org/alpha-editado");
 
   console.log("runtime variable tests: ok");
 })().catch(err => {

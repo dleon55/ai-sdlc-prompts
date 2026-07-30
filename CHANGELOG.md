@@ -31,6 +31,15 @@ Este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 - Pruebas de contrato para evitar campos sin UI, alias ambiguos y regresiones en prompts de triage y análisis de requerimientos.
 
 ### Fixed
+- `resolvePrompt()`: corrige doble sustitución cruzada entre variables — si el valor de un campo contenía literalmente el placeholder de otro campo procesado después (ej. `repositorio = "mi-repo [STACK]"`), ese texto recién insertado volvía a sustituirse, corrompiendo silenciosamente el valor del usuario. La sustitución ahora ocurre en una sola pasada de regex sobre el texto original, nunca sobre texto ya sustituido.
+- `resolvePrompt()`: corrige un falso bloqueo de "placeholder obligatorio sin resolver" cuando un campo requerido se llenaba con un valor idéntico a su propio token (ej. `entrada = "[ENTRADA PRINCIPAL]"`) — la detección de placeholders sin resolver para campos conocidos ahora se basa en si el campo quedó vacío, no en re-escanear el texto ya sustituido.
+- Panel de variables: al borrar el proyecto **activo**, el panel ahora se resincroniza con el proyecto sobreviviente (`syncPanelToProject()`) — antes seguía mostrando los valores del proyecto recién eliminado, y editar cualquier campo después sobrescribía silenciosamente las variables del proyecto que sí sobrevivió.
+- GitHub Pages: agrega `404.html` (copia de `index.html`) al artefacto publicado — el botón principal de la landing (`href="/app"`, ruteo client-side) devolvía un 404 real de GitHub Pages por falta de rewrite, aunque funcionaba correctamente en producción (GCP/Nginx con `try_files`).
+- Modal de modo guiado (🧭): ahora cierra con Escape y con clic fuera del modal, igual que el resto de los overlays — quedó fuera de ambos mecanismos al agregarse después de que se escribiera ese código compartido.
+- Barra flotante de multi-select (`.ms-bar`): ya no se corta en los bordes en viewports móviles (~375px) — el contador de seleccionados y el botón "Limpiar selección" quedaban inalcanzables.
+- Onboarding: el paso 5 (captura de email) ahora es bilingüe ES/EN — antes era el único paso solo en español, rompiendo la paridad justo en el paso más accionable del wizard.
+- Selector de nivel de autonomía y chips de filtro A0-A3: el selector de variables ahora antepone el código (`A0 — solo análisis`, etc.) y los chips de filtro tienen un `title` explicando cada código — antes solo se explicaban una vez en el modal de onboarding, sin forma de consultarlos después.
+- Modal de gestión de proyectos: el botón de eliminar ahora tiene color distintivo en reposo (antes solo cambiaba de color al pasar el mouse encima, igual que las demás acciones no destructivas).
 - Panel de variables: muestra opciones explícitas de compliance y alinea las etiquetas de objetivo puntual y profundidad con la fórmula del framework.
 - Framework `00`: usa tokens configurables independientes y evita reutilizar `tipo de proyecto` como workspace o `componentes` como documentos.
 - `02-02` Análisis técnico profundo: elimina contenido duplicado y corrige la referencia del diseño de solución de `02-04` a `04-01`.
