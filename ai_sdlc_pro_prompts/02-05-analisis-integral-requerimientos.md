@@ -20,7 +20,7 @@ Prompt de ingeniería de software senior diseñado para realizar un análisis ex
 | Criterios de detención | si no puede confirmarse el cumplimiento de la Definition of Ready (criterios de aceptación, alcance o impacto verificable), marcar el issue resultante como "no listo" en vez de presentarlo como Ready |
 | Salida esperada | ver `## Salida esperada` |
 | Evidencia mínima | cada afirmación en HECHOS debe corresponder a estado verificado del repositorio; SUPUESTOS y RIESGOS deben quedar declarados por separado, no mezclados con hechos |
-| Siguiente prompt recomendado | `02-04-triage-backlog-github` si se generan varios issues a priorizar; `04-01-diseno-solucion` si el issue ya fue creado y se continúa al diseño |
+| Siguiente prompt recomendado | `02-04-triage-backlog-github` si se generan varios issues a priorizar; `04-01-diseno-solucion` si el issue ya fue creado y se continúa al diseño; `02-07-matriz-trazabilidad-requerimientos` para agregar este requerimiento a la matriz de trazabilidad de todo el proyecto |
 
 ---
 

@@ -20,7 +20,7 @@ Prompt para detectar y documentar el stack de pruebas activo en el repositorio. 
 | Criterios de detención | marcar explícitamente "sin detectar" en vez de asumir o inventar un framework, comando o convención que no esté respaldado por un archivo real del repositorio |
 | Salida esperada | ver `## Salida esperada — Perfil de stack de pruebas` |
 | Evidencia mínima | cada campo del perfil respaldado por una ruta de archivo o comando verificado citado explícitamente, no por inferencia sin fuente |
-| Siguiente prompt recomendado | `07-01-pruebas-unitarias` (o directamente `07-07-implementacion-pruebas-unitarias` usando el perfil como contexto) |
+| Siguiente prompt recomendado | `07-01-pruebas-unitarias` (o directamente `07-07-implementacion-pruebas-unitarias` usando el perfil como contexto); `07-15-plan-maestro-pruebas` si se necesita primero la estrategia de QA de todo el proyecto antes de diseñar cada tipo de prueba |
 
 ---
 

@@ -20,7 +20,7 @@ Prompt to design the complete solution before implementing: objective, scope, as
 | Stop criteria | if there is no viable rollback strategy for a critical component, state it as an open risk in the design instead of omitting it |
 | Expected output | see `## Expected output` |
 | Minimum evidence | every proposed change by component must be linked to a risk and its mitigation, and to cited findings from the prior analysis |
-| Recommended next prompt | `05-01-plan-implementacion`; in parallel, `04-02-diagramas-mermaid` if the design requires architecture or flow diagrams before continuing |
+| Recommended next prompt | `05-01-plan-implementacion`; in parallel, `04-02-diagramas-mermaid` if the design requires architecture or flow diagrams before continuing; `04-06-diseno-contrato-api` and/or `04-07-diseno-modelo-datos` if the design includes a new API or a data schema not yet detailed |
 
 ---
 

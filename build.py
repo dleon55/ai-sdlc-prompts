@@ -1079,12 +1079,6 @@ body.ms-mode .sec-check { display: block; }
   display: flex; align-items: center; gap: 6px;
   padding: 0 14px 10px; border-bottom: 1px solid var(--bdr);
 }
-.proj-select {
-  flex: 1; background: var(--bg); color: var(--tx); border: 1px solid var(--bdr2);
-  border-radius: 6px; padding: 4px 8px; font-size: .76rem; font-family: inherit;
-  cursor: pointer; outline: none;
-}
-.proj-select:focus { border-color: #06b6d4; }
 .proj-mgr-btn {
   background: none; border: 1px solid var(--bdr2); border-radius: 6px;
   color: var(--tx3); padding: 4px 8px; font-size: .7rem; cursor: pointer;
@@ -1936,7 +1930,7 @@ function duplicateProject(id) {
 function renameProject(id, name) {
   var list = loadProjects() || [];
   var p = list.find(function(x) { return x.id === id; });
-  if (p && name.trim()) { p.name = name.trim(); saveProjects(list); renderProjectSelector(); renderProjQuick(); renderProjFloat(); }
+  if (p && name.trim()) { p.name = name.trim(); saveProjects(list); renderProjectSelector(); renderProjQuick(); }
 }
 
 function setDefaultProject(id) {
@@ -1950,7 +1944,6 @@ function switchProject(id) {
   syncPanelToProject();
   renderProjectSelector();
   renderProjQuick();
-  renderProjFloat();
 }
 
 /* ════════════════════  AUTENTICACIÓN (Supabase + GitHub)  ═══════
@@ -2082,7 +2075,7 @@ function pullCloudProjects() {
       if (!list.find(function(p) { return p.id === activeId; })) {
         setActiveProjectId((list.find(function(p) { return p.isDefault; }) || list[0]).id);
       }
-      renderProjectSelector(); renderProjQuick(); renderProjFloat(); syncPanelToProject();
+      renderProjectSelector(); renderProjQuick(); syncPanelToProject();
     } else {
       offerLocalImportIfNeeded();
     }
@@ -2119,7 +2112,7 @@ function pushLocalProjectsToCloud(list) {
     });
     try { localStorage.setItem(LS_KEY_PROJ, JSON.stringify(newList)); } catch (e) {}
     setActiveProjectId((newList.find(function(p) { return p.isDefault; }) || newList[0]).id);
-    renderProjectSelector(); renderProjQuick(); renderProjFloat(); syncPanelToProject();
+    renderProjectSelector(); renderProjQuick(); syncPanelToProject();
   }).catch(function() {});
 }
 
@@ -2743,7 +2736,6 @@ function handleImportProjectsFile(inputEl) {
       renderProjectsModal();
       renderProjectSelector();
       renderProjQuick();
-      renderProjFloat();
     } catch (err) {
       showToast(lang === 'en' ? 'Invalid import file' : 'Archivo de importación inválido', 'warn');
     }
@@ -2898,22 +2890,10 @@ function syncProjectFromQuickFloat() {
 }
 
 function renderProjectSelector() {
-  var sel = document.getElementById('proj-selector');
-  var list = loadProjects() || [];
   var active = getActiveProject();
-  var activeId = active ? active.id : null;
-  if (sel) {
-    sel.innerHTML = list.map(function(p) {
-      var selAttr = (p.id === activeId) ? ' selected' : '';
-      var label = p.name + (p.isDefault ? ' \u2605' : '');
-      return '<option value="' + p.id.replace(/&/g,'&amp;').replace(/"/g,'&quot;') + '"' + selAttr + '>'
-             + label.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</option>';
-    }).join('');
-  }
   var nameEl = document.getElementById('vp-proj-name');
   if (nameEl && active) nameEl.textContent = active.name + (active.isDefault ? ' \u2605' : '');
   renderProjQuick();
-  renderProjFloat();
 }
 
 /* ════════════════════  PROYECTOS — modal  ═══════════════════════ */
@@ -3011,52 +2991,6 @@ function closeProjQuick() {
   var wrap = document.getElementById('proj-quick');
   if (wrap) wrap.classList.remove('open');
   var btn = document.getElementById('proj-quick-btn');
-  if (btn) btn.setAttribute('aria-expanded', 'false');
-}
-
-/* ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  PROYECTO FLOTANTE — issue #30  ▀▀▀▀▀▀▀▀▀▀▀▀ */
-function renderProjFloat() {
-  var list = loadProjects() || [];
-  var active = getActiveProject();
-  var activeId = active ? active.id : null;
-  var nameEl = document.getElementById('proj-float-name');
-  var fallback = getCurrentLanguage() === 'en' ? 'Project' : 'Proyecto';
-  if (nameEl) nameEl.textContent = (active ? active.name : fallback) + (active && active.isDefault ? ' \u2605' : '');
-  var dd = document.getElementById('proj-float-dropdown');
-  if (!dd) return;
-  var items = list.map(function(p) {
-    var isAct = p.id === activeId;
-    return '<button class="pq-item' + (isAct ? ' pq-active' : '') + '"'
-      + ' onclick="switchProject(\\'' + escId(p.id) + '\\');closeProjFloat();">' 
-      + '<span class="pq-dot' + (isAct ? ' on' : '') + '"></span>'
-      + '<span class="pq-item-name">' + p.name.replace(/&/g,'&amp;').replace(/</g,'&lt;') + '</span>'
-      + (p.isDefault ? '<span style="font-size:.6rem;color:var(--tx3)">\u2605</span>' : '')
-      + '</button>';
-  }).join('');
-  var labelNew = getCurrentLanguage() === 'en' ? '+ New' : '+ Nuevo';
-  var labelMgr = getCurrentLanguage() === 'en' ? '⚙ Manage' : '⚙ Gestionar';
-  dd.innerHTML = items
-    + '<div class="pq-sep"></div>'
-    + '<div class="pq-footer">'
-    + '<button class="pq-new-btn" onclick="createProject();renderProjQuick();renderProjFloat();renderProjectSelector();syncPanelToProject();closeProjFloat();">' + labelNew + '</button>'
-    + '<button class="pq-mgr-btn" onclick="openProjectsModal();closeProjFloat();">' + labelMgr + '</button>'
-    + '</div>';
-}
-
-function toggleProjFloat(e) {
-  if (e) e.stopPropagation();
-  var wrap = document.getElementById('proj-float');
-  if (!wrap) return;
-  var isOpen = wrap.classList.toggle('open');
-  var btn = document.getElementById('proj-float-btn');
-  if (btn) btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-  if (isOpen) renderProjFloat();
-}
-
-function closeProjFloat() {
-  var wrap = document.getElementById('proj-float');
-  if (wrap) wrap.classList.remove('open');
-  var btn = document.getElementById('proj-float-btn');
   if (btn) btn.setAttribute('aria-expanded', 'false');
 }
 
@@ -3607,7 +3541,6 @@ function setLanguage(lang) {
 
   // Sincronizar selectores de proyecto
   renderProjQuick();
-  renderProjFloat();
   renderProjectSelector();
 
   if (typeof initChips === 'function') initChips();
@@ -3617,6 +3550,15 @@ function setLanguage(lang) {
   // contador se quedaba con el texto y el conteo del idioma anterior hasta
   // la siguiente interacción con la búsqueda (issue #96).
   if (typeof applyFilters === 'function') applyFilters();
+
+  // Gap real de eficiencia corregido (auditoría de eficiencia): a partir de
+  // este cambio, updateLivePreview() en cada tecla del panel de variables
+  // solo resuelve los bloques del idioma activo -- así que al cambiar de
+  // idioma hay que forzar un refresco completo aquí para que los bloques
+  // del idioma recién activado (posiblemente saltados mientras el otro
+  // idioma estaba activo) queden al día. Los cambios de idioma son
+  // infrecuentes, así que este costo no es el hot path que se optimizó.
+  updateLivePreview();
 }
 
 function initLanguageDetection() {
@@ -3707,11 +3649,21 @@ function updateContextualVariablePanel() {
 
 function updateLivePreview() {
   // Antes cada resolvePrompt() dentro de este loop llamaba a getVarValues(),
-  // que relee y re-parsea localStorage -- con 184 prompts (92 x ES/EN) eso
-  // era hasta 184 lecturas/JSON.parse redundantes por cada tecla en el panel
+  // que relee y re-parsea localStorage -- con 228 prompts (114 x ES/EN) eso
+  // era hasta 228 lecturas/JSON.parse redundantes por cada tecla en el panel
   // de variables. Se lee una sola vez y se reusa el mismo snapshot.
   var values = getVarValues();
+  // Gap real de eficiencia corregido (auditoría de eficiencia): este loop
+  // se dispara en cada tecla del panel de variables (oninput=, sin
+  // debounce) y antes recorría los 228 bloques de código de AMBOS idiomas
+  // aunque solo uno esté visible -- medido en ~20-31ms mediana, picos de
+  // hasta ~57-77ms, por encima del presupuesto de 16ms/60fps. Filtrar por
+  // el idioma activo evita la mitad del trabajo innecesario; setLanguage()
+  // llama a updateLivePreview() sin filtrar-por-uso-previo al cambiar de
+  // idioma para que el idioma recién activado quede al día igual.
+  var suffix = '-' + getCurrentLanguage();
   Object.keys(RAW_PROMPTS).forEach(function(codeId) {
+    if (codeId.slice(-3) !== suffix) return;
     var codeEl = document.getElementById(codeId);
     if (!codeEl) return;
     var resolved = resolvePrompt(RAW_PROMPTS[codeId], { valuesOverride: values });
@@ -4597,7 +4549,6 @@ function initAppData() {
   renderProjectSelector();
   syncPanelToProject();
   renderProjQuick();
-  renderProjFloat();
 
   // Restaurar estado del sidebar
   try { if (localStorage.getItem('AI_SDLC_sidebar') === '1') document.body.classList.add('sidebar-collapsed'); } catch(e) {}
@@ -4623,9 +4574,6 @@ document.addEventListener('DOMContentLoaded', function() {
     var wrap = document.getElementById('proj-quick');
     if (wrap && !wrap.contains(e.target)) closeProjQuick();
     
-    var floatWrap = document.getElementById('proj-float');
-    if (floatWrap && !floatWrap.contains(e.target)) closeProjFloat();
-
     var varFloat = document.getElementById('var-float');
     if (varFloat && !varFloat.contains(e.target)) closeVarFloat();
     
@@ -6156,7 +6104,6 @@ def build():
         '<button class="var-close-btn" onclick="closeVarPanel()" title="Cerrar / Close" aria-label="Cerrar / Close">&#x2715;</button>'
         '</div>\n'
         '<div class="proj-selector-row">'
-        '<select id="proj-selector" class="proj-select" onchange="switchProject(this.value)" style="display:none"></select>'
         '<div style="flex:1;font-size:.74rem;color:var(--tx2);display:flex;align-items:center;gap:5px;overflow:hidden;">'
         '<span style="color:var(--tx3);flex-shrink:0;"><span class="fw-lang-es">Proyecto\u00a0</span><span class="fw-lang-en">Project\u00a0</span></span>'
         '<span id="vp-proj-name" style="color:#7dd3fc;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>'

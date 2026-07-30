@@ -20,7 +20,7 @@ Senior software engineering prompt designed to perform a comprehensive analysis 
 | Stop criteria | if Definition of Ready compliance cannot be confirmed (acceptance criteria, scope, or impact not verifiable), mark the resulting issue as "not ready" instead of presenting it as Ready |
 | Expected output | see `## Expected output` |
 | Minimum evidence | every statement under FACTS must correspond to verified repository state; ASSUMPTIONS and RISKS must be declared separately, not mixed with facts |
-| Recommended next prompt | `02-04-triage-backlog-github` if several generated issues need prioritization; `04-01-diseno-solucion` if the issue was already created and design work continues |
+| Recommended next prompt | `02-04-triage-backlog-github` if several generated issues need prioritization; `04-01-diseno-solucion` if the issue was already created and design work continues; `02-07-matriz-trazabilidad-requerimientos` to add this requirement to the whole-project traceability matrix |
 
 ---
 

@@ -20,7 +20,7 @@ Prompt para verificar que se han aplicado los controles de seguridad requeridos 
 | Criterios de detención | marcar un control como "⚠️ parcial" o "❌ no cumple" en vez de "✅ cumple" si no hay evidencia verificable citada; detener y escalar si se detecta un secreto en código o un control crítico ausente en producción |
 | Salida esperada | ver `## Salida esperada` |
 | Evidencia mínima | cada ítem del checklist referencia la evidencia (archivo, pipeline, política) que sustenta el estado marcado |
-| Siguiente prompt recomendado | `08-03-remediacion-maestro` para las brechas que requieren cambio de código; `05-01-plan-implementacion` para las que requieren trabajo de diseño o proceso |
+| Siguiente prompt recomendado | `08-03-remediacion-maestro` para las brechas que requieren cambio de código; `05-01-plan-implementacion` para las que requieren trabajo de diseño o proceso; `13-05-dast-analisis-dinamico-seguridad` si la revisión detecta que faltan pruebas DAST sobre el entorno en ejecución |
 
 ---
 
