@@ -49,6 +49,10 @@ jobs:
 # ============================================================
   build:
     runs-on: ubuntu-latest
+    # Las variables Live de Paddle viven en el Environment production. Los PR
+    # usan ci para no requerir aprobacion ni leer configuracion Live.
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || 'ci' }}
     outputs:
       card_count: ${{ steps.card_count.outputs.count }}
     steps:
