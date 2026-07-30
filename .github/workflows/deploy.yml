@@ -49,8 +49,9 @@ jobs:
 # ============================================================
   build:
     runs-on: ubuntu-latest
-    # Las variables Live de Paddle viven en el Environment production. Los PR
-    # usan ci para no requerir aprobacion ni leer configuracion Live.
+    # Las variables publicas de Paddle viven a nivel repositorio para que el
+    # build las resuelva de forma determinista. El Environment production
+    # conserva el control de despliegues de main; los PR usan ci.
     environment:
       name: ${{ github.ref == 'refs/heads/main' && 'production' || 'ci' }}
     outputs:
