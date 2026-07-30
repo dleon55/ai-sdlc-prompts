@@ -4578,6 +4578,64 @@
       }
     },
     {
+      "id": "11-14-migracion-cutover-plataforma",
+      "section": "11",
+      "title": {
+        "es": "11.14 — Plan de migración y cutover de plataforma o sistema legacy",
+        "en": "11.14 — Platform or legacy system migration and cutover plan"
+      },
+      "contract": {
+        "es": {
+          "type": "diseño",
+          "expected_risk": "alto — una migración mal secuenciada puede causar pérdida de datos, downtime no planeado o inconsistencia entre sistemas si el corte de tráfico ocurre antes de que el backfill o la verificación estén completos; el prompt no ejecuta ninguna migración de datos ni mueve tráfico real por sí mismo",
+          "required_inputs": "sistema origen y destino (descripción, stack, volumen de datos), arquitectura de destino si existe (`00-D-02`/`04-01`), restricciones de downtime tolerable, dependientes conocidos del sistema origen (inventario de `11-11` si existe)",
+          "allowed_tools": "ninguna de ejecución — lectura de documentación y arquitectura existentes; produce un documento de plan, no ejecuta ninguna migración de datos ni corte de tráfico",
+          "permitted_autonomy": "A1 — Proponer",
+          "stop_criteria": "si no puede confirmarse una estrategia de verificación de consistencia de datos entre origen y destino, no declarar el plan de cutover como listo para ejecutar — marcarlo como bloqueante en vez de asumir consistencia",
+          "expected_output": "ver `## Salida esperada`",
+          "minimum_evidence": "cada etapa del cutover declara criterio de avance verificable y plan de rollback específico; la estrategia de migración de datos declara el método de verificación de consistencia usado",
+          "recommended_next_prompt": "`11-11-plan-decomiso-sistema-legacy` una vez el cutover se completó y el sistema origen ya no recibe tráfico; `11-09-runbook-rollback` para el rollback de un solo despliegue puntual dentro del plan de cutover, si aplica",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "11-11-plan-decomiso-sistema-legacy",
+            "11-09-runbook-rollback"
+          ]
+        },
+        "en": {
+          "type": "design",
+          "expected_risk": "high — a poorly sequenced migration can cause data loss, unplanned downtime, or inconsistency between systems if traffic is cut over before backfill or verification are complete; the prompt does not execute any data migration or move real traffic by itself",
+          "required_inputs": "source and target systems (description, stack, data volume), target architecture if it exists (`00-D-02`/`04-01`), tolerable downtime constraints, known dependents of the source system (`11-11` inventory if it exists)",
+          "allowed_tools": "none for execution — reading existing documentation and architecture; produces a plan document, does not execute any data migration or traffic cutover",
+          "permitted_autonomy": "A1 — Propose",
+          "stop_criteria": "if a data-consistency verification strategy between source and target cannot be confirmed, do not declare the cutover plan ready to execute — mark it blocking instead of assuming consistency",
+          "expected_output": "see `## Expected output`",
+          "minimum_evidence": "each cutover stage declares a verifiable advancement criterion and a specific rollback plan; the data migration strategy declares the consistency-verification method used",
+          "recommended_next_prompt": "`11-11-plan-decomiso-sistema-legacy` once cutover is complete and the source system no longer receives traffic; `11-09-runbook-rollback` for a single deployment's rollback within the cutover plan, if applicable",
+          "type_tags": [
+            "design"
+          ],
+          "expected_risk_tags": [
+            "high"
+          ],
+          "permitted_autonomy_tags": [
+            "A1"
+          ],
+          "recommended_next_prompt_ids": [
+            "11-11-plan-decomiso-sistema-legacy",
+            "11-09-runbook-rollback"
+          ]
+        }
+      }
+    },
+    {
       "id": "12-orquestador",
       "section": "12",
       "title": {
