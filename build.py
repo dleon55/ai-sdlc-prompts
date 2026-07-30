@@ -4940,10 +4940,21 @@ def build_precios_page():
 #  checkout de Paddle.
 # ══════════════════════════════════════════════════════════════════
 
-# Correo de contacto legal / soporte. Se toma el que ya está
-# publicado en lionsystems.com.mx. Cambiar aquí si se habilita una
-# dirección dedicada de soporte -- aparece en las tres páginas.
-LEGAL_CONTACT_EMAIL = "dleon5555@gmail.com"
+# Correo de contacto legal / soporte. Aparece en las tres páginas
+# legales y es la vía por la que llegan las solicitudes de reembolso,
+# así que tiene que ser un buzón que realmente reciba.
+#
+# El destino final es soporte@lionsystems.com.mx, pero al 30/07/2026
+# el dominio NO tiene registros MX (solo SOA), o sea que no puede
+# recibir correo todavía y cualquier mensaje a soporte@ rebotaría.
+# Publicar una dirección que rebota es peor que publicar una personal:
+# un reembolso solicitado y nunca recibido es un cargo en disputa.
+#
+# Por eso el interino apunta a un buzón verificado como operativo
+# (live.com.mx resuelve a nam.olc.protection.outlook.com). Cuando se
+# habilite el correo del dominio, cambiar esta única línea a
+# "soporte@lionsystems.com.mx" y reconstruir.
+LEGAL_CONTACT_EMAIL = "dleon555@live.com.mx"
 
 # Fecha de última actualización que se muestra en las tres páginas.
 # Se actualiza a mano cuando cambie el contenido legal, no en cada
