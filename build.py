@@ -1949,6 +1949,56 @@ function duplicateProject(id) {
   return copy;
 }
 
+// Gate de plataforma (issue #7, Opción B -- ver docs/STRATEGY.md): crear un
+// 2do proyecto o más requiere sesión + prueba activa o suscripción (ver
+// checkProFeatureGate() y la sección MURO DE REGISTRO / PRUEBA / FEEDBACK
+// más abajo). El primer proyecto (loadProjects().length === 0) siempre es
+// gratis, sin gate -- solo se gatea a partir del segundo.
+function requestNewProject(onSuccess) {
+  var list = loadProjects() || [];
+  if (list.length === 0) {
+    createProject();
+    if (onSuccess) onSuccess();
+    return;
+  }
+  checkProFeatureGate().then(function(gate) {
+    if (!gate.allowed) {
+      if (gate.reason === 'trial_expired') openFeedbackWall();
+      else openRegisterWall();
+      return;
+    }
+    createProject();
+    if (onSuccess) onSuccess();
+  });
+}
+
+function requestNewProjectFromQuick() {
+  requestNewProject(function() {
+    renderProjQuick(); renderProjectSelector(); syncPanelToProject(); closeProjQuick();
+  });
+}
+
+function requestNewProjectFromModal() {
+  requestNewProject(function() {
+    renderProjectsModal(); renderProjectSelector(); syncPanelToProject();
+  });
+}
+
+// Duplicar SIEMPRE crea un proyecto adicional (por definición ya existe al
+// menos 1, el que se duplica) -- a diferencia de requestNewProject(), no
+// hay excepción de "primer proyecto gratis": siempre pasa por el gate.
+function requestDuplicateProject(id) {
+  checkProFeatureGate().then(function(gate) {
+    if (!gate.allowed) {
+      if (gate.reason === 'trial_expired') openFeedbackWall();
+      else openRegisterWall();
+      return;
+    }
+    duplicateProject(id);
+    renderProjectsModal(); renderProjectSelector(); syncPanelToProject();
+  });
+}
+
 function renameProject(id, name) {
   var list = loadProjects() || [];
   var p = list.find(function(x) { return x.id === id; });
@@ -1996,10 +2046,10 @@ var _sbUser = null;
 // Bug real reportado tras el primer login post-redirect de GitHub: justo al
 // volver del OAuth, getSession() todavía está intercambiando el código por
 // una sesión (viaje de red real, no instantáneo) -- _sbUser sigue en null
-// durante esa ventana, así que checkCopyGate() lo trataba como anónimo y
-// mostraba el muro de registro otra vez aunque el login sí hubiera
-// funcionado. _authStateResolved distingue "aún no sabemos" de "confirmado
-// sin sesión", para que el gate falle abierto (permita copiar) mientras la
+// durante esa ventana, así que checkProFeatureGate() lo trataba como
+// anónimo y mostraba el muro de registro otra vez aunque el login sí
+// hubiera funcionado. _authStateResolved distingue "aún no sabemos" de
+// "confirmado sin sesión", para que el gate falle abierto mientras la
 // primera resolución de getSession() está en curso, en vez de asumir
 // "anónimo" por defecto.
 var _authStateResolved = false;
@@ -2026,9 +2076,10 @@ function initSupabaseAuth() {
     if (_sbUser) { pullCloudProjects(); pullCloudPromptState(); }
   }).catch(function() {
     // Si getSession() llega a rechazar en vez de resolver, _authStateResolved
-    // debe quedar en true de todas formas -- de lo contrario checkCopyGate()
-    // se queda fallando abierto (permitiendo todo) para siempre en esta
-    // sesión en vez de solo durante la ventana breve de carga real.
+    // debe quedar en true de todas formas -- de lo contrario
+    // checkProFeatureGate() se queda fallando abierto (permitiendo todo)
+    // para siempre en esta sesión en vez de solo durante la ventana breve
+    // de carga real.
     _authStateResolved = true;
     renderAuthUI();
   });
@@ -2345,6 +2396,32 @@ function saveCustomAdditions(pid, value) { savePromptTextField(pid, 'customAddit
 // usuario pega aquí después de ejecutar el prompt en su agente.
 function saveAiOutput(pid, value) { savePromptTextField(pid, 'aiOutput', 'ai_output', value); }
 
+// Gate de plataforma (issue #7, Opción B -- ver docs/STRATEGY.md): guardar
+// personalización o resultados de IA con contenido no vacío requiere
+// sesión + prueba activa o suscripción, mismo gate que
+// requestNewProject(). Vaciar un campo ya guardado (borrar todo el texto)
+// siempre se permite sin gate -- no tiene sentido bloquear a alguien que
+// solo quiere borrar lo que ya escribió. `textarea.dataset.proOk` evita
+// repetir el RPC en cada tecla una vez que el gate ya se confirmó abierto
+// para esta instancia del textarea (se reinicia al reabrir el modal).
+function saveGatedPromptField(textarea, saveFn, pid) {
+  var val = textarea.value;
+  if (!val.trim() || textarea.dataset.proOk === '1') {
+    saveFn(pid, val);
+    return;
+  }
+  checkProFeatureGate().then(function(gate) {
+    if (!gate.allowed) {
+      textarea.value = '';
+      if (gate.reason === 'trial_expired') openFeedbackWall();
+      else openRegisterWall();
+      return;
+    }
+    textarea.dataset.proOk = '1';
+    saveFn(pid, textarea.value);
+  });
+}
+
 // #137: si el proyecto activo tiene adiciones personalizadas guardadas
 // para alguno de los prompt_id de esta copia, se anexan al final del
 // texto ya resuelto -- nunca sustituyen ni se mezclan con el cuerpo
@@ -2532,20 +2609,34 @@ function renderGuidedStep(index) {
 }
 
 /* ══════════  MURO DE REGISTRO / PRUEBA / FEEDBACK  ══════════
-   Ver docs/trial-gate-setup.md y supabase/trial_gate.sql. Único punto de
-   verificación: checkCopyGate(), invocado desde copyResolvedText() antes
-   de escribir al portapapeles (doCopy). Anónimo: 10 copias gratis contadas
-   por IP en Supabase (check_anon_usage), acumuladas de por vida. Con sesión:
-   1 semana de prueba (check_trial_status); al vencer, se exige enviar
-   feedback para renovar otra semana (submit_feedback_and_renew). Fail-open
-   ante cualquier error de red o SDK aún no cargado -- nunca se bloquea a un
-   usuario real por una falla transitoria (decisión de diseño, ver
-   docs/trial-gate-setup.md). */
+   Ver docs/trial-gate-setup.md y supabase/trial_gate.sql.
 
-function checkCopyGate() {
+   Rediseño (issue #7, Opción B -- ver docs/STRATEGY.md): el repositorio es
+   público, así que el TEXTO de los prompts no se puede proteger realmente
+   (cualquiera lo lee en GitHub o vía el servidor MCP sin autenticación) --
+   un gate al copiar solo agregaba fricción sin proteger nada. Copiar
+   prompts ahora es SIEMPRE gratis e ilimitado, con o sin sesión (ver
+   copyResolvedText()). Lo que sí es exclusivo de la plataforma web -- y por
+   lo tanto sí monetizable -- es la capa de gestión de proyecto: crear un 2do
+   proyecto o más (checkProFeatureGate(), invocado desde
+   requestNewProject()/requestDuplicateProject()), y guardar
+   personalización/resultados de IA (mismo gate, invocado al escribir el
+   primer carácter en esos campos). El proyecto #1 y el modo guiado/checklist
+   de progreso dentro de él siguen siendo gratis para siempre, sin sesión.
+
+   Anónimo: el límite de "1 proyecto gratis" se calcula del lado del cliente
+   (loadProjects().length) -- a diferencia de las copias, el conteo de
+   proyectos ya vive en localStorage, así que no hace falta rastrear IPs
+   como antes (check_anon_usage()/tabla anon_usage quedan sin uso, ver nota
+   en docs/trial-gate-setup.md; no se borran de la base por si ya hay datos).
+   Con sesión: 1 semana de prueba (check_trial_status); al vencer, se exige
+   enviar feedback para renovar otra semana (submit_feedback_and_renew).
+   Fail-open ante cualquier error de red o SDK aún no cargado -- nunca se
+   bloquea a un usuario real por una falla transitoria (decisión de diseño,
+   ver docs/trial-gate-setup.md). */
+
+function checkProFeatureGate() {
   if (!isSupabaseConfigured()) return Promise.resolve({ allowed: true });
-  var client = getSupabaseClient();
-  if (!client) return Promise.resolve({ allowed: true });
   // Aún no sabemos si hay sesión o no (getSession() sigue resolviendo --
   // p. ej. justo tras volver del redirect de GitHub, intercambiando el
   // código por una sesión real). Tratarlo como "anónimo" por defecto aquí
@@ -2553,15 +2644,17 @@ function checkCopyGate() {
   // con éxito -- se falla abierto hasta confirmar el estado real.
   if (!_authStateResolved) return Promise.resolve({ allowed: true });
 
-  if (_sbUser) {
-    return client.rpc('check_trial_status').then(function(res) {
-      if (!res || res.error || !res.data) return { allowed: true };
-      return res.data.active ? { allowed: true } : { allowed: false, reason: 'trial_expired' };
-    }).catch(function() { return { allowed: true }; });
-  }
-  return client.rpc('check_anon_usage').then(function(res) {
+  // Anónimo: el límite de "1 proyecto gratis" se decide del lado del
+  // cliente por el propio llamador (requestNewProject() ya revisa
+  // loadProjects().length antes de invocar este gate) -- si llegamos aquí
+  // sin sesión es porque el llamador ya determinó que se necesita Pro.
+  if (!_sbUser) return Promise.resolve({ allowed: false, reason: 'anon_project_limit' });
+
+  var client = getSupabaseClient();
+  if (!client) return Promise.resolve({ allowed: true });
+  return client.rpc('check_trial_status').then(function(res) {
     if (!res || res.error || !res.data) return { allowed: true };
-    return res.data.allowed ? { allowed: true } : { allowed: false, reason: 'anon_limit' };
+    return res.data.active ? { allowed: true } : { allowed: false, reason: 'trial_expired' };
   }).catch(function() { return { allowed: true }; });
 }
 
@@ -2944,7 +3037,7 @@ function renderProjectsModal() {
       + '<button class="proj-action-btn" title="Predeterminar / Make Default" aria-label="Predeterminar / Make Default"'
         + ' onclick="setDefaultProject(\\'' + escId(p.id) + '\\');renderProjectsModal();renderProjectSelector();">\u2605</button>'
       + '<button class="proj-action-btn" title="Duplicar / Duplicate" aria-label="Duplicar / Duplicate"'
-        + ' onclick="duplicateProject(\\'' + escId(p.id) + '\\');renderProjectsModal();renderProjectSelector();syncPanelToProject();">\u2398</button>'
+        + ' onclick="requestDuplicateProject(\\'' + escId(p.id) + '\\');">\u2398</button>'
       + '<button class="proj-action-btn" title="Exportar / Export" aria-label="Exportar / Export"'
         + ' onclick="exportProject(\\'' + escId(p.id) + '\\')">\u2b07</button>'
       + delBtn
@@ -2994,7 +3087,7 @@ function renderProjQuick() {
   dd.innerHTML = items
     + '<div class="pq-sep"></div>'
     + '<div class="pq-footer">'
-    + '<button class="pq-new-btn" onclick="createProject();renderProjQuick();renderProjectSelector();syncPanelToProject();closeProjQuick();">' + labelNew + '</button>'
+    + '<button class="pq-new-btn" onclick="requestNewProjectFromQuick();">' + labelNew + '</button>'
     + '<button class="pq-mgr-btn" onclick="openProjectsModal();closeProjQuick();">' + labelMgr + '</button>'
     + '</div>';
 }
@@ -3711,34 +3804,31 @@ function showUnresolvedWarning(result) {
 // confirmación explícita ("Copiar de todas formas") en vez de copiar solo.
 // Los placeholders opcionales sin resolver siguen mostrando el aviso suave
 // existente, sin bloquear.
+// Copiar prompts es SIEMPRE gratis e ilimitado (issue #7, Opción B -- ver
+// docs/STRATEGY.md): el repositorio es público, así que el texto ya es
+// legible por cualquiera sin este gate; gatear la copia solo agregaba
+// fricción sin proteger nada. Antes esta función pasaba por
+// checkCopyGate() antes de copiar -- eliminado. El gate real de la
+// plataforma ahora vive en requestNewProject()/requestDuplicateProject() y
+// en el guardado de personalización/resultados de IA, ver
+// checkProFeatureGate().
 function copyResolvedText(resolved, btn) {
-  // Gate único (ver sección MURO DE REGISTRO / PRUEBA / FEEDBACK más abajo):
-  // se evalúa antes que cualquier otra cosa. Fire-and-forget desde los 3
-  // invocadores (copyPromptLang, copySelected, botón de fórmula del modal
-  // de información) -- ninguno consume el valor de retorno de esta función.
-  checkCopyGate().then(function(gate) {
-    if (!gate.allowed) {
-      if (gate.reason === 'trial_expired') openFeedbackWall();
-      else openRegisterWall();
-      return;
-    }
-    if (resolved.unresolvedRequired && resolved.unresolvedRequired.length) {
-      var lang = getCurrentLanguage();
-      var list = resolved.unresolvedRequired;
-      var msg = lang === 'en'
-        ? list.length + ' required placeholder(s) still unfilled: ' + list.slice(0, 3).join(', ') + (list.length > 3 ? '…' : '')
-        : list.length + ' placeholder(s) obligatorios sin llenar: ' + list.slice(0, 3).join(', ') + (list.length > 3 ? '…' : '');
-      var actionLabel = lang === 'en' ? 'Copy anyway' : 'Copiar de todas formas';
-      showToast(msg, 'warn', actionLabel, function() { trackPromptCopy(resolved.promptIds); markPromptsUsed(resolved.promptIds); doCopy(appendCustomAdditions(resolved), btn); });
-      return;
-    }
-    if (resolved.unresolvedOptional && resolved.unresolvedOptional.length) {
-      showUnresolvedWarning(resolved);
-    }
-    trackPromptCopy(resolved.promptIds);
-    markPromptsUsed(resolved.promptIds);
-    doCopy(appendCustomAdditions(resolved), btn);
-  });
+  if (resolved.unresolvedRequired && resolved.unresolvedRequired.length) {
+    var lang = getCurrentLanguage();
+    var list = resolved.unresolvedRequired;
+    var msg = lang === 'en'
+      ? list.length + ' required placeholder(s) still unfilled: ' + list.slice(0, 3).join(', ') + (list.length > 3 ? '…' : '')
+      : list.length + ' placeholder(s) obligatorios sin llenar: ' + list.slice(0, 3).join(', ') + (list.length > 3 ? '…' : '');
+    var actionLabel = lang === 'en' ? 'Copy anyway' : 'Copiar de todas formas';
+    showToast(msg, 'warn', actionLabel, function() { trackPromptCopy(resolved.promptIds); markPromptsUsed(resolved.promptIds); doCopy(appendCustomAdditions(resolved), btn); });
+    return;
+  }
+  if (resolved.unresolvedOptional && resolved.unresolvedOptional.length) {
+    showUnresolvedWarning(resolved);
+  }
+  trackPromptCopy(resolved.promptIds);
+  markPromptsUsed(resolved.promptIds);
+  doCopy(appendCustomAdditions(resolved), btn);
 }
 
 function showToast(msg, type, actionLabel, actionFn) {
@@ -3928,7 +4018,7 @@ function openInfoLang(pid, lang) {
         ? 'e.g. our team always uses TypeScript strict mode; never touch the billing module without approval…'
         : 'ej. nuestro equipo siempre usa TypeScript strict mode; nunca tocar el módulo de facturación sin aprobación…';
       customTextarea.value = getPromptStateField(pid, 'customAdditions');
-      customTextarea.addEventListener('input', function() { saveCustomAdditions(pid, customTextarea.value); });
+      customTextarea.addEventListener('input', function() { saveGatedPromptField(customTextarea, saveCustomAdditions, pid); });
       customSec.appendChild(customH);
       customSec.appendChild(customNote);
       customSec.appendChild(customTextarea);
@@ -3959,7 +4049,7 @@ function openInfoLang(pid, lang) {
         ? 'Paste the AI response here…'
         : 'Pega aquí la respuesta de la IA…';
       aiTextarea.value = getPromptStateField(pid, 'aiOutput');
-      aiTextarea.addEventListener('input', function() { saveAiOutput(pid, aiTextarea.value); });
+      aiTextarea.addEventListener('input', function() { saveGatedPromptField(aiTextarea, saveAiOutput, pid); });
       aiSec.appendChild(aiH);
       aiSec.appendChild(aiNote);
       aiSec.appendChild(aiTextarea);
@@ -4618,7 +4708,8 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   // Ídem para los muros de registro/feedback -- cerrarlos con clic-fuera o
   // Escape nunca otorga acceso: el gate se re-evalúa en el siguiente intento
-  // de copia (checkCopyGate), así que es seguro permitir descartarlos.
+  // de crear un 2do proyecto o guardar personalización (checkProFeatureGate),
+  // así que es seguro permitir descartarlos.
   var registerWallOverlay = document.getElementById('register-wall-modal');
   if (registerWallOverlay) {
     registerWallOverlay.addEventListener('click', function(e) {
@@ -4771,14 +4862,20 @@ LANDING_HTML = get_landing_html(TOTAL_PROMPTS)
 
 
 def build_precios_page():
-    """Página estática nueva (issue #8): explica el periodo de prueba
-    vigente (10 copias anónimas + 1 semana con registro, renovable por
-    feedback) en vez de comprometerse a precios fijos -- los tiers de pago
-    (Fase 2, issue #7) aún no están definidos, se decidirán con datos reales
-    del piloto (ver diseño 04-01). Autocontenida: no depende del bundle CSS/JS
-    de index.html, reutiliza los mismos tokens de color y el mismo mecanismo
-    de idioma (I18N_KEY en localStorage + fw-lang-es/fw-lang-en) para que la
-    preferencia de idioma del usuario se mantenga entre ambas páginas."""
+    """Página estática (issue #8): explica el periodo de prueba vigente en
+    vez de comprometerse a precios fijos -- los tiers de pago definitivos se
+    decidirán con datos reales del piloto (ver diseño 04-01).
+
+    Rediseño (issue #7, Opción B -- ver docs/STRATEGY.md): el repositorio es
+    público, así que copiar prompts NUNCA se gatea (protegerlo no tendría
+    efecto real). Lo que sí se gatea es la plataforma: crear más de 1
+    proyecto, y guardar personalización/resultados de IA por prompt --
+    capas que solo existen en el sitio, no en el texto de los prompts.
+
+    Autocontenida: no depende del bundle CSS/JS de index.html, reutiliza los
+    mismos tokens de color y el mismo mecanismo de idioma (I18N_KEY en
+    localStorage + fw-lang-es/fw-lang-en) para que la preferencia de idioma
+    del usuario se mantenga entre ambas páginas."""
     paddle_config = paddle_public_config()
     return (
         '<!DOCTYPE html>\n<html lang="es" data-lang="es">\n<head>\n'
@@ -4798,7 +4895,7 @@ def build_precios_page():
         '})();</script>\n'
         '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n'
         '<title>Precios — AI-SDLC Pro / Pricing — AI-SDLC Pro</title>\n'
-        '<meta name="description" content="Periodo de prueba vigente de AI-SDLC Pro: 10 copias gratis, 1 semana con registro, renovable con feedback. Plan de pago introductorio: 1 USD al mes.">\n'
+        '<meta name="description" content="AI-SDLC Pro: copia los 115 prompts gratis siempre. Gestiona más de un proyecto, personaliza prompts y guarda resultados de IA con 1 semana de prueba Pro o el plan introductorio de 1 USD al mes.">\n'
         '<meta name="robots" content="index,follow">\n'
         '<meta name="theme-color" content="#0f172a">\n'
         '<link rel="canonical" href="https://prompts.lionsystems.com.mx/precios.html">\n'
@@ -4853,39 +4950,41 @@ def build_precios_page():
         '    <h2><span class="px-badge fw-lang-es">Gratis</span><span class="px-badge fw-lang-en">Free</span>'
         '<span class="fw-lang-es">&nbsp;Sin registro</span><span class="fw-lang-en">&nbsp;No sign-up</span></h2>\n'
         '    <ul class="fw-lang-es">\n'
-        '      <li>10 copias de prompts, sin necesidad de crear cuenta.</li>\n'
-        '      <li>Al copiar el prompt número 11 se te pide iniciar sesión con GitHub.</li>\n'
+        '      <li>Copia los 115 prompts, sin límite, para siempre — sin necesidad de crear cuenta.</li>\n'
+        '      <li>1 proyecto activo con variables, checklist de progreso y modo guiado completos.</li>\n'
         '    </ul>\n'
         '    <ul class="fw-lang-en">\n'
-        '      <li>10 prompt copies, no account required.</li>\n'
-        '      <li>Copying the 11th prompt asks you to sign in with GitHub.</li>\n'
+        '      <li>Copy all 115 prompts, unlimited, forever — no account required.</li>\n'
+        '      <li>1 active project with full variables, progress checklist, and guided mode.</li>\n'
         '    </ul>\n'
         '  </div>\n'
         '  <div class="px-card">\n'
-        '    <h2><span class="px-badge fw-lang-es">Prueba</span><span class="px-badge fw-lang-en">Trial</span>'
+        '    <h2><span class="px-badge fw-lang-es">Prueba Pro</span><span class="px-badge fw-lang-en">Pro trial</span>'
         '<span class="fw-lang-es">&nbsp;1 semana, renovable</span>'
         '<span class="fw-lang-en">&nbsp;1 week, renewable</span></h2>\n'
         '    <ul class="fw-lang-es">\n'
-        '      <li>Al iniciar sesión con GitHub obtienes 1 semana de acceso ilimitado a la biblioteca completa.</li>\n'
+        '      <li>Al iniciar sesión con GitHub obtienes 1 semana de acceso Pro: proyectos ilimitados, personalización por prompt y guardado de resultados de IA.</li>\n'
         '      <li>Al vencer, una breve retroalimentación (calificación + comentario) renueva otra semana al instante.</li>\n'
         '      <li>Puedes renovar cada semana mientras dure el piloto.</li>\n'
         '    </ul>\n'
         '    <ul class="fw-lang-en">\n'
-        '      <li>Signing in with GitHub grants 1 week of unlimited access to the full library.</li>\n'
+        '      <li>Signing in with GitHub grants 1 week of Pro access: unlimited projects, per-prompt personalization, and AI output storage.</li>\n'
         '      <li>When it expires, brief feedback (rating + comment) renews another week instantly.</li>\n'
         '      <li>You can keep renewing weekly for as long as the pilot runs.</li>\n'
         '    </ul>\n'
         '  </div>\n'
         '  <div class="px-card px-future">\n'
-        '    <h2><span class="px-badge fw-lang-es">Plan de pago</span><span class="px-badge fw-lang-en">Paid plan</span>'
+        '    <h2><span class="px-badge fw-lang-es">Plan Pro</span><span class="px-badge fw-lang-en">Pro plan</span>'
         '<span class="fw-lang-es">&nbsp;$1 USD/mes</span>'
         '<span class="fw-lang-en">&nbsp;$1 USD/month</span></h2>\n'
-        '    <p class="fw-lang-es">Precio introductorio del piloto: <strong>$1 USD al mes</strong>, acceso ilimitado '
-        'sin muro de prueba. Los tiers definitivos (Individual y Equipo) se van a decidir con datos reales de este '
-        'piloto (qué tanto se usa la herramienta y qué prompts importan más), no a ciegas — este precio puede ajustarse.</p>\n'
-        '    <p class="fw-lang-en">Pilot introductory price: <strong>$1 USD per month</strong>, unlimited access with '
-        'no trial wall. The final tiers (Individual and Team) will be decided using real data from this pilot (how '
-        'much the tool gets used and which prompts matter most), not a guess — this price may change.</p>\n'
+        '    <p class="fw-lang-es">Precio introductorio del piloto: <strong>$1 USD al mes</strong>, acceso Pro '
+        'ilimitado (proyectos, personalización, resultados de IA) sin muro de prueba. Copiar prompts es y seguirá '
+        'siendo gratis para todos, con o sin Pro. Los tiers definitivos (Individual y Equipo) se van a decidir con '
+        'datos reales de este piloto, no a ciegas — este precio puede ajustarse.</p>\n'
+        '    <p class="fw-lang-en">Pilot introductory price: <strong>$1 USD per month</strong>, unlimited Pro access '
+        '(projects, personalization, AI output storage) with no trial wall. Copying prompts is and will remain free '
+        'for everyone, Pro or not. The final tiers (Individual and Team) will be decided using real data from this '
+        'pilot, not a guess — this price may change.</p>\n'
         '    <button id="px-subscribe-btn" class="px-cta" style="border:none;cursor:pointer;" onclick="pxStartCheckout()">'
         '<span class="fw-lang-es">Suscribirme</span><span class="fw-lang-en">Subscribe</span></button>\n'
         '    <p id="px-sub-status" class="px-foot" style="margin-top:.75rem;"></p>\n'
@@ -5182,17 +5281,21 @@ def build_terminos_page():
         + _lg_section(
             'Cuenta y acceso', 'Account and access',
             [('ul',
-              ['Puedes copiar hasta 10 prompts sin crear cuenta.',
-               'A partir de ahí se requiere iniciar sesión con GitHub.',
-               'Iniciar sesión otorga una semana de acceso completo, renovable con una breve '
+              ['Copiar prompts es gratis, ilimitado y para siempre, con o sin cuenta.',
+               'Sin cuenta puedes gestionar 1 proyecto activo con variables, progreso y modo guiado completos.',
+               'Gestionar más de un proyecto, o guardar personalización y resultados de IA por prompt, '
+               'requiere iniciar sesión con GitHub.',
+               'Iniciar sesión otorga una semana de acceso Pro completo, renovable con una breve '
                'retroalimentación mientras dure el periodo de piloto.',
-               'La suscripción de pago elimina el muro de prueba.',
+               'La suscripción de pago elimina el muro de prueba para las funciones Pro.',
                'Eres responsable de la actividad de tu cuenta.'],
-              ['You can copy up to 10 prompts without creating an account.',
-               'Beyond that, signing in with GitHub is required.',
-               'Signing in grants one week of full access, renewable with brief feedback for as long as '
+              ['Copying prompts is free, unlimited, and forever, with or without an account.',
+               'Without an account you can manage 1 active project with full variables, progress, and guided mode.',
+               'Managing more than one project, or saving per-prompt personalization and AI outputs, '
+               'requires signing in with GitHub.',
+               'Signing in grants one week of full Pro access, renewable with brief feedback for as long as '
                'the pilot period runs.',
-               'A paid subscription removes the trial wall.',
+               'A paid subscription removes the trial wall for Pro features.',
                'You are responsible for activity on your account.'])]
         )
         + _lg_section(
@@ -6500,7 +6603,7 @@ def build():
         '    </div>\n'
         '    <ul class="proj-list" id="proj-modal-list"></ul>\n'
         '    <button class="proj-add-btn"'
-        ' onclick="createProject();renderProjectsModal();renderProjectSelector();syncPanelToProject();">'
+        ' onclick="requestNewProjectFromModal();">'
         '<span class="fw-lang-es">+ Nuevo proyecto</span><span class="fw-lang-en">+ New project</span></button>\n'
         '    <div class="proj-modal-footer">\n'
         '      <button class="proj-secondary-btn" onclick="exportAllProjects()">'
@@ -6513,19 +6616,19 @@ def build():
         '  </div>\n'
         '</div>\n'
 
-        # ── Muro de registro (10 copias gratis agotadas, anónimo) ──
+        # ── Muro de registro (límite de 1 proyecto gratis alcanzado, anónimo) ──
         '<div class="modal-overlay" id="register-wall-modal" role="dialog" aria-modal="true" aria-labelledby="register-wall-title">\n'
         '  <div class="modal-box">\n'
         '    <div class="modal-hdr">\n'
         '      <h2 id="register-wall-title">'
-        '<span class="fw-lang-es">¡Ya copiaste 10 prompts!</span>'
-        '<span class="fw-lang-en">You’ve copied 10 prompts!</span>'
+        '<span class="fw-lang-es">Gestiona más de un proyecto</span>'
+        '<span class="fw-lang-en">Manage more than one project</span>'
         '</h2>\n'
         '      <button class="modal-close-btn" onclick="closeRegisterWall()" aria-label="Cerrar / Close">&#x2715;</button>\n'
         '    </div>\n'
         '    <div class="modal-body wall-modal-body">\n'
-        '      <p class="fw-lang-es">Regístrate gratis con GitHub para seguir usando la biblioteca completa — 1 semana de acceso sin límite.</p>\n'
-        '      <p class="fw-lang-en">Sign up free with GitHub to keep using the full library — 1 week of unlimited access.</p>\n'
+        '      <p class="fw-lang-es">Copiar los 115 prompts sigue siendo gratis siempre. Regístrate gratis con GitHub para crear más de un proyecto, personalizar prompts y guardar resultados de IA — 1 semana de acceso Pro sin costo.</p>\n'
+        '      <p class="fw-lang-en">Copying all 115 prompts stays free forever. Sign up free with GitHub to create more than one project, personalize prompts, and save AI outputs — 1 week of free Pro access.</p>\n'
         '      <button class="auth-btn" onclick="closeRegisterWall();signInWithGitHub();">'
         '<svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" style="flex-shrink:0">'
         '<path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>'
@@ -6536,19 +6639,19 @@ def build():
         '  </div>\n'
         '</div>\n'
 
-        # ── Muro de feedback (prueba de 1 semana vencida) ──
+        # ── Muro de feedback (prueba Pro de 1 semana vencida) ──
         '<div class="modal-overlay" id="feedback-wall-modal" role="dialog" aria-modal="true" aria-labelledby="feedback-wall-title">\n'
         '  <div class="modal-box">\n'
         '    <div class="modal-hdr">\n'
         '      <h2 id="feedback-wall-title">'
-        '<span class="fw-lang-es">Tu semana de acceso expiró</span>'
-        '<span class="fw-lang-en">Your access week expired</span>'
+        '<span class="fw-lang-es">Tu semana de Pro expiró</span>'
+        '<span class="fw-lang-en">Your Pro week expired</span>'
         '</h2>\n'
         '      <button class="modal-close-btn" onclick="closeFeedbackWall()" aria-label="Cerrar / Close">&#x2715;</button>\n'
         '    </div>\n'
         '    <div class="modal-body wall-modal-body">\n'
-        '      <p class="fw-lang-es">Cuéntanos qué tal te fue — al enviar, renuevas otra semana al instante.</p>\n'
-        '      <p class="fw-lang-en">Tell us how it went — submitting renews another week instantly.</p>\n'
+        '      <p class="fw-lang-es">Copiar prompts sigue funcionando igual. Cuéntanos qué tal te fue con la gestión de proyectos — al enviar, renuevas otra semana de Pro al instante.</p>\n'
+        '      <p class="fw-lang-en">Copying prompts still works the same. Tell us how project management went for you — submitting renews another Pro week instantly.</p>\n'
         '      <div class="fb-stars" id="fb-stars" role="radiogroup" aria-label="Calificación de 1 a 5 / Rating from 1 to 5">\n'
         + ''.join(
             '        <button type="button" class="fb-star" role="radio" aria-checked="false" '

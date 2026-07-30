@@ -8,6 +8,9 @@ Este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+### Changed
+- Rediseño del muro Free/Pro (issue #7, "Opción B"): al confirmar que el repositorio es **público** (el texto de los 115 prompts ya es legible por cualquiera en GitHub o vía el servidor MCP sin autenticación), el gate dejó de aplicarse a la **copia de prompts** — ahora siempre gratis e ilimitada, con o sin sesión — y pasó a aplicarse a la **plataforma**: crear un 2do proyecto (o duplicar uno existente) y guardar personalización (`custom_additions`)/resultados de IA (`ai_output`) con contenido no vacío requieren sesión + prueba Pro activa o suscripción. El primer proyecto (variables, checklist de progreso, modo guiado) sigue siendo gratis para siempre sin cuenta. Sin cambios de esquema en Supabase — reutiliza `check_trial_status()`/`submit_feedback_and_renew()` existentes; `check_anon_usage()`/`anon_usage` quedan sin uso. Actualizados `docs/STRATEGY.md`, `docs/trial-gate-setup.md`, `README.md`, la página `/precios` y la sección legal de `terminos.html` para reflejar el nuevo modelo.
+
 ## [1.10.0] — 2026-07-30
 
 ### Added
