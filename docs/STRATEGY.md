@@ -117,8 +117,8 @@ Ver: [Milestones](https://github.com/dleon55/ai-sdlc-prompts/milestones) · [Iss
 
 | # | Acción | Labels |
 |---|--------|--------|
-| 12 | Outreach directo: 20 CTOs/Tech Leads en LinkedIn, propuesta licencia equipo | `marketing`, `monetization` |
-| 13 | Programa early adopters: primeros 50 Pro a $99 MXN/mes de por vida | `monetization` |
+| 12 | Outreach directo: 20 CTOs/Tech Leads en LinkedIn, propuesta licencia equipo. **Plantillas listas 2026-07-31**: `docs/marketing/outreach-ctos.md` — usa el precio Individual vigente ($1 USD/mes); el tier de equipo se posiciona como "en definición con el piloto" en vez del $799 MXN/mes original del issue (desactualizado, contradice `/precios`). Pendiente: armar la lista real de 20 prospectos (requiere LinkedIn) y enviar. | `marketing`, `monetization` |
+| 13 | Programa early adopters: primeros 50 Pro a $99 MXN/mes de por vida. **Rediseñado 2026-07-31**: `docs/marketing/early-adopters-program.md` — reemplaza el precio original ($99 MXN, desactualizado) por congelar el precio vigente ($1 USD/mes) de por vida para los primeros 50. Copy listo; **el mecanismo técnico de precio congelado por cohorte no está implementado** (requiere decisión sobre Paddle con acceso a esa cuenta) — no anunciar el programa hasta resolver eso. | `monetization` |
 | 14 | Recopilar 3 testimonios de devs para social proof en landing | `marketing`, `ux` |
 
 ---
