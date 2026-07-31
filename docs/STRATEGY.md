@@ -109,9 +109,9 @@ Ver: [Milestones](https://github.com/dleon55/ai-sdlc-prompts/milestones) · [Iss
 
 | # | Acción | Labels |
 |---|--------|--------|
-| 9 | Estrategia LinkedIn: 3 posts/semana — plantillas + casos de uso | `marketing` |
-| 10 | Artículo Dev.to/Hashnode: "Framework para dirigir agentes IA en el SDLC" | `marketing`, `seo` |
-| 11 | ProductHunt launch planeado — semana 8 | `marketing` |
+| 9 | Estrategia LinkedIn: 3 posts/semana — plantillas + casos de uso. **Contenido listo 2026-07-31**: 3 plantillas + 6 posts redactados en `docs/marketing/linkedin-posts.md`. Pendiente: publicación y medición manual. | `marketing` |
+| 10 | Artículo Dev.to/Hashnode: "Framework para dirigir agentes IA en el SDLC". **Artículo listo 2026-07-31**: borrador completo en `docs/marketing/dev-to-article.md`, con capturas reales en `docs/marketing/assets/`. Pendiente: publicación manual. | `marketing`, `seo` |
+| 11 | ProductHunt launch planeado — semana 8. **Copy listo 2026-07-31**: tagline, descripción y comentario de apertura en `docs/marketing/producthunt-launch.md`. Pendiente: GIF demo, hunter y fecha (requieren decisión/grabación humana). | `marketing` |
 
 #### Sprint 4 — Primera factura (Sem 9-12)
 
