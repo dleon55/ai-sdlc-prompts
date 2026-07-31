@@ -8,6 +8,9 @@ Este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+### Added
+- `build_gumroad_pack.py` (issue #9): script que empaqueta el catálogo completo (115 prompts ES+EN + framework de contexto multi-agente) en `dist/ai-sdlc-pro-pack-completo.zip`, listo para subir manualmente a Gumroad — reutiliza el mismo filtro de prompts "reales" que `count_prompts()` en `build.py`. `docs/gumroad-listing.md` documenta el texto de listado (título, precio $499 MXN, descripción) y el checklist de publicación manual; la descripción declara explícitamente que el contenido es el mismo disponible gratis en el sitio (repositorio público, mismo criterio de honestidad ya aplicado al muro Free/Pro de la plataforma en #7) — lo que se vende es la copia offline organizada, no exclusividad de contenido.
+
 ### Changed
 - Rediseño del muro Free/Pro (issue #7, "Opción B"): al confirmar que el repositorio es **público** (el texto de los 115 prompts ya es legible por cualquiera en GitHub o vía el servidor MCP sin autenticación), el gate dejó de aplicarse a la **copia de prompts** — ahora siempre gratis e ilimitada, con o sin sesión — y pasó a aplicarse a la **plataforma**: crear un 2do proyecto (o duplicar uno existente) y guardar personalización (`custom_additions`)/resultados de IA (`ai_output`) con contenido no vacío requieren sesión + prueba Pro activa o suscripción. El primer proyecto (variables, checklist de progreso, modo guiado) sigue siendo gratis para siempre sin cuenta. Sin cambios de esquema en Supabase — reutiliza `check_trial_status()`/`submit_feedback_and_renew()` existentes; `check_anon_usage()`/`anon_usage` quedan sin uso. Actualizados `docs/STRATEGY.md`, `docs/trial-gate-setup.md`, `README.md`, la página `/precios` y la sección legal de `terminos.html` para reflejar el nuevo modelo.
 
