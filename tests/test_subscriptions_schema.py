@@ -108,3 +108,31 @@ def test_paddle_webhook_transaction_is_atomic_and_orders_events():
     assert "last_event_occurred_at" in SCHEMA
     assert "on conflict (event_id) do nothing" in SCHEMA.lower()
     assert "revoke execute on function apply_paddle_subscription_event" in SCHEMA.lower()
+
+
+def test_unlinked_subscription_event_fails_instead_of_being_marked_done():
+    """Un evento subscription.* sin user_id cuya suscripcion no existe
+    localmente NO puede marcarse como procesado.
+
+    Si se marcara, la Edge Function devolveria 200, Paddle dejaria de
+    reintentar, el cliente quedaria sin el acceso que pago, y ni un replay
+    manual lo arreglaria -- todo con el tablero en verde. Como Paddle no
+    garantiza el orden de entrega, un subscription.updated puede llegar
+    antes que el created que si trae el user_id, asi que hay que fallar
+    ruidosamente para forzar el reintento."""
+    lowered = SCHEMA.lower()
+
+    # Se mide cuantas filas toco el UPDATE del camino sin user_id.
+    assert "get diagnostics" in lowered
+    assert "row_count" in lowered
+
+    # 0 filas se desambigua: solo es error si ademas no existe la fila.
+    assert "affected = 0" in lowered
+    assert "not exists" in lowered
+
+    # Y ese caso lanza excepcion, que revierte el insert en
+    # paddle_webhook_events y hace que el webhook responda 500.
+    unlinked = re.search(
+        r"if\s+affected\s*=\s*0.*?raise\s+exception", lowered, re.DOTALL
+    )
+    assert unlinked, "el camino sin fila local debe terminar en raise exception"
