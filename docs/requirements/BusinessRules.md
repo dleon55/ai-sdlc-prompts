@@ -59,11 +59,21 @@ FR-04 (Ciclo Forzado)
 
 | ID | Nombre | Descripción | Severidad |
 |----|--------|-------------|-----------|
-| **MR-01** | Tier Free | 10 prompts básicos (análisis, diseño, implementación) sin costo | 🔴 Crítica |
-| **MR-02** | Tier Pro Individual | $299 MXN/mes — acceso completo 75+ prompts, 00-B, 00-C, variables avanzadas | 🔴 Crítica |
-| **MR-03** | Tier Pro Equipo | $799 MXN/mes — hasta 5 devs, proyectos compartidos, sync básico | 🟡 Alta |
-| **MR-04** | Pack Único Gumroad | $499 MXN — compra única, versión del día, sin suscripción | 🟢 Media |
-| **MR-05** | Enterprise | $5,000-15,000 MXN/mes — SSO, prompts privados, soporte prioritario | 🟢 Media |
+| **MR-01** | Tier Free | Los 115 prompts completos, copia ilimitada, sin cuenta y para siempre. 1 proyecto activo. El muro gatea la **plataforma**, no el texto (issue #7) | 🔴 Crítica |
+| **MR-02** | Tier Pro Individual | $1 USD/mes (introductorio) — quita el muro de prueba: proyectos ilimitados, personalización por prompt, guardado de resultados de IA | 🔴 Crítica |
+| **MR-03** | Tier Pro Equipo | Por definir con datos del piloto — no construir antes de validar demanda | 🟡 Alta |
+| **MR-04** | Pack Único Gumroad | Canal de **descubrimiento**, no de ingreso: "pay what you want", sugerido $5 USD, mínimo $0. Ver nota abajo | 🟢 Media |
+| **MR-05** | Enterprise | Por definir con datos del piloto | 🟢 Media |
+
+> **Nota sobre MR-04 (revisado 2026-07-31).** El precio original era $499 MXN,
+> calibrado cuando MR-02 costaba $299 MXN/mes: el pack equivalía a ~1.7 meses de
+> suscripción. Al bajar MR-02 a $1 USD/mes, ese mismo pack pasó a equivaler a ~27
+> meses, y quedó vendiendo por ~$27 USD un contenido que MR-01 ahora regala para
+> siempre. La corrección no es solo de precio: tras el issue #7 el texto dejó de
+> ser el producto, así que el pack no puede ser un canal de ingreso sin competir
+> con el tier Free. Se reposiciona como canal de adquisición — Gumroad tiene
+> tráfico propio que no llega al sitio — con el `LEEME.md` del pack apuntando a
+> MR-02 como destino de conversión.
 
 ### 2.2 Reglas de Gate de Conversión
 

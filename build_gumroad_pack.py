@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """
 build_gumroad_pack.py -- Empaqueta el catálogo completo de prompts en un
-.zip listo para subir a Gumroad (issue #9, "Pack completo único", $499 MXN,
+.zip listo para subir a Gumroad (issue #9, "Pack completo unico" -- canal de
+adquisicion, "pay what you want" sugerido $5 USD; el precio fijo de $499 MXN
+quedo obsoleto al bajar la suscripcion a $1 USD/mes,
 ver docs/STRATEGY.md "Canal alternativo -- Producto digital").
 
 No publica nada por su cuenta -- Gumroad no tiene API pública de creación de
@@ -60,6 +62,22 @@ o simplemente apoyar el proyecto. La app web sigue siendo la forma
 recomendada de usarlos día a día: resuelve las 19 variables por proyecto
 automáticamente y siempre tiene la versión más reciente.
 
+## Si te sirvió, esto es lo que sigue
+
+Los {prompt_count} prompts son gratis para siempre, aquí y en la web: no hay
+muro que desbloquear para leerlos ni para copiarlos.
+
+Lo que sí cuesta es la **plataforma**, por **$1 USD al mes**:
+
+- Resuelve las 19 variables de tu proyecto automáticamente en cada prompt,
+  en vez de reemplazar placeholders a mano.
+- Proyectos ilimitados, cada uno con su propio contexto y checklist de avance.
+- Guarda los resultados que te devuelve la IA, ligados al prompt que los generó.
+- Modo guiado: te dice cuál es el siguiente prompt según dónde vas.
+
+Se cancela cuando quieras y hay 14 días de reembolso sin preguntas:
+{"https://prompts.lionsystems.com.mx/precios.html"}
+
 ## Estructura
 
 - `es/` — los {prompt_count} prompts en español, un archivo `.md` por prompt.
@@ -86,7 +104,7 @@ gratuita en {"https://prompts.lionsystems.com.mx"}.
 
 Copyright (c) 2026 LionSystems. Este pack es para uso individual de quien lo
 adquirió -- no redistribuir, revender ni republicar el contenido. Consultas
-de licenciamiento: contacto@lionsystems.com.mx
+de licenciamiento: dleon555@live.com.mx
 """
     return f"""# AI-SDLC Pro — Complete Prompt Pack
 
@@ -102,6 +120,22 @@ catalog to work without a connection, wire it into your own tooling, or
 simply support the project. The web app remains the recommended way to use
 these day to day: it resolves the 19 per-project variables automatically and
 always has the latest version.
+
+## If this was useful, here's what's next
+
+The {prompt_count} prompts are free forever, here and on the web: there is no
+wall to unlock in order to read or copy them.
+
+What does cost money is the **platform**, at **$1 USD per month**:
+
+- Resolves your project's 19 variables automatically in every prompt, instead
+  of replacing placeholders by hand.
+- Unlimited projects, each with its own context and progress checklist.
+- Saves the output your AI returns, linked to the prompt that produced it.
+- Guided mode: tells you which prompt comes next based on where you are.
+
+Cancel anytime, with a 14-day no-questions refund:
+{"https://prompts.lionsystems.com.mx/precios.html"}
 
 ## Structure
 
@@ -129,7 +163,7 @@ manual replacement, the app is still free at
 
 Copyright (c) 2026 LionSystems. This pack is for the individual use of the
 person who acquired it -- do not redistribute, resell, or republish the
-content. Licensing inquiries: contacto@lionsystems.com.mx
+content. Licensing inquiries: dleon555@live.com.mx
 """
 
 
