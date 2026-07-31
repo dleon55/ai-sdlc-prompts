@@ -520,60 +520,19 @@ def test_new_project_id_is_a_valid_uuid_for_cloud_sync(app_page):
 
 # ─────────────────────  Muro de registro / prueba / feedback  ─────────────────────
 # Ver diseño 04-01, plan 05-01 y docs/trial-gate-setup.md.
+#
+# Rediseño (issue #7, Opción B): el repositorio es público, así que copiar
+# prompts ya NO pasa por ningún gate (protegerlo no tendría efecto real).
+# El muro ahora protege la PLATAFORMA: crear un 2do proyecto o más, y
+# guardar personalización/resultados de IA -- ver checkProFeatureGate() y
+# docs/trial-gate-setup.md.
 
-def test_copy_gate_fails_open_while_auth_state_is_still_resolving(app_page):
-    """Regresión de un bug real reportado en producción: justo tras volver
-    del redirect de GitHub, getSession() todavía está intercambiando el
-    código por una sesión (viaje de red real) -- _sbUser sigue en null
-    durante esa ventana. Antes de este fix, checkCopyGate() trataba eso
-    como "anónimo" y volvía a mostrar el muro de registro aunque el login
-    ya hubiera funcionado. Con _authStateResolved en false (simulando esa
-    ventana exacta), la copia debe permitirse (fail-open), no bloquearse."""
-    app_page.evaluate(
-        """
-        window._authStateResolved = false;
-        window._sbUser = null;
-        window.supabase.createClient = function() {
-            return {
-                auth: {
-                    getSession: function() { return new Promise(function() {}); },
-                    onAuthStateChange: function() {},
-                    signInWithOAuth: function() {},
-                    signOut: function() {}
-                },
-                rpc: function(name) {
-                    if (name === 'check_anon_usage') {
-                        return Promise.resolve({ data: { allowed: false, remaining: 0 }, error: null });
-                    }
-                    return Promise.resolve({ data: null, error: null });
-                }
-            };
-        };
-        window._sb = null;
-        """
-    )
-    pid = "00-B-01-scaffolding-repositorio"
-    clip = _copy_and_read_clipboard(app_page, pid, "es")
-
-    is_open = app_page.evaluate(
-        "(document.getElementById('register-wall-modal') || {}).classList"
-        ".contains('open')"
-    )
-    assert not is_open, (
-        "El muro de registro no debería aparecer mientras el estado de "
-        "auth sigue resolviéndose (fail-open) -- ver checkCopyGate()"
-    )
-    # No se compara contra el pid literal -- el slug del prompt no
-    # necesariamente aparece tal cual en su propio texto copiado. Un
-    # portapapeles no vacío y razonablemente largo (framework + cuerpo del
-    # prompt) confirma que la copia sí se completó en vez de quedar bloqueada.
-    assert len(clip) > 200, f"La copia debería haberse completado (fail-open), portapapeles: {clip!r}"
-
-
-def test_register_wall_appears_when_anon_copy_limit_is_reached(app_page):
-    """Con check_anon_usage() stubeado devolviendo 'allowed: false' (simula
-    que ya se agotaron las 2 copias gratis por IP), el siguiente intento de
-    copia debe abrir el muro de registro en vez de copiar al portapapeles."""
+def test_copying_prompts_is_never_gated_regardless_of_trial_state(app_page):
+    """Copiar cualquier prompt debe funcionar siempre, incluso simulando el
+    estado más restrictivo posible (anónimo, con check_anon_usage()
+    devolviendo 'allowed: false', que en el diseño anterior habría
+    bloqueado la copia). Confirma que copyResolvedText() ya no llama a
+    ningún gate."""
     app_page.evaluate(
         """
         window.supabase.createClient = function() {
@@ -588,6 +547,9 @@ def test_register_wall_appears_when_anon_copy_limit_is_reached(app_page):
                     if (name === 'check_anon_usage') {
                         return Promise.resolve({ data: { allowed: false, remaining: 0 }, error: null });
                     }
+                    if (name === 'check_trial_status') {
+                        return Promise.resolve({ data: { active: false, expires_at: '2020-01-01' }, error: null });
+                    }
                     return Promise.resolve({ data: null, error: null });
                 }
             };
@@ -597,26 +559,102 @@ def test_register_wall_appears_when_anon_copy_limit_is_reached(app_page):
         """
     )
     pid = "00-B-01-scaffolding-repositorio"
-    app_page.click(f'.copy-btn[onclick*="{pid}\', \'es\'"]')
+    clip = _copy_and_read_clipboard(app_page, pid, "es")
+
+    is_open = app_page.evaluate(
+        "(document.getElementById('register-wall-modal') || {}).classList"
+        ".contains('open')"
+    )
+    assert not is_open, "Copiar un prompt no debe abrir ningún muro -- ya no hay gate de copia"
+    assert len(clip) > 200, f"La copia debería completarse siempre, portapapeles: {clip!r}"
+
+
+def test_pro_feature_gate_fails_open_while_auth_state_is_still_resolving(app_page):
+    """Regresión de un bug real reportado en producción: justo tras volver
+    del redirect de GitHub, getSession() todavía está intercambiando el
+    código por una sesión (viaje de red real) -- _sbUser sigue en null
+    durante esa ventana. Antes de este fix, el gate trataba eso como
+    "anónimo" y volvía a mostrar el muro de registro aunque el login ya
+    hubiera funcionado. Con _authStateResolved en false (simulando esa
+    ventana exacta), crear un 2do proyecto debe permitirse (fail-open)."""
+    app_page.evaluate(
+        """
+        window._authStateResolved = false;
+        window._sbUser = null;
+        window.supabase.createClient = function() {
+            return {
+                auth: {
+                    getSession: function() { return new Promise(function() {}); },
+                    onAuthStateChange: function() {},
+                    signInWithOAuth: function() {},
+                    signOut: function() {}
+                },
+                rpc: function() { return Promise.resolve({ data: null, error: null }); }
+            };
+        };
+        window._sb = null;
+        """
+    )
+    before = app_page.evaluate("(loadProjects() || []).length")
+    app_page.evaluate("requestNewProjectFromModal()")
     app_page.wait_for_timeout(300)
 
     is_open = app_page.evaluate(
         "(document.getElementById('register-wall-modal') || {}).classList"
         ".contains('open')"
     )
-    assert is_open, "El muro de registro no apareció con el límite anónimo agotado"
-
-    clip = app_page.evaluate("navigator.clipboard.readText()")
-    assert pid not in clip or clip == "", (
-        "El copiado no debería haberse completado con el límite agotado"
+    assert not is_open, (
+        "El muro de registro no debería aparecer mientras el estado de "
+        "auth sigue resolviéndose (fail-open) -- ver checkProFeatureGate()"
     )
+    after = app_page.evaluate("(loadProjects() || []).length")
+    assert after == before + 1, "El 2do proyecto debería haberse creado (fail-open)"
 
 
-def test_feedback_wall_blocks_copy_until_submitted_then_renews(app_page):
+def test_register_wall_appears_when_creating_second_project_anonymously(app_page):
+    """Sin sesión, intentar crear un 2do proyecto (el 1ro ya existe por
+    defecto) debe abrir el muro de registro en vez de crearlo -- el límite
+    de "1 proyecto gratis" se decide del lado del cliente
+    (loadProjects().length), sin necesitar ningún RPC."""
+    app_page.evaluate(
+        """
+        window.supabase.createClient = function() {
+            return {
+                auth: {
+                    getSession: function() { return Promise.resolve({ data: { session: null } }); },
+                    onAuthStateChange: function() {},
+                    signInWithOAuth: function() {},
+                    signOut: function() {}
+                },
+                rpc: function() { return Promise.resolve({ data: null, error: null }); }
+            };
+        };
+        window._sb = null;
+        window._sbUser = null;
+        """
+    )
+    before = app_page.evaluate("(loadProjects() || []).length")
+    assert before == 1, f"El fixture debería arrancar con exactamente 1 proyecto, tiene {before}"
+
+    app_page.evaluate("requestNewProjectFromModal()")
+    app_page.wait_for_timeout(300)
+
+    is_open = app_page.evaluate(
+        "(document.getElementById('register-wall-modal') || {}).classList"
+        ".contains('open')"
+    )
+    assert is_open, "El muro de registro no apareció al intentar crear un 2do proyecto anónimo"
+
+    after = app_page.evaluate("(loadProjects() || []).length")
+    assert after == before, "No debería haberse creado un 2do proyecto con el muro de registro abierto"
+
+
+def test_feedback_wall_blocks_second_project_until_submitted_then_renews(app_page):
     """Con sesión simulada y check_trial_status() devolviendo 'active: false'
-    (prueba vencida), el intento de copia debe abrir el muro de feedback en
-    vez de copiar. Al enviarlo (submit_feedback_and_renew stubeado con
-    éxito), el modal se cierra y confirma la renovación."""
+    (prueba vencida), el intento de crear un 2do proyecto debe abrir el
+    muro de feedback en vez de crearlo. Al enviarlo
+    (submit_feedback_and_renew stubeado con éxito), el modal se cierra y
+    crear el 2do proyecto vuelve a funcionar de inmediato."""
     app_page.evaluate(
         """
         window._sbUser = { id: 'fake-user-id', email: 'test@example.com' };
@@ -643,8 +681,8 @@ def test_feedback_wall_blocks_copy_until_submitted_then_renews(app_page):
         window._sb = null;
         """
     )
-    pid = "00-B-01-scaffolding-repositorio"
-    app_page.click(f'.copy-btn[onclick*="{pid}\', \'es\'"]')
+    before = app_page.evaluate("(loadProjects() || []).length")
+    app_page.evaluate("requestNewProjectFromModal()")
     app_page.wait_for_timeout(300)
 
     is_open = app_page.evaluate(
@@ -652,6 +690,8 @@ def test_feedback_wall_blocks_copy_until_submitted_then_renews(app_page):
         ".contains('open')"
     )
     assert is_open, "El muro de feedback no apareció con la prueba vencida"
+    mid = app_page.evaluate("(loadProjects() || []).length")
+    assert mid == before, "No debería haberse creado el 2do proyecto antes de enviar el feedback"
 
     app_page.click('#fb-stars .fb-star[data-value="4"]')
     app_page.fill("#fb-comments", "Muy útil, gracias.")
@@ -666,3 +706,44 @@ def test_feedback_wall_blocks_copy_until_submitted_then_renews(app_page):
         ".contains('open')"
     )
     assert not still_open, "El muro de feedback debería cerrarse tras enviar exitosamente"
+
+    # Tras renovar, check_trial_status ya no se vuelve a llamar en este stub
+    # (queda fijo en active:false) -- lo relevante es que el modal se cerró
+    # y el usuario puede reintentar sin quedar atascado.
+
+
+def test_saving_custom_additions_is_gated_for_anonymous_users(app_page):
+    """Escribir el primer carácter en 'Adiciones personalizadas' (modal ⓘ)
+    sin sesión debe abrir el muro de registro y vaciar el campo -- guardar
+    personalización es una función Pro, no cubierta por el proyecto #1
+    gratis. Ver saveGatedPromptField()."""
+    app_page.evaluate(
+        """
+        window.supabase.createClient = function() {
+            return {
+                auth: {
+                    getSession: function() { return Promise.resolve({ data: { session: null } }); },
+                    onAuthStateChange: function() {},
+                    signInWithOAuth: function() {},
+                    signOut: function() {}
+                },
+                rpc: function() { return Promise.resolve({ data: null, error: null }); }
+            };
+        };
+        window._sb = null;
+        window._sbUser = null;
+        """
+    )
+    pid = "00-B-01-scaffolding-repositorio"
+    app_page.click(f'.info-btn[onclick*="{pid}\', \'es\'"]')
+    app_page.wait_for_timeout(150)
+    custom_field = app_page.locator("#modal-custom-section textarea")
+    custom_field.fill("Nuestro equipo siempre usa TypeScript strict mode")
+    app_page.wait_for_timeout(300)
+
+    is_open = app_page.evaluate(
+        "(document.getElementById('register-wall-modal') || {}).classList"
+        ".contains('open')"
+    )
+    assert is_open, "El muro de registro no apareció al escribir personalización sin sesión"
+    assert custom_field.input_value() == "", "El campo debería vaciarse al bloquear el guardado"

@@ -1,6 +1,6 @@
 # Estrategia de Producto y Monetización — AI-SDLC Pro
 
-> Documento vivo. Última actualización: 2026-04-11.  
+> Documento vivo. Última actualización: 2026-07-30.  
 > Propietario: LionSystems — dleon55
 
 ---
@@ -46,14 +46,22 @@ Un dev o equipo que usa AI-SDLC Pro obtiene outputs consistentes, trazables y de
 
 ## Modelo de monetización
 
-### Tiers del producto
+> **Actualizado 2026-07-30** — el modelo original de esta sección (4 tiers
+> con paywall sobre los prompts) se reemplazó al confirmar que el
+> repositorio es **público**: el texto de los 115 prompts ya es legible por
+> cualquiera en GitHub o vía el servidor MCP sin autenticación, así que
+> gatear el CONTENIDO no protege nada real. La decisión (issue #7, "Opción
+> B") fue monetizar la **plataforma**, no el texto — ver "Decisiones
+> registradas" al final de este documento.
+
+### Tiers del producto (vigente)
 
 | Tier | Precio | Contenido | Target |
 |------|--------|-----------|--------|
-| **Free** | $0 | 10 prompts del ciclo básico (análisis, diseño, implementación) | Adquisición |
-| **Pro Individual** | $299 MXN/mes | Todos los prompts (75+) + 00-B + 00-C + variables avanzadas + actualizaciones mensuales | Dev individual |
-| **Pro Equipo** | $799 MXN/mes | Todo Pro + hasta 5 devs + proyectos compartidos | Equipos pequeños |
-| **Enterprise** | $5,000-15,000 MXN/mes | Todo Equipo + SSO + prompts privados cliente + soporte prioritario | Agencias / empresas |
+| **Free** | $0 | Los 115 prompts, copia ilimitada y para siempre, sin cuenta. 1 proyecto activo (variables, checklist de progreso, modo guiado). | Adquisición — todo el catálogo |
+| **Pro (prueba 1 semana)** | $0, con GitHub | Todo Free + proyectos ilimitados + personalización por prompt + guardado de resultados de IA. Renovable semanalmente con feedback mientras dure el piloto. | Conversión a cuenta |
+| **Pro (suscripción)** | $1 USD/mes (introductorio) | Todo Pro sin muro de prueba ni renovación por feedback. | Individual, sin límite de tiempo |
+| **Pro Equipo / Enterprise** | Por definir con datos del piloto | Todo Pro + funciones de equipo (a definir: miembros, proyectos compartidos, SSO) | Equipos y agencias — pendiente de validar demanda antes de construir |
 
 ### Canal alternativo — Producto digital
 
@@ -93,7 +101,7 @@ Ver: [Milestones](https://github.com/dleon55/ai-sdlc-prompts/milestones) · [Iss
 
 | # | Acción | Labels |
 |---|--------|--------|
-| 6 | Definir prompts Free vs Pro — gate de conversión en sidebar | `monetization`, `ux` |
+| 6 | ~~Definir prompts Free vs Pro — gate de conversión en sidebar~~ **Completado 2026-07-30, rediseñado**: dado que el repo es público, el gate no se aplicó a los prompts (no protege nada) sino a la plataforma — 1 proyecto gratis vs. proyectos ilimitados + personalización + resultados de IA en Pro. Ver issue #7 y `docs/trial-gate-setup.md`. | `monetization`, `ux` |
 | 7 | Crear página de precios /precios con 3 tiers | `monetization`, `ux` |
 | 8 | Publicar pack completo en Gumroad ($499 MXN) — validación de demanda | `monetization` |
 
@@ -198,6 +206,7 @@ Ver: [Milestones](https://github.com/dleon55/ai-sdlc-prompts/milestones) · [Iss
 | 2026-04-11 | Gumroad como canal de validación rápida antes de implementar paywall | Bajo esfuerzo, valida disposición a pagar en 24 hrs |
 | 2026-04-11 | Mantener sitio self-contained (sin backend en corto plazo) | Minimizar complejidad operativa en fase de validación |
 | 2026-04-11 | Priorizar distribución orgánica antes de paid advertising | CAC desconocido, construir audiencia antes de escalar |
+| 2026-07-30 | Gate Free/Pro sobre la PLATAFORMA (proyectos múltiples, personalización, resultados de IA), no sobre el TEXTO de los prompts ("Opción B", issue #7) | El repositorio es público — el texto ya es legible por cualquiera en GitHub o vía el servidor MCP sin autenticación; gatear la copia solo agregaba fricción sin proteger contenido real. La plataforma (gestión de proyecto) sí es exclusiva del sitio y monetizable de forma honesta. |
 
 ---
 
