@@ -13,10 +13,19 @@
 | Campo | Valor |
 |-------|-------|
 | Nombre | AI-SDLC Pro — Pack completo de prompts |
-| Precio | $499 MXN (pago único, sin suscripción) |
+| Precio | **"Pay what you want"**, sugerido $5 USD, mínimo $0 (ver nota) |
 | Categoría | Software Development / Productivity |
 | Tags sugeridos | `ai`, `prompts`, `chatgpt`, `github-copilot`, `claude`, `software-development`, `sdlc`, `productivity` |
 | Archivo a subir | `dist/ai-sdlc-pro-pack-completo.zip` (115 prompts × ES/EN + framework de contexto) |
+
+> **Nota sobre el precio (revisado 2026-07-31).** Era $499 MXN fijo, calibrado
+> cuando la suscripción costaba $299 MXN/mes. Con la suscripción en $1 USD/mes
+> ese precio equivalía a ~27 meses de plataforma a cambio de una copia del
+> catálogo que el tier Free ya regala para siempre (issue #7). Este canal se
+> reposiciona como **adquisición, no ingreso**: Gumroad aporta tráfico propio, y
+> el `LEEME.md` del pack dirige a la suscripción. De ahí el "pay what you want"
+> con mínimo $0 — cobrar por lo que se regala en el sitio sería incoherente.
+> Ver MR-04 en `docs/requirements/BusinessRules.md`.
 
 ## Descripción corta (subtítulo / preview)
 

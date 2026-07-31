@@ -65,8 +65,21 @@ Un dev o equipo que usa AI-SDLC Pro obtiene outputs consistentes, trazables y de
 
 ### Canal alternativo — Producto digital
 
-- **Pack completo único** (Gumroad/Lemon Squeezy): $499 MXN — sin suscripción, versión del día
-- **Packs por industria**: FinTech, eCommerce, SaaS B2B — $199 MXN c/u
+Tras el issue #7 (el muro gatea la plataforma, no el texto) este canal dejó de ser
+una vía de ingreso y pasó a ser **de adquisición**: Gumroad tiene catálogo y tráfico
+propios que nunca llegarían al sitio, y el pack funciona como folleto que termina en
+la suscripción.
+
+- **Pack completo único** (Gumroad): **"pay what you want"**, sugerido $5 USD, mínimo $0
+  — versión del día del catálogo que ya es gratuito. No es contenido exclusivo; su
+  `LEEME.md` apunta a la suscripción de $1 USD/mes como destino de conversión.
+- **Packs por industria**: FinTech, eCommerce, SaaS B2B — pospuestos hasta validar
+  que este canal traiga tráfico real.
+
+> El precio anterior ($499 MXN fijo) se fijó cuando la suscripción costaba $299
+> MXN/mes: el pack equivalía a ~1.7 meses. Con la suscripción en $1 USD/mes ese
+> mismo precio equivalía a ~27 meses de plataforma por una copia de lo que ya se
+> regala. Ver la nota de MR-04 en `docs/requirements/BusinessRules.md`.
 
 ### Proyección de ingresos
 
@@ -103,7 +116,7 @@ Ver: [Milestones](https://github.com/dleon55/ai-sdlc-prompts/milestones) · [Iss
 |---|--------|--------|
 | 6 | ~~Definir prompts Free vs Pro — gate de conversión en sidebar~~ **Completado 2026-07-30, rediseñado**: dado que el repo es público, el gate no se aplicó a los prompts (no protege nada) sino a la plataforma — 1 proyecto gratis vs. proyectos ilimitados + personalización + resultados de IA en Pro. Ver issue #7 y `docs/trial-gate-setup.md`. | `monetization`, `ux` |
 | 7 | Crear página de precios /precios con 3 tiers | `monetization`, `ux` |
-| 8 | Publicar pack completo en Gumroad ($499 MXN) — validación de demanda | `monetization` |
+| 8 | Publicar pack completo en Gumroad ("pay what you want", sugerido $5 USD) — canal de adquisición. Bloqueado hasta validar el cobro real en Paddle | `monetization` |
 
 #### Sprint 3 — Distribución (Sem 5-8)
 
