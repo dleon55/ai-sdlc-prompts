@@ -27,14 +27,14 @@
 **EN:** `Structured software-engineering prompts for any AI agent`
 
 Alternativas:
-- `115 prompts para dirigir Copilot y Claude como un ingeniero senior`
+- `112 prompts para dirigir Copilot y Claude como un ingeniero senior`
 - `The prompt library that runs your AI agent through the full SDLC`
 
 ## Descripción (para el listing, ~250-300 caracteres funciona bien en PH)
 
 **ES:**
 ```
-AI-SDLC Pro es una biblioteca de 115 prompts estructurados (español + inglés)
+AI-SDLC Pro es una biblioteca de 112 prompts estructurados (español + inglés)
 que dirige agentes IA — Copilot, Claude, Cursor, Windsurf, Codex — a través
 de todo el ciclo de ingeniería de software: requerimientos, diseño, código,
 pruebas, revisión, operaciones. Cada prompt declara su nivel de riesgo y
@@ -43,7 +43,7 @@ autonomía permitida. Gratis, sin cuenta, copia y pega.
 
 **EN:**
 ```
-AI-SDLC Pro is a library of 115 structured prompts (Spanish + English) that
+AI-SDLC Pro is a library of 112 structured prompts (Spanish + English) that
 steer AI agents — Copilot, Claude, Cursor, Windsurf, Codex — through the
 full software engineering lifecycle: requirements, design, code, testing,
 review, operations. Every prompt declares its risk level and allowed
@@ -62,7 +62,7 @@ equipo lo hacía distinto, con resultados distintos.
 
 Lo que hace diferente a esta biblioteca:
 
-→ 115 prompts organizados por las 18 etapas reales del SDLC, no prompts
+→ 112 prompts organizados por las 18 etapas reales del SDLC, no prompts
   sueltos sin estructura
 → Cada prompt declara su nivel de riesgo y cuánta autonomía puede tener el
   agente (¿solo puede opinar? ¿puede ejecutar cambios?)
@@ -93,7 +93,7 @@ it differently, with different results.
 
 What makes this different:
 
-→ 115 prompts organized by the 18 real stages of the SDLC, not loose
+→ 112 prompts organized by the 18 real stages of the SDLC, not loose
   prompts with no structure
 → Every prompt declares its risk level and how much autonomy the agent
   gets (can it only suggest? can it execute changes?)

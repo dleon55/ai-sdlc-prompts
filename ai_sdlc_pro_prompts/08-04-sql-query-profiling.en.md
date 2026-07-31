@@ -20,7 +20,7 @@ Specialized prompt to act as a Database Administrator (DBA). It analyzes the out
 | Stop criteria | if the schema or execution plan lacks real table volumetry or up-to-date statistics, present the diagnosis as preliminary and do not guarantee the estimated impact |
 | Expected output | see `## Expected output` |
 | Minimum evidence | the diagnosis must cite the specific execution plan node (or the exact N+1 query) responsible for the bottleneck |
-| Recommended next prompt | `08-01-revision-estatica` to validate the optimized query and index DDL before applying them |
+| Recommended next prompt | `08-01-revision-completa-pr` to validate the optimized query and index DDL before applying them |
 
 ---
 

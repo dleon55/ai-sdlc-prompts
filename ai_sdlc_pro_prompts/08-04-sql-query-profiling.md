@@ -20,7 +20,7 @@ Prompt especializado para actuar como Database Administrator (DBA). Analiza el o
 | Criterios de detención | si el esquema o el plan de ejecución no incluye volumetría real ni estadísticas actualizadas de las tablas, presentar el diagnóstico como preliminar y no garantizar el impacto estimado |
 | Salida esperada | ver `## Salida esperada` |
 | Evidencia mínima | el diagnóstico debe citar el nodo específico del plan de ejecución (o la consulta N+1 exacta) responsable del cuello de botella |
-| Siguiente prompt recomendado | `08-01-revision-estatica` para validar la query optimizada y el DDL de índices antes de aplicarlos |
+| Siguiente prompt recomendado | `08-01-revision-completa-pr` para validar la query optimizada y el DDL de índices antes de aplicarlos |
 
 ---
 

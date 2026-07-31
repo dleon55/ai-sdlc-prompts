@@ -2,7 +2,7 @@
 
 ## Descripción
 
-Prompt para mantener una **matriz de trazabilidad agregada y viva** de todos los requerimientos de un proyecto: qué necesidad de negocio dio origen a cada requerimiento, y si ya tiene diseño, implementación y prueba vinculados. Complementa `08-02-cumplimiento-requerimiento`, que valida el cumplimiento de **un** issue puntual, no una vista agregada de todo el proyecto.
+Prompt para mantener una **matriz de trazabilidad agregada y viva** de todos los requerimientos de un proyecto: qué necesidad de negocio dio origen a cada requerimiento, y si ya tiene diseño, implementación y prueba vinculados. Complementa `08-01-revision-completa-pr` (dimensión de cumplimiento), que valida el cumplimiento de **un** issue puntual, no una vista agregada de todo el proyecto.
 
 **Cuándo usarlo:** periódicamente durante la ejecución de un proyecto con múltiples requerimientos ya analizados (`02-05`), para detectar requerimientos huérfanos (sin diseño, código o prueba) o código sin requerimiento formal que lo respalde, antes de que el proyecto se dé por cerrado.
 
@@ -20,7 +20,7 @@ Prompt para mantener una **matriz de trazabilidad agregada y viva** de todos los
 | Criterios de detención | si un requerimiento no puede vincularse a ninguna evidencia de diseño, código o prueba, no lo marques como "cubierto" — repórtalo explícitamente como huérfano |
 | Salida esperada | ver `## Salida esperada` |
 | Evidencia mínima | cada requerimiento del proyecto aparece exactamente una vez en la matriz con su estado de cobertura citado en cada etapa (requerimiento → diseño → implementación → prueba) |
-| Siguiente prompt recomendado | `08-02-cumplimiento-requerimiento` para profundizar en un requerimiento específico marcado como incompleto o huérfano |
+| Siguiente prompt recomendado | `08-01-revision-completa-pr` para profundizar en un requerimiento específico marcado como incompleto o huérfano, dentro de su dimensión de cumplimiento |
 
 ---
 

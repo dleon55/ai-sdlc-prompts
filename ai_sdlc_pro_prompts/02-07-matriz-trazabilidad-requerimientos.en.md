@@ -2,7 +2,7 @@
 
 ## Description
 
-Prompt to maintain a **living, aggregated traceability matrix** for all of a project's requirements: which business need originated each requirement, and whether it already has linked design, implementation, and test evidence. Complements `08-02-cumplimiento-requerimiento`, which validates compliance for **one** specific issue, not an aggregated view of the whole project.
+Prompt to maintain a **living, aggregated traceability matrix** for all of a project's requirements: which business need originated each requirement, and whether it already has linked design, implementation, and test evidence. Complements `08-01-revision-completa-pr` (compliance dimension), which validates compliance for **one** specific issue, not an aggregated view of the whole project.
 
 **When to use it:** periodically during the execution of a project with multiple requirements already analyzed (`02-05`), to detect orphaned requirements (missing design, code, or test) or code with no formal requirement backing it, before the project is considered closed.
 
@@ -20,7 +20,7 @@ Prompt to maintain a **living, aggregated traceability matrix** for all of a pro
 | Stop criteria | if a requirement cannot be linked to any design, code, or test evidence, do not mark it as "covered" — explicitly report it as orphaned |
 | Expected output | see `## Expected output` |
 | Minimum evidence | every requirement in the project appears exactly once in the matrix with its cited coverage status at each stage (requirement → design → implementation → test) |
-| Recommended next prompt | `08-02-cumplimiento-requerimiento` to dig deeper into a specific requirement flagged as incomplete or orphaned |
+| Recommended next prompt | `08-01-revision-completa-pr` to dig deeper into a specific requirement flagged as incomplete or orphaned, within its compliance dimension |
 
 ---
 

@@ -20,7 +20,7 @@ Prompt geared towards QA Automation or Frontend Architect profiles. It examines 
 | Stop criteria | if the code fragment lacks enough context to evaluate a criterion (e.g., color contrast defined in an external, unprovided stylesheet, or dynamic behavior not visible in the snippet), document it as an evidence limitation instead of assuming compliance or non-compliance |
 | Expected output | see `## Expected output` |
 | Minimum evidence | each reported violation must cite the code element or line and the specific WCAG 2.2 criterion violated |
-| Recommended next prompt | `08-01-revision-estatica` to include the corrected code in the static review before merge |
+| Recommended next prompt | `08-01-revision-completa-pr` to include the corrected code in the review before merge |
 
 ---
 

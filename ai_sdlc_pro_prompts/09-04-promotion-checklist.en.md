@@ -20,7 +20,7 @@ Prompt to plan and document the promotion of changes between environments (dev �
 | Stop criteria | if no rollback owner is available, if there are DB migrations without a confirmed backup, or if any explicit NO-GO condition from section 2 is met, stop and do not recommend proceeding with the deployment |
 | Expected output | see `## Expected output` |
 | Minimum evidence | each item in the go/no-go semaphore must be marked with its status (🟢/🔴) and an observation justifying it |
-| Recommended next prompt | `09-02-monitoreo-ci` before executing the promotion, to confirm the change's pipeline is green |
+| Recommended next prompt | `08-01-revision-completa-pr` before executing the promotion, to confirm the change's pipeline is green and the merge verdict is favorable |
 
 ---
 

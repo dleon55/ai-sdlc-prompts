@@ -1,7 +1,7 @@
 # Artículo Dev.to / Hashnode (issue #11)
 
 > Sprint 3, `docs/STRATEGY.md`. Título sugerido original en el issue decía
-> "44 prompts" — desactualizado; el catálogo real tiene 115. Keywords SEO
+> "44 prompts" — desactualizado; el catálogo real tiene 112. Keywords SEO
 > objetivo tomadas de `docs/STRATEGY.md`: "prompts ingeniería software IA
 > español", "prompts GitHub Copilot SDLC", "biblioteca prompts Claude
 > desarrollo software", "AI-SDLC framework español", "prompts multi-agente
@@ -14,12 +14,12 @@
 
 ## Título
 
-**Cómo uso 115 prompts estructurados para dirigir Copilot y Claude en cada fase del SDLC**
+**Cómo uso 112 prompts estructurados para dirigir Copilot y Claude en cada fase del SDLC**
 
 ## Cuerpo del artículo
 
 ```markdown
-# Cómo uso 115 prompts estructurados para dirigir Copilot y Claude en cada fase del SDLC
+# Cómo uso 112 prompts estructurados para dirigir Copilot y Claude en cada fase del SDLC
 
 Si usas IA para programar todos los días, seguro ya viviste esto: le pides
 algo a Copilot o a Claude, el resultado es *casi* lo que necesitabas, y
@@ -43,7 +43,7 @@ software: con un proceso repetible.
 ## Un prompt de ingeniería tiene una estructura, no es una frase
 
 Llevo meses construyendo (y usando en proyectos reales) una biblioteca de
-115 prompts estructurados en español, organizados por las 18 etapas del
+112 prompts estructurados en español, organizados por las 18 etapas del
 ciclo de vida del desarrollo de software — desde el project charter hasta
 el postmortem de producción. Cada prompt sigue el mismo contrato editorial:
 
@@ -114,7 +114,7 @@ reutiliza en cualquier prompt que las necesite.
 
 ## Cómo empezar
 
-El catálogo completo (115 prompts, español e inglés, con el framework de
+El catálogo completo (112 prompts, español e inglés, con el framework de
 contexto multi-agente) está disponible gratis, sin cuenta, en
 **[prompts.lionsystems.com.mx](https://prompts.lionsystems.com.mx)**. Copiar
 cualquier prompt es y seguirá siendo gratis e ilimitado — no hay contenido

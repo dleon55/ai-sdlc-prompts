@@ -20,7 +20,7 @@ Prompt orientado a perfiles de QA Automation o Frontend Architect. Examina el c�
 | Criterios de detención | si el fragmento de código no incluye suficiente contexto para evaluar un criterio (p. ej. contraste de color definido en una hoja de estilos externa no provista, o comportamiento dinámico no visible en el snippet), documentarlo como limitación de evidencia en vez de asumir cumplimiento o incumplimiento |
 | Salida esperada | ver `## Salida esperada` |
 | Evidencia mínima | cada violación reportada debe citar el elemento o línea del código y el criterio WCAG 2.2 específico incumplido |
-| Siguiente prompt recomendado | `08-01-revision-estatica` para incluir el código corregido en la revisión estática previa al merge |
+| Siguiente prompt recomendado | `08-01-revision-completa-pr` para incluir el código corregido en la revisión previa al merge |
 
 ---
 

@@ -1287,7 +1287,7 @@
           "stop_criteria": "si un requerimiento no puede vincularse a ninguna evidencia de diseño, código o prueba, no lo marques como \"cubierto\" — repórtalo explícitamente como huérfano",
           "expected_output": "ver `## Salida esperada`",
           "minimum_evidence": "cada requerimiento del proyecto aparece exactamente una vez en la matriz con su estado de cobertura citado en cada etapa (requerimiento → diseño → implementación → prueba)",
-          "recommended_next_prompt": "`08-02-cumplimiento-requerimiento` para profundizar en un requerimiento específico marcado como incompleto o huérfano",
+          "recommended_next_prompt": "`08-01-revision-completa-pr` para profundizar en un requerimiento específico marcado como incompleto o huérfano, dentro de su dimensión de cumplimiento",
           "type_tags": [
             "analysis"
           ],
@@ -1299,7 +1299,7 @@
             "A1"
           ],
           "recommended_next_prompt_ids": [
-            "08-02-cumplimiento-requerimiento"
+            "08-01-revision-completa-pr"
           ]
         },
         "en": {
@@ -1311,7 +1311,7 @@
           "stop_criteria": "if a requirement cannot be linked to any design, code, or test evidence, do not mark it as \"covered\" — explicitly report it as orphaned",
           "expected_output": "see `## Expected output`",
           "minimum_evidence": "every requirement in the project appears exactly once in the matrix with its cited coverage status at each stage (requirement → design → implementation → test)",
-          "recommended_next_prompt": "`08-02-cumplimiento-requerimiento` to dig deeper into a specific requirement flagged as incomplete or orphaned",
+          "recommended_next_prompt": "`08-01-revision-completa-pr` to dig deeper into a specific requirement flagged as incomplete or orphaned, within its compliance dimension",
           "type_tags": [
             "analysis"
           ],
@@ -1323,7 +1323,7 @@
             "A1"
           ],
           "recommended_next_prompt_ids": [
-            "08-02-cumplimiento-requerimiento"
+            "08-01-revision-completa-pr"
           ]
         }
       }
@@ -2041,7 +2041,7 @@
           "stop_criteria": "si el cambio descrito mezcla intenciones no relacionadas, detener y recomendar dividir en commits separados antes de proponer el mensaje final",
           "expected_output": "ver `## Salida esperada`",
           "minimum_evidence": "mensaje de commit válido bajo Conventional Commits (ver `CONTRIBUTING.md`)",
-          "recommended_next_prompt": "ninguno para el commit en sí — es el último paso antes de `git push`; antes de abrir el PR, ejecutar `08-02-cumplimiento-requerimiento` como gate de calidad final",
+          "recommended_next_prompt": "ninguno para el commit en sí — es el último paso antes de `git push`; antes de mergear el PR, ejecutar `08-01-revision-completa-pr` como gate de calidad final",
           "type_tags": [
             "documentation"
           ],
@@ -2052,7 +2052,7 @@
             "A1"
           ],
           "recommended_next_prompt_ids": [
-            "08-02-cumplimiento-requerimiento"
+            "08-01-revision-completa-pr"
           ]
         },
         "en": {
@@ -2064,7 +2064,7 @@
           "stop_criteria": "if the described change mixes unrelated intentions, stop and recommend splitting into separate commits before proposing the final message",
           "expected_output": "see `## Expected output`",
           "minimum_evidence": "commit message valid under Conventional Commits (see `CONTRIBUTING.md`)",
-          "recommended_next_prompt": "none for the commit itself — this is the last step before `git push`; before opening the PR, run `08-02-cumplimiento-requerimiento` as a final quality gate",
+          "recommended_next_prompt": "none for the commit itself — this is the last step before `git push`; before merging the PR, run `08-01-revision-completa-pr` as a final quality gate",
           "type_tags": [
             "documentation"
           ],
@@ -2075,7 +2075,7 @@
             "A1"
           ],
           "recommended_next_prompt_ids": [
-            "08-02-cumplimiento-requerimiento"
+            "08-01-revision-completa-pr"
           ]
         }
       }
@@ -2837,7 +2837,7 @@
           "stop_criteria": "si el fragmento de código no incluye suficiente contexto para evaluar un criterio (p. ej. contraste de color definido en una hoja de estilos externa no provista, o comportamiento dinámico no visible en el snippet), documentarlo como limitación de evidencia en vez de asumir cumplimiento o incumplimiento",
           "expected_output": "ver `## Salida esperada`",
           "minimum_evidence": "cada violación reportada debe citar el elemento o línea del código y el criterio WCAG 2.2 específico incumplido",
-          "recommended_next_prompt": "`08-01-revision-estatica` para incluir el código corregido en la revisión estática previa al merge",
+          "recommended_next_prompt": "`08-01-revision-completa-pr` para incluir el código corregido en la revisión previa al merge",
           "type_tags": [
             "validation"
           ],
@@ -2848,7 +2848,7 @@
             "A1"
           ],
           "recommended_next_prompt_ids": [
-            "08-01-revision-estatica"
+            "08-01-revision-completa-pr"
           ]
         },
         "en": {
@@ -2860,7 +2860,7 @@
           "stop_criteria": "if the code fragment lacks enough context to evaluate a criterion (e.g., color contrast defined in an external, unprovided stylesheet, or dynamic behavior not visible in the snippet), document it as an evidence limitation instead of assuming compliance or non-compliance",
           "expected_output": "see `## Expected output`",
           "minimum_evidence": "each reported violation must cite the code element or line and the specific WCAG 2.2 criterion violated",
-          "recommended_next_prompt": "`08-01-revision-estatica` to include the corrected code in the static review before merge",
+          "recommended_next_prompt": "`08-01-revision-completa-pr` to include the corrected code in the review before merge",
           "type_tags": [
             "validation"
           ],
@@ -2871,7 +2871,7 @@
             "A1"
           ],
           "recommended_next_prompt_ids": [
-            "08-01-revision-estatica"
+            "08-01-revision-completa-pr"
           ]
         }
       }
@@ -3051,23 +3051,23 @@
       }
     },
     {
-      "id": "08-01-revision-estatica",
+      "id": "08-01-revision-completa-pr",
       "section": "08",
       "title": {
-        "es": "8.1 — Revisión estática de código",
-        "en": "8.1 — Static code review"
+        "es": "8.1 — Revisión completa de PR: calidad, cumplimiento e integración",
+        "en": "8.1 — Complete PR Review: Quality, Compliance, and Integration"
       },
       "contract": {
         "es": {
           "type": "análisis",
-          "expected_risk": "medio — no modifica código, pero sus hallazgos determinan si un cambio está listo para PR o merge; un hallazgo omitido puede dejar pasar un defecto o vulnerabilidad",
-          "required_inputs": "diff real de los cambios, requerimiento o issue asociado, estándares de código y arquitectura del proyecto",
-          "allowed_tools": "lectura del código, del diff y de la documentación aplicable — sin ejecutar pruebas ni modificar archivos",
-          "permitted_autonomy": "A0 — Analizar",
-          "stop_criteria": "si no se puede acceder al diff completo o al requerimiento original, documentarlo como brecha de evidencia en el reporte en vez de inferir el alcance del cambio",
+          "expected_risk": "medio — no modifica código ni ejecuta el merge, pero el veredicto conjunto determina si un PR está listo para integrarse; un hallazgo omitido en cualquiera de las 4 dimensiones puede dejar pasar un defecto, un requerimiento incompleto, un conflicto de integración o un pipeline roto",
+          "required_inputs": "diff real del PR, issue/requerimiento asociado, diseño aprobado si existe, resultados de pruebas, historial de commits y ramas activas relacionadas, logs de CI local y de GitHub Actions, estándares de código del proyecto",
+          "allowed_tools": "lectura de código, diff, documentación, historial y estado de git (`git log`, `git diff`, `git branch`), logs de CI y checks del PR — sin ejecutar pruebas nuevas, sin modificar archivos, sin merge/rebase/cherry-pick/push, sin re-ejecutar jobs de CI",
+          "permitted_autonomy": "A1 — Proponer (el veredicto y la estrategia de integración quedan propuestos; ejecutar el merge, aplicar remediación o resolver conflictos requiere un prompt de ejecución separado y aprobación humana)",
+          "stop_criteria": "si falta el diff completo, el requerimiento original, o alguno de los cuatro insumos de cumplimiento (solicitado/diseñado/implementado/probado), declara la brecha de evidencia en esa dimensión específica en vez de omitirla o asumir que está en orden; si el estado local no está sincronizado con el remoto, sincroniza (`git fetch`) antes de evaluar integración; si algún check de CI está pendiente o sin logs accesibles, márcalo \"pendiente\", no asumas que pasó",
           "expected_output": "ver `## Salida esperada`",
-          "minimum_evidence": "cada hallazgo debe incluir archivo y línea, comportamiento afectado, severidad justificada y remediación concreta, según la tabla \"Evidencia mínima por hallazgo\"",
-          "recommended_next_prompt": "`08-03-remediacion-maestro` si se detectan hallazgos críticos o medios que requieren corrección antes de merge",
+          "minimum_evidence": "cada hallazgo de calidad cita archivo y línea; cada criterio de aceptación queda marcado cumple/parcial/no cumple con brecha citada; cada conflicto de integración cita archivo y rama; cada falla de CI cita job, paso y mensaje",
+          "recommended_next_prompt": "`08-03-remediacion-maestro` si hay hallazgos críticos o medios de calidad que corregir antes de merge; `09-04-promotion-checklist` una vez el veredicto de las 4 dimensiones es favorable, para planificar el despliegue entre ambientes",
           "type_tags": [
             "analysis"
           ],
@@ -3075,22 +3075,23 @@
             "medium"
           ],
           "permitted_autonomy_tags": [
-            "A0"
+            "A1"
           ],
           "recommended_next_prompt_ids": [
-            "08-03-remediacion-maestro"
+            "08-03-remediacion-maestro",
+            "09-04-promotion-checklist"
           ]
         },
         "en": {
           "type": "analysis",
-          "expected_risk": "medium — does not modify code, but its findings determine whether a change is ready for PR or merge; a missed finding can let a defect or vulnerability through",
-          "required_inputs": "actual diff of the changes, associated requirement or issue, project code standards and architecture",
-          "allowed_tools": "reading code, diff and applicable documentation — no test execution or file modification",
-          "permitted_autonomy": "A0 — Analyze",
-          "stop_criteria": "if the full diff or the original requirement cannot be accessed, document it as an evidence gap in the report instead of inferring the scope of the change",
+          "expected_risk": "medium — doesn't modify code or execute the merge, but the combined verdict determines whether a PR is ready to integrate; a missed finding in any of the 4 dimensions can let through a defect, an incomplete requirement, an integration conflict, or a broken pipeline",
+          "required_inputs": "the PR's real diff, associated issue/requirement, approved design if any, test results, commit history and related active branches, local and GitHub Actions CI logs, project code standards",
+          "allowed_tools": "reading code, diff, documentation, git history and state (`git log`, `git diff`, `git branch`), CI logs and PR checks — no running new tests, no editing files, no merge/rebase/cherry-pick/push, no re-running CI jobs",
+          "permitted_autonomy": "A1 — Propose (the verdict and integration strategy are proposed; executing the merge, applying remediation, or resolving conflicts requires a separate execution prompt and human approval)",
+          "stop_criteria": "if the full diff, the original requirement, or any of the four compliance inputs (requested/designed/implemented/tested) is missing, declare the evidence gap in that specific dimension instead of omitting it or assuming it's fine; if local state isn't synced with remote, sync (`git fetch`) before evaluating integration; if a CI check is pending or has no accessible logs, mark it \"pending,\" don't assume it passed",
           "expected_output": "see `## Expected output`",
-          "minimum_evidence": "each finding must include file and line, affected behavior, justified severity and concrete remediation, per the \"Minimum evidence per finding\" table",
-          "recommended_next_prompt": "`08-03-remediacion-maestro` if critical or medium findings requiring correction before merge are detected",
+          "minimum_evidence": "every quality finding cites file and line; every acceptance criterion is marked met/partial/not met with the gap cited; every integration conflict cites file and branch; every CI failure cites job, step, and message",
+          "recommended_next_prompt": "`08-03-remediacion-maestro` if there are critical or medium quality findings to fix before merge; `09-04-promotion-checklist` once the verdict across all 4 dimensions is favorable, to plan the deployment across environments",
           "type_tags": [
             "analysis"
           ],
@@ -3098,66 +3099,11 @@
             "medium"
           ],
           "permitted_autonomy_tags": [
-            "A0"
+            "A1"
           ],
           "recommended_next_prompt_ids": [
-            "08-03-remediacion-maestro"
-          ]
-        }
-      }
-    },
-    {
-      "id": "08-02-cumplimiento-requerimiento",
-      "section": "08",
-      "title": {
-        "es": "8.2 — Revisión de cumplimiento contra requerimiento",
-        "en": "8.2 — Requirement compliance review"
-      },
-      "contract": {
-        "es": {
-          "type": "validación",
-          "expected_risk": "medio — el veredicto determina si un issue puede cerrarse; un falso \"cumple\" puede cerrar trabajo incompleto y un falso \"no cumple\" bloquea innecesariamente",
-          "required_inputs": "issue o requerimiento original, diseño aprobado, código implementado, resultados de pruebas",
-          "allowed_tools": "lectura del issue, diseño, código y resultados de pruebas existentes — sin ejecutar pruebas nuevas ni modificar código",
-          "permitted_autonomy": "A0 — Analizar",
-          "stop_criteria": "si falta alguno de los cuatro insumos a comparar (lo solicitado, lo diseñado, lo implementado o lo probado), detener y reportarlo como brecha de evidencia antes de emitir un veredicto de cumplimiento",
-          "expected_output": "ver `## Salida esperada`",
-          "minimum_evidence": "cada criterio de aceptación debe quedar marcado como cumplido, parcial o no cumplido, con la brecha específica citada en la matriz",
-          "recommended_next_prompt": "`09-01-integracion-ramas` si el cumplimiento es total y el cambio queda listo para integrar",
-          "type_tags": [
-            "validation"
-          ],
-          "expected_risk_tags": [
-            "medium"
-          ],
-          "permitted_autonomy_tags": [
-            "A0"
-          ],
-          "recommended_next_prompt_ids": [
-            "09-01-integracion-ramas"
-          ]
-        },
-        "en": {
-          "type": "validation",
-          "expected_risk": "medium — the verdict determines whether an issue can be closed; a false \"compliant\" can close incomplete work and a false \"non-compliant\" blocks unnecessarily",
-          "required_inputs": "original issue or requirement, approved design, implemented code, test results",
-          "allowed_tools": "reading the issue, design, code and existing test results — no new test execution or code modification",
-          "permitted_autonomy": "A0 — Analyze",
-          "stop_criteria": "if any of the four inputs to compare is missing (requested, designed, implemented or tested), stop and report it as an evidence gap before issuing a compliance verdict",
-          "expected_output": "see `## Expected output`",
-          "minimum_evidence": "each acceptance criterion must be marked as fully met, partial or not met, with the specific gap cited in the matrix",
-          "recommended_next_prompt": "`09-01-integracion-ramas` if compliance is total and the change is ready to integrate",
-          "type_tags": [
-            "validation"
-          ],
-          "expected_risk_tags": [
-            "medium"
-          ],
-          "permitted_autonomy_tags": [
-            "A0"
-          ],
-          "recommended_next_prompt_ids": [
-            "09-01-integracion-ramas"
+            "08-03-remediacion-maestro",
+            "09-04-promotion-checklist"
           ]
         }
       }
@@ -3241,7 +3187,7 @@
           "stop_criteria": "si el esquema o el plan de ejecución no incluye volumetría real ni estadísticas actualizadas de las tablas, presentar el diagnóstico como preliminar y no garantizar el impacto estimado",
           "expected_output": "ver `## Salida esperada`",
           "minimum_evidence": "el diagnóstico debe citar el nodo específico del plan de ejecución (o la consulta N+1 exacta) responsable del cuello de botella",
-          "recommended_next_prompt": "`08-01-revision-estatica` para validar la query optimizada y el DDL de índices antes de aplicarlos",
+          "recommended_next_prompt": "`08-01-revision-completa-pr` para validar la query optimizada y el DDL de índices antes de aplicarlos",
           "type_tags": [
             "analysis"
           ],
@@ -3252,7 +3198,7 @@
             "A1"
           ],
           "recommended_next_prompt_ids": [
-            "08-01-revision-estatica"
+            "08-01-revision-completa-pr"
           ]
         },
         "en": {
@@ -3264,7 +3210,7 @@
           "stop_criteria": "if the schema or execution plan lacks real table volumetry or up-to-date statistics, present the diagnosis as preliminary and do not guarantee the estimated impact",
           "expected_output": "see `## Expected output`",
           "minimum_evidence": "the diagnosis must cite the specific execution plan node (or the exact N+1 query) responsible for the bottleneck",
-          "recommended_next_prompt": "`08-01-revision-estatica` to validate the optimized query and index DDL before applying them",
+          "recommended_next_prompt": "`08-01-revision-completa-pr` to validate the optimized query and index DDL before applying them",
           "type_tags": [
             "analysis"
           ],
@@ -3275,7 +3221,7 @@
             "A1"
           ],
           "recommended_next_prompt_ids": [
-            "08-01-revision-estatica"
+            "08-01-revision-completa-pr"
           ]
         }
       }
@@ -3336,118 +3282,6 @@
           ],
           "recommended_next_prompt_ids": [
             "11-09-runbook-rollback"
-          ]
-        }
-      }
-    },
-    {
-      "id": "09-01-integracion-ramas",
-      "section": "09",
-      "title": {
-        "es": "9.1 — Integración controlada con ramas",
-        "en": "9.1 — Controlled integration with branches"
-      },
-      "contract": {
-        "es": {
-          "type": "análisis",
-          "expected_risk": "medio — no ejecuta el merge, pero una estrategia mal evaluada puede causar conflictos o sobrescribir cambios de otros agentes o desarrolladores",
-          "required_inputs": "historial de commits, listado de ramas activas, PRs abiertos relacionados",
-          "allowed_tools": "lectura del historial y estado de git (`git log`, `git diff`, `git branch`) — sin ejecutar merge, rebase, cherry-pick ni push",
-          "permitted_autonomy": "A1 — Proponer",
-          "stop_criteria": "si el estado local no está sincronizado con el remoto (`git fetch` pendiente) o existen ramas activas de otros agentes con cambios no verificados, detener y solicitar sincronización antes de recomendar una estrategia definitiva",
-          "expected_output": "ver `## Salida esperada`",
-          "minimum_evidence": "cada conflicto potencial debe citar el archivo o zona específica y la rama con la que colisiona",
-          "recommended_next_prompt": "`09-02-monitoreo-ci` una vez ejecutada la integración, para validar el estado del pipeline resultante",
-          "type_tags": [
-            "analysis"
-          ],
-          "expected_risk_tags": [
-            "medium"
-          ],
-          "permitted_autonomy_tags": [
-            "A1"
-          ],
-          "recommended_next_prompt_ids": [
-            "09-02-monitoreo-ci"
-          ]
-        },
-        "en": {
-          "type": "analysis",
-          "expected_risk": "medium — does not execute the merge, but a poorly evaluated strategy can cause conflicts or overwrite changes from other agents or developers",
-          "required_inputs": "commit history, list of active branches, related open PRs",
-          "allowed_tools": "reading git history and state (`git log`, `git diff`, `git branch`) — no merge, rebase, cherry-pick or push execution",
-          "permitted_autonomy": "A1 — Propose",
-          "stop_criteria": "if the local state is not synced with the remote (`git fetch` pending) or there are active branches from other agents with unverified changes, stop and request synchronization before recommending a definitive strategy",
-          "expected_output": "see `## Expected output`",
-          "minimum_evidence": "each potential conflict must cite the specific file or area and the branch it collides with",
-          "recommended_next_prompt": "`09-02-monitoreo-ci` once the integration has run, to validate the resulting pipeline status",
-          "type_tags": [
-            "analysis"
-          ],
-          "expected_risk_tags": [
-            "medium"
-          ],
-          "permitted_autonomy_tags": [
-            "A1"
-          ],
-          "recommended_next_prompt_ids": [
-            "09-02-monitoreo-ci"
-          ]
-        }
-      }
-    },
-    {
-      "id": "09-02-monitoreo-ci",
-      "section": "09",
-      "title": {
-        "es": "9.2 — Monitoreo de CI local y remoto",
-        "en": "9.2 — Local and remote CI monitoring"
-      },
-      "contract": {
-        "es": {
-          "type": "análisis",
-          "expected_risk": "bajo — es diagnóstico de solo lectura sobre el estado del pipeline, no modifica workflows, código ni re-ejecuta jobs",
-          "required_inputs": "logs de CI local y de GitHub Actions, estado de checks del PR, archivos de `.github/workflows/`",
-          "allowed_tools": "lectura de logs de CI y checks del PR — sin re-ejecutar jobs, sin modificar workflows",
-          "permitted_autonomy": "A0 — Analizar",
-          "stop_criteria": "si algún check del PR está en estado pendiente o sin logs accesibles, marcarlo como \"pendiente\" en el criterio de aprobación en vez de asumir que pasó o falló",
-          "expected_output": "ver `## Salida esperada`",
-          "minimum_evidence": "cada falla reportada debe citar el job, el paso y el mensaje de error específico del log",
-          "recommended_next_prompt": "`09-01-integracion-ramas` si el pipeline está en verde y se procede a integrar con la rama destino",
-          "type_tags": [
-            "analysis"
-          ],
-          "expected_risk_tags": [
-            "low"
-          ],
-          "permitted_autonomy_tags": [
-            "A0"
-          ],
-          "recommended_next_prompt_ids": [
-            "09-01-integracion-ramas"
-          ]
-        },
-        "en": {
-          "type": "analysis",
-          "expected_risk": "low — read-only diagnosis of pipeline status, does not modify workflows, code, or re-run jobs",
-          "required_inputs": "local CI logs and GitHub Actions logs, PR check status, files under `.github/workflows/`",
-          "allowed_tools": "reading CI logs and PR checks — no re-running jobs, no modifying workflows",
-          "permitted_autonomy": "A0 — Analyze",
-          "stop_criteria": "if any PR check is pending or has no accessible logs, mark it as \"pending\" in the approval criterion instead of assuming it passed or failed",
-          "expected_output": "see `## Expected output`",
-          "minimum_evidence": "each reported failure must cite the job, the step, and the specific error message from the log",
-          "recommended_next_prompt": "`09-01-integracion-ramas` if the pipeline is green and integration with the target branch proceeds",
-          "type_tags": [
-            "analysis"
-          ],
-          "expected_risk_tags": [
-            "low"
-          ],
-          "permitted_autonomy_tags": [
-            "A0"
-          ],
-          "recommended_next_prompt_ids": [
-            "09-01-integracion-ramas"
           ]
         }
       }
@@ -3525,7 +3359,7 @@
           "stop_criteria": "si no hay responsable de rollback disponible, si hay migraciones de BD sin backup confirmado, o si se cumple alguna condición NO-GO explícita del punto 2, detener y no recomendar continuar con el despliegue",
           "expected_output": "ver `## Salida esperada`",
           "minimum_evidence": "cada ítem del semáforo go/no-go debe quedar marcado con su estado (🟢/🔴) y una observación que lo justifique",
-          "recommended_next_prompt": "`09-02-monitoreo-ci` antes de ejecutar la promoción, para confirmar que el pipeline del cambio está en verde",
+          "recommended_next_prompt": "`08-01-revision-completa-pr` antes de ejecutar la promoción, para confirmar que el pipeline del cambio está en verde y el veredicto de merge es favorable",
           "type_tags": [
             "operation"
           ],
@@ -3537,7 +3371,7 @@
             "A3"
           ],
           "recommended_next_prompt_ids": [
-            "09-02-monitoreo-ci"
+            "08-01-revision-completa-pr"
           ]
         },
         "en": {
@@ -3549,7 +3383,7 @@
           "stop_criteria": "if no rollback owner is available, if there are DB migrations without a confirmed backup, or if any explicit NO-GO condition from section 2 is met, stop and do not recommend proceeding with the deployment",
           "expected_output": "see `## Expected output`",
           "minimum_evidence": "each item in the go/no-go semaphore must be marked with its status (🟢/🔴) and an observation justifying it",
-          "recommended_next_prompt": "`09-02-monitoreo-ci` before executing the promotion, to confirm the change's pipeline is green",
+          "recommended_next_prompt": "`08-01-revision-completa-pr` before executing the promotion, to confirm the change's pipeline is green and the merge verdict is favorable",
           "type_tags": [
             "operation"
           ],
@@ -3561,7 +3395,7 @@
             "A3"
           ],
           "recommended_next_prompt_ids": [
-            "09-02-monitoreo-ci"
+            "08-01-revision-completa-pr"
           ]
         }
       }

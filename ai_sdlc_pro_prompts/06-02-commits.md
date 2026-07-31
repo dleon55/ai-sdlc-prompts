@@ -20,7 +20,7 @@ Prompt para generar mensajes de commit pequeños, claros y trazables, alineados 
 | Criterios de detención | si el cambio descrito mezcla intenciones no relacionadas, detener y recomendar dividir en commits separados antes de proponer el mensaje final |
 | Salida esperada | ver `## Salida esperada` |
 | Evidencia mínima | mensaje de commit válido bajo Conventional Commits (ver `CONTRIBUTING.md`) |
-| Siguiente prompt recomendado | ninguno para el commit en sí — es el último paso antes de `git push`; antes de abrir el PR, ejecutar `08-02-cumplimiento-requerimiento` como gate de calidad final |
+| Siguiente prompt recomendado | ninguno para el commit en sí — es el último paso antes de `git push`; antes de mergear el PR, ejecutar `08-01-revision-completa-pr` como gate de calidad final |
 
 ---
 

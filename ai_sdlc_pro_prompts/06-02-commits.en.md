@@ -20,7 +20,7 @@ Prompt to generate small, clear and traceable commit messages, aligned with the 
 | Stop criteria | if the described change mixes unrelated intentions, stop and recommend splitting into separate commits before proposing the final message |
 | Expected output | see `## Expected output` |
 | Minimum evidence | commit message valid under Conventional Commits (see `CONTRIBUTING.md`) |
-| Recommended next prompt | none for the commit itself — this is the last step before `git push`; before opening the PR, run `08-02-cumplimiento-requerimiento` as a final quality gate |
+| Recommended next prompt | none for the commit itself — this is the last step before `git push`; before merging the PR, run `08-01-revision-completa-pr` as a final quality gate |
 
 ---
 

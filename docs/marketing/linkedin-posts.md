@@ -47,7 +47,7 @@ inventar, nada que corregir después.
 La diferencia no fue el agente. Fue dirigirlo como dirigirías a un ingeniero
 senior nuevo en el equipo: con contexto completo, no con una frase suelta.
 
-115 prompts así, gratis, en español: https://prompts.lionsystems.com.mx
+112 prompts así, gratis, en español: https://prompts.lionsystems.com.mx
 
 ¿Cuál es la tarea que más veces le repites "contexto" a tu agente de IA?
 
@@ -121,7 +121,7 @@ querías".
 La diferencia entre un prompt y un prompt DE INGENIERÍA es que el segundo
 define qué pasa cuando algo no está claro.
 
-115 prompts estructurados así, gratis: https://prompts.lionsystems.com.mx
+112 prompts estructurados así, gratis: https://prompts.lionsystems.com.mx
 
 #PromptEngineering #GitHubCopilot #ClaudeAI #SDLC
 ```
@@ -185,7 +185,7 @@ No es un prompt más. Es la capa de contexto que hace que Copilot, Claude,
 Cursor, Windsurf, Codex o Antigravity trabajen con la MISMA información base,
 en vez de cada uno improvisando la suya.
 
-Framework + 115 prompts, gratis: https://prompts.lionsystems.com.mx
+Framework + 112 prompts, gratis: https://prompts.lionsystems.com.mx
 
 ¿Usas más de un agente de IA en tu flujo de trabajo? ¿Cómo mantienes el
 contexto consistente entre ellos?
