@@ -63,6 +63,7 @@ set search_path = public
 as $$
 declare
   already_processed timestamptz;
+  affected integer;
 begin
   insert into paddle_webhook_events (event_id, event_type, occurred_at)
   values (p_event_id, p_event_type, p_occurred_at)
@@ -110,6 +111,38 @@ begin
           last_event_occurred_at is null
           or last_event_occurred_at <= p_occurred_at
         );
+
+      get diagnostics affected = row_count;
+
+      -- 0 filas actualizadas significa dos cosas MUY distintas, y hay que
+      -- separarlas o el modo de fallo es el peor posible:
+      --
+      --   (a) la suscripcion ya existe pero su ultimo evento es mas
+      --       reciente -> descarte intencional por orden. Todo bien.
+      --   (b) no existe ninguna fila con ese paddle_subscription_id ->
+      --       este evento no trae user_id y no hay como ligarlo a nadie.
+      --
+      -- En el caso (b) NO se puede marcar el evento como procesado: si se
+      -- marcara, la funcion devolveria 200, Paddle dejaria de reintentar,
+      -- el cliente se quedaria sin el acceso que pago, y ni siquiera un
+      -- replay manual lo arreglaria (el evento ya contaria como hecho).
+      -- Ademas el tablero se veria sano, sin ninguna señal del problema.
+      --
+      -- Paddle no garantiza el orden de entrega, asi que un
+      -- subscription.updated puede llegar antes que el created que si
+      -- trae el user_id. Fallar aqui hace que la Edge Function responda
+      -- 500 y Paddle reintente hasta que ese created llegue. Si nunca
+      -- llega, el evento queda visible en la cola de fallidos de Paddle
+      -- en vez de desaparecer en silencio.
+      if affected = 0 and not exists (
+        select 1 from subscriptions
+        where paddle_subscription_id = p_subscription_id
+      ) then
+        raise exception
+          'no local subscription for % and event % carries no user_id; '
+          'failing so Paddle retries until the creating event arrives',
+          p_subscription_id, p_event_id;
+      end if;
     end if;
   end if;
 
