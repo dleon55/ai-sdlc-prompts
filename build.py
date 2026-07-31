@@ -3136,14 +3136,14 @@ var TOKEN_REGISTRY = {
                  'RAMA', 'TEST BRANCH'] },
   rama_destino:{ required: false, scope: 'task', aliases: ['RAMA OBJETIVO', 'TARGET BRANCH', 'RAMA PRINCIPAL', 'RAMA INTEGRADA',
                  'RAMA DESTINO', 'RAMA DE RELEASE', 'DEVELOP / MAIN / RELEASE', 'RELEASE BRANCH',
-                 'INTEGRATED BRANCH', 'MAIN BRANCH', 'PR OR INTEGRATION BRANCH'] },
+                 'INTEGRATED BRANCH', 'MAIN BRANCH'] },
   ambiente:    { required: false, scope: 'task', aliases: ['DEV / QA / PROD', 'ENVIRONMENT', 'QA / STAGING', 'QA / STAGING / PROD',
                  'DEV / QA / STAGING / PROD', 'PROD / STAGING', 'DEV / QA',
                  'URL DEL AMBIENTE', 'ENVIRONMENT URL', 'URL DE QA O STAGING', 'DEV / QA / STAGING',
                  'QA OR STAGING URL', 'DEV / STAGING / PROD', 'AMBIENTE', 'LOCAL / DEV / QA / PROD'] },
   componentes: { required: false, scope: 'task', aliases: ['COMPONENTES INVOLUCRADOS', 'INVOLVED COMPONENTS', 'COMPONENTES MODIFICADOS',
                  'COMPONENTES A MODIFICAR', 'COMPONENTES REVISADOS',
-                 'RUTAS DE ARCHIVOS MODIFICADOS', 'FUNCIONES O UNIDADES A PROBAR',
+                 'FUNCIONES O UNIDADES A PROBAR',
                  'SI YA CONOCES ALGUNO', 'REVIEWED COMPONENTS', 'COMPONENTS TO MODIFY',
                  'MODIFIED COMPONENTS', 'FILES AND MODULES TO MODIFY', 'AFFECTED MODULE OR FILE', 'DIRECTORY/PACKAGE', 'DIRECTORIO/PAQUETE'] },
   modulo:      { required: false, scope: 'task', aliases: ['NOMBRE DEL PROCESO', 'PROCESS NAME', 'MODULE OR FUNCTIONALITY',
@@ -4895,7 +4895,7 @@ def build_precios_page():
         '})();</script>\n'
         '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n'
         '<title>Precios — AI-SDLC Pro / Pricing — AI-SDLC Pro</title>\n'
-        '<meta name="description" content="AI-SDLC Pro: copia los 115 prompts gratis siempre. Gestiona más de un proyecto, personaliza prompts y guarda resultados de IA con 1 semana de prueba Pro o el plan introductorio de 1 USD al mes.">\n'
+        f'<meta name="description" content="AI-SDLC Pro: copia los {TOTAL_PROMPTS} prompts gratis siempre. Gestiona más de un proyecto, personaliza prompts y guarda resultados de IA con 1 semana de prueba Pro o el plan introductorio de 1 USD al mes.">\n'
         '<meta name="robots" content="index,follow">\n'
         '<meta name="theme-color" content="#0f172a">\n'
         '<link rel="canonical" href="https://prompts.lionsystems.com.mx/precios.html">\n'
@@ -4950,11 +4950,11 @@ def build_precios_page():
         '    <h2><span class="px-badge fw-lang-es">Gratis</span><span class="px-badge fw-lang-en">Free</span>'
         '<span class="fw-lang-es">&nbsp;Sin registro</span><span class="fw-lang-en">&nbsp;No sign-up</span></h2>\n'
         '    <ul class="fw-lang-es">\n'
-        '      <li>Copia los 115 prompts, sin límite, para siempre — sin necesidad de crear cuenta.</li>\n'
+        f'      <li>Copia los {TOTAL_PROMPTS} prompts, sin límite, para siempre — sin necesidad de crear cuenta.</li>\n'
         '      <li>1 proyecto activo con variables, checklist de progreso y modo guiado completos.</li>\n'
         '    </ul>\n'
         '    <ul class="fw-lang-en">\n'
-        '      <li>Copy all 115 prompts, unlimited, forever — no account required.</li>\n'
+        f'      <li>Copy all {TOTAL_PROMPTS} prompts, unlimited, forever — no account required.</li>\n'
         '      <li>1 active project with full variables, progress checklist, and guided mode.</li>\n'
         '    </ul>\n'
         '  </div>\n'
@@ -6627,8 +6627,8 @@ def build():
         '      <button class="modal-close-btn" onclick="closeRegisterWall()" aria-label="Cerrar / Close">&#x2715;</button>\n'
         '    </div>\n'
         '    <div class="modal-body wall-modal-body">\n'
-        '      <p class="fw-lang-es">Copiar los 115 prompts sigue siendo gratis siempre. Regístrate gratis con GitHub para crear más de un proyecto, personalizar prompts y guardar resultados de IA — 1 semana de acceso Pro sin costo.</p>\n'
-        '      <p class="fw-lang-en">Copying all 115 prompts stays free forever. Sign up free with GitHub to create more than one project, personalize prompts, and save AI outputs — 1 week of free Pro access.</p>\n'
+        f'      <p class="fw-lang-es">Copiar los {TOTAL_PROMPTS} prompts sigue siendo gratis siempre. Regístrate gratis con GitHub para crear más de un proyecto, personalizar prompts y guardar resultados de IA — 1 semana de acceso Pro sin costo.</p>\n'
+        f'      <p class="fw-lang-en">Copying all {TOTAL_PROMPTS} prompts stays free forever. Sign up free with GitHub to create more than one project, personalize prompts, and save AI outputs — 1 week of free Pro access.</p>\n'
         '      <button class="auth-btn" onclick="closeRegisterWall();signInWithGitHub();">'
         '<svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" style="flex-shrink:0">'
         '<path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>'

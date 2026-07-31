@@ -34,7 +34,7 @@ Hola [NOMBRE] — vi que [empresa] usa [Copilot/Claude/IA] en el equipo de
 ingeniería. Te escribo porque construí algo que puede ahorrarles la fricción
 de que cada dev le dé contexto distinto al agente de IA en cada tarea.
 
-Es una biblioteca de 115 prompts estructurados por fase del SDLC (no
+Es una biblioteca de 112 prompts estructurados por fase del SDLC (no
 prompts sueltos) — cada uno declara qué riesgo tiene y cuánta autonomía
 puede tener el agente. La usan equipos que quieren que "usar IA bien" no
 dependa de qué tan senior es cada dev.
@@ -52,7 +52,7 @@ Hi [NAME] — saw that [company] uses [Copilot/Claude/AI] on the engineering
 team. Reaching out because I built something that can save the friction of
 every dev giving the AI agent different context on every task.
 
-It's a library of 115 prompts structured by SDLC phase (not loose prompts)
+It's a library of 112 prompts structured by SDLC phase (not loose prompts)
 — each one declares its risk level and how much autonomy the agent gets.
 Teams use it so "using AI well" doesn't depend on how senior each dev is.
 
@@ -68,7 +68,7 @@ Up for a quick call this week or next?
 **ES:**
 ```
 [NOMBRE], sé que estás ocupado — solo quería dejarte esto por si sirve: la
-biblioteca completa (115 prompts, framework de contexto multi-agente) sigue
+biblioteca completa (112 prompts, framework de contexto multi-agente) sigue
 gratis y sin cuenta en prompts.lionsystems.com.mx. Si en algún momento tu
 equipo quiere estandarizar cómo usan IA, aquí ando.
 ```
@@ -76,7 +76,7 @@ equipo quiere estandarizar cómo usan IA, aquí ando.
 **EN:**
 ```
 [NAME], I know you're busy — just wanted to leave this in case it's useful:
-the full library (115 prompts, multi-agent context framework) is still free
+the full library (112 prompts, multi-agent context framework) is still free
 and account-free at prompts.lionsystems.com.mx. If your team ever wants to
 standardize how they use AI, I'm around.
 ```

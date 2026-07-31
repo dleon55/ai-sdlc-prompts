@@ -79,7 +79,7 @@ primero.
 Después de esos 50, el precio Pro sigue siendo el que esté vigente en el
 piloto — sin sorpresas, sin letra chica.
 
-Prueba el catálogo completo gratis (115 prompts, sin cuenta) y decide si
+Prueba el catálogo completo gratis (112 prompts, sin cuenta) y decide si
 quieres ser de los primeros 50: https://prompts.lionsystems.com.mx
 
 #IA #StartupBuilding #SoftwareEngineering

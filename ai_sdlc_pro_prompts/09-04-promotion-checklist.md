@@ -20,7 +20,7 @@ Prompt para planificar y documentar la promoción de cambios entre ambientes (de
 | Criterios de detención | si no hay responsable de rollback disponible, si hay migraciones de BD sin backup confirmado, o si se cumple alguna condición NO-GO explícita del punto 2, detener y no recomendar continuar con el despliegue |
 | Salida esperada | ver `## Salida esperada` |
 | Evidencia mínima | cada ítem del semáforo go/no-go debe quedar marcado con su estado (🟢/🔴) y una observación que lo justifique |
-| Siguiente prompt recomendado | `09-02-monitoreo-ci` antes de ejecutar la promoción, para confirmar que el pipeline del cambio está en verde |
+| Siguiente prompt recomendado | `08-01-revision-completa-pr` antes de ejecutar la promoción, para confirmar que el pipeline del cambio está en verde y el veredicto de merge es favorable |
 
 ---
 

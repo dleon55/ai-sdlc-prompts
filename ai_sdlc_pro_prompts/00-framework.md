@@ -122,13 +122,10 @@ Usa el prompt de análisis de causa raíz y adáptalo a:
 | `07-12-accessibility-a11y-audit.md` | 7.12 | Auditoría de accesibilidad (a11y) y UX compliance |
 | `07-13-diagnostico-tests-flaky.md` | 7.13 | Diagnóstico y estabilización de tests inestables (flaky) |
 | `07-14-gestion-datos-prueba.md` | 7.14 | Estrategia de gestión de datos de prueba en QA |
-| `08-01-revision-estatica.md` | 8.1 | Revisión estática de código |
-| `08-02-cumplimiento-requerimiento.md` | 8.2 | Revisión de cumplimiento contra requerimiento |
+| `08-01-revision-completa-pr.md` | 8.1 | Revisión completa de PR: calidad, cumplimiento e integración |
 | `08-03-remediacion-maestro.md` | 8.3 | Prompt maestro de remediación de revisión estática |
 | `08-04-sql-query-profiling.md` | 8.4 | Auditoría de planes de ejecución y profiling SQL (DBA) |
 | `08-05-revision-migracion-esquema-bd.md` | 8.5 | Revisión de migración de esquema de base de datos |
-| `09-01-integracion-ramas.md` | 9.1 | Integración controlada con ramas |
-| `09-02-monitoreo-ci.md` | 9.2 | Monitoreo de CI local y remoto |
 | `09-03-workflows-github-actions.md` | 9.3 | Revisión de workflows de GitHub Actions |
 | `09-04-promotion-checklist.md` | 9.4 | Checklist de promoción entre ambientes (dev→staging→prod) |
 | `09-05-estrategia-feature-flags.md` | 9.5 | Estrategia de feature flags / kill-switch |

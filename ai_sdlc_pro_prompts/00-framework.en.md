@@ -119,13 +119,10 @@ Use the root cause analysis prompt and adapt it to:
 | `07-12-accessibility-a11y-audit.md` | 7.12 | Accessibility (a11y) Audit and UX Compliance |
 | `07-13-diagnostico-tests-flaky.md` | 7.13 | Flaky test diagnosis and stabilization |
 | `07-14-gestion-datos-prueba.md` | 7.14 | QA test data management strategy |
-| `08-01-revision-estatica.md` | 8.1 | Static code review |
-| `08-02-cumplimiento-requerimiento.md` | 8.2 | Requirement compliance review |
+| `08-01-revision-completa-pr.md` | 8.1 | Complete PR review: quality, compliance, and integration |
 | `08-03-remediacion-maestro.md` | 8.3 | Static review remediation (master prompt) |
 | `08-04-sql-query-profiling.md` | 8.4 | SQL Execution Plan Audit and Profiling (DBA) |
 | `08-05-revision-migracion-esquema-bd.md` | 8.5 | Database Schema Migration Review |
-| `09-01-integracion-ramas.md` | 9.1 | Controlled integration with branches |
-| `09-02-monitoreo-ci.md` | 9.2 | Local and remote CI monitoring |
 | `09-03-workflows-github-actions.md` | 9.3 | GitHub Actions workflows review |
 | `09-04-promotion-checklist.md` | 9.4 | Promotion checklist: integration and deployment between environments |
 | `09-05-estrategia-feature-flags.md` | 9.5 | Feature Flag / Kill-Switch Strategy |

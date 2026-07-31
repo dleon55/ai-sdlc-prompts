@@ -1,6 +1,6 @@
 # AI-SDLC Pro — Biblioteca de Prompts de Ingeniería de Software
 
-Biblioteca interactiva de prompts estructurados bajo el **AI-SDLC Enterprise Framework**: **115 prompts** organizados en **18 secciones** que cubren el ciclo completo de ingeniería de software asistida por IA.
+Biblioteca interactiva de prompts estructurados bajo el **AI-SDLC Enterprise Framework**: **112 prompts** organizados en **18 secciones** que cubren el ciclo completo de ingeniería de software asistida por IA.
 
 ## Entornos activos
 
@@ -18,9 +18,9 @@ Biblioteca interactiva de prompts estructurados bajo el **AI-SDLC Enterprise Fra
 - **Personalización y resultados de IA por (proyecto, prompt)** — dos campos opcionales en el modal ⓘ (Pro, ver muro de registro más abajo): adiciones personalizadas que se anexan solo al copiar (sin modificar nunca el prompt oficial), y un espacio para pegar el resultado que devolvió tu agente de IA al ejecutar el prompt, útil como insumo para `10-02-memoria-tecnica`/`17-06-reporte-estado-stakeholders`. Se exportan/importan junto con el resto del proyecto.
 - **Modo guiado / ruta de proyecto** — botón 🧭 junto al selector de proyecto: recorre paso a paso el orden curado del framework (00-D → 01 → 02 → ... → 17) con Anterior/Siguiente, marca visualmente lo ya usado y permite saltar directamente al primer prompt pendiente.
 - **Registro de usuarios (opcional)** — inicio de sesión con GitHub vía Supabase Auth para sincronizar proyectos entre dispositivos; el uso anónimo con `localStorage` sigue funcionando igual sin necesidad de cuenta. Configuración documentada en [`docs/auth-setup.md`](docs/auth-setup.md).
-- **Muro de registro + prueba Pro de 1 semana** — copiar cualquiera de los 115 prompts es gratis e ilimitado para siempre, con o sin cuenta (el repositorio es público, así que gatear el texto no protege nada; ver `docs/STRATEGY.md`). Lo que sí requiere sesión es la capa de plataforma: gestionar más de 1 proyecto, y guardar personalización/resultados de IA por prompt. Al intentarlo sin sesión se pide iniciar sesión con GitHub, lo que activa 1 semana de acceso Pro completo; al vencer, se exige enviar una breve retroalimentación (calificación + comentario) para renovar otra semana. Página [`/precios.html`](precios.html) explica el modelo vigente y permite suscribirse a $1 USD/mes (acceso Pro ilimitado sin muro). Configuración documentada en [`docs/trial-gate-setup.md`](docs/trial-gate-setup.md) y [`docs/paddle-integration.md`](docs/paddle-integration.md).
+- **Muro de registro + prueba Pro de 1 semana** — copiar cualquiera de los 112 prompts es gratis e ilimitado para siempre, con o sin cuenta (el repositorio es público, así que gatear el texto no protege nada; ver `docs/STRATEGY.md`). Lo que sí requiere sesión es la capa de plataforma: gestionar más de 1 proyecto, y guardar personalización/resultados de IA por prompt. Al intentarlo sin sesión se pide iniciar sesión con GitHub, lo que activa 1 semana de acceso Pro completo; al vencer, se exige enviar una breve retroalimentación (calificación + comentario) para renovar otra semana. Página [`/precios.html`](precios.html) explica el modelo vigente y permite suscribirse a $1 USD/mes (acceso Pro ilimitado sin muro). Configuración documentada en [`docs/trial-gate-setup.md`](docs/trial-gate-setup.md) y [`docs/paddle-integration.md`](docs/paddle-integration.md).
 - **Framework auto-prepend** — el bloque de contexto del framework se antepone automáticamente a cada prompt copiado, con validación bloqueante de placeholders obligatorios sin resolver antes de copiar.
-- **Contrato editorial por prompt** — cada uno de los 115 prompts declara tipo, riesgo esperado, autonomía permitida y siguiente prompt recomendado, expuestos como badges filtrables y publicados en `prompts-index.json` para consumo por agentes de IA.
+- **Contrato editorial por prompt** — cada uno de los 112 prompts declara tipo, riesgo esperado, autonomía permitida y siguiente prompt recomendado, expuestos como badges filtrables y publicados en `prompts-index.json` para consumo por agentes de IA.
 - **Filtros por riesgo y autonomía** — chips de faceta (`Bajo/Medio/Alto/Variable`, `A0-A3`) combinables con la búsqueda de texto y los filtros por sección.
 - **Onboarding guiado** — banner + overlay de bienvenida para nuevos usuarios con guía de primeros pasos.
 - **Multi-select** — selección de varios prompts para copiarlos en bloque.
@@ -40,7 +40,7 @@ El catálogo también se expone a agentes de IA (Claude Code, Claude Desktop, Cu
 ## Estructura del proyecto
 
 ```
-ai_sdlc_pro_prompts/    # 115 prompts Markdown (18 secciones, ciclo SDLC completo)
+ai_sdlc_pro_prompts/    # 112 prompts Markdown (18 secciones, ciclo SDLC completo)
 build.py                # Generador: produce index.html y prompts-index.json desde los .md
 extract_vars.py         # Analiza tokens [PLACEHOLDER] en los prompts
 verify_clean.py         # QA gate: valida prompts limpios (integrado en CI)
@@ -117,8 +117,8 @@ issue (milestone + project) → rama de trabajo → Pull Request → CI (gates) 
 | 05 | Plan de implementación (plan, riesgos) | 2 |
 | 06 | Ejecución (multi-agente, commits, coordinación de programa multi-agente) | 3 |
 | 07 | Pruebas (diseño + implementación: stack, unitarias, integración, E2E, humo, automatización, performance, accesibilidad, diagnóstico de tests flaky, gestión de datos de prueba, plan maestro de pruebas) | 16 |
-| 08 | Revisión y remediación (estática, cumplimiento, maestro, SQL profiling, migración de esquema de BD) | 5 |
-| 09 | Integración y CI/CD (ramas, monitoreo, workflows, promotion, feature flags, coordinación de breaking changes) | 6 |
+| 08 | Revisión y remediación (revisión completa de PR — calidad, cumplimiento e integración —, maestro, SQL profiling, migración de esquema de BD) | 4 |
+| 09 | Integración y CI/CD (workflows, promotion, feature flags, coordinación de breaking changes) | 4 |
 | 10 | Documentación (técnica, memoria, changelog, observabilidad, API pública, capacitación/rollout para usuarios finales) | 6 |
 | 11 | Operaciones (troubleshooting, hardening, deuda técnica, incident response, performance, parches, postmortem, FinOps, runbook de rollback, capacity planning, decomiso de sistemas legacy, ruido de alertas, salud de rotación on-call, migración y cutover de plataforma, recuperación ante desastres y continuidad de negocio) | 15 |
 | 12 | Orquestador maestro (ciclo completo) | 1 |
@@ -127,7 +127,7 @@ issue (milestone + project) → rama de trabajo → Pull Request → CI (gates) 
 | 15 | Negocio y QA funcional (historias Gherkin, casos de prueba manuales, defectos de negocio) | 3 |
 | 16 | Soporte y Mesa de Ayuda (triage de tickets, diagnóstico y respuesta, base de conocimiento, SLA/escalamiento, tendencias, auditoría de salud de la KB) | 6 |
 | 17 | Back Office de Ingeniería (onboarding/offboarding técnico, evaluación de herramientas, capacidad del equipo, renovación de vendors, reporte de estado a stakeholders, revisión de éxito post-lanzamiento, retrospectiva de equipo por sprint) | 8 |
-| **Total** | | **115** |
+| **Total** | | **112** |
 
 ---
 

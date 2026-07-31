@@ -48,7 +48,7 @@ Un dev o equipo que usa AI-SDLC Pro obtiene outputs consistentes, trazables y de
 
 > **Actualizado 2026-07-30** — el modelo original de esta sección (4 tiers
 > con paywall sobre los prompts) se reemplazó al confirmar que el
-> repositorio es **público**: el texto de los 115 prompts ya es legible por
+> repositorio es **público**: el texto de los 112 prompts ya es legible por
 > cualquiera en GitHub o vía el servidor MCP sin autenticación, así que
 > gatear el CONTENIDO no protege nada real. La decisión (issue #7, "Opción
 > B") fue monetizar la **plataforma**, no el texto — ver "Decisiones
@@ -58,7 +58,7 @@ Un dev o equipo que usa AI-SDLC Pro obtiene outputs consistentes, trazables y de
 
 | Tier | Precio | Contenido | Target |
 |------|--------|-----------|--------|
-| **Free** | $0 | Los 115 prompts, copia ilimitada y para siempre, sin cuenta. 1 proyecto activo (variables, checklist de progreso, modo guiado). | Adquisición — todo el catálogo |
+| **Free** | $0 | Los 112 prompts, copia ilimitada y para siempre, sin cuenta. 1 proyecto activo (variables, checklist de progreso, modo guiado). | Adquisición — todo el catálogo |
 | **Pro (prueba 1 semana)** | $0, con GitHub | Todo Free + proyectos ilimitados + personalización por prompt + guardado de resultados de IA. Renovable semanalmente con feedback mientras dure el piloto. | Conversión a cuenta |
 | **Pro (suscripción)** | $1 USD/mes (introductorio) | Todo Pro sin muro de prueba ni renovación por feedback. | Individual, sin límite de tiempo |
 | **Pro Equipo / Enterprise** | Por definir con datos del piloto | Todo Pro + funciones de equipo (a definir: miembros, proyectos compartidos, SSO) | Equipos y agencias — pendiente de validar demanda antes de construir |
