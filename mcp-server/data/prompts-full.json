@@ -892,7 +892,7 @@
         "en": "0-D.1 — Project Charter: Formal Definition of New Project"
       },
       "description": {
-        "es": "Prompt para generar el Project Charter de un proyecto nuevo: el documento fundacional que establece el porqué, el qué, el quién y el cómo de alto nivel, autorizado por el patrocinador y aceptado por el equipo antes de iniciar cualquier esfuerzo técnico.\n\nCuándo usarlo: al inicio de un proyecto nuevo, al formalizar un proyecto que comenzó sin documentación, o al actualizar el alcance después de un cambio estratégico significativo.",
+        "es": "Prompt para generar el Project Charter de un proyecto nuevo: el documento fundacional que establece el porqué, el qué, el quién y el cómo de alto nivel, autorizado por el patrocinador y aceptado por el equipo antes de iniciar cualquier esfuerzo técnico.\n\nCuándo usarlo: al inicio de un proyecto nuevo, al formalizar un proyecto que comenzó sin documentación, o al actualizar el alcance después de un cambio estratégico significativo.\n\nRuta rápida — proyecto de riesgo bajo: si el proyecto es pequeño, interno, de bajo presupuesto y sin dependencias externas relevantes (riesgo bajo según la clasificación del framework en `00-framework.md`), resume el Charter en un párrafo de 4-6 líneas (objetivo, alcance, responsable, fecha límite) en vez del documento completo — la ceremonia completa es para proyectos con riesgo medio/alto real, no un formalismo obligatorio para cualquier iniciativa.",
         "en": ""
       },
       "template": {
@@ -966,7 +966,7 @@
         "en": "0-D.2 — Initial Stack & Architecture: Selection and Documentation of Technical Foundation"
       },
       "description": {
-        "es": "Prompt para definir, justificar y documentar el stack tecnológico inicial y las decisiones arquitectónicas fundacionales de un proyecto nuevo. Cubre desde la selección de lenguaje y runtime hasta la topología de infraestructura, el modelo de datos y los patrones de integración.\n\nCuándo usarlo: después de aprobar el Project Charter (`00-D-01`) y antes de generar los ADRs individuales (`04-04-adr-decisiones-arquitectura.md`), la estructura del repositorio (`00-B-01`) o el plan de implementación (`05-01-plan-implementacion.md`).",
+        "es": "Prompt para definir, justificar y documentar el stack tecnológico inicial y las decisiones arquitectónicas fundacionales de un proyecto nuevo. Cubre desde la selección de lenguaje y runtime hasta la topología de infraestructura, el modelo de datos y los patrones de integración.\n\nCuándo usarlo: después de aprobar el Project Charter (`00-D-01`) y antes de generar los ADRs individuales (`04-04-adr-decisiones-arquitectura.md`), la estructura del repositorio (`00-B-01`) o el plan de implementación (`05-01-plan-implementacion.md`).\n\nRuta rápida — riesgo bajo: si el proyecto hereda stack y arquitectura de un proyecto similar ya validado, o es de alcance pequeño y bajo riesgo, resume la decisión en 2-3 líneas justificadas en vez del documento completo — reserva el detalle exhaustivo para decisiones de alto impacto o difíciles de revertir.",
         "en": ""
       },
       "template": {
@@ -1040,7 +1040,7 @@
         "en": "0-D.3 — Project work plan: schedule, WBS, and resource allocation"
       },
       "description": {
-        "es": "Prompt para elaborar el plan de trabajo de todo el proyecto: estructura de desglose del trabajo (EDT/WBS), estimación por fase o entregable, dependencias, cronograma con ruta crítica y asignación de recursos. Es el plan a nivel de proyecto completo — distinto de `05-01-plan-implementacion`, que planifica la ejecución de un cambio o feature ya diseñado dentro de un componente existente.\n\nCuándo usarlo: después de aprobar el Project Charter (`00-D-01`) y, si ya existe, el stack/arquitectura inicial (`00-D-02`) — antes de iniciar la ejecución del proyecto, para tener un cronograma y una asignación de recursos que el equipo o patrocinador pueda aprobar.",
+        "es": "Prompt para elaborar el plan de trabajo de todo el proyecto: estructura de desglose del trabajo (EDT/WBS), estimación por fase o entregable, dependencias, cronograma con ruta crítica y asignación de recursos. Es el plan a nivel de proyecto completo — distinto de `05-01-plan-implementacion`, que planifica la ejecución de un cambio o feature ya diseñado dentro de un componente existente.\n\nCuándo usarlo: después de aprobar el Project Charter (`00-D-01`) y, si ya existe, el stack/arquitectura inicial (`00-D-02`) — antes de iniciar la ejecución del proyecto, para tener un cronograma y una asignación de recursos que el equipo o patrocinador pueda aprobar.\n\nRuta rápida — riesgo bajo: para proyectos pequeños o de alcance muy acotado, un cronograma de alto nivel (hitos principales + fecha estimada) es suficiente — reserva el EDT detallado y la asignación de recursos formal para proyectos con varias personas/equipos o dependencias reales entre tareas.",
         "en": ""
       },
       "template": {
@@ -1118,7 +1118,7 @@
         "en": "0-D.4 — Project risk register (RAID): risks, assumptions, issues and dependencies"
       },
       "description": {
-        "es": "Prompt para construir y mantener el registro de riesgos de todo el proyecto siguiendo el formato RAID (Risks, Assumptions, Issues, Dependencies): riesgos potenciales con probabilidad/impacto, supuestos sobre los que se apoya el plan, incidentes ya materializados que requieren resolución, y dependencias externas que pueden bloquear el cronograma. Es el registro a nivel de todo el proyecto — distinto de `05-02-riesgos-implementacion`, que analiza los riesgos de un cambio o feature puntual ya diseñado.\n\nCuándo usarlo: junto con el Project Charter (`00-D-01`) y el plan de trabajo (`00-D-03`), al inicio del proyecto, y revisado periódicamente (cada hito o cada sprint) durante toda la ejecución — un registro de riesgos que solo se llena una vez al inicio pierde su valor.",
+        "es": "Prompt para construir y mantener el registro de riesgos de todo el proyecto siguiendo el formato RAID (Risks, Assumptions, Issues, Dependencies): riesgos potenciales con probabilidad/impacto, supuestos sobre los que se apoya el plan, incidentes ya materializados que requieren resolución, y dependencias externas que pueden bloquear el cronograma. Es el registro a nivel de todo el proyecto — distinto de `05-02-riesgos-implementacion`, que analiza los riesgos de un cambio o feature puntual ya diseñado.\n\nCuándo usarlo: junto con el Project Charter (`00-D-01`) y el plan de trabajo (`00-D-03`), al inicio del proyecto, y revisado periódicamente (cada hito o cada sprint) durante toda la ejecución — un registro de riesgos que solo se llena una vez al inicio pierde su valor.\n\nRuta rápida — riesgo bajo: si el proyecto tiene pocos riesgos reales identificables y bajo impacto, un registro de 3-5 filas (riesgo, probabilidad, impacto, mitigación) es suficiente — no fuerces el formato RAID completo si no hay supuestos ni dependencias externas relevantes que documentar.",
         "en": ""
       },
       "template": {
@@ -1195,7 +1195,7 @@
         "en": "0-D.5 — Feasibility study and business case: should we even do this project?"
       },
       "description": {
-        "es": "Prompt para evaluar si una idea o iniciativa vale la pena formalizarse como proyecto, antes de invertir tiempo en redactar el Project Charter: viabilidad técnica, económica, operativa y legal/regulatoria, alternativas consideradas (incluyendo no hacer nada) y una recomendación explícita de go/no-go.\n\nCuándo usarlo: al recibir una idea de proyecto o iniciativa de negocio, antes de `00-D-01-project-charter` — este prompt determina si el proyecto debería formalizarse; el Charter asume que ya se decidió que sí.",
+        "es": "Prompt para evaluar si una idea o iniciativa vale la pena formalizarse como proyecto, antes de invertir tiempo en redactar el Project Charter: viabilidad técnica, económica, operativa y legal/regulatoria, alternativas consideradas (incluyendo no hacer nada) y una recomendación explícita de go/no-go.\n\nCuándo usarlo: al recibir una idea de proyecto o iniciativa de negocio, antes de `00-D-01-project-charter` — este prompt determina si el proyecto debería formalizarse; el Charter asume que ya se decidió que sí.\n\nRuta rápida — riesgo bajo: para iniciativas pequeñas y reversibles (ej. una mejora interna sin impacto en clientes ni presupuesto significativo), responde las 4 dimensiones (técnica, económica, operativa, legal) en un párrafo cada una en vez del documento extenso — reserva el análisis exhaustivo para decisiones de inversión significativas o difíciles de revertir.",
         "en": ""
       },
       "template": {
@@ -2206,7 +2206,7 @@
         "en": "4.1 — Functional and technical solution design"
       },
       "description": {
-        "es": "Prompt para diseñar la solución completa antes de implementar: objetivo, alcance, supuestos, restricciones, cambios por componente, riesgos, dependencias, estrategia de validación y rollback.\n\nCuándo usarlo: una vez completado el análisis funcional, técnico y de impacto, antes de planificar o ejecutar cualquier cambio.",
+        "es": "Prompt para diseñar la solución completa antes de implementar: objetivo, alcance, supuestos, restricciones, cambios por componente, riesgos, dependencias, estrategia de validación y rollback.\n\nCuándo usarlo: una vez completado el análisis funcional, técnico y de impacto, antes de planificar o ejecutar cualquier cambio.\n\nRuta rápida — riesgo bajo: si el cambio es de riesgo bajo (lectura, análisis o cambio local reversible, según la clasificación del framework en `00-framework.md`), resume el diseño en un párrafo corto (qué cambia, por qué, riesgo principal) dentro del prompt de implementación (`05-01`/`06-01`) en vez de producir el documento de diseño completo — reserva el proceso de 11 pasos para cambios de riesgo medio/alto.",
         "en": ""
       },
       "template": {
@@ -2753,7 +2753,7 @@
         "en": "5.1 — Detailed implementation plan"
       },
       "description": {
-        "es": "Prompt para elaborar un plan de implementación ejecutable y trazable: actividades previas, cambios por componente, migraciones, pruebas, despliegue, rollback y evidencias esperadas por paso.\n\nCuándo usarlo: después del diseño aprobado (`04-01`), antes de ejecutar cualquier cambio en el repositorio.",
+        "es": "Prompt para elaborar un plan de implementación ejecutable y trazable: actividades previas, cambios por componente, migraciones, pruebas, despliegue, rollback y evidencias esperadas por paso.\n\nCuándo usarlo: después del diseño aprobado (`04-01`), antes de ejecutar cualquier cambio en el repositorio.\n\nRuta rápida — riesgo bajo: si el cambio es de riesgo bajo, resume el plan en una lista corta de 3-5 pasos con su evidencia esperada, sin el bloque JSON de metadatos ni el registro de métricas PSP/TSP — reserva el plan detallado paso a paso para cambios de riesgo medio/alto o que toquen producción, datos o infraestructura.",
         "en": ""
       },
       "template": {
@@ -2834,7 +2834,7 @@
         "en": "5.2 — Implementation risk and impact analysis"
       },
       "description": {
-        "es": "Prompt para identificar y clasificar los riesgos de implementación: funcionales, técnicos, de datos, seguridad, operación, concurrencia de agentes, integración y despliegue. Genera una matriz de riesgos con probabilidad, impacto y plan de mitigación.\n\nCuándo usarlo: en paralelo al plan de implementación (`05-01`), antes de ejecutar cualquier cambio.",
+        "es": "Prompt para identificar y clasificar los riesgos de implementación: funcionales, técnicos, de datos, seguridad, operación, concurrencia de agentes, integración y despliegue. Genera una matriz de riesgos con probabilidad, impacto y plan de mitigación.\n\nCuándo usarlo: en paralelo al plan de implementación (`05-01`), antes de ejecutar cualquier cambio.\n\nRuta rápida — riesgo bajo: si el cambio es de riesgo bajo, incluye los riesgos identificados (si los hay) directamente en el plan de implementación (`05-01`) como una lista corta, sin la matriz completa de riesgos — reserva la matriz detallada para cambios de riesgo medio/alto donde de verdad hay múltiples riesgos que clasificar y mitigar.",
         "en": ""
       },
       "template": {

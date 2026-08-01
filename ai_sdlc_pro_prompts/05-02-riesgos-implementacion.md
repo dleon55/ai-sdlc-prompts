@@ -6,6 +6,8 @@ Prompt para identificar y clasificar los riesgos de implementación: funcionales
 
 **Cuándo usarlo:** en paralelo al plan de implementación (`05-01`), antes de ejecutar cualquier cambio.
 
+**Ruta rápida — riesgo bajo:** si el cambio es de riesgo bajo, incluye los riesgos identificados (si los hay) directamente en el plan de implementación (`05-01`) como una lista corta, sin la matriz completa de riesgos — reserva la matriz detallada para cambios de riesgo medio/alto donde de verdad hay múltiples riesgos que clasificar y mitigar.
+
 ---
 
 ## Contrato editorial

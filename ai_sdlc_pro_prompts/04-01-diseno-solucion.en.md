@@ -6,6 +6,8 @@ Prompt to design the complete solution before implementing: objective, scope, as
 
 **When to use it:** once functional, technical and impact analysis is complete, before planning or executing any change.
 
+**Fast path — low risk:** if the change is low risk (reading, analysis, or a reversible local change, per the framework's classification in `00-framework.md`), summarize the design in a short paragraph (what changes, why, main risk) inside the implementation prompt (`05-01`/`06-01`) instead of producing the full design document — reserve the 11-step process for medium/high-risk changes.
+
 ---
 
 ## Editorial Contract

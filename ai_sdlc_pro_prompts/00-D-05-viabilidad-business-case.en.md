@@ -6,6 +6,8 @@ Prompt to evaluate whether an idea or initiative **is worth formalizing as a pro
 
 **When to use it:** upon receiving a project idea or business initiative, **before** `00-D-01-project-charter` — this prompt determines whether the project should be formalized at all; the Charter assumes that decision has already been made.
 
+**Fast path — low risk:** for small, reversible initiatives (e.g. an internal improvement with no customer impact or significant budget), answer the 4 dimensions (technical, economic, operational, legal) in one paragraph each instead of the extensive document — reserve the exhaustive analysis for significant or hard-to-reverse investment decisions.
+
 ---
 
 ## Editorial Contract

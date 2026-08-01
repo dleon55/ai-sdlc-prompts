@@ -6,6 +6,8 @@ Prompt para evaluar si una idea o iniciativa **vale la pena formalizarse como pr
 
 **Cuándo usarlo:** al recibir una idea de proyecto o iniciativa de negocio, **antes** de `00-D-01-project-charter` — este prompt determina si el proyecto debería formalizarse; el Charter asume que ya se decidió que sí.
 
+**Ruta rápida — riesgo bajo:** para iniciativas pequeñas y reversibles (ej. una mejora interna sin impacto en clientes ni presupuesto significativo), responde las 4 dimensiones (técnica, económica, operativa, legal) en un párrafo cada una en vez del documento extenso — reserva el análisis exhaustivo para decisiones de inversión significativas o difíciles de revertir.
+
 ---
 
 ## Contrato editorial

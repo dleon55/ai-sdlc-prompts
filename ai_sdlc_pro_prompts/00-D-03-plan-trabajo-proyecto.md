@@ -6,6 +6,8 @@ Prompt para elaborar el **plan de trabajo de todo el proyecto**: estructura de d
 
 **Cuándo usarlo:** después de aprobar el Project Charter (`00-D-01`) y, si ya existe, el stack/arquitectura inicial (`00-D-02`) — antes de iniciar la ejecución del proyecto, para tener un cronograma y una asignación de recursos que el equipo o patrocinador pueda aprobar.
 
+**Ruta rápida — riesgo bajo:** para proyectos pequeños o de alcance muy acotado, un cronograma de alto nivel (hitos principales + fecha estimada) es suficiente — reserva el EDT detallado y la asignación de recursos formal para proyectos con varias personas/equipos o dependencias reales entre tareas.
+
 ---
 
 ## Contrato editorial
