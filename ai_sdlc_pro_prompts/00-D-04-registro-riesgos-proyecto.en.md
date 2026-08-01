@@ -6,6 +6,8 @@ Prompt to build and maintain the **whole-project risk register** following the R
 
 **When to use it:** together with the Project Charter (`00-D-01`) and the work plan (`00-D-03`), at the start of the project, and reviewed periodically (each milestone or sprint) throughout execution — a risk register filled in only once at the start loses its value.
 
+**Fast path — low risk:** if the project has few identifiable real risks and low impact, a 3-5 row register (risk, probability, impact, mitigation) is enough — don't force the full RAID format if there are no relevant assumptions or external dependencies to document.
+
 ---
 
 ## Editorial Contract

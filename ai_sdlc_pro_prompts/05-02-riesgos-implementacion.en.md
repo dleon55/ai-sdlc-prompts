@@ -6,6 +6,8 @@ Prompt to identify and classify implementation risks: functional, technical, dat
 
 **When to use it:** in parallel with the implementation plan (`05-01`), before executing any change.
 
+**Fast path — low risk:** if the change is low risk, include any identified risks directly in the implementation plan (`05-01`) as a short list, without the full risk matrix — reserve the detailed matrix for medium/high-risk changes where there really are multiple risks to classify and mitigate.
+
 ---
 
 ## Editorial Contract

@@ -6,6 +6,8 @@ Prompt para construir y mantener el **registro de riesgos de todo el proyecto** 
 
 **Cuándo usarlo:** junto con el Project Charter (`00-D-01`) y el plan de trabajo (`00-D-03`), al inicio del proyecto, y revisado periódicamente (cada hito o cada sprint) durante toda la ejecución — un registro de riesgos que solo se llena una vez al inicio pierde su valor.
 
+**Ruta rápida — riesgo bajo:** si el proyecto tiene pocos riesgos reales identificables y bajo impacto, un registro de 3-5 filas (riesgo, probabilidad, impacto, mitigación) es suficiente — no fuerces el formato RAID completo si no hay supuestos ni dependencias externas relevantes que documentar.
+
 ---
 
 ## Contrato editorial

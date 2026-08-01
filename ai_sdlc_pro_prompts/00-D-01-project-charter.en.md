@@ -6,6 +6,8 @@ Prompt for generating the **Project Charter** of a new project: the foundational
 
 **When to use it:** at the start of a new project, when formalizing a project that began without documentation, or when updating scope after a significant strategic change.
 
+**Fast path — low-risk project:** if the project is small, internal, low-budget, and has no significant external dependencies (low risk per the framework's classification in `00-framework.md`), summarize the Charter in a 4-6 line paragraph (objective, scope, owner, deadline) instead of the full document — the complete ceremony is for projects with real medium/high risk, not a mandatory formality for any initiative.
+
 ---
 
 ## Editorial Contract

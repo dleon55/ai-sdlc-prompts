@@ -6,6 +6,8 @@ Prompt para elaborar un plan de implementación ejecutable y trazable: actividad
 
 **Cuándo usarlo:** después del diseño aprobado (`04-01`), antes de ejecutar cualquier cambio en el repositorio.
 
+**Ruta rápida — riesgo bajo:** si el cambio es de riesgo bajo, resume el plan en una lista corta de 3-5 pasos con su evidencia esperada, sin el bloque JSON de metadatos ni el registro de métricas PSP/TSP — reserva el plan detallado paso a paso para cambios de riesgo medio/alto o que toquen producción, datos o infraestructura.
+
 ---
 
 ## Contrato editorial

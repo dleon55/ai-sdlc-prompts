@@ -6,6 +6,8 @@ Prompt para definir, justificar y documentar el **stack tecnológico inicial y l
 
 **Cuándo usarlo:** después de aprobar el Project Charter (`00-D-01`) y antes de generar los ADRs individuales (`04-04-adr-decisiones-arquitectura.md`), la estructura del repositorio (`00-B-01`) o el plan de implementación (`05-01-plan-implementacion.md`).
 
+**Ruta rápida — riesgo bajo:** si el proyecto hereda stack y arquitectura de un proyecto similar ya validado, o es de alcance pequeño y bajo riesgo, resume la decisión en 2-3 líneas justificadas en vez del documento completo — reserva el detalle exhaustivo para decisiones de alto impacto o difíciles de revertir.
+
 ---
 
 ## Contrato editorial

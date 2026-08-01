@@ -6,6 +6,8 @@ Prompt for defining, justifying, and documenting the **initial technology stack 
 
 **When to use it:** after approving the Project Charter (`00-D-01`) and before generating individual ADRs (`04-04-adr-decisiones-arquitectura.md`), repository structure (`00-B-01`), or the implementation plan (`05-01-plan-implementacion.md`).
 
+**Fast path — low risk:** if the project inherits stack and architecture from a similar, already-validated project, or is small in scope and low risk, summarize the decision in 2-3 justified lines instead of the full document — reserve the exhaustive detail for high-impact or hard-to-reverse decisions.
+
 ---
 
 ## Editorial Contract

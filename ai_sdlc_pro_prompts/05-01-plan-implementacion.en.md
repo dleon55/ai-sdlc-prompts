@@ -6,6 +6,8 @@ Prompt to elaborate an executable and traceable implementation plan: previous ac
 
 **When to use it:** after approved design (`04-01`), before executing any change in the repository.
 
+**Fast path — low risk:** if the change is low risk, summarize the plan as a short list of 3-5 steps with their expected evidence, without the JSON metadata block or the PSP/TSP metrics log — reserve the detailed step-by-step plan for medium/high-risk changes or ones touching production, data, or infrastructure.
+
 ---
 
 ## Editorial Contract

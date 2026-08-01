@@ -6,6 +6,8 @@ Prompt to build the **whole-project work plan**: work breakdown structure (WBS),
 
 **When to use it:** after approving the Project Charter (`00-D-01`) and, if it already exists, the initial stack/architecture (`00-D-02`) — before starting project execution, to have a schedule and resource allocation that the team or sponsor can approve.
 
+**Fast path — low risk:** for small projects or very narrow scope, a high-level schedule (main milestones + estimated date) is enough — reserve the detailed WBS and formal resource allocation for projects with several people/teams or real dependencies between tasks.
+
 ---
 
 ## Editorial Contract

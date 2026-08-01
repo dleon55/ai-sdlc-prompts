@@ -6,6 +6,8 @@ Prompt para diseñar la solución completa antes de implementar: objetivo, alcan
 
 **Cuándo usarlo:** una vez completado el análisis funcional, técnico y de impacto, antes de planificar o ejecutar cualquier cambio.
 
+**Ruta rápida — riesgo bajo:** si el cambio es de riesgo bajo (lectura, análisis o cambio local reversible, según la clasificación del framework en `00-framework.md`), resume el diseño en un párrafo corto (qué cambia, por qué, riesgo principal) dentro del prompt de implementación (`05-01`/`06-01`) en vez de producir el documento de diseño completo — reserva el proceso de 11 pasos para cambios de riesgo medio/alto.
+
 ---
 
 ## Contrato editorial

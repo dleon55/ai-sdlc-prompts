@@ -6,6 +6,8 @@ Prompt para generar el **Project Charter** de un proyecto nuevo: el documento fu
 
 **Cuándo usarlo:** al inicio de un proyecto nuevo, al formalizar un proyecto que comenzó sin documentación, o al actualizar el alcance después de un cambio estratégico significativo.
 
+**Ruta rápida — proyecto de riesgo bajo:** si el proyecto es pequeño, interno, de bajo presupuesto y sin dependencias externas relevantes (riesgo bajo según la clasificación del framework en `00-framework.md`), resume el Charter en un párrafo de 4-6 líneas (objetivo, alcance, responsable, fecha límite) en vez del documento completo — la ceremonia completa es para proyectos con riesgo medio/alto real, no un formalismo obligatorio para cualquier iniciativa.
+
 ---
 
 ## Contrato editorial
