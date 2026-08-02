@@ -5,8 +5,8 @@
 
 **Estándar:** RUP (Rational Unified Process) + PSP (Personal Software Process)  
 **Metodología:** Use-Case Driven Development  
-**Fecha de Creación:** 2026-04-12  
-**Versión:** 1.0
+**Fecha de actualización:** 2026-08-02
+**Versión:** 1.1
 
 ---
 
@@ -39,9 +39,9 @@ Total Especificación:
 └── Documento de Visión:  1 documento estratégico
 
 Estado de Implementación:
-✅ Implementados:    ~75% (42 FR, 36 NFR)
-🔶 Parciales:       ~15% (8 FR, 8 NFR)
-❌ Pendientes:      ~10% (4 FR, 4 NFR - monetización)
+✅ Implementados:    catálogo, proyectos, autenticación, sincronización y monetización de plataforma
+🔶 Parciales:       analítica, medición comercial e i18n editorial continuo
+❌ Pendientes:      capacidades de equipo/Enterprise, sujetas a validación de demanda
 ```
 
 ### Arquitectura del Sistema
@@ -57,13 +57,13 @@ Estado de Implementación:
 │                    LÓGICA DE NEGOCIO                    │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │
 │  │   Prompts   │  │  Proyectos  │  │    i18n     │     │
-│  │  (75 items) │  │ (19 vars)   │  │  (ES/EN)    │     │
+│  │ (112 items) │  │ (19 vars)   │  │  (ES/EN)    │     │
 │  └─────────────┘  └─────────────┘  └─────────────┘     │
 ├─────────────────────────────────────────────────────────┤
 │                   PERSISTENCIA                          │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐     │
-│  │ localStorage│  │   Export    │  │   Import    │     │
-│  │  (cliente)  │  │   (JSON)    │  │   (JSON)    │     │
+│  │ localStorage│  │  Supabase   │  │   Export    │     │
+│  │  (anónimo)  │  │  (sesión)   │  │   (JSON)    │     │
 │  └─────────────┘  └─────────────┘  └─────────────┘     │
 ├─────────────────────────────────────────────────────────┤
 │                   GENERACIÓN                            │
@@ -218,7 +218,7 @@ MAJOR.MINOR.PATCH
 
 ---
 
-**Última actualización:** 2026-04-12  
-**Próxima revisión programada:** 2026-05-12 (mensual)  
+**Última actualización:** 2026-08-02
+**Próxima revisión programada:** 2026-09-02 (mensual)
 **Propietario:** LionSystems — dleon55
 

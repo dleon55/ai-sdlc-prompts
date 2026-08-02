@@ -3,8 +3,8 @@
 
 ---
 
-**Fecha:** 2026-04-12  
-**Versión:** 1.0  
+**Fecha:** 2026-08-02
+**Versión:** 1.1
 **Estándar:** RUP Business Modeling / PSP Process Definition  
 **Clasificación:** Por dominio (Framework, Monetización, Técnica, Calidad)
 
@@ -59,37 +59,32 @@ FR-04 (Ciclo Forzado)
 
 | ID | Nombre | Descripción | Severidad |
 |----|--------|-------------|-----------|
-| **MR-01** | Tier Free | Los 115 prompts completos, copia ilimitada, sin cuenta y para siempre. 1 proyecto activo. El muro gatea la **plataforma**, no el texto (issue #7) | 🔴 Crítica |
+| **MR-01** | Tier Free | Los 112 prompts completos, copia ilimitada, sin cuenta y para siempre. 1 proyecto activo. El muro gatea la **plataforma**, no el texto (issue #7) | 🔴 Crítica |
 | **MR-02** | Tier Pro Individual | $1 USD/mes (introductorio) — quita el muro de prueba: proyectos ilimitados, personalización por prompt, guardado de resultados de IA | 🔴 Crítica |
 | **MR-03** | Tier Pro Equipo | Por definir con datos del piloto — no construir antes de validar demanda | 🟡 Alta |
-| **MR-04** | Pack Único Gumroad | Canal de **descubrimiento**, no de ingreso: "pay what you want", sugerido $5 USD, mínimo $0. Ver nota abajo | 🟢 Media |
+| **MR-04** | Canal alternativo | Gumroad no es integración de cobro ni oferta activa; cualquier canal alternativo exige decisión comercial y material actualizado | 🟢 Media |
 | **MR-05** | Enterprise | Por definir con datos del piloto | 🟢 Media |
 
-> **Nota sobre MR-04 (revisado 2026-07-31).** El precio original era $499 MXN,
-> calibrado cuando MR-02 costaba $299 MXN/mes: el pack equivalía a ~1.7 meses de
-> suscripción. Al bajar MR-02 a $1 USD/mes, ese mismo pack pasó a equivaler a ~27
-> meses, y quedó vendiendo por ~$27 USD un contenido que MR-01 ahora regala para
-> siempre. La corrección no es solo de precio: tras el issue #7 el texto dejó de
-> ser el producto, así que el pack no puede ser un canal de ingreso sin competir
-> con el tier Free. Se reposiciona como canal de adquisición — Gumroad tiene
-> tráfico propio que no llega al sitio — con el `LEEME.md` del pack apuntando a
-> MR-02 como destino de conversión.
+> **Decisión histórica.** El pack Gumroad de $499 MXN se retiró al adoptar el
+> modelo de plataforma: el catálogo es público y el valor monetizable reside en
+> las capacidades Pro. La trazabilidad de esa decisión vive en el issue de
+> producto correspondiente; esta especificación no define un pack activo.
 
 ### 2.2 Reglas de Gate de Conversión
 
 | ID | Nombre | Condición | Acción |
 |----|--------|-----------|--------|
-| **MR-06** | Gate Framework Avanzado | Prompts 00-B (scaffolding) y 00-C (gobernanza) son PRO | Mostrar badge "🔒 Pro", botón "Upgrade para desbloquear" |
-| **MR-07** | Gate Cantidad | Límite de 10 copias/mes en tier Free | Banner "Límite alcanzado — Upgrade a Pro" |
-| **MR-08** | Gate Variables Avanzadas | Variables 7-12 requieren tier Pro | Input disabled con tooltip "Disponible en Pro" |
+| **MR-06** | Acceso al catálogo | Todo visitante puede consultar y copiar los 112 prompts | No bloquear texto, copia ni secciones por tier |
+| **MR-07** | Límite de proyectos Free | Usuario Free intenta crear o conservar más de un proyecto activo | Solicitar sesión y ofrecer prueba Pro; el proyecto existente no se pierde |
+| **MR-08** | Capacidades Pro | Usuario sin Pro intenta usar proyectos adicionales, personalización por prompt o guardado de resultados | Mostrar CTA de autenticación, prueba o suscripción sin bloquear el catálogo |
 
 ### 2.3 Reglas de Precios
 
 | ID | Regla | Justificación |
 |----|-------|---------------|
-| **MR-09** | Precios en MXN | Mercado objetivo principal México/LATAM |
-| **MR-10** | Sin descuentos automáticos | Valor percibido se mantiene, descuentos manuales por ventas |
-| **MR-11** | Trial implícito | Tier Free actúa como trial ilimitado en tiempo, limitado en funcionalidad |
+| **MR-09** | Precio piloto | Pro Individual se ofrece a $1 USD/mes mientras se valida demanda; cualquier cambio exige decisión de producto y actualización de la página pública |
+| **MR-10** | Prueba Pro | La sesión con GitHub habilita una prueba de una semana; el feedback puede renovar el periodo durante el piloto |
+| **MR-11** | Activación de pago | Sólo un evento Paddle firmado y procesado de forma idempotente puede conceder o mantener acceso Pro de pago |
 
 ---
 
@@ -101,16 +96,16 @@ FR-04 (Ciclo Forzado)
 |----|--------|----------------|-----------|
 | **TR-01** | Generador Estático | `build.py` debe producir único archivo `index.html` sin dependencias SSR | 🔴 Crítica |
 | **TR-02** | Single Artifact | Output: un solo HTML (~255KB-1MB) conteniendo todo CSS, JS, contenido | 🔴 Crítica |
-| **TR-03** | Zero CDN | Sin dependencias externas (fuentes, librerías, imágenes deben ser inline/data-uri) | 🟡 Alta |
+| **TR-03** | Dependencias externas acotadas | La interfaz base es autocontenida; Supabase y Paddle.js sólo se cargan para funciones configuradas de autenticación o cobro | 🟡 Alta |
 | **TR-04** | GitHub Pages Compatible | No usar funcionalidades server-side (PHP, Node, etc.) | 🔴 Crítica |
 
 ### 3.2 Reglas de Datos y Estado
 
 | ID | Nombre | Especificación |
 |----|--------|----------------|
-| **TR-05** | localStorage Only | Persistencia exclusiva en browser, sin backend database | 🔴 Crítica |
-| **TR-06** | Schema Versionado | Claves `AI_SDLC_v1_*` permiten migraciones futuras | 🟡 Alta |
-| **TR-07** | Límite LocalStorage | Asumir máximo 5MB disponible, comprimir datos si es necesario | 🟢 Media |
+| **TR-05** | Persistencia híbrida | localStorage sostiene uso anónimo; Supabase persiste proyectos, estado y suscripción para usuarios autenticados, bajo RLS | 🔴 Crítica |
+| **TR-06** | Schema Versionado | Claves `AI_SDLC_v1_*` y esquemas/migraciones de Supabase permiten evolución compatible | 🟡 Alta |
+| **TR-07** | Límite LocalStorage | El uso anónimo debe manejar límites del navegador sin pérdida silenciosa; la sesión autenticada sincroniza los datos permitidos | 🟢 Media |
 
 ### 3.3 Reglas de Calidad y CI/CD
 
@@ -180,6 +175,10 @@ FR-04 (Ciclo Forzado)
 | `AI_SDLC_fw_expanded` | String | '1' si framework expandido | Indefinido |
 | `AI_SDLC_onboarding_done` | String | '1' si usuario completó onboarding | Indefinido |
 | `AI_SDLC_email_collected` | String | Email capturado en onboarding | Indefinido |
+
+> Para usuarios autenticados, la copia en Supabase es la fuente sincronizada
+> entre dispositivos. Las claves locales siguen siendo el respaldo de la
+> experiencia anónima y no sustituyen las políticas RLS.
 
 ### 6.2 Reglas de Variables de Proyecto
 
@@ -251,6 +250,7 @@ FR-04 (Ciclo Forzado)
 | Versión | Fecha | Autor | Cambios |
 |---------|-------|-------|---------|
 | 1.0 | 2026-04-12 | Asistente IA | Documento inicial, 64 reglas identificadas |
+| 1.1 | 2026-08-02 | LionSystems | Alineación con catálogo público, capacidades Pro, Supabase, MCP y Paddle |
 
 ---
 

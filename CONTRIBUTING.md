@@ -91,7 +91,7 @@ Campos obligatorios del contrato:
 Reglas:
 - El contrato es metadata de proceso; no reemplaza ni duplica el contenido del prompt ejecutable ni la sección `## Salida esperada`.
 - ES/EN deben mantener equivalencia funcional en los 9 campos — no requiere traducción palabra por palabra, pero el contenido decisional (riesgo, autonomía, criterios de detención) debe ser el mismo.
-- No es obligatorio para los 75 prompts de una sola vez: se normaliza progresivamente empezando por los prompts críticos. La lista de prompts ya normalizados se documenta en el PR/issue correspondiente, no en un archivo nuevo del repo.
+- No es obligatorio para los 112 prompts de una sola vez: se normaliza progresivamente empezando por los prompts críticos. La lista de prompts ya normalizados se documenta en el PR/issue correspondiente, no en un archivo nuevo del repo.
 
 ---
 

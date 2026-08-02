@@ -122,7 +122,7 @@ jobs:
 
       # Umbral del smoke test de produccion (job deploy-gcp) derivado del
       # build real, no un numero fijo: evita que vuelva a quedar obsoleto
-      # (paso de >=44 a 75 prompts sin que nadie actualizara el smoke test).
+      # (evita que un crecimiento del catálogo deje obsoleto el smoke test).
       - name: Compute expected card count
         id: card_count
         run: |

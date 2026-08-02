@@ -3,8 +3,8 @@
 
 ---
 
-**Fecha:** 2026-04-12  
-**Versión:** 1.2  
+**Fecha:** 2026-08-02
+**Versión:** 1.3
 **Estado:** Aprobado  
 **Autor:** LionSystems — dleon55  
 **Estándar:** RUP / PSP v3.0
@@ -39,7 +39,7 @@ AI-SDLC Pro es una biblioteca interactiva web de prompts estructurados para diri
 | Aspecto | Descripción |
 |---------|-------------|
 | **Problema** | Desarrolladores obtienen outputs inconsistentes de IA por falta de contexto estructurado y metodología SDLC |
-| **Solución** | Biblioteca de 75 prompts profesionales con framework multi-agente obligatorio |
+| **Solución** | Plataforma web con 112 prompts profesionales, framework multi-agente, proyectos con contexto persistente y acceso MCP |
 | **Mercado** | 26.9M desarrolladores globales, crecimiento IA-assisted coding al 35% anual |
 
 ### 2.2 Definición del Problema
@@ -107,8 +107,8 @@ AI-SDLC Pro es una biblioteca interactiva web de prompts estructurados para diri
 | Actor | Descripción | Responsabilidad |
 |-------|-------------|-----------------|
 | **Usuario Visitante** | Accede por primera vez | Explorar landing, entender propuesta de valor |
-| **Usuario Free** | Registrado, tier gratuito | Usar 10 prompts básicos, evaluar producto |
-| **Usuario Pro** | Suscriptor pagado | Acceso completo 75+ prompts, variables avanzadas |
+| **Usuario Free** | Visitante o usuario sin suscripción | Consultar y copiar los 112 prompts sin límite; gestionar un proyecto activo |
+| **Usuario Pro** | Usuario autenticado con prueba o suscripción activa | Proyectos ilimitados, personalización por prompt y guardado de resultados de IA |
 | **Administrador** | LionSystems | Deploys, analytics, gestión de contenido |
 
 ---
@@ -121,12 +121,12 @@ AI-SDLC Pro es una biblioteca interactiva web de prompts estructurados para diri
 |----|-----------|-----------|-------------------|
 | **N-01** | Contexto obligatorio consistente | **Must** | Framework auto-prepend |
 | **N-02** | Variables de proyecto persistentes | **Must** | Sistema de proyectos con 19 variables |
-| **N-03** | Biblioteca estructurada SDLC | **Must** | 75 prompts en 19 grupos |
+| **N-03** | Biblioteca estructurada SDLC | **Must** | 112 prompts en 18 secciones, con contrato editorial y rutas guiadas |
 | **N-04** | Copiar prompts fácilmente | **Must** | Botón copiar con framework + variables |
 | **N-05** | Buscar prompts rápidamente | **Should** | Búsqueda en tiempo real |
 | **N-06** | Soporte multi-idioma | **Should** | i18n ES/EN (implementado parcial) |
 | **N-07** | Multi-selección de prompts | **Could** | Checkboxes + copia en bloque |
-| **N-08** | Sincronización cloud | **Won't** | Fuera de alcance (localStorage only) |
+| **N-08** | Sincronización autenticada | **Should** | Supabase sincroniza proyectos y estado de prompts para usuarios con sesión; el uso anónimo conserva localStorage |
 
 ### 5.2 Características del Producto
 
@@ -134,7 +134,7 @@ AI-SDLC Pro es una biblioteca interactiva web de prompts estructurados para diri
 |----------------|-----------|------------------------|
 | Framework auto-prepend | 🔴 Crítica | 8 horas |
 | Sistema de proyectos | 🔴 Crítica | 16 horas |
-| Biblioteca 44 prompts | 🔴 Crítica | 80 horas (contenido) |
+| Biblioteca 112 prompts | 🔴 Crítica | Evolución continua del contenido |
 | Búsqueda en tiempo real | 🟡 Alta | 4 horas |
 | i18n ES/EN completo | 🟡 Alta | 60 horas |
 | Onboarding guiado | 🟢 Media | 8 horas |
@@ -149,34 +149,25 @@ AI-SDLC Pro es una biblioteca interactiva web de prompts estructurados para diri
 |------------|-------------------------------------|
 | **PromptBase** | Prompts individuales sin estructura SDLC, sin multi-agente, en inglés |
 | **FlowGPT / PromptHero** | Sin framework, sin variables, sin proyectos, prompts sueltos |
-| **Recursos Udemy/Gumroad** | Estáticos, no interactivos, no adaptables al proyecto real |
+| **Recursos estáticos / marketplaces** | Contenido aislado, no interactivo ni adaptable al proyecto real |
 | **GitHub Copilot DIY** | Requiere experiencia, sin guía SDLC, sin estructura |
 
 ---
 
 ## 7. Alcance de Versiones (Roadmap)
 
-### v1.0 (Actual — 2026-04)
-- ✅ 44 prompts estructurados
-- ✅ Framework auto-prepend
-- ✅ Sistema de proyectos (12 variables)
-- ✅ SPA responsive, diseño oscuro
-- ✅ CI/CD dual (GitHub Pages + GCP)
+### v1.3 (Actual — 2026-08)
+- ✅ 112 prompts ES/EN con contrato editorial y rutas guiadas
+- ✅ Framework auto-prepend, proyectos con 19 variables y estado de progreso
+- ✅ Uso anónimo local y sincronización autenticada mediante Supabase
+- ✅ Servidor MCP para consultar, resolver y recomendar prompts a agentes IA
+- ✅ CI/CD dual (GitHub Pages + GCP) y checkout Paddle preparado para el piloto
 
-### v1.1 (In Progress)
-- 🔶 i18n ES/EN (framework listo, prompts pendientes)
-- 🔶 Gate de monetización Free/Pro
-- 🔶 Landing page de conversión optimizada
-
-### v1.2 (Q2 2026)
-- ⏳ Proyectos compartidos (equipo)
-- ⏳ SSO Enterprise
-- ⏳ Prompts privados por organización
-
-### v2.0 (Q3 2026)
-- ⏳ Integración API (OpenAI, Anthropic)
-- ⏳ Extensiones IDE (VS Code plugin)
-- ⏳ Analytics de uso por prompt
+### Próxima validación de producto
+- 🔶 Analítica y medición de adopción, conversión y retención
+- 🔶 Validación controlada del checkout y del ciclo de suscripción
+- ⏳ Proyectos compartidos, SSO y capacidades de equipo sólo tras validar demanda
+- ⏳ Integraciones adicionales con agentes o IDE sólo si resuelven un caso de uso validado
 
 ---
 
@@ -200,7 +191,9 @@ AI-SDLC Pro es una biblioteca interactiva web de prompts estructurados para diri
 | **R-01** | Competidor grande copia concepto | Media | 🔴 Alto | Diferenciación i18n español, velocidad de iteración |
 | **R-02** | Traducciones técnicas incorrectas | Media | 🟡 Medio | Glosario validado, revisión peer |
 | **R-03** | Low adoption por falta de awareness | Alta | 🔴 Alto | Marketing LinkedIn, casos de uso reales |
-| **R-04** | Dependencia de plataformas IA (Copilot, Claude) | Baja | 🟡 Medio | Agnosticismo de agente, soporte multi-agente |
+| **R-04** | Dependencia de plataformas IA (Copilot, Claude) | Baja | 🟡 Medio | Agnosticismo de agente, soporte multi-agente y MCP |
+| **R-05** | Monetizar texto público sin valor diferenciador | Alta | 🔴 Alto | Monetizar capacidades de plataforma y validar disposición de pago antes de ampliar tiers |
+| **R-06** | Cobro o acceso Pro inconsistente | Media | 🔴 Alto | Validar webhook firmado, idempotencia, checkout controlado y políticas publicadas |
 
 ---
 
@@ -208,8 +201,8 @@ AI-SDLC Pro es una biblioteca interactiva web de prompts estructurados para diri
 
 | Rol | Nombre | Firma | Fecha |
 |-----|--------|-------|-------|
-| **Product Owner** | LionSystems | [Pendiente] | 2026-04-12 |
-| **Arquitecto Soluciones** | [Asistente IA] | [Automated] | 2026-04-12 |
+| **Product Owner** | LionSystems | [Pendiente de aceptación] | 2026-08-02 |
+| **Arquitecto Soluciones** | [Asistente IA] | [Actualización documental] | 2026-08-02 |
 
 ---
 
