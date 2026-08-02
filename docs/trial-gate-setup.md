@@ -17,7 +17,7 @@ permite la acción en vez de bloquearla.
 ## Rediseño (issue #7, Opción B) — qué cambió y por qué
 
 El repositorio de este proyecto es **público**: el texto completo de los
-115 prompts ya es legible por cualquiera en GitHub o vía el servidor MCP,
+112 prompts ya es legible por cualquiera en GitHub o vía el servidor MCP,
 sin autenticación. Gatear la **copia** de prompts (el diseño original de
 este muro, "10 copias anónimas") solo agregaba fricción sin proteger nada
 real — cualquier usuario técnico podía evadirlo leyendo el repo.

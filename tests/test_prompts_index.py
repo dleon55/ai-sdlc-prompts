@@ -5,7 +5,7 @@ tests/test_prompts_index.py — Contrato de prompts-index.json (issue #63)
 Verifica que build.build() derive un índice JSON machine-readable desde la
 tabla "## Contrato editorial" / "## Editorial Contract" (issue #47/#60) de
 cada prompt, para que un orquestador pueda seleccionar el prompt correcto
-por consulta estructurada en vez de leer las 75 páginas markdown completas.
+por consulta estructurada en vez de leer todos los archivos Markdown completos.
 """
 import json
 import sys
@@ -48,7 +48,7 @@ def test_index_file_generated_by_build(tmp_path, monkeypatch):
 
 
 def test_all_prompts_have_contract_in_index(tmp_path, monkeypatch):
-    """75/75 prompts deben tener contrato editorial completo (issue #60)."""
+    """Todo prompt del índice debe tener contrato editorial completo (issue #60)."""
     out_index = tmp_path / "out-index.json"
     monkeypatch.setattr(build, "OUTPUT_FILE", tmp_path / "out.html")
     monkeypatch.setattr(build, "INDEX_OUTPUT_FILE", out_index)

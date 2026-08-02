@@ -3,8 +3,8 @@
 
 ---
 
-**Fecha:** 2026-04-12  
-**Versión:** 1.0  
+**Fecha:** 2026-08-02
+**Versión:** 1.1
 **Metodología:** RUP Use-Case Driven Development  
 **Notación:** UML 2.5 Use Case Diagrams + Especificación textual
 
@@ -124,7 +124,7 @@
 |-------|-------------|
 | **ID** | UC-03 |
 | **Nombre** | Cambiar Proyecto Activo |
-| **Actor(es)** | Usuario Registrado |
+| **Actor(es)** | Visitante o usuario autenticado |
 | **Descripción** | Usuario selecciona otro proyecto de su lista, cargando sus variables asociadas |
 | **Precondiciones** | Mínimo 2 proyectos creados |
 | **Postcondiciones** | Proyecto seleccionado se vuelve activo; variables cargadas en contexto |
@@ -149,7 +149,7 @@
 |-------|-------------|
 | **ID** | UC-04 |
 | **Nombre** | Configurar Variables de Contexto |
-| **Actor(es)** | Usuario Registrado |
+| **Actor(es)** | Visitante o usuario autenticado |
 | **Descripción** | Usuario define las 19 variables de contexto que personalizarán los prompts |
 | **Precondiciones** | Proyecto activo existente |
 | **Postcondiciones** | Variables persistidas en `localStorage.AI_SDLC_v1_projects` |
@@ -177,7 +177,7 @@
 |-------|-------------|
 | **ID** | UC-05 |
 | **Nombre** | Crear y Nombrar Proyecto |
-| **Actor(es)** | Usuario Registrado |
+| **Actor(es)** | Visitante o usuario autenticado |
 | **Descripción** | Usuario crea proyecto nuevo con nombre descriptivo |
 | **Precondiciones** | Ninguna (primer proyecto se crea automáticamente) |
 | **Postcondiciones** | Nuevo proyecto en array `projects`; variables vacías inicializadas |
@@ -201,7 +201,7 @@
 |-------|-------------|
 | **ID** | UC-06 |
 | **Nombre** | Buscar y Filtrar Prompts |
-| **Actor(es)** | Usuario Registrado |
+| **Actor(es)** | Visitante o usuario autenticado |
 | **Descripción** | Usuario busca prompts por texto en título o contenido |
 | **Precondiciones** | App cargada (sección /app) |
 | **Postcondiciones** | Lista filtrada mostrando solo coincidencias |
@@ -210,7 +210,7 @@
 1. Usuario posiciona cursor en campo de búsqueda
 2. Escribe término de búsqueda (ej: "incidente")
 3. Sistema filtra en tiempo real (debounce 150ms)
-4. Muestra contador: "3 de 75 prompts"
+4. Muestra contador: "3 de 112 prompts"
 5. Cards no coincidentes ocultados
 6. Usuario limpia búsqueda → restaura todos
 
@@ -225,7 +225,7 @@
 |-------|-------------|
 | **ID** | UC-07 |
 | **Nombre** | Copiar Prompt al Portapapeles |
-| **Actor(es)** | Usuario Registrado |
+| **Actor(es)** | Visitante o usuario autenticado |
 | **Descripción** | Usuario copia prompt específico con framework prepend y variables aplicadas |
 | **Precondiciones** | Proyecto activo; prompt visible |
 | **Postcondiciones** | Texto en clipboard listo para pegar en agente IA |
@@ -253,7 +253,7 @@
 |-------|-------------|
 | **ID** | UC-08 |
 | **Nombre** | Consultar Info y Fórmulas de Uso |
-| **Actor(es)** | Usuario Registrado |
+| **Actor(es)** | Visitante o usuario autenticado |
 | **Descripción** | Usuario ve descripción detallada, fórmulas de uso y variables sin copiar prompt |
 | **Precondiciones** | Prompt en biblioteca |
 | **Postcondiciones** | Modal informativo visible; prompt no copiado |
@@ -278,7 +278,7 @@
 |-------|-------------|
 | **ID** | UC-09 |
 | **Nombre** | Seleccionar Múltiples Prompts |
-| **Actor(es)** | Usuario Registrado |
+| **Actor(es)** | Visitante o usuario autenticado |
 | **Descripción** | Usuario selecciona varios prompts vía checkboxes y los copia en bloque |
 | **Precondiciones** | Modo "Multi-select" activado |
 | **Postcondiciones** | Múltiples prompts en clipboard separados por delimitador |
@@ -302,7 +302,7 @@
 |-------|-------------|
 | **ID** | UC-10 |
 | **Nombre** | Controlar Visibilidad de Componentes |
-| **Actor(es)** | Usuario Registrado |
+| **Actor(es)** | Visitante o usuario autenticado |
 | **Descripción** | Usuario colapsa/expande sidebar, framework banner, o cards individuales |
 | **Precondiciones** | Elemento UI presente |
 | **Postcondiciones** | Estado persistido en localStorage |
@@ -328,13 +328,14 @@ Ver documento `i18n-UseCases.md` para especificación detallada de:
 
 ---
 
-### UC-14 a UC-17: Monetización
+### UC-14 a UC-17: Capacidades de Plataforma y Suscripción
 
-Ver documento `Monetization-UseCases.md` para especificación detallada de:
-- UC-14: Acceder Contenido Tier Free
-- UC-15: Solicitar Upgrade a Pro
-- UC-16: Detectar Gate de Conversión
-- UC-17: Procesar Pago y Activar Pro
+| Caso | Actor | Flujo vigente | Resultado esperado |
+|------|-------|---------------|--------------------|
+| **UC-14: Usar plataforma Free** | Visitante | Consulta y copia cualquier prompt; crea o usa un proyecto activo | Catálogo sin bloqueo de contenido y contexto local disponible |
+| **UC-15: Solicitar capacidad Pro** | Usuario Free | Intenta crear otro proyecto, personalizar un prompt o guardar un resultado | Se solicita sesión GitHub y se ofrece prueba Pro; no se pierde el trabajo existente |
+| **UC-16: Renovar acceso de prueba** | Usuario con prueba vencida | Envía calificación y comentario durante el piloto | El sistema renueva el periodo de prueba conforme a reglas publicadas |
+| **UC-17: Suscribirse y activar Pro** | Usuario autenticado, Paddle y webhook | Completa Checkout; el webhook firmado procesa el evento de forma idempotente | Acceso Pro actualizado sin exponer secretos ni aceptar eventos falsos |
 
 ---
 
@@ -352,6 +353,10 @@ Ver documento `Monetization-UseCases.md` para especificación detallada de:
 | UC-08 | N-05 | Info Modal | 4 |
 | UC-09 | N-05 | MultiSelect JS | 6 |
 | UC-10 | N-03 | Toggle UI | 4 |
+| UC-14 | FR-MON-01, FR-MON-02, FR-MON-04 | Sesión, proyectos y gate de capacidades | - |
+| UC-15 | FR-MON-03 | CTA de autenticación o Pro | - |
+| UC-16 | MR-10 | Renovación de prueba por feedback | - |
+| UC-17 | FR-MON-05, FR-MON-06 | Paddle Checkout, webhook y Supabase | - |
 | **Total** | | | **62 horas** |
 
 ---

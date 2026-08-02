@@ -259,7 +259,7 @@ def parse_md(filepath):
 # ── Índice JSON machine-readable (issue #63) ──────────────────────────────
 # Extrae la tabla "## Contrato editorial" / "## Editorial Contract" (issue #47/#60)
 # de cada prompt para que un orquestador (humano o agente) pueda seleccionar el
-# prompt correcto por consulta estructurada, sin leer las 75 páginas completas.
+# prompt correcto por consulta estructurada, sin leer todos los archivos Markdown.
 # Extractor de solo lectura: nunca toca RAW_PROMPTS, HEADER_CATEGORY ni parse_md().
 CONTRACT_FIELD_MAP = {
     "tipo": "type", "type": "type",

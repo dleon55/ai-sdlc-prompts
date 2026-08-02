@@ -9,6 +9,11 @@
 
 **AI-SDLC Pro** es la primera biblioteca interactiva de prompts estructurados en español para dirigir agentes IA (GitHub Copilot, Claude, Cursor, Windsurf, Codex, Antigravity) a través del ciclo completo de ingeniería de software.
 
+AI-SDLC Pro es un producto de **Lion Systems**: su función es demostrar la
+capacidad de la organización, adquirir usuarios y validar capacidades de
+plataforma. No sustituye los servicios B2B de arquitectura, desarrollo,
+automatización, seguridad y soporte ofrecidos por la marca institucional.
+
 **Propuesta de valor central:**  
 Un dev o equipo que usa AI-SDLC Pro obtiene outputs consistentes, trazables y de calidad de ingeniería — sin importar qué agente IA usa ni qué tan experimentado es con prompting.
 
@@ -39,7 +44,7 @@ Un dev o equipo que usa AI-SDLC Pro obtiene outputs consistentes, trazables y de
 |------------|-------------------------------------|
 | PromptBase | Prompts individuales sin estructura SDLC, sin multi-agente, en inglés |
 | FlowGPT / PromptHero | Sin framework, sin variables, sin proyectos, prompts sueltos |
-| Recursos Udemy/Gumroad | Estáticos, no interactivos, no adaptables al proyecto real |
+| Recursos estáticos / marketplaces | Contenido aislado, no interactivo ni adaptable al proyecto real |
 | GitHub Copilot instructions DIY | Requiere experiencia, sin guía SDLC, sin estructura |
 
 ---
@@ -65,16 +70,15 @@ Un dev o equipo que usa AI-SDLC Pro obtiene outputs consistentes, trazables y de
 
 ### Canal alternativo — Producto digital
 
-Tras el issue #7 (el muro gatea la plataforma, no el texto) este canal dejó de ser
-una vía de ingreso y pasó a ser **de adquisición**: Gumroad tiene catálogo y tráfico
-propios que nunca llegarían al sitio, y el pack funciona como folleto que termina en
-la suscripción.
+Tras el issue #7, Gumroad dejó de ser una integración de cobro y una vía de
+ingreso del producto. Puede evaluarse en el futuro como canal de adquisición,
+pero no es un requisito funcional ni debe anunciarse como oferta activa mientras
+no exista una decisión comercial, atribución de tráfico y material actualizado.
 
-- **Pack completo único** (Gumroad): **"pay what you want"**, sugerido $5 USD, mínimo $0
-  — versión del día del catálogo que ya es gratuito. No es contenido exclusivo; su
-  `LEEME.md` apunta a la suscripción de $1 USD/mes como destino de conversión.
-- **Packs por industria**: FinTech, eCommerce, SaaS B2B — pospuestos hasta validar
-  que este canal traiga tráfico real.
+- **Pack completo único:** no activo; cualquier publicación futura debe apuntar
+  a la plataforma y no vender como exclusivo un contenido público.
+- **Packs por industria:** pospuestos hasta validar demanda y una propuesta de
+  valor diferenciada.
 
 > El precio anterior ($499 MXN fijo) se fijó cuando la suscripción costaba $299
 > MXN/mes: el pack equivalía a ~1.7 meses. Con la suscripción en $1 USD/mes ese
@@ -116,7 +120,7 @@ Ver: [Milestones](https://github.com/dleon55/ai-sdlc-prompts/milestones) · [Iss
 |---|--------|--------|
 | 6 | ~~Definir prompts Free vs Pro — gate de conversión en sidebar~~ **Completado 2026-07-30, rediseñado**: dado que el repo es público, el gate no se aplicó a los prompts (no protege nada) sino a la plataforma — 1 proyecto gratis vs. proyectos ilimitados + personalización + resultados de IA en Pro. Ver issue #7 y `docs/trial-gate-setup.md`. | `monetization`, `ux` |
 | 7 | Crear página de precios /precios con 3 tiers | `monetization`, `ux` |
-| 8 | Publicar pack completo en Gumroad ("pay what you want", sugerido $5 USD) — canal de adquisición. Bloqueado hasta validar el cobro real en Paddle | `monetization` |
+| 8 | Evaluar canales alternativos de adquisición sólo después de validar cobro, atribución y oferta; Gumroad no es requisito ni oferta activa | `monetization` |
 
 #### Sprint 3 — Distribución (Sem 5-8)
 
@@ -216,7 +220,7 @@ Ver: [Milestones](https://github.com/dleon55/ai-sdlc-prompts/milestones) · [Iss
 | Fecha | Decisión | Razón |
 |-------|---------|-------|
 | 2026-04-11 | Modelo Freemium + Licencia equipo como estrategia principal | Mayor potencial de MRR recurrente vs venta única |
-| 2026-04-11 | Gumroad como canal de validación rápida antes de implementar paywall | Bajo esfuerzo, valida disposición a pagar en 24 hrs |
+| 2026-04-11 | Gumroad como canal de validación rápida antes de implementar paywall | Decisión histórica reemplazada: no es integración de cobro ni oferta activa del producto |
 | 2026-04-11 | Mantener sitio self-contained (sin backend en corto plazo) | Minimizar complejidad operativa en fase de validación |
 | 2026-04-11 | Priorizar distribución orgánica antes de paid advertising | CAC desconocido, construir audiencia antes de escalar |
 | 2026-07-30 | Gate Free/Pro sobre la PLATAFORMA (proyectos múltiples, personalización, resultados de IA), no sobre el TEXTO de los prompts ("Opción B", issue #7) | El repositorio es público — el texto ya es legible por cualquiera en GitHub o vía el servidor MCP sin autenticación; gatear la copia solo agregaba fricción sin proteger contenido real. La plataforma (gestión de proyecto) sí es exclusiva del sitio y monetizable de forma honesta. |

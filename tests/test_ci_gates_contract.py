@@ -5,7 +5,7 @@ tests/test_ci_gates_contract.py — Contrato del workflow de CI/CD
 Bloquea que un futuro cambio a .github/workflows/deploy.yml elimine
 silenciosamente alguno de los 5 gates obligatorios antes de desplegar, o
 reintroduzca un umbral de smoke test hardcodeado que vuelva a quedar
-obsoleto (como pasó con ">=44" cuando la biblioteca creció a 75 prompts).
+obsoleto cuando la biblioteca cambia de tamaño.
 """
 from pathlib import Path
 

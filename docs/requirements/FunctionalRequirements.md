@@ -3,8 +3,8 @@
 
 ---
 
-**Fecha:** 2026-04-12  
-**Versión:** 1.0  
+**Fecha:** 2026-08-02
+**Versión:** 1.1
 **Estándar:** IEEE 830-1998 / RUP SRS  
 **Prioridad:** MoSCoW (Must, Should, Could, Won't)
 
@@ -32,7 +32,7 @@ Cubre todas las funcionalidades accesibles por usuarios finales (visitantes, usu
 
 | ID | Requerimiento | Prioridad | Caso de Uso | Estado |
 |----|---------------|-----------|-------------|--------|
-| **FR-BLD-01** | El generador `build.py` debe procesar 75 archivos `.md` en `ai_sdlc_pro_prompts/` | Must | - | ✅ |
+| **FR-BLD-01** | El generador `build.py` debe procesar los 112 prompts fuente `.md` en `ai_sdlc_pro_prompts/` | Must | - | ✅ |
 | **FR-BLD-02** | Debe generar único archivo `index.html` (~255KB) sin dependencias externas | Must | - | ✅ |
 | **FR-BLD-03** | Debe extraer título, descripción, prompt, fórmulas y variables de cada `.md` | Must | - | ✅ |
 | **FR-BLD-04** | Debe generar cards HTML con IDs únicos por prompt (`pid = seccion-sub`) | Must | - | ✅ |
@@ -43,7 +43,7 @@ Cubre todas las funcionalidades accesibles por usuarios finales (visitantes, usu
 
 | ID | Requerimiento | Prioridad | Caso de Uso | Estado |
 |----|---------------|-----------|-------------|--------|
-| **FR-PRM-01** | Mostrar biblioteca de 75 prompts organizados en 19 grupos (00-15) | Must | UC-01 | ✅ |
+| **FR-PRM-01** | Mostrar biblioteca de 112 prompts organizados en 18 secciones del ciclo SDLC | Must | UC-01 | ✅ |
 | **FR-PRM-02** | Permitir expansión/colapso individual de cada card de prompt | Must | UC-10 | ✅ |
 | **FR-PRM-03** | Mostrar descripción corta y botón "Copiar" en card colapsada | Must | UC-07 | ✅ |
 | **FR-PRM-04** | Mostrar contenido completo del prompt en card expandida | Must | UC-07 | ✅ |
@@ -79,7 +79,7 @@ Cubre todas las funcionalidades accesibles por usuarios finales (visitantes, usu
 
 | ID | Requerimiento | Prioridad | Caso de Uso | Estado |
 |----|---------------|-----------|-------------|--------|
-| **FR-VAR-01** | Almacenar 20 variables por proyecto, con migración defensiva de proyectos existentes | Must | UC-04 | ✅ |
+| **FR-VAR-01** | Almacenar 19 variables por proyecto y asignaciones adicionales `TOKEN=valor`, con migración defensiva de proyectos existentes | Must | UC-04 | ✅ |
 | **FR-VAR-02** | Clasificar variables de contexto general y entradas específicas reutilizables por prompt | Should | UC-04 | ✅ |
 | **FR-VAR-03** | Panel de edición de variables deslizable desde derecha | Should | UC-04 | ✅ |
 | **FR-VAR-04** | Validar campos requeridos antes de permitir copia | Should | UC-04 | 🟡 |
@@ -101,7 +101,7 @@ Cubre todas las funcionalidades accesibles por usuarios finales (visitantes, usu
 | **FR-I18N-07** | Actualizar meta tags dinámicamente al cambiar idioma | Could | UC-12 | 🔶 |
 | **FR-I18N-08** | Fallback a ES si contenido EN no disponible | Should | i18n | ✅ |
 | **FR-I18N-09** | Traducir UI completa (strings, labels, tooltips) | Must | i18n | ✅ |
-| **FR-I18N-10** | Traducir contenido de los 75 prompts | Should | i18n | 🔶 |
+| **FR-I18N-10** | Mantener pares ES/EN funcionalmente equivalentes para los 112 prompts | Should | i18n | 🔶 |
 | **FR-I18N-11** | Traducir landing page completa | Could | i18n | 🔶 |
 
 ### 2.7 Sistema de UI/UX
@@ -139,16 +139,16 @@ Cubre todas las funcionalidades accesibles por usuarios finales (visitantes, usu
 | **FR-ANL-04** | Trackear page views de `/app` vs landing | Could | - | ✅ |
 | **FR-ANL-05** | No bloquear funcionamiento si analytics falla | Must | - | ✅ |
 
-### 2.10 Sistema de Monetización (Futuro)
+### 2.10 Sistema de Monetización de Plataforma
 
 | ID | Requerimiento | Prioridad | Caso de Uso | Estado |
 |----|---------------|-----------|-------------|--------|
-| **FR-MON-01** | Detectar tier del usuario (Free vs Pro) | Must | UC-14 | 🔶 |
-| **FR-MON-02** | Mostrar badge "🔒 Pro" en prompts bloqueados | Must | UC-16 | 🔶 |
-| **FR-MON-03** | Mostrar CTA upgrade cuando usuario intenta acceder Pro | Must | UC-15 | 🔶 |
-| **FR-MON-04** | Limitar funcionalidad en tier Free (10 prompts, variables básicas) | Must | UC-14 | 🔶 |
-| **FR-MON-05** | Integrar gateway de pago (Stripe/Gumroad/Lemon Squeezy) | Must | UC-17 | 🔶 |
-| **FR-MON-06** | Activar funcionalidad Pro tras pago exitoso | Must | UC-17 | 🔶 |
+| **FR-MON-01** | Determinar sesión y capacidades Free, prueba Pro o Pro de pago | Must | UC-14 | ✅ |
+| **FR-MON-02** | Mantener el catálogo y copia de prompts disponibles sin bloqueo de texto | Must | UC-14 | ✅ |
+| **FR-MON-03** | Mostrar CTA cuando una capacidad exclusiva de plataforma requiere autenticación o Pro | Must | UC-15 | ✅ |
+| **FR-MON-04** | Permitir un proyecto Free y restringir a Pro los proyectos adicionales, la personalización y el guardado de resultados | Must | UC-14 | ✅ |
+| **FR-MON-05** | Integrar Paddle Checkout y un webhook firmado para sincronizar suscripciones | Must | UC-17 | ✅ |
+| **FR-MON-06** | Activar, actualizar o revocar el acceso Pro sólo con eventos Paddle válidos, tolerantes a reintentos e idempotentes | Must | UC-17 | ✅ |
 
 ---
 
@@ -174,7 +174,7 @@ Cubre todas las funcionalidades accesibles por usuarios finales (visitantes, usu
 | Interfaz | Descripción | Tipo |
 |----------|-------------|------|
 | **Landing Page** | Página de marketing, conversión | Público |
-| **App SPA** | Biblioteca interactiva de prompts | Autenticado (future) / Free |
+| **App SPA** | Biblioteca, proyectos y capacidades Pro | Visitante, Free o usuario autenticado |
 | **Admin Panel** | Gestión de prompts, analytics | Privado (LionSystems) |
 
 ### 4.2 Interfaces de Software
@@ -182,9 +182,11 @@ Cubre todas las funcionalidades accesibles por usuarios finales (visitantes, usu
 | Interfaz | Protocolo | Descripción |
 |----------|-----------|-------------|
 | **Google Analytics** | HTTPS/JS | Event tracking |
-| **Stripe/Gumroad** | HTTPS/API | Procesamiento pagos (future) |
+| **Paddle Checkout / Webhook** | HTTPS | Suscripción y eventos de acceso Pro |
+| **Supabase Auth / Database** | HTTPS | Autenticación GitHub y persistencia sincronizada con RLS |
+| **MCP (stdio)** | Model Context Protocol | Consulta y resolución de prompts para agentes IA |
 | **Clipboard API** | Browser API | navigator.clipboard |
-| **localStorage** | Browser API | Persistencia datos usuario |
+| **localStorage** | Browser API | Persistencia anónima y preferencias locales |
 
 ### 4.3 Interfaces de Comunicaciones
 
@@ -222,6 +224,7 @@ Cubre todas las funcionalidades accesibles por usuarios finales (visitantes, usu
 | Versión | Fecha | Autor | Cambios |
 |---------|-------|-------|---------|
 | 1.0 | 2026-04-12 | Asistente IA | Documento inicial, 54 FR identificados |
+| 1.1 | 2026-08-02 | Lion Systems | Alineación del catálogo, persistencia y monetización de plataforma con la implementación vigente |
 
 ---
 
@@ -231,6 +234,5 @@ Cubre todas las funcionalidades accesibles por usuarios finales (visitantes, usu
 - **Should:** 15 (28%)
 - **Could:** 5 (9%)
 - **Won't:** 2 (4%)
-- **Implementados:** ~42 (78%)
-- **Pendientes:** ~12 (monetización + i18n prompts)
+- **Estado:** revisar contra pruebas y despliegues vigentes; este documento no sustituye la evidencia de CI/CD o producción.
 

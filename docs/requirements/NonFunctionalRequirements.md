@@ -3,8 +3,8 @@
 
 ---
 
-**Fecha:** 2026-04-12  
-**Versión:** 1.0  
+**Fecha:** 2026-08-02
+**Versión:** 1.1
 **Estándar:** ISO/IEC 25010 (SQuaRE) / RUP Supplementary Specifications  
 **Categorías:** Performance, Security, Reliability, Usability, Maintainability, Portability
 
@@ -41,8 +41,8 @@
 
 | ID | Requerimiento | Prioridad | Estado |
 |----|---------------|-----------|--------|
-| **NFR-SEC-01** | Datos de proyecto almacenados localmente (no servidor) | Must | ✅ |
-| **NFR-SEC-02** | Sin transmisión de datos de proyecto a terceros | Must | ✅ |
+| **NFR-SEC-01** | Los proyectos anónimos se almacenan localmente; los de usuarios autenticados se sincronizan en Supabase bajo RLS | Must | ✅ |
+| **NFR-SEC-02** | No transmitir contenido de proyectos a servicios externos no configurados; Supabase sólo recibe los datos necesarios de usuarios autenticados | Must | ✅ |
 | **NFR-SEC-03** | Analytics solo eventos agregados (no contenido de prompts) | Must | ✅ |
 | **NFR-SEC-04** | No almacenar credenciales, tokens, o secrets en variables | Must | ✅ |
 
@@ -86,7 +86,7 @@
 | ID | Requerimiento | Prioridad | Estado |
 |----|---------------|-----------|--------|
 | **NFR-REL-07** | Export/Import de proyectos para backup manual | Could | ✅ |
-| **NFR-REL-08** | Auto-backup no requerido (client-side only) | Won't | ❌ |
+| **NFR-REL-08** | No se requiere auto-backup para uso anónimo; la sincronización de usuarios autenticados depende de Supabase | Won't | ❌ |
 
 ---
 
@@ -142,7 +142,7 @@
 
 | ID | Requerimiento | Prioridad | Estado |
 |----|---------------|-----------|--------|
-| **NFR-MAN-05** | Componente card de prompt reusable para todos los 75 prompts | Must | ✅ |
+| **NFR-MAN-05** | Componente card de prompt reusable para los 112 prompts | Must | ✅ |
 | **NFR-MAN-06** | Funciones de copia/variables reutilizables | Must | ✅ |
 
 ### 5.3 Analizabilidad
@@ -267,6 +267,7 @@ IMP      ├─────────────┼────────�
 | Versión | Fecha | Autor | Cambios |
 |---------|-------|-------|---------|
 | 1.0 | 2026-04-12 | Asistente IA | Documento inicial, 48 NFR + 5 restricciones |
+| 1.1 | 2026-08-02 | Lion Systems | Alineación con arquitectura híbrida, Supabase y checkout Paddle |
 
 ---
 
