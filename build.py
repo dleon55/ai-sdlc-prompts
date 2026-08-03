@@ -4519,6 +4519,12 @@ function dismissWelcomeBanner() {
   } catch(e) {}
 }
 
+function startGuidedRoute() {
+  if (typeof gtag === 'function') gtag('event', 'guided_route_started', {source: 'welcome_banner'});
+  dismissWelcomeBanner();
+  openGuidedModal();
+}
+
 /* ═══════════════════  ONBOARDING  ══════════════════════════════ */
 var _obStep = 0;
 var _obTotal = 5;
@@ -4798,7 +4804,7 @@ def get_landing_html(n):
         f'    <p>{ls["hero_subtitle"].format(n=n)}</p>\n'
         f'    <div class="landing-cta-group">\n'
         f'      <a class="landing-cta-primary" href="/app">{ls["cta_primary"]}</a>\n'
-        f'      <a class="landing-cta-secondary" href="https://github.com/dleon55/ai-sdlc-prompts" target="_blank" rel="noopener">{ls["cta_secondary"]}</a>\n'
+        f'      <a class="landing-cta-secondary" href="/precios.html" onclick="if(typeof gtag===\'function\')gtag(\'event\',\'pricing_cta_click\',{{source:\'landing\'}});">{ls["cta_secondary"]}</a>\n'
         f'    </div>\n'
         f'  </section>\n'
         f'  <section class="landing-pain">\n'
@@ -4839,6 +4845,7 @@ def get_landing_html(n):
         f'    <p>{ls["final_subtitle"]}</p>\n'
         f'    <div class="landing-cta-group">\n'
         f'      <a class="landing-cta-primary" href="/app">{ls["cta_nav"]}</a>\n'
+        '      <a class="landing-cta-secondary" href="https://www.lionsystems.com.mx/contactus?subject=ai-sdlc-pro-product-auditoria" target="_blank" rel="noopener" onclick="if(typeof gtag===\'function\')gtag(\'event\',\'b2b_audit_cta_click\',{source:\'landing\'});"><span class="fw-lang-es">Solicitar auditoría empresarial</span><span class="fw-lang-en">Request an enterprise audit</span></a>\n'
         f'    </div>\n'
         f'  </section>\n'
         f'  <footer class="landing-footer">\n'
@@ -4944,8 +4951,8 @@ def build_precios_page():
         '</header>\n'
         '<main>\n'
         '  <h1><span class="fw-lang-es">Precios</span><span class="fw-lang-en">Pricing</span></h1>\n'
-        '  <p class="px-sub fw-lang-es">Estamos en periodo de piloto: así funciona el acceso hoy.</p>\n'
-        '  <p class="px-sub fw-lang-en">We are in a pilot period: here is how access works today.</p>\n'
+        '  <p class="px-sub fw-lang-es">Oferta de lanzamiento: así funciona el acceso actual.</p>\n'
+        '  <p class="px-sub fw-lang-en">Launch offer: this is how access works today.</p>\n'
         '  <div class="px-card">\n'
         '    <h2><span class="px-badge fw-lang-es">Gratis</span><span class="px-badge fw-lang-en">Free</span>'
         '<span class="fw-lang-es">&nbsp;Sin registro</span><span class="fw-lang-en">&nbsp;No sign-up</span></h2>\n'
@@ -4977,25 +4984,34 @@ def build_precios_page():
         '    <h2><span class="px-badge fw-lang-es">Plan Pro</span><span class="px-badge fw-lang-en">Pro plan</span>'
         '<span class="fw-lang-es">&nbsp;$1 USD/mes</span>'
         '<span class="fw-lang-en">&nbsp;$1 USD/month</span></h2>\n'
-        '    <p class="fw-lang-es">Precio introductorio del piloto: <strong>$1 USD al mes</strong>, acceso Pro '
+        '    <p class="fw-lang-es">Precio introductorio de lanzamiento: <strong>$1 USD al mes</strong>, acceso Pro '
         'ilimitado (proyectos, personalización, resultados de IA) sin muro de prueba. Copiar prompts es y seguirá '
-        'siendo gratis para todos, con o sin Pro. Los tiers definitivos (Individual y Equipo) se van a decidir con '
-        'datos reales de este piloto, no a ciegas — este precio puede ajustarse.</p>\n'
-        '    <p class="fw-lang-en">Pilot introductory price: <strong>$1 USD per month</strong>, unlimited Pro access '
+        'siendo gratis para todos, con o sin Pro. Cualquier cambio de precio se comunicará antes de que aplique a tu '
+        'siguiente renovación y podrás cancelar sin penalización.</p>\n'
+        '    <p class="fw-lang-en">Launch introductory price: <strong>$1 USD per month</strong>, unlimited Pro access '
         '(projects, personalization, AI output storage) with no trial wall. Copying prompts is and will remain free '
-        'for everyone, Pro or not. The final tiers (Individual and Team) will be decided using real data from this '
-        'pilot, not a guess — this price may change.</p>\n'
+        'for everyone, Pro or not. Any price change will be communicated before it applies to your next renewal, '
+        'and you may cancel without penalty.</p>\n'
         '    <button id="px-subscribe-btn" class="px-cta" style="border:none;cursor:pointer;" onclick="pxStartCheckout()">'
         '<span class="fw-lang-es">Suscribirme</span><span class="fw-lang-en">Subscribe</span></button>\n'
+        '    <p class="px-foot fw-lang-es">La suscripción se renueva mensualmente hasta que la canceles. Puedes cancelarla desde el enlace de gestión incluido en el recibo de Paddle o solicitándola a <a href="mailto:soporte@lionsystems.com.mx">soporte@lionsystems.com.mx</a>. Consulta <a href="/terminos.html" onclick="pxTrack(\'legal_policy_opened\',{policy:\'terms\'});">términos</a>, <a href="/privacidad.html" onclick="pxTrack(\'legal_policy_opened\',{policy:\'privacy\'});">privacidad</a> y <a href="/reembolsos.html" onclick="pxTrack(\'legal_policy_opened\',{policy:\'refunds\'});">reembolsos</a> antes de pagar.</p>\n'
+        '    <p class="px-foot fw-lang-en">The subscription renews monthly until you cancel it. You can cancel through the management link in your Paddle receipt or by requesting it at <a href="mailto:soporte@lionsystems.com.mx">soporte@lionsystems.com.mx</a>. Review the <a href="/terminos.html" onclick="pxTrack(\'legal_policy_opened\',{policy:\'terms\'});">terms</a>, <a href="/privacidad.html" onclick="pxTrack(\'legal_policy_opened\',{policy:\'privacy\'});">privacy notice</a>, and <a href="/reembolsos.html" onclick="pxTrack(\'legal_policy_opened\',{policy:\'refunds\'});">refund policy</a> before paying.</p>\n'
         '    <p id="px-sub-status" class="px-foot" style="margin-top:.75rem;"></p>\n'
+        '  </div>\n'
+        '  <div class="px-card">\n'
+        '    <h2><span class="fw-lang-es">¿Necesitas implementación empresarial?</span><span class="fw-lang-en">Need enterprise implementation?</span></h2>\n'
+        '    <p class="fw-lang-es">Lion Systems ofrece auditoría de arquitectura, implementación y soporte especializado bajo cotización.</p>\n'
+        '    <p class="fw-lang-en">Lion Systems provides architecture audits, implementation, and specialized support by quotation.</p>\n'
+        '    <a class="px-cta" href="https://www.lionsystems.com.mx/contactus?subject=ai-sdlc-pro-product-auditoria" target="_blank" rel="noopener" onclick="pxTrack(\'b2b_audit_cta_click\',{source:\'pricing\'});"><span class="fw-lang-es">Solicitar auditoría</span><span class="fw-lang-en">Request an audit</span></a>\n'
         '  </div>\n'
         '  <a class="px-cta fw-lang-es" href="/">Volver a la biblioteca de prompts</a>\n'
         '  <a class="px-cta fw-lang-en" href="/">Back to the prompt library</a>\n'
-        '  <p class="px-foot fw-lang-es">¿Dudas o feedback? Escríbenos al enviar tu retroalimentación semanal desde la app.</p>\n'
-        '  <p class="px-foot fw-lang-en">Questions or feedback? Send it via the weekly feedback form in the app.</p>\n'
+        '  <p class="px-foot fw-lang-es">¿Dudas o feedback? Escríbenos a <a href="mailto:soporte@lionsystems.com.mx">soporte@lionsystems.com.mx</a>.</p>\n'
+        '  <p class="px-foot fw-lang-en">Questions or feedback? Email us at <a href="mailto:soporte@lionsystems.com.mx">soporte@lionsystems.com.mx</a>.</p>\n'
         '</main>\n'
         '<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>\n'
         '<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>\n'
+        '<script async src="https://www.googletagmanager.com/gtag/js?id=G-C5JKYNZ62F"></script>\n'
         '<script>\n'
         'window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}'
         'gtag("js",new Date());gtag("config","G-C5JKYNZ62F");\n'
@@ -5024,6 +5040,7 @@ def build_precios_page():
         f'var PADDLE_PRICE_ID={json.dumps(paddle_config["price_id"])};\n'
         f'var PADDLE_ENVIRONMENT={json.dumps(paddle_config["environment"])};\n'
         'var _pxUser=null;\n'
+        'function pxTrack(name,params){if(typeof gtag==="function")gtag("event",name,params||{});}\n'
         'function pxSetStatus(es,en){\n'
         '  var el=document.getElementById("px-sub-status");if(!el)return;\n'
         '  el.innerHTML="<span class=\\"fw-lang-es\\">"+es+"</span><span class=\\"fw-lang-en\\">"+en+"</span>";\n'
@@ -5050,6 +5067,7 @@ def build_precios_page():
         '}\n'
         'function pxStartCheckout(){\n'
         '  if(PADDLE_CLIENT_TOKEN==="PENDIENTE_CONFIGURAR"){\n'
+        '    pxTrack("checkout_unavailable",{reason:"missing_public_config"});\n'
         '    pxSetStatus("El pago aún no está disponible — vuelve pronto.","Payment isn\\u2019t available yet — check back soon.");\n'
         '    return;\n'
         '  }\n'
@@ -5059,21 +5077,25 @@ def build_precios_page():
         # (ReferenceError solo visible en la consola) en vez de avisarle
         # algo al usuario.
         '  if(typeof Paddle==="undefined"){\n'
+        '    pxTrack("checkout_load_error",{reason:"paddle_script_unavailable"});\n'
         '    pxSetStatus("No se pudo cargar el pago -- intenta recargar la página.",'
         '"Could not load payment -- try reloading the page.");\n'
         '    return;\n'
         '  }\n'
         '  if(!_pxUser){\n'
+        '    pxTrack("checkout_login_required",{source:"pricing"});\n'
         '    pxSetStatus("Primero <a href=\\"/\\" style=\\"color:inherit\\">inicia sesión con GitHub</a> en la app.",'
         '"First <a href=\\"/\\" style=\\"color:inherit\\">sign in with GitHub</a> in the app.");\n'
         '    return;\n'
         '  }\n'
+        '  pxTrack("checkout_open_requested",{source:"pricing"});\n'
         '  Paddle.Checkout.open({\n'
         '    items:[{priceId:PADDLE_PRICE_ID,quantity:1}],\n'
         '    customData:{user_id:_pxUser.id},\n'
         '    settings:{successUrl:window.location.origin+"/precios.html?checkout=success"}\n'
         '  });\n'
         '}\n'
+        'pxTrack("pricing_view",{product:"ai_sdlc_pro"});\n'
         'pxInitPaddle();\n'
         'pxInitAuth();\n'
         '</script>\n'
@@ -5098,27 +5120,17 @@ def build_precios_page():
 #  checkout de Paddle.
 # ══════════════════════════════════════════════════════════════════
 
-# Correo de contacto legal / soporte. Aparece en las tres páginas
-# legales y es la vía por la que llegan las solicitudes de reembolso,
-# así que tiene que ser un buzón que realmente reciba.
-#
-# El destino final es soporte@lionsystems.com.mx, pero al 30/07/2026
-# el dominio NO tiene registros MX (solo SOA), o sea que no puede
-# recibir correo todavía y cualquier mensaje a soporte@ rebotaría.
-# Publicar una dirección que rebota es peor que publicar una personal:
-# un reembolso solicitado y nunca recibido es un cargo en disputa.
-#
-# Por eso el interino apunta a un buzón verificado como operativo
-# (live.com.mx resuelve a nam.olc.protection.outlook.com). Cuando se
-# habilite el correo del dominio, cambiar esta única línea a
-# "soporte@lionsystems.com.mx" y reconstruir.
-LEGAL_CONTACT_EMAIL = "dleon555@live.com.mx"
+# Correo oficial de contacto legal y soporte. Aparece en las tres páginas
+# legales y es la vía operativa para solicitudes de privacidad, cancelación
+# y reembolso. El routing del dominio debe permanecer verificado antes de
+# cualquier cambio posterior a esta dirección.
+LEGAL_CONTACT_EMAIL = "soporte@lionsystems.com.mx"
 
 # Fecha de última actualización que se muestra en las tres páginas.
 # Se actualiza a mano cuando cambie el contenido legal, no en cada
 # build: una fecha que se mueve sola no significa nada para nadie.
-LEGAL_LAST_UPDATED_ES = "29 de julio de 2026"
-LEGAL_LAST_UPDATED_EN = "July 29, 2026"
+LEGAL_LAST_UPDATED_ES = "2 de agosto de 2026"
+LEGAL_LAST_UPDATED_EN = "August 2, 2026"
 
 LEGAL_OUTPUT_FILES = {
     "terminos": Path(__file__).parent / "terminos.html",
@@ -5257,12 +5269,12 @@ def build_terminos_page():
         _lg_section(
             'Quién opera este servicio', 'Who operates this service',
             [('p',
-              'AI-SDLC Pro es un producto de <strong>LionSystems</strong> '
+              'AI-SDLC Pro es un producto de <strong>Lion Systems MX, S.A. de C.V.</strong> '
               '(<a href="https://lionsystems.com.mx" target="_blank" rel="noopener">lionsystems.com.mx</a>), '
-              'operado desde México. Al usar el sitio o suscribirte aceptas estos términos.',
-              'AI-SDLC Pro is a product of <strong>LionSystems</strong> '
+              'con domicilio en Calle Mina 210, Buenavista, Cuauhtémoc, 06350 Ciudad de México. Al usar el sitio o suscribirte aceptas estos términos.',
+              'AI-SDLC Pro is a product of <strong>Lion Systems MX, S.A. de C.V.</strong> '
               '(<a href="https://lionsystems.com.mx" target="_blank" rel="noopener">lionsystems.com.mx</a>), '
-              'operated from Mexico. By using the site or subscribing you accept these terms.')]
+              'with its address at Calle Mina 210, Buenavista, Cuauhtémoc, 06350 Mexico City. By using the site or subscribing you accept these terms.')]
         )
         + _lg_section(
             'Qué es AI-SDLC Pro', 'What AI-SDLC Pro is',
@@ -5301,10 +5313,10 @@ def build_terminos_page():
         + _lg_section(
             'Suscripción, precio y renovación', 'Subscription, price and renewal',
             [('p',
-              'El plan Individual cuesta <strong>1 USD al mes</strong>. Es un precio introductorio del '
-              'periodo de piloto y puede cambiar; si cambia, te avisaremos antes de que aplique a tu '
+              'El plan Individual cuesta <strong>1 USD al mes</strong>. Es un precio introductorio de '
+              'lanzamiento y puede cambiar; si cambia, te avisaremos antes de que aplique a tu '
               'siguiente cobro y podrás cancelar sin penalización.',
-              'The Individual plan costs <strong>1 USD per month</strong>. This is an introductory pilot '
+              'The Individual plan costs <strong>1 USD per month</strong>. This is an introductory launch '
               'price and may change; if it does, we will notify you before it applies to your next charge '
               'and you may cancel without penalty.'),
              ('p',
@@ -5411,11 +5423,13 @@ def build_privacidad_page():
         _lg_section(
             'Quién es el responsable', 'Who is the data controller',
             [('p',
-              '<strong>LionSystems</strong>, operando desde Ciudad de México, es responsable del '
+              '<strong>Lion Systems MX, S.A. de C.V.</strong>, con domicilio en Calle Mina 210, Buenavista, '
+              'Cuauhtémoc, 06350 Ciudad de México, es responsable del '
               'tratamiento de los datos personales que recabamos a través de '
               'prompts.lionsystems.com.mx. Este aviso explica qué recabamos, para qué, con quién lo '
               'compartimos y cómo ejercer tus derechos.',
-              '<strong>LionSystems</strong>, operating from Mexico City, is the controller for the personal '
+              '<strong>Lion Systems MX, S.A. de C.V.</strong>, with its address at Calle Mina 210, Buenavista, '
+              'Cuauhtémoc, 06350 Mexico City, is the controller for the personal '
               'data we collect through prompts.lionsystems.com.mx. This notice explains what we collect, '
               'why, who we share it with and how to exercise your rights.')]
         )
@@ -5605,11 +5619,11 @@ def build_reembolsos_page():
               'from the next cycle and keep full access until the period you already paid for ends.'),
              ('p',
               'Como el plan es mensual y cuesta 1 USD, cancelar a tiempo evita cualquier cobro que no '
-              'quieras. Si se te pasó y te cobraron un mes que no pensabas usar, escríbenos: no lo '
-              'devolvemos por política, pero lo revisamos caso por caso.',
+              'quieras. Fuera de los casos de error operativo comprobado descritos en esta política, no '
+              'hacemos reembolsos ni prorrateos después de los 14 días.',
               'Since the plan is monthly and costs 1 USD, cancelling in time avoids any charge you do not '
-              'want. If it slipped by and you were charged for a month you did not intend to use, email us: '
-              'it is outside the policy, but we review these case by case.')]
+              'want. Other than the confirmed operational errors described in this policy, we do not issue '
+              'refunds or prorations after the 14-day window.')]
         )
         + _lg_section(
             'Cómo cancelar', 'How to cancel',
@@ -6136,6 +6150,8 @@ def build():
         '    <span class="wb-pill">&#9656; Context variables that adapt each prompt to your project</span>\n'
         '    <span class="wb-pill">&#9656; Multi-agent governance: Copilot, Claude, Cursor, Windsurf</span>\n'
         '  </div>\n'
+        '  <button class="wb-dismiss fw-lang-es" onclick="startGuidedRoute()">Ruta: requerimiento a pruebas</button>\n'
+        '  <button class="wb-dismiss fw-lang-en" onclick="startGuidedRoute()">Route: requirement to testing</button>\n'
         '  <button class="wb-dismiss fw-lang-es" onclick="dismissWelcomeBanner()">Entendido &#x2715;</button>\n'
         '  <button class="wb-dismiss fw-lang-en" onclick="dismissWelcomeBanner()">Got it &#x2715;</button>\n'
         '</div>\n'

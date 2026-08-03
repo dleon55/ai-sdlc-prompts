@@ -1401,7 +1401,7 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
     <p>112 prompts estructurados para guiar a Copilot, Claude, Cursor y Windsurf en análisis, diseño, implementación, pruebas, CI/CD y documentación — en español, listos para producción.</p>
     <div class="landing-cta-group">
       <a class="landing-cta-primary" href="/app">Explorar prompts gratis →</a>
-      <a class="landing-cta-secondary" href="https://github.com/dleon55/ai-sdlc-prompts" target="_blank" rel="noopener">Ver en GitHub ↗</a>
+      <a class="landing-cta-secondary" href="/precios.html" onclick="if(typeof gtag==='function')gtag('event','pricing_cta_click',{source:'landing'});">Ver precios y Plan Pro →</a>
     </div>
   </section>
   <section class="landing-pain">
@@ -1442,10 +1442,11 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
     <p>Acceso gratuito. Sin registro. Sin tarjeta de crédito.</p>
     <div class="landing-cta-group">
       <a class="landing-cta-primary" href="/app">Explorar prompts →</a>
+      <a class="landing-cta-secondary" href="https://www.lionsystems.com.mx/contactus?subject=ai-sdlc-pro-product-auditoria" target="_blank" rel="noopener" onclick="if(typeof gtag==='function')gtag('event','b2b_audit_cta_click',{source:'landing'});"><span class="fw-lang-es">Solicitar auditoría empresarial</span><span class="fw-lang-en">Request an enterprise audit</span></a>
     </div>
   </section>
   <footer class="landing-footer">
-    <span>AI-SDLC Pro © 2025 LionSystems</span>
+    <span>AI-SDLC Pro © 2026 Lion Systems</span>
     <span class="landing-footer-legal">
       <a href="/terminos.html">Términos</a>
       <a href="/privacidad.html">Privacidad</a>
@@ -1473,6 +1474,8 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
     <span class="wb-pill">&#9656; Context variables that adapt each prompt to your project</span>
     <span class="wb-pill">&#9656; Multi-agent governance: Copilot, Claude, Cursor, Windsurf</span>
   </div>
+  <button class="wb-dismiss fw-lang-es" onclick="startGuidedRoute()">Ruta: requerimiento a pruebas</button>
+  <button class="wb-dismiss fw-lang-en" onclick="startGuidedRoute()">Route: requirement to testing</button>
   <button class="wb-dismiss fw-lang-es" onclick="dismissWelcomeBanner()">Entendido &#x2715;</button>
   <button class="wb-dismiss fw-lang-en" onclick="dismissWelcomeBanner()">Got it &#x2715;</button>
 </div>
@@ -16555,6 +16558,12 @@ function dismissWelcomeBanner() {
     if (banner) banner.classList.add('hidden');
     localStorage.setItem(LS_WELCOME, '1');
   } catch(e) {}
+}
+
+function startGuidedRoute() {
+  if (typeof gtag === 'function') gtag('event', 'guided_route_started', {source: 'welcome_banner'});
+  dismissWelcomeBanner();
+  openGuidedModal();
 }
 
 /* ═══════════════════  ONBOARDING  ══════════════════════════════ */
