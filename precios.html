@@ -44,8 +44,8 @@ h1{font-size:1.75rem;font-weight:700;margin-bottom:.5rem;}
 </header>
 <main>
   <h1><span class="fw-lang-es">Precios</span><span class="fw-lang-en">Pricing</span></h1>
-  <p class="px-sub fw-lang-es">Estamos en periodo de piloto: así funciona el acceso hoy.</p>
-  <p class="px-sub fw-lang-en">We are in a pilot period: here is how access works today.</p>
+  <p class="px-sub fw-lang-es">Oferta de lanzamiento: así funciona el acceso actual.</p>
+  <p class="px-sub fw-lang-en">Launch offer: this is how access works today.</p>
   <div class="px-card">
     <h2><span class="px-badge fw-lang-es">Gratis</span><span class="px-badge fw-lang-en">Free</span><span class="fw-lang-es">&nbsp;Sin registro</span><span class="fw-lang-en">&nbsp;No sign-up</span></h2>
     <ul class="fw-lang-es">
@@ -72,18 +72,27 @@ h1{font-size:1.75rem;font-weight:700;margin-bottom:.5rem;}
   </div>
   <div class="px-card px-future">
     <h2><span class="px-badge fw-lang-es">Plan Pro</span><span class="px-badge fw-lang-en">Pro plan</span><span class="fw-lang-es">&nbsp;$1 USD/mes</span><span class="fw-lang-en">&nbsp;$1 USD/month</span></h2>
-    <p class="fw-lang-es">Precio introductorio del piloto: <strong>$1 USD al mes</strong>, acceso Pro ilimitado (proyectos, personalización, resultados de IA) sin muro de prueba. Copiar prompts es y seguirá siendo gratis para todos, con o sin Pro. Los tiers definitivos (Individual y Equipo) se van a decidir con datos reales de este piloto, no a ciegas — este precio puede ajustarse.</p>
-    <p class="fw-lang-en">Pilot introductory price: <strong>$1 USD per month</strong>, unlimited Pro access (projects, personalization, AI output storage) with no trial wall. Copying prompts is and will remain free for everyone, Pro or not. The final tiers (Individual and Team) will be decided using real data from this pilot, not a guess — this price may change.</p>
+    <p class="fw-lang-es">Precio introductorio de lanzamiento: <strong>$1 USD al mes</strong>, acceso Pro ilimitado (proyectos, personalización, resultados de IA) sin muro de prueba. Copiar prompts es y seguirá siendo gratis para todos, con o sin Pro. Cualquier cambio de precio se comunicará antes de que aplique a tu siguiente renovación y podrás cancelar sin penalización.</p>
+    <p class="fw-lang-en">Launch introductory price: <strong>$1 USD per month</strong>, unlimited Pro access (projects, personalization, AI output storage) with no trial wall. Copying prompts is and will remain free for everyone, Pro or not. Any price change will be communicated before it applies to your next renewal, and you may cancel without penalty.</p>
     <button id="px-subscribe-btn" class="px-cta" style="border:none;cursor:pointer;" onclick="pxStartCheckout()"><span class="fw-lang-es">Suscribirme</span><span class="fw-lang-en">Subscribe</span></button>
+    <p class="px-foot fw-lang-es">La suscripción se renueva mensualmente hasta que la canceles. Puedes cancelarla desde el enlace de gestión incluido en el recibo de Paddle o solicitándola a <a href="mailto:soporte@lionsystems.com.mx">soporte@lionsystems.com.mx</a>. Consulta <a href="/terminos.html" onclick="pxTrack('legal_policy_opened',{policy:'terms'});">términos</a>, <a href="/privacidad.html" onclick="pxTrack('legal_policy_opened',{policy:'privacy'});">privacidad</a> y <a href="/reembolsos.html" onclick="pxTrack('legal_policy_opened',{policy:'refunds'});">reembolsos</a> antes de pagar.</p>
+    <p class="px-foot fw-lang-en">The subscription renews monthly until you cancel it. You can cancel through the management link in your Paddle receipt or by requesting it at <a href="mailto:soporte@lionsystems.com.mx">soporte@lionsystems.com.mx</a>. Review the <a href="/terminos.html" onclick="pxTrack('legal_policy_opened',{policy:'terms'});">terms</a>, <a href="/privacidad.html" onclick="pxTrack('legal_policy_opened',{policy:'privacy'});">privacy notice</a>, and <a href="/reembolsos.html" onclick="pxTrack('legal_policy_opened',{policy:'refunds'});">refund policy</a> before paying.</p>
     <p id="px-sub-status" class="px-foot" style="margin-top:.75rem;"></p>
+  </div>
+  <div class="px-card">
+    <h2><span class="fw-lang-es">¿Necesitas implementación empresarial?</span><span class="fw-lang-en">Need enterprise implementation?</span></h2>
+    <p class="fw-lang-es">Lion Systems ofrece auditoría de arquitectura, implementación y soporte especializado bajo cotización.</p>
+    <p class="fw-lang-en">Lion Systems provides architecture audits, implementation, and specialized support by quotation.</p>
+    <a class="px-cta" href="https://www.lionsystems.com.mx/contactus?subject=ai-sdlc-pro-product-auditoria" target="_blank" rel="noopener" onclick="pxTrack('b2b_audit_cta_click',{source:'pricing'});"><span class="fw-lang-es">Solicitar auditoría</span><span class="fw-lang-en">Request an audit</span></a>
   </div>
   <a class="px-cta fw-lang-es" href="/">Volver a la biblioteca de prompts</a>
   <a class="px-cta fw-lang-en" href="/">Back to the prompt library</a>
-  <p class="px-foot fw-lang-es">¿Dudas o feedback? Escríbenos al enviar tu retroalimentación semanal desde la app.</p>
-  <p class="px-foot fw-lang-en">Questions or feedback? Send it via the weekly feedback form in the app.</p>
+  <p class="px-foot fw-lang-es">¿Dudas o feedback? Escríbenos a <a href="mailto:soporte@lionsystems.com.mx">soporte@lionsystems.com.mx</a>.</p>
+  <p class="px-foot fw-lang-en">Questions or feedback? Email us at <a href="mailto:soporte@lionsystems.com.mx">soporte@lionsystems.com.mx</a>.</p>
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-C5JKYNZ62F"></script>
 <script>
 window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-C5JKYNZ62F");
 var PX_I18N_KEY="AI_SDLC_language";
@@ -102,6 +111,7 @@ var PADDLE_CLIENT_TOKEN="PENDIENTE_CONFIGURAR";
 var PADDLE_PRICE_ID="PENDIENTE_CONFIGURAR";
 var PADDLE_ENVIRONMENT="sandbox";
 var _pxUser=null;
+function pxTrack(name,params){if(typeof gtag==="function")gtag("event",name,params||{});}
 function pxSetStatus(es,en){
   var el=document.getElementById("px-sub-status");if(!el)return;
   el.innerHTML="<span class=\"fw-lang-es\">"+es+"</span><span class=\"fw-lang-en\">"+en+"</span>";
@@ -128,23 +138,28 @@ function pxInitAuth(){
 }
 function pxStartCheckout(){
   if(PADDLE_CLIENT_TOKEN==="PENDIENTE_CONFIGURAR"){
+    pxTrack("checkout_unavailable",{reason:"missing_public_config"});
     pxSetStatus("El pago aún no está disponible — vuelve pronto.","Payment isn\u2019t available yet — check back soon.");
     return;
   }
   if(typeof Paddle==="undefined"){
+    pxTrack("checkout_load_error",{reason:"paddle_script_unavailable"});
     pxSetStatus("No se pudo cargar el pago -- intenta recargar la página.","Could not load payment -- try reloading the page.");
     return;
   }
   if(!_pxUser){
+    pxTrack("checkout_login_required",{source:"pricing"});
     pxSetStatus("Primero <a href=\"/\" style=\"color:inherit\">inicia sesión con GitHub</a> en la app.","First <a href=\"/\" style=\"color:inherit\">sign in with GitHub</a> in the app.");
     return;
   }
+  pxTrack("checkout_open_requested",{source:"pricing"});
   Paddle.Checkout.open({
     items:[{priceId:PADDLE_PRICE_ID,quantity:1}],
     customData:{user_id:_pxUser.id},
     settings:{successUrl:window.location.origin+"/precios.html?checkout=success"}
   });
 }
+pxTrack("pricing_view",{product:"ai_sdlc_pro"});
 pxInitPaddle();
 pxInitAuth();
 </script>
