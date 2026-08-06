@@ -148,7 +148,12 @@ function pxSignIn(){
   var c=pxClient();if(!c)return;
   c.auth.signInWithOAuth({provider:"github",options:{redirectTo:window.location.origin+"/precios.html"}});
 }
+function pxStripTokens(){
+  if(!window.location.hash||window.location.hash.indexOf("access_token=")<0)return;
+  try{history.replaceState(null,"",window.location.pathname+window.location.search);}catch(e){}
+}
 function pxInitAuth(){
+  pxStripTokens();
   var client=pxClient();if(!client)return;
   client.auth.getSession().then(function(res){
     _pxUser=(res&&res.data&&res.data.session)?res.data.session.user:null;

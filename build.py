@@ -2099,6 +2099,7 @@ function initSupabaseAuth() {
   client.auth.getSession().then(function(res) {
     _sbUser = (res && res.data && res.data.session) ? res.data.session.user : null;
     _authStateResolved = true;
+    stripAuthTokensFromUrl();
     renderAuthUI();
     if (_sbUser) { pullCloudProjects(); pullCloudPromptState(); refreshProState(); }
   }).catch(function() {
@@ -2136,10 +2137,26 @@ function signInWithGitHub() {
   // Suscribirme, ve "primero inicia sesion" y se autentica, aterrizaba en
   // la landing sin ninguna pista de que debia volver a precios -- el
   // embudo de pago se rompia justo antes de cobrar.
+  // SIN el hash a proposito. Usar window.location.href arrastra el
+  // #access_token= que Supabase acaba de dejar, asi que cada login
+  // apilaba otro token sobre el anterior: se observaron URLs con TRES
+  // access_token, refresh_token y provider_token de GitHub encadenados.
+  // Eso los deja en el historial, en el titulo de la pestaña y en
+  // cualquier captura de pantalla, y hace crecer la URL sin limite.
   client.auth.signInWithOAuth({
     provider: 'github',
-    options: { redirectTo: window.location.href }
+    options: { redirectTo: window.location.origin + window.location.pathname + window.location.search }
   });
+}
+
+// Borra el fragmento con los tokens en cuanto el SDK ya los consumio.
+// Supabase los deja en la URL por el flujo implicito y no los limpia
+// solo; sin esto quedan visibles y compartibles indefinidamente.
+function stripAuthTokensFromUrl() {
+  if (!window.location.hash || window.location.hash.indexOf('access_token=') < 0) return;
+  try {
+    history.replaceState(null, '', window.location.pathname + window.location.search);
+  } catch (e) {}
 }
 
 function signOutUser() {
@@ -2171,9 +2188,14 @@ function renderAuthUI() {
     proBadge.style.display = (_sbUser && isProUser()) ? '' : 'none';
   }
   if (_sbUser) {
+    // El nombre por si solo no se lee como "boton para salir": se reporto
+    // no encontrar donde cerrar sesion. El icono lo hace explicito sin
+    // ocupar mas espacio en el header.
     var who = (_sbUser.user_metadata && _sbUser.user_metadata.user_name) || _sbUser.email || '';
-    label.textContent = who ? who : (lang === 'en' ? 'Signed in' : 'Con sesión');
-    btn.title = lang === 'en' ? 'Sign out' : 'Cerrar sesión';
+    var salir = lang === 'en' ? 'Sign out' : 'Cerrar sesión';
+    label.textContent = (who ? who : (lang === 'en' ? 'Signed in' : 'Con sesión')) + '  ⏻';
+    btn.title = salir;
+    btn.setAttribute('aria-label', salir + (who ? (' (' + who + ')') : ''));
     btn.onclick = signOutUser;
   } else {
     label.textContent = lang === 'en' ? 'Sign in' : 'Iniciar sesión';
@@ -5172,7 +5194,15 @@ def build_precios_page():
         '  var c=pxClient();if(!c)return;\n'
         '  c.auth.signInWithOAuth({provider:"github",options:{redirectTo:window.location.origin+"/precios.html"}});\n'
         '}\n'
+        # Supabase deja los tokens en el hash y no los limpia solo: sin esto
+        # el access_token, el refresh_token y el provider_token de GitHub
+        # quedan visibles en la barra de direcciones y en el historial.
+        'function pxStripTokens(){\n'
+        '  if(!window.location.hash||window.location.hash.indexOf("access_token=")<0)return;\n'
+        '  try{history.replaceState(null,"",window.location.pathname+window.location.search);}catch(e){}\n'
+        '}\n'
         'function pxInitAuth(){\n'
+        '  pxStripTokens();\n'
         '  var client=pxClient();if(!client)return;\n'
         '  client.auth.getSession().then(function(res){\n'
         '    _pxUser=(res&&res.data&&res.data.session)?res.data.session.user:null;\n'

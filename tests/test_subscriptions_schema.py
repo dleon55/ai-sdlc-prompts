@@ -181,3 +181,24 @@ def test_oauth_returns_to_the_page_the_user_started_from():
     assert "redirectTo" in INDEX_HTML
     assert "redirectTo" in PRECIOS_HTML
     assert "pxSignIn" in PRECIOS_HTML
+
+
+def test_oauth_tokens_never_accumulate_in_the_url():
+    """redirectTo con window.location.href arrastra el #access_token= que
+    Supabase acaba de dejar, asi que cada login apila otro token: se
+    observaron URLs en produccion con TRES access_token, refresh_token y
+    provider_token de GitHub encadenados, visibles en la barra de
+    direcciones, el historial y cualquier captura de pantalla."""
+    assert "redirectTo: window.location.href" not in INDEX_HTML, (
+        "redirectTo no debe incluir el hash -- apila tokens en cada login"
+    )
+    for name, html in (("index.html", INDEX_HTML), ("precios.html", PRECIOS_HTML)):
+        assert "replaceState" in html, f"{name} no limpia el hash tras consumir los tokens"
+        assert "access_token=" in html, f"{name} no detecta el fragmento a limpiar"
+
+
+def test_sign_out_is_discoverable():
+    """El nombre de usuario a secas no se lee como boton de salida: se
+    reporto no encontrar donde cerrar sesion."""
+    assert "aria-label" in INDEX_HTML
+    assert "Cerrar sesión" in INDEX_HTML
