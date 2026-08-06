@@ -136,3 +136,48 @@ def test_unlinked_subscription_event_fails_instead_of_being_marked_done():
         r"if\s+affected\s*=\s*0.*?raise\s+exception", lowered, re.DOTALL
     )
     assert unlinked, "el camino sin fila local debe terminar en raise exception"
+
+
+# ── Contrato del frontend de suscripción (issue del pago sin indicador) ──
+# Un cliente pagó, Paddle confirmó por correo, y la app nunca mostró nada.
+# Estos tests fijan las cuatro piezas que faltaban para que eso no vuelva.
+
+INDEX_HTML = (PROJECT_ROOT / "index.html").read_text(encoding="utf-8")
+PRECIOS_HTML = (PROJECT_ROOT / "precios.html").read_text(encoding="utf-8")
+
+
+def test_supabase_session_is_persisted_explicitly():
+    """Sin persistSession la sesión vive solo en memoria: cada recarga
+    vuelve anónimo, auth.uid() es null y check_trial_status() nunca
+    encuentra la suscripción de alguien que YA PAGÓ."""
+    for name, html in (("index.html", INDEX_HTML), ("precios.html", PRECIOS_HTML)):
+        compact = html.replace(" ", "")
+        assert "persistSession:true" in compact, f"{name} sin persistSession"
+        assert "autoRefreshToken:true" in compact, f"{name} sin autoRefreshToken"
+
+
+def test_app_reads_subscribed_and_shows_pro_badge():
+    """check_trial_status() ya devolvía 'subscribed', pero la app solo leía
+    'active' y lo descartaba -- por eso no existía indicador de Pro."""
+    assert "subscribed" in INDEX_HTML
+    assert "setProState" in INDEX_HTML
+    assert "auth-pro-badge" in INDEX_HTML
+
+
+def test_pricing_page_handles_checkout_return_and_waits_for_webhook():
+    """El webhook de Paddle es asíncrono: una sola consulta al volver del
+    checkout llega antes que la escritura y deja al comprador viendo
+    'Suscribirme'. Debe sondear, y al rendirse confirmar que el pago sí
+    se recibió en vez de dar a entender que se perdió."""
+    assert "checkout=success" in PRECIOS_HTML
+    assert "pxPollPro" in PRECIOS_HTML
+    assert "setTimeout" in PRECIOS_HTML
+    assert "Pago recibido" in PRECIOS_HTML
+
+
+def test_oauth_returns_to_the_page_the_user_started_from():
+    """Sin redirectTo, Supabase devuelve siempre al Site URL: quien iniciaba
+    sesión desde /precios.html aterrizaba en la landing y abandonaba."""
+    assert "redirectTo" in INDEX_HTML
+    assert "redirectTo" in PRECIOS_HTML
+    assert "pxSignIn" in PRECIOS_HTML
