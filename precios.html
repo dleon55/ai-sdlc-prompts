@@ -121,19 +121,43 @@ function pxInitPaddle(){
   if(PADDLE_ENVIRONMENT==="sandbox")Paddle.Environment.set("sandbox");
   Paddle.Initialize({token:PADDLE_CLIENT_TOKEN});
 }
+var PX_AUTH_OPTS={auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:window.localStorage}};
+var _pxClient=null;
+function pxClient(){
+  if(typeof supabase==="undefined")return null;
+  if(!_pxClient)_pxClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,PX_AUTH_OPTS);
+  return _pxClient;
+}
+function pxShowPro(){
+  var btn=document.getElementById("px-subscribe-btn");if(btn)btn.style.display="none";
+  pxSetStatus("Ya tienes acceso Pro activo — ¡gracias!","You already have active Pro access — thank you!");
+}
+function pxPollPro(intentos){
+  var c=pxClient();if(!c||!_pxUser)return;
+  c.rpc("check_trial_status").then(function(r){
+    if(r&&r.data&&r.data.subscribed){pxShowPro();return;}
+    if(intentos<6){
+      pxSetStatus("Pago recibido — activando tu acceso…","Payment received — activating your access…");
+      setTimeout(function(){pxPollPro(intentos+1);},Math.min(1000*Math.pow(2,intentos),8000));
+    }else{
+      pxSetStatus("Tu pago se registró. La activación puede tardar unos minutos — recarga esta página.","Your payment went through. Activation can take a few minutes — reload this page.");
+    }
+  }).catch(function(){});
+}
+function pxSignIn(){
+  var c=pxClient();if(!c)return;
+  c.auth.signInWithOAuth({provider:"github",options:{redirectTo:window.location.origin+"/precios.html"}});
+}
 function pxInitAuth(){
-  if(typeof supabase==="undefined")return;
-  var client=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+  var client=pxClient();if(!client)return;
   client.auth.getSession().then(function(res){
     _pxUser=(res&&res.data&&res.data.session)?res.data.session.user:null;
-    if(_pxUser){
-      client.rpc("check_trial_status").then(function(r){
-        if(r&&r.data&&r.data.subscribed){
-          var btn=document.getElementById("px-subscribe-btn");if(btn)btn.style.display="none";
-          pxSetStatus("Ya tienes acceso Pro activo — ¡gracias!","You already have active Pro access — thank you!");
-        }
-      }).catch(function(){});
-    }
+    if(!_pxUser)return;
+    var vieneDePagar=window.location.search.indexOf("checkout=success")>=0;
+    if(vieneDePagar){pxPollPro(0);return;}
+    client.rpc("check_trial_status").then(function(r){
+      if(r&&r.data&&r.data.subscribed)pxShowPro();
+    }).catch(function(){});
   }).catch(function(){});
 }
 function pxStartCheckout(){
@@ -149,7 +173,8 @@ function pxStartCheckout(){
   }
   if(!_pxUser){
     pxTrack("checkout_login_required",{source:"pricing"});
-    pxSetStatus("Primero <a href=\"/\" style=\"color:inherit\">inicia sesión con GitHub</a> en la app.","First <a href=\"/\" style=\"color:inherit\">sign in with GitHub</a> in the app.");
+    pxSetStatus("Necesitas una cuenta para suscribirte — te redirigimos a GitHub…","You need an account to subscribe — redirecting you to GitHub…");
+    pxSignIn();
     return;
   }
   pxTrack("checkout_open_requested",{source:"pricing"});

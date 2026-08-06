@@ -1715,6 +1715,14 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
 }
 /* Enlaces legales exigidos por la verificacion de Paddle. Se centran
    en el hueco del footer y colapsan a bloque propio en movil. */
+/* Badge PRO del header: unica señal visible de suscripcion de pago
+   activa. Verde para leerse como "estado bueno", no como aviso. */
+.auth-pro-badge {
+  display: inline-block; margin-right: .4rem; padding: .1rem .4rem;
+  border-radius: 999px; font-size: .62rem; font-weight: 700;
+  letter-spacing: .04em; background: rgba(34,197,94,.16); color: #22c55e;
+  border: 1px solid rgba(34,197,94,.35); vertical-align: middle;
+}
 .landing-footer-legal { display: flex; flex-wrap: wrap; gap: 1rem; }
 .landing-footer-legal a { color: var(--tx3); text-decoration: none; }
 .landing-footer-legal a:hover { color: var(--tx2); text-decoration: underline; }
@@ -2058,9 +2066,28 @@ function isSupabaseConfigured() {
   return SUPABASE_URL !== 'PENDIENTE_CONFIGURAR' && SUPABASE_ANON_KEY !== 'PENDIENTE_CONFIGURAR';
 }
 
+// Opciones de auth EXPLICITAS a proposito. Con createClient(url, key) a
+// secas se depende de los defaults del SDK, y en produccion se observo la
+// sesion viviendo solo en memoria: localStorage tenia las 5 claves
+// AI_SDLC_* pero ninguna sb-*-auth-token. Sin sesion persistida, cada
+// recarga vuelve anonimo, check_trial_status() no encuentra auth.uid() y
+// un usuario que YA PAGO nunca ve su acceso Pro.
+//
+// Declararlas aqui deja el contrato a la vista y hace que precios.html
+// pueda usar exactamente las mismas (misma storageKey por defecto = la
+// sesion se comparte entre / , /app y /precios.html).
+var SB_AUTH_OPTS = {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+    storage: window.localStorage
+  }
+};
+
 function getSupabaseClient() {
   if (!isSupabaseConfigured() || typeof supabase === 'undefined') return null;
-  if (!_sb) _sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  if (!_sb) _sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, SB_AUTH_OPTS);
   return _sb;
 }
 
@@ -2073,7 +2100,7 @@ function initSupabaseAuth() {
     _sbUser = (res && res.data && res.data.session) ? res.data.session.user : null;
     _authStateResolved = true;
     renderAuthUI();
-    if (_sbUser) { pullCloudProjects(); pullCloudPromptState(); }
+    if (_sbUser) { pullCloudProjects(); pullCloudPromptState(); refreshProState(); }
   }).catch(function() {
     // Si getSession() llega a rechazar en vez de resolver, _authStateResolved
     // debe quedar en true de todas formas -- de lo contrario
@@ -2104,7 +2131,15 @@ function signInWithGitHub() {
     showToast(lang === 'en' ? 'Still loading — try again in a moment' : 'Aún cargando — intenta de nuevo en un momento', 'warn');
     return;
   }
-  client.auth.signInWithOAuth({ provider: 'github' });
+  // redirectTo explicito: sin el, Supabase devuelve siempre al Site URL
+  // del proyecto (la raiz). Un visitante que llega a /precios.html, pulsa
+  // Suscribirme, ve "primero inicia sesion" y se autentica, aterrizaba en
+  // la landing sin ninguna pista de que debia volver a precios -- el
+  // embudo de pago se rompia justo antes de cobrar.
+  client.auth.signInWithOAuth({
+    provider: 'github',
+    options: { redirectTo: window.location.href }
+  });
 }
 
 function signOutUser() {
@@ -2118,6 +2153,23 @@ function renderAuthUI() {
   var label = document.getElementById('auth-btn-label');
   if (!btn || !label) return;
   var lang = getCurrentLanguage();
+  // Badge Pro: la unica señal visible de que una suscripcion de pago esta
+  // activa. Sin esto un cliente que ya pago no tiene forma de saber que su
+  // pago surtio efecto, que fue exactamente lo que se reporto en produccion.
+  var proBadge = document.getElementById('auth-pro-badge');
+  if (!proBadge && btn.parentNode) {
+    proBadge = document.createElement('span');
+    proBadge.id = 'auth-pro-badge';
+    proBadge.className = 'auth-pro-badge';
+    btn.parentNode.insertBefore(proBadge, btn);
+  }
+  if (proBadge) {
+    proBadge.textContent = 'PRO';
+    proBadge.title = lang === 'en'
+      ? 'Active paid subscription'
+      : 'Suscripción de pago activa';
+    proBadge.style.display = (_sbUser && isProUser()) ? '' : 'none';
+  }
   if (_sbUser) {
     var who = (_sbUser.user_metadata && _sbUser.user_metadata.user_name) || _sbUser.email || '';
     label.textContent = who ? who : (lang === 'en' ? 'Signed in' : 'Con sesión');
@@ -2654,8 +2706,37 @@ function checkProFeatureGate() {
   if (!client) return Promise.resolve({ allowed: true });
   return client.rpc('check_trial_status').then(function(res) {
     if (!res || res.error || !res.data) return { allowed: true };
+    // check_trial_status() devuelve 'subscribed' ademas de 'active', pero
+    // hasta ahora se descartaba: la app no distinguia "pago" de "esta en
+    // prueba gratis" y por eso no existia ningun indicador Pro. Guardarlo
+    // aqui es lo que alimenta el badge del header (renderAuthUI).
+    setProState(res.data.subscribed === true);
     return res.data.active ? { allowed: true } : { allowed: false, reason: 'trial_expired' };
   }).catch(function() { return { allowed: true }; });
+}
+
+// Estado Pro compartido: lo escribe cualquier consulta a
+// check_trial_status() y lo lee renderAuthUI() para pintar el badge.
+var _isPro = false;
+
+function setProState(isPro) {
+  var changed = (_isPro !== !!isPro);
+  _isPro = !!isPro;
+  if (changed) renderAuthUI();
+}
+
+function isProUser() { return _isPro; }
+
+// Consulta directa del estado Pro, sin pasar por el gate de proyectos.
+// La usa el arranque de sesion y el retorno del checkout.
+function refreshProState() {
+  var client = getSupabaseClient();
+  if (!client || !_sbUser) { setProState(false); return Promise.resolve(false); }
+  return client.rpc('check_trial_status').then(function(res) {
+    var pro = !!(res && res.data && res.data.subscribed === true);
+    setProState(pro);
+    return pro;
+  }).catch(function() { return false; });
 }
 
 // Indicador de administrador (issue #7 Fase 2): registra qué prompts se
@@ -5050,19 +5131,57 @@ def build_precios_page():
         '  if(PADDLE_ENVIRONMENT==="sandbox")Paddle.Environment.set("sandbox");\n'
         '  Paddle.Initialize({token:PADDLE_CLIENT_TOKEN});\n'
         '}\n'
+        # Mismas opciones explicitas que index.html: sin persistSession la
+        # sesion vive solo en memoria y esta pagina ve anonimo a un usuario
+        # que si inicio sesion en la app. Misma storageKey por defecto, asi
+        # que la sesion se comparte entre / , /app y /precios.html.
+        'var PX_AUTH_OPTS={auth:{persistSession:true,autoRefreshToken:true,'
+        'detectSessionInUrl:true,storage:window.localStorage}};\n'
+        'var _pxClient=null;\n'
+        'function pxClient(){\n'
+        '  if(typeof supabase==="undefined")return null;\n'
+        '  if(!_pxClient)_pxClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,PX_AUTH_OPTS);\n'
+        '  return _pxClient;\n'
+        '}\n'
+        'function pxShowPro(){\n'
+        '  var btn=document.getElementById("px-subscribe-btn");if(btn)btn.style.display="none";\n'
+        '  pxSetStatus("Ya tienes acceso Pro activo — ¡gracias!","You already have active Pro access — thank you!");\n'
+        '}\n'
+        # El webhook de Paddle es ASINCRONO: al volver del checkout la fila
+        # de subscriptions puede tardar unos segundos en existir. Una sola
+        # consulta llegaba antes que la escritura y la pagina se quedaba
+        # mostrando "Suscribirme" a alguien que acababa de pagar. Se sondea
+        # con backoff hasta ~20s antes de rendirse, y al rendirse se dice
+        # que el pago SI se recibio -- nunca dejar creer que se perdio.
+        'function pxPollPro(intentos){\n'
+        '  var c=pxClient();if(!c||!_pxUser)return;\n'
+        '  c.rpc("check_trial_status").then(function(r){\n'
+        '    if(r&&r.data&&r.data.subscribed){pxShowPro();return;}\n'
+        '    if(intentos<6){\n'
+        '      pxSetStatus("Pago recibido — activando tu acceso…","Payment received — activating your access…");\n'
+        '      setTimeout(function(){pxPollPro(intentos+1);},Math.min(1000*Math.pow(2,intentos),8000));\n'
+        '    }else{\n'
+        '      pxSetStatus("Tu pago se registró. La activación puede tardar unos minutos — recarga esta página.",'
+        '"Your payment went through. Activation can take a few minutes — reload this page.");\n'
+        '    }\n'
+        '  }).catch(function(){});\n'
+        '}\n'
+        # redirectTo a esta misma pagina, no al Site URL del proyecto: asi
+        # el visitante vuelve a precios listo para pulsar Suscribirme.
+        'function pxSignIn(){\n'
+        '  var c=pxClient();if(!c)return;\n'
+        '  c.auth.signInWithOAuth({provider:"github",options:{redirectTo:window.location.origin+"/precios.html"}});\n'
+        '}\n'
         'function pxInitAuth(){\n'
-        '  if(typeof supabase==="undefined")return;\n'
-        '  var client=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);\n'
+        '  var client=pxClient();if(!client)return;\n'
         '  client.auth.getSession().then(function(res){\n'
         '    _pxUser=(res&&res.data&&res.data.session)?res.data.session.user:null;\n'
-        '    if(_pxUser){\n'
-        '      client.rpc("check_trial_status").then(function(r){\n'
-        '        if(r&&r.data&&r.data.subscribed){\n'
-        '          var btn=document.getElementById("px-subscribe-btn");if(btn)btn.style.display="none";\n'
-        '          pxSetStatus("Ya tienes acceso Pro activo — ¡gracias!","You already have active Pro access — thank you!");\n'
-        '        }\n'
-        '      }).catch(function(){});\n'
-        '    }\n'
+        '    if(!_pxUser)return;\n'
+        '    var vieneDePagar=window.location.search.indexOf("checkout=success")>=0;\n'
+        '    if(vieneDePagar){pxPollPro(0);return;}\n'
+        '    client.rpc("check_trial_status").then(function(r){\n'
+        '      if(r&&r.data&&r.data.subscribed)pxShowPro();\n'
+        '    }).catch(function(){});\n'
         '  }).catch(function(){});\n'
         '}\n'
         'function pxStartCheckout(){\n'
@@ -5082,10 +5201,15 @@ def build_precios_page():
         '"Could not load payment -- try reloading the page.");\n'
         '    return;\n'
         '  }\n'
+        # Antes esto mandaba a "/" a iniciar sesion y el visitante aterrizaba
+        # en la landing sin pista de que debia volver a precios: el embudo se
+        # rompia justo antes de cobrar. Ahora se autentica desde aqui y
+        # regresa a esta misma pagina gracias a redirectTo.
         '  if(!_pxUser){\n'
         '    pxTrack("checkout_login_required",{source:"pricing"});\n'
-        '    pxSetStatus("Primero <a href=\\"/\\" style=\\"color:inherit\\">inicia sesión con GitHub</a> en la app.",'
-        '"First <a href=\\"/\\" style=\\"color:inherit\\">sign in with GitHub</a> in the app.");\n'
+        '    pxSetStatus("Necesitas una cuenta para suscribirte — te redirigimos a GitHub…",'
+        '"You need an account to subscribe — redirecting you to GitHub…");\n'
+        '    pxSignIn();\n'
         '    return;\n'
         '  }\n'
         '  pxTrack("checkout_open_requested",{source:"pricing"});\n'
