@@ -346,6 +346,44 @@ def parse_editorial_contract(content, lang):
     return fields
 
 
+# Campos del contrato que viajan con el prompt copiado, y su clave corta en
+# PROMPT_INFO. Ver _operating_contract().
+#
+# Se emiten con clave de una letra a propósito: son 224 entradas (112 prompts
+# x 2 idiomas) y las claves largas costarían ~5 KB de payload sin agregar
+# nada. El mapa canónico vive aquí y en operatingContract() del front-end.
+_OPERATING_CONTRACT_FIELDS = (
+    ("permitted_autonomy", "a"),   # techo de autonomía (A0-A3)
+    ("allowed_tools",      "t"),   # qué puede tocar el agente
+    ("stop_criteria",      "s"),   # cuándo debe detenerse y preguntar
+    ("minimum_evidence",   "e"),   # qué prueba debe traer la salida
+)
+
+# `required_inputs` se deja fuera a propósito: describe lo que aporta la
+# persona, no lo que restringe al agente, y el sistema de variables de la
+# página ya cubre esa función sin cobrar payload dos veces.
+
+
+def _operating_contract(contract_lang):
+    """Extrae del contrato editorial los campos que restringen al agente.
+
+    Estos cuatro campos estaban escritos en los 224 contratos y no llegaban
+    al modelo: la tabla se parsea para prompts-index.json y para los badges,
+    pero el texto que la persona copia y pega nunca los incluyó. El agente
+    que debía respetar el techo de autonomía y los criterios de detención
+    jamás los veía.
+
+    Devuelve {} si no hay ningún campo, para que el front-end simplemente no
+    agregue el bloque en vez de pegar encabezados vacíos.
+    """
+    out = {}
+    for campo, clave in _OPERATING_CONTRACT_FIELDS:
+        valor = (contract_lang.get(campo) or "").strip()
+        if valor:
+            out[clave] = valor
+    return out
+
+
 _TYPE_TAGS = (
     (("análisis", "analysis"), "analysis"),
     (("diseño", "design"), "design"),
@@ -2773,6 +2811,73 @@ function appendCustomAdditions(resolved) {
   return resolved.text + '\\n\\n---\\n\\n' + extras.join('\\n\\n---\\n\\n');
 }
 
+// ── Contrato de operación en el texto copiado ─────────────────────────
+//
+// Cada prompt declara techo de autonomía, herramientas permitidas,
+// criterios de detención y evidencia mínima. Estaba escrito en los 224
+// contratos (112 prompts x 2 idiomas) y se usaba para los badges y para
+// prompts-index.json -- pero NO viajaba en el texto que la persona pega en
+// Claude, Cursor o Codex. El agente que debía respetar esas reglas nunca
+// las leía: la gobernanza existía en la página, no en la sesión.
+//
+// Las claves de una letra vienen de _OPERATING_CONTRACT_FIELDS en build.py.
+var CONTRACT_LABELS = {
+  es: { a: 'Autonomía máxima', t: 'Herramientas permitidas',
+        s: 'Detente y pregunta cuando', e: 'Evidencia mínima de tu salida' },
+  en: { a: 'Maximum autonomy', t: 'Allowed tools',
+        s: 'Stop and ask when', e: 'Minimum evidence in your output' }
+};
+var CONTRACT_ORDER = ['a', 't', 's', 'e'];
+
+// Devuelve el bloque Markdown del contrato de un prompt, o '' si no tiene.
+function operatingContractText(pid, lang) {
+  var info = (typeof PROMPT_INFO !== 'undefined') ? PROMPT_INFO[pid] : null;
+  if (!info) return '';
+  var c = lang === 'en' ? info.contract_en : info.contract_es;
+  if (!c) return '';
+  var labels = CONTRACT_LABELS[lang === 'en' ? 'en' : 'es'];
+  var lines = CONTRACT_ORDER
+    .filter(function(k) { return c[k]; })
+    .map(function(k) { return '- **' + labels[k] + ':** ' + c[k]; });
+  if (!lines.length) return '';
+  var head = lang === 'en'
+    ? '## Operating contract\\n\\n'
+      + 'These constraints come from this prompt\\'s editorial contract. '
+      // No se le pide obedecer "por encima de todo": si la tarea contradice
+      // el contrato, lo correcto es que lo diga, no que elija en silencio.
+      + 'If the task contradicts them, say so instead of exceeding them.\\n\\n'
+    : '## Contrato de operación\\n\\n'
+      + 'Estas restricciones vienen del contrato editorial de este prompt. '
+      + 'Si la tarea las contradice, decláralo en vez de excederlas.\\n\\n';
+  return head + lines.join('\\n');
+}
+
+// Agrega el contrato de cada prompt incluido en el copiado.
+//
+// Solo actúa si quien copió lo pidió (resolved.withContract). Copiar una
+// FÓRMULA suelta desde el modal también pasa por aquí, y colgarle un
+// contrato de operación a un fragmento de una línea seria ruido.
+function appendOperatingContracts(text, resolved) {
+  if (!resolved.withContract || !resolved.promptIds) return text;
+  var lang = getCurrentLanguage();
+  // 'fw' es el preámbulo del framework, no un prompt con contrato propio.
+  var pids = resolved.promptIds.filter(function(p) { return p !== 'fw'; });
+  var varios = pids.length > 1;
+  var bloques = pids.map(function(pid) {
+    var body = operatingContractText(pid, lang);
+    if (!body) return '';
+    // Con varios prompts en un mismo pegado, un bloque sin nombre no dice a
+    // cuál aplica. Con uno solo el título sobra.
+    if (!varios) return body;
+    // Se titula con el id, no con el titulo: es como los prompts se
+    // referencian entre si (recommended_next_prompt_ids), es inequivoco, y
+    // repetir el titulo aqui lo duplicaria dentro del mismo pegado.
+    return body.replace(/^## (.+)\\n/, '## $1 — `' + pid + '`\\n');
+  }).filter(Boolean);
+  if (!bloques.length) return text;
+  return text + '\\n\\n---\\n\\n' + bloques.join('\\n\\n---\\n\\n');
+}
+
 // Cuenta, por sección, cuántos prompts del proyecto activo ya se usaron.
 // PROMPT_INFO ya trae la sección de cada prompt (ver build.py, info_data).
 function computeProjectProgress() {
@@ -4258,7 +4363,7 @@ function copyResolvedText(resolved, btn) {
       ? list.length + ' required placeholder(s) still unfilled: ' + list.slice(0, 3).join(', ') + (list.length > 3 ? '…' : '')
       : list.length + ' placeholder(s) obligatorios sin llenar: ' + list.slice(0, 3).join(', ') + (list.length > 3 ? '…' : '');
     var actionLabel = lang === 'en' ? 'Copy anyway' : 'Copiar de todas formas';
-    showToast(msg, 'warn', actionLabel, function() { trackPromptCopy(resolved.promptIds); markPromptsUsed(resolved.promptIds); doCopy(appendCustomAdditions(resolved), btn); });
+    showToast(msg, 'warn', actionLabel, function() { trackPromptCopy(resolved.promptIds); markPromptsUsed(resolved.promptIds); doCopy(appendOperatingContracts(appendCustomAdditions(resolved), resolved), btn); });
     return;
   }
   if (resolved.unresolvedOptional && resolved.unresolvedOptional.length) {
@@ -4266,7 +4371,7 @@ function copyResolvedText(resolved, btn) {
   }
   trackPromptCopy(resolved.promptIds);
   markPromptsUsed(resolved.promptIds);
-  doCopy(appendCustomAdditions(resolved), btn);
+  doCopy(appendOperatingContracts(appendCustomAdditions(resolved), resolved), btn);
 }
 
 function showToast(msg, type, actionLabel, actionFn) {
@@ -4373,7 +4478,7 @@ function copyPromptLang(pid, lang, btn) {
       resolved.unresolvedOptional = fwResolved.unresolvedOptional.concat(resolved.unresolvedOptional);
     }
   }
-  copyResolvedText({ text: text, unresolvedRequired: resolved.unresolvedRequired, unresolvedOptional: resolved.unresolvedOptional, promptIds: promptIds }, btn);
+  copyResolvedText({ text: text, unresolvedRequired: resolved.unresolvedRequired, unresolvedOptional: resolved.unresolvedOptional, promptIds: promptIds, withContract: true }, btn);
 }
 
 function openInfoLang(pid, lang) {
@@ -4763,7 +4868,7 @@ function copySelected(btn) {
   aggregate.unresolvedOptional = aggregate.unresolvedOptional.concat(fwResult.unresolvedOptional);
   if (fwResult.text) promptIds.push('fw');
   var text = (fwResult.text ? fwResult.text + '\\n\\n---\\n\\n' : '') + parts.join('\\n\\n---\\n\\n');
-  copyResolvedText({ text: text, unresolvedRequired: aggregate.unresolvedRequired, unresolvedOptional: aggregate.unresolvedOptional, promptIds: promptIds }, btn);
+  copyResolvedText({ text: text, unresolvedRequired: aggregate.unresolvedRequired, unresolvedOptional: aggregate.unresolvedOptional, promptIds: promptIds, withContract: true }, btn);
 }
 
 /* ═══════════════════  SEARCH / FILTER  ═════════════════════════ */
@@ -6390,6 +6495,11 @@ def build():
                 # usados por sección a partir de este campo, sin tener que
                 # recalcular la pertenencia de cada prompt del lado del cliente.
                 "section": sk,
+                # Contrato de operación, por idioma. Ver _operating_contract():
+                # estos tres campos existían al 100% en los 224 contratos y no
+                # llegaban al agente que debe obedecerlos.
+                "contract_es": _operating_contract(contract.get("es", {})),
+                "contract_en": _operating_contract(contract.get("en", {})),
             }
             _titles_by_id[pid] = {"es": p["title_es"], "en": p["title_en"]}
     prompt_info_js = "var PROMPT_INFO = " + json.dumps(info_data, ensure_ascii=False) + ";"
