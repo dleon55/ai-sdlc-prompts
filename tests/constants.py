@@ -39,7 +39,19 @@ Extrae magic numbers del código de pruebas para mantenibilidad.
 # clics adentro del modal de información, así que casi nadie lo veía.
 # El costo es payload; lo que compra es que el producto deje de leerse
 # como catálogo de 226 tarjetas y se lea como el flujo que ya es.
-MAX_INDEX_SIZE_KB = 1900
+# Elevado de 1900 a 2050 KB al hacer que el contrato de operación viaje con
+# el prompt copiado: techo de autonomía, herramientas permitidas, criterios
+# de detención y evidencia mínima, en los 112 prompts x ES/EN, +165 KB
+# medidos. Es el único de estos aumentos que NO es para pintar algo: ese
+# texto se pega en el agente. Los cuatro campos estaban escritos al 100% en
+# los 224 contratos y llegaban al modelo en 0% -- la gobernanza existía en
+# la página y no en la sesión, que es donde hace falta.
+#
+# Sobre el costo: nginx comprime text/html siempre (ver nginx_prompts.conf),
+# y esta prosa comprime ~4x, así que en la red son ~50 KB, no 165. El tope
+# de aquí mide el archivo crudo; si se sigue subiendo conviene medir gzip o
+# cargar el catálogo bajo demanda en vez de elevarlo otra vez.
+MAX_INDEX_SIZE_KB = 2050
 MIN_INDEX_SIZE_KB = 100   # Mínimo esperado para contenido válido
 
 # Cobertura de prompts

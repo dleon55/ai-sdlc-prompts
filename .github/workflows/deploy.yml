@@ -103,6 +103,7 @@ jobs:
         run: |
           node tests/js/test_variables_runtime.js
           node tests/js/test_precios_runtime.js
+          node tests/js/test_contract_runtime.js
 
       - name: Run tests
         run: |
