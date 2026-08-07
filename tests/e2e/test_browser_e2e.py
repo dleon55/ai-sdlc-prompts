@@ -182,11 +182,16 @@ def test_multi_select_copy_does_not_duplicate_prompts(app_page):
     app_page.click(".ms-copy-btn")
     app_page.wait_for_timeout(250)
     clip = app_page.evaluate("navigator.clipboard.readText()")
-    # sección 01 tiene 2 prompts (01-01, 01-02); separador '---' entre
-    # bloques + el framework antepuesto = a lo sumo 3 separadores '---'.
-    separators = clip.count("\n\n---\n\n")
-    assert separators <= 3, f"Posible duplicación: {separators} separadores en {clip[:200]!r}"
+    # Contar separadores '---' era un proxy de "no se duplicó", y dejó de
+    # servir cuando el contrato de operación pasó a viajar con el prompt
+    # copiado: cada prompt aporta ahora un bloque más, con su propio
+    # separador, sin que nada esté duplicado. Se comprueba la duplicación
+    # directamente, que era la intención original (PR #42).
     assert clip.count("Prompt para inventario técnico") <= 1, "01-01 aparece duplicado"
+    # Y el contrato acompaña a cada prompt, uno por prompt, sin repetirse.
+    assert clip.count("## Contrato de operación") == 2, (
+        f"se esperaba un contrato por prompt (2), hubo {clip.count('## Contrato de operación')}"
+    )
 
 
 # ─────────────────────  Modal de fórmulas  ─────────────────────

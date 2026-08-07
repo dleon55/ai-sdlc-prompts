@@ -14644,9 +14644,10 @@ function appendOperatingContracts(text, resolved) {
     // Con varios prompts en un mismo pegado, un bloque sin nombre no dice a
     // cuál aplica. Con uno solo el título sobra.
     if (!varios) return body;
-    var info = PROMPT_INFO[pid] || {};
-    var titulo = (lang === 'en' ? info.title_en : info.title_es) || pid;
-    return body.replace(/^## (.+)\n/, '## $1 — ' + titulo + '\n');
+    // Se titula con el id, no con el titulo: es como los prompts se
+    // referencian entre si (recommended_next_prompt_ids), es inequivoco, y
+    // repetir el titulo aqui lo duplicaria dentro del mismo pegado.
+    return body.replace(/^## (.+)\n/, '## $1 — `' + pid + '`\n');
   }).filter(Boolean);
   if (!bloques.length) return text;
   return text + '\n\n---\n\n' + bloques.join('\n\n---\n\n');

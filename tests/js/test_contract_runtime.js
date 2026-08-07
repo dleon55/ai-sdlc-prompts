@@ -134,8 +134,12 @@ assert.strictEqual(soloFormula, base,
 const dos = [pid, pids.find(p => p !== pid && INFO[p].contract_es && INFO[p].contract_es.s)];
 const multi = context.appendOperatingContracts(base, { withContract: true, promptIds: dos });
 for (const p of dos) {
-  assert(multi.includes(INFO[p].title_es),
-    `con varios prompts, el bloque debe nombrar "${INFO[p].title_es}"`);
+  assert(multi.includes("`" + p + "`"),
+    `con varios prompts, el bloque debe nombrar el id "${p}"`);
+  // Se usa el id y no el titulo a proposito: repetir el titulo dentro del
+  // mismo pegado lo duplica, y hay un e2e que cuenta esa duplicacion.
+  assert(!multi.includes(INFO[p].title_es),
+    `el bloque no debe repetir el titulo de "${p}": duplica texto en el pegado`);
 }
 
 // ── 8. 'fw' no inventa un contrato ──
