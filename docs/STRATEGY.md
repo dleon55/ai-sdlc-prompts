@@ -224,6 +224,7 @@ Ver: [Milestones](https://github.com/dleon55/ai-sdlc-prompts/milestones) · [Iss
 | 2026-04-11 | Mantener sitio self-contained (sin backend en corto plazo) | Minimizar complejidad operativa en fase de validación |
 | 2026-04-11 | Priorizar distribución orgánica antes de paid advertising | CAC desconocido, construir audiencia antes de escalar |
 | 2026-07-30 | Gate Free/Pro sobre la PLATAFORMA (proyectos múltiples, personalización, resultados de IA), no sobre el TEXTO de los prompts ("Opción B", issue #7) | El repositorio es público — el texto ya es legible por cualquiera en GitHub o vía el servidor MCP sin autenticación; gatear la copia solo agregaba fricción sin proteger contenido real. La plataforma (gestión de proyecto) sí es exclusiva del sitio y monetizable de forma honesta. |
+| 2026-08-06 | Licencia **por alcance**: prompts CC BY 4.0, servidor MCP MIT, plataforma propietaria | La `LICENSE` anterior ("All Rights Reserved", prohibía reproducir y usar sin permiso escrito) contradecía esta misma tabla: el plan Free promete "copia ilimitada y para siempre, sin cuenta", y publicar el servidor MCP era imposible porque instalar es reproducir y ejecutar es usar. La licencia por alcance codifica la decisión del 2026-07-30 en términos legales: libre el texto, propietaria la plataforma. Se eligió CC BY (y no BY-NC) porque prohibir el uso comercial dejaría fuera al freelancer/consultor, la persona con mayor disposición a pagar. La atribución convierte cada reuso en un enlace de vuelta. |
 
 ---
 
