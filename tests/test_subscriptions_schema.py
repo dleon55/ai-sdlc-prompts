@@ -216,8 +216,20 @@ def test_list_price_anchors_the_introductory_price():
 
 
 def test_anchor_does_not_change_what_is_charged():
-    """El ancla es solo comunicación. El checkout sigue cobrando $1 USD:
-    cambiar el cobro requeriría un precio nuevo en Paddle y actualizar los
-    documentos legales, que es otra decisión."""
-    assert "$1 USD al mes" in PRECIOS_HTML
+    """El ancla es solo comunicación: el precio mostrado debe ser el
+    configurado, no el de lista.
+
+    La primera version de este test afirmaba `"$1 USD al mes" in
+    PRECIOS_HTML`, o sea una foto del precio de ese dia en vez del
+    invariante. Al mover el precio a $9 rompio el build -- correctamente,
+    pero por la razon equivocada: no habia defecto, solo un test que
+    codificaba un supuesto caduco. Ahora se compara contra la
+    configuracion, asi que sigue siendo valido a cualquier precio."""
+    import build
+
+    monto = build.paddle_public_config()["amount"]
+
+    assert f"${monto} USD al mes" in PRECIOS_HTML
     assert "PADDLE_PRICE_ID" in PRECIOS_HTML
+    # El ancla nunca debe ser lo que se cobra.
+    assert monto != build.PRECIO_LISTA_USD or "px-anchor" not in PRECIOS_HTML
