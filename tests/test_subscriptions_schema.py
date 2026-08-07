@@ -310,3 +310,48 @@ def test_anchor_does_not_change_what_is_charged():
     # El ancla nunca debe ser lo que se cobra. Se busca el ELEMENTO, no la
     # cadena suelta: "px-anchor" tambien esta en la regla CSS.
     assert monto != build.PRECIO_LISTA_USD or 'class="px-anchor' not in html
+
+
+# ── Checkout: la firma y la guarda de doble suscripcion ──
+
+def test_checkout_function_declares_the_annual_parameter():
+    """Bug real en produccion: al agregar el plan anual, el cuerpo empezo a
+    usar `anual` para elegir el precio pero la firma quedo sin el
+    parametro. Resultado: ReferenceError que rompia AMBOS botones -- nadie
+    podia suscribirse. No se detecto porque el unico usuario con sesion ya
+    era Pro y no veia el boton mensual, y porque ningun test ejecutaba la
+    funcion: solo comprobaban que ciertas cadenas existieran."""
+    import re
+
+    import build
+
+    html = build.build_precios_page()
+
+    firma = re.search(r"function pxStartCheckout\(([^)]*)\)", html)
+    assert firma, "no se encontro pxStartCheckout"
+
+    cuerpo = html[html.index("function pxStartCheckout"):]
+    cuerpo = cuerpo[: cuerpo.index("Paddle.Checkout.open") + 200]
+
+    if "anual" in cuerpo:
+        assert "anual" in firma.group(1), (
+            "pxStartCheckout usa `anual` pero no lo declara: ReferenceError "
+            "en tiempo de ejecucion, con los botones de pago rotos"
+        )
+
+
+def test_checkout_refuses_to_open_for_an_active_subscriber():
+    """Un suscriptor activo que abriera el checkout crearia una SEGUNDA
+    suscripcion y se le cobraria dos veces. Ocultar el boton no basta: la
+    funcion es invocable por consola o si el DOM cambia."""
+    import build
+
+    html = build.build_precios_page()
+
+    assert "_pxYaPro" in html
+    assert "already_subscribed" in html
+    # Y ambos botones deben ocultarse, no solo el mensual.
+    assert "px-subscribe-annual-btn" in html
+    ocultar = html[html.index("function pxShowPro"):]
+    ocultar = ocultar[: ocultar.index("pxSetStatus")]
+    assert "px-subscribe-btn" in ocultar and "px-subscribe-annual-btn" in ocultar
