@@ -7,6 +7,7 @@ Fase 5: Pruebas y Validación — Issue #28
 import sys
 import os
 import re
+import gzip
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -14,7 +15,7 @@ PROJECT_ROOT = Path(__file__).parent.parent
 # Importar constantes
 sys.path.insert(0, str(PROJECT_ROOT / "tests"))
 from constants import (
-    MAX_INDEX_SIZE_KB, MIN_INDEX_SIZE_KB,
+    MAX_INDEX_SIZE_KB, MAX_INDEX_GZIP_KB, MIN_INDEX_SIZE_KB,
     EXPECTED_HREFLANG_COUNT, MIN_DATA_LANG_MATCHES
 )
 
@@ -27,13 +28,29 @@ def test_index_html_exists():
 
 
 def test_index_html_size():
-    """Validar que index.html está dentro del tamaño esperado (< 1MB)"""
+    """El peso de index.html, medido como lo recibe el visitante.
+
+    El presupuesto que manda es el comprimido: nginx sirve text/html con
+    gzip siempre (ver nginx_prompts.conf), asi que los bytes crudos no los
+    descarga nadie. Ademas el archivo en disco pesa ~15 KB mas en Windows
+    que en el runner Linux por CRLF, y el tope crudo llego a fallar por esa
+    diferencia y no por contenido.
+
+    El tope crudo se conserva como red de seguridad gruesa contra un error
+    que multiplique el archivo, no para arbitrar si una funcionalidad cabe.
+    """
     index_file = PROJECT_ROOT / "index.html"
-    size_bytes = index_file.stat().st_size
-    size_kb = size_bytes / 1024
+    datos = index_file.read_bytes()
+    size_kb = len(datos) / 1024
+    gzip_kb = len(gzip.compress(datos, 6)) / 1024
+
+    assert gzip_kb < MAX_INDEX_GZIP_KB, (
+        f"index.html pesa {gzip_kb:.1f}KB comprimido (tope {MAX_INDEX_GZIP_KB}KB). "
+        "Antes de subir el tope: revisar si el catalogo puede cargarse bajo demanda."
+    )
     assert size_kb < MAX_INDEX_SIZE_KB, f"index.html muy grande: {size_kb:.1f}KB (esperado < {MAX_INDEX_SIZE_KB}KB)"
     assert size_kb > MIN_INDEX_SIZE_KB, f"index.html muy pequeño: {size_kb:.1f}KB (esperado > {MIN_INDEX_SIZE_KB}KB)"
-    print(f"✓ index.html tamaño: {size_kb:.1f}KB (en rango {MIN_INDEX_SIZE_KB}-{MAX_INDEX_SIZE_KB}KB)")
+    print(f"✓ index.html: {gzip_kb:.1f}KB gzip / {size_kb:.1f}KB crudo")
 
 
 def test_data_lang_es_present():
