@@ -5351,8 +5351,20 @@ def build_precios_page():
         '  if(!_pxClient)_pxClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,PX_AUTH_OPTS);\n'
         '  return _pxClient;\n'
         '}\n'
+        # _pxYaPro es la defensa de fondo: ocultar botones no basta, porque
+        # pxStartCheckout puede invocarse desde la consola, desde un enlace
+        # viejo o si el DOM cambia. Sin ella, un suscriptor activo que
+        # pulsara "Pagar anual" abria un SEGUNDO checkout y terminaba con
+        # dos suscripciones cobrandose en paralelo.
+        'var _pxYaPro=false;\n'
         'function pxShowPro(){\n'
-        '  var btn=document.getElementById("px-subscribe-btn");if(btn)btn.style.display="none";\n'
+        '  _pxYaPro=true;\n'
+        # Se ocultan AMBOS botones. Antes solo se ocultaba el mensual: el
+        # anual se agrego despues y esta funcion no se actualizo, asi que un
+        # cliente Pro seguia viendo "Pagar anual" activo.
+        '  ["px-subscribe-btn","px-subscribe-annual-btn"].forEach(function(id){\n'
+        '    var b=document.getElementById(id);if(b)b.style.display="none";\n'
+        '  });\n'
         '  pxSetStatus("Ya tienes acceso Pro activo — ¡gracias!","You already have active Pro access — thank you!");\n'
         '}\n'
         # El webhook de Paddle es ASINCRONO: al volver del checkout la fila
@@ -5400,7 +5412,22 @@ def build_precios_page():
         '    }).catch(function(){});\n'
         '  }).catch(function(){});\n'
         '}\n'
-        'function pxStartCheckout(){\n'
+        # El parametro `anual` es obligatorio en la firma: el cuerpo lo usa
+        # para elegir el precio. Quedo fuera al agregar el plan anual (un
+        # reemplazo de texto que perdio el cambio) y el resultado fue un
+        # ReferenceError que rompia AMBOS botones, no solo el anual --
+        # nadie podia suscribirse. No se noto porque el unico usuario con
+        # sesion ya era Pro y no veia el boton mensual.
+        'function pxStartCheckout(anual){\n'
+        # Ya suscrito: no abrir un segundo checkout. Ocultar el boton no
+        # basta como unica defensa (la funcion es invocable por consola o
+        # por un DOM que cambie), y una segunda suscripcion significa
+        # cobrarle dos veces a un cliente que ya paga.
+        '  if(_pxYaPro){\n'
+        '    pxTrack("checkout_blocked",{reason:"already_subscribed"});\n'
+        '    pxSetStatus("Ya tienes una suscripción activa.","You already have an active subscription.");\n'
+        '    return;\n'
+        '  }\n'
         '  if(PADDLE_CLIENT_TOKEN==="PENDIENTE_CONFIGURAR"){\n'
         '    pxTrack("checkout_unavailable",{reason:"missing_public_config"});\n'
         '    pxSetStatus("El pago aún no está disponible — vuelve pronto.","Payment isn\\u2019t available yet — check back soon.");\n'

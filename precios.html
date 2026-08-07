@@ -132,8 +132,12 @@ function pxClient(){
   if(!_pxClient)_pxClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,PX_AUTH_OPTS);
   return _pxClient;
 }
+var _pxYaPro=false;
 function pxShowPro(){
-  var btn=document.getElementById("px-subscribe-btn");if(btn)btn.style.display="none";
+  _pxYaPro=true;
+  ["px-subscribe-btn","px-subscribe-annual-btn"].forEach(function(id){
+    var b=document.getElementById(id);if(b)b.style.display="none";
+  });
   pxSetStatus("Ya tienes acceso Pro activo — ¡gracias!","You already have active Pro access — thank you!");
 }
 function pxPollPro(intentos){
@@ -169,7 +173,12 @@ function pxInitAuth(){
     }).catch(function(){});
   }).catch(function(){});
 }
-function pxStartCheckout(){
+function pxStartCheckout(anual){
+  if(_pxYaPro){
+    pxTrack("checkout_blocked",{reason:"already_subscribed"});
+    pxSetStatus("Ya tienes una suscripción activa.","You already have an active subscription.");
+    return;
+  }
   if(PADDLE_CLIENT_TOKEN==="PENDIENTE_CONFIGURAR"){
     pxTrack("checkout_unavailable",{reason:"missing_public_config"});
     pxSetStatus("El pago aún no está disponible — vuelve pronto.","Payment isn\u2019t available yet — check back soon.");
