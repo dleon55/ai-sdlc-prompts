@@ -3,11 +3,36 @@
   "version": "1.0.0",
   "description": "Servidor MCP que expone la biblioteca de prompts AI-SDLC Pro (112 prompts, ES/EN) a agentes de IA vía stdio.",
   "type": "module",
-  "private": true,
   "main": "index.js",
   "bin": {
     "ai-sdlc-prompts-mcp": "index.js"
   },
+  "files": [
+    "index.js",
+    "src/",
+    "data/prompts-full.json",
+    "README.md"
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "prompts",
+    "sdlc",
+    "ai-agents",
+    "governance",
+    "claude",
+    "cursor"
+  ],
+  "homepage": "https://prompts.lionsystems.com.mx",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dleon55/ai-sdlc-prompts.git",
+    "directory": "mcp-server"
+  },
+  "bugs": {
+    "url": "https://github.com/dleon55/ai-sdlc-prompts/issues"
+  },
+  "author": "LionSystems",
   "scripts": {
     "start": "node index.js",
     "test": "node --test"
