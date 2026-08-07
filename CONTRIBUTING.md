@@ -225,4 +225,4 @@ No. El sitio es 100% self-contained (`index.html` único). Los prompts son solo 
 Abrir una discusión en GitHub Issues con el prefijo `[PROPUESTA]` antes de implementar.
 
 **¿Quién aprueba los cambios?**  
-El equipo de LionSystems revisa y aprueba todos los PRs. Contacto: contacto@lionsystems.com.mx
+El equipo de LionSystems revisa y aprueba todos los PRs. Contacto: dleon555@live.com.mx

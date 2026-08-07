@@ -15,40 +15,30 @@ Mientras el paquete no exista, esa frase es falsa.
 
 ---
 
-## Bloqueo: la licencia
+## La licencia (resuelta)
 
-**Esto no se puede publicar tal como está, y no es un detalle de forma.**
+El repositorio usa **licencia por alcance**, porque el producto ya estaba
+dividido así — `docs/STRATEGY.md`, decisión del 2026-07-30: *el gate va sobre
+la plataforma, no sobre el texto*.
 
-`LICENSE` dice:
+| Alcance | Licencia | Por qué |
+|---|---|---|
+| Los prompts (`ai_sdlc_pro_prompts/**`, `prompts-index.json`, `data/prompts-full.json`) | **CC BY 4.0** | El plan Free promete "copia ilimitada y para siempre". Permite uso comercial: sin eso, un freelancer no podría usarlos con un cliente, que es la persona con mayor disposición a pagar. |
+| El servidor MCP (`mcp-server/`, sin `data/`) | **MIT** | Instalar es reproducir y ejecutar es usar. Sin permiso explícito, el paquete es ininstalable en términos legales. |
+| La plataforma (`build.py`, sitio generado, `supabase/`, utilerías) | **Propietario** | Es lo que se vende. Que el código sea legible no otorga licencia de uso. |
 
-> No part of this Software may be reproduced, distributed, transmitted,
-> displayed, modified, or adapted in any form or by any means […] without the
-> prior written permission of LionSystems.
->
-> UNAUTHORIZED USE PROHIBITED
+`mcp-server/package.json` declara `"license": "MIT AND CC-BY-4.0"`, que es la
+expresión SPDX correcta para un paquete cuyo código y contenido embebido tienen
+licencias distintas.
 
-Instalar un paquete de npm **es** reproducirlo; ejecutarlo **es** usarlo. Con
-esta licencia, cada persona que corra `npx ai-sdlc-prompts-mcp` estaría en
-violación, y `package.json` declara `"license": "UNLICENSED"`, que es
-coherente con `LICENSE` pero incoherente con distribuir el paquete.
+**Lo que esto concede y lo que no.** Cualquiera puede usar, adaptar y
+redistribuir los prompts, incluso comercialmente, dando crédito con enlace al
+sitio. Nadie puede tomar `build.py` y el sitio generado para operar un servicio
+equivalente. La atribución convierte cada reuso en un enlace de vuelta.
 
-Además contradice la estrategia ya decidida. `docs/STRATEGY.md` define el plan
-Free como *"los 112 prompts, copia ilimitada y para siempre, sin cuenta"*, y el
-registro de decisiones del 2026-07-30 dice que el gate va sobre la plataforma y
-no sobre el texto. La licencia dice lo contrario que el modelo de negocio.
-
-### Qué hace falta decidir (es una decisión de negocio, no técnica)
-
-| Opción | Qué implica |
-|---|---|
-| **Licencia permisiva para el contenido del paquete** (MIT/Apache-2.0, o una propia que permita uso y redistribución) | Coherente con el plan Free ya publicado. Es lo que la estrategia describe. |
-| **Licencia propia de "uso permitido, redistribución no"** | Permite instalar y usar, prohíbe revender. Más cercana a la intención actual sin romper npm. |
-| **No publicar** | Coherente con `LICENSE`, pero entonces conviene corregir `STRATEGY.md`, que afirma que el MCP ya sirve el texto sin autenticación. |
-
-Sea cual sea, hay un defecto aparte que sí conviene corregir: el contacto de
-licencias en `LICENSE` es `contacto@lionsystems.com.mx`, la dirección que ya se
-confirmó que **rebota** (sin registros MX). Quien quiera licenciar el producto
-hoy no tiene a dónde escribir.
+> Redactado por criterio de ingeniería, no legal. Antes de depender de la
+> sección propietaria en una disputa real, conviene que la revise alguien con
+> criterio legal.
 
 ---
 

@@ -11,9 +11,12 @@ anexa por defecto — ver [Contrato de operación](#contrato-de-operación).
 
 ## Instalación
 
-> **Aún no publicado en npm.** Ver [`docs/publicar-mcp.md`](../docs/publicar-mcp.md):
-> falta resolver la licencia (`LICENSE` es *All Rights Reserved* y prohíbe la
-> reproducción y el uso sin permiso escrito). Hasta entonces, usa el clon local.
+> **Aún no publicado en npm.** Falta cargar el secreto `NPM_TOKEN` y crear el
+> tag — ver [`docs/publicar-mcp.md`](../docs/publicar-mcp.md). Mientras tanto,
+> usa el clon local.
+>
+> Licencia: el código de este servidor es **MIT**; los prompts que sirve son
+> **CC BY 4.0** (uso comercial permitido, con atribución). Ver [`LICENSE`](LICENSE).
 
 Una vez publicado, sin clonar el repositorio:
 

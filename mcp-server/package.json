@@ -11,6 +11,7 @@
     "index.js",
     "src/",
     "data/prompts-full.json",
+    "LICENSE",
     "README.md"
   ],
   "keywords": [
@@ -44,5 +45,5 @@
     "@modelcontextprotocol/sdk": "^1.30.0",
     "zod": "^4.4.3"
   },
-  "license": "UNLICENSED"
+  "license": "MIT AND CC-BY-4.0"
 }
