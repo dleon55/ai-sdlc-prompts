@@ -239,10 +239,48 @@ def test_guided_gate_fails_open_on_error():
 def test_list_price_anchors_the_introductory_price():
     """precios.html decía "precio introductorio" sin decir respecto a qué.
     Un precio sin ancla no se lee como oferta: se lee como el valor real
-    del producto -- y $1 sin referencia comunica "juguete"."""
-    assert "px-anchor" in PRECIOS_HTML
-    assert "16 USD" in PRECIOS_HTML
-    assert "line-through" in PRECIOS_HTML
+    del producto -- y un precio bajo sin referencia comunica "juguete".
+
+    Tercera vez que se corrige este vicio en el mismo archivo: la version
+    anterior afirmaba `"16 USD" in PRECIOS_HTML`, otro literal que caduca
+    al primer cambio de ancla. Se deriva de la constante y se genera la
+    pagina aqui, por la misma razon que en el test de abajo: en CI el paso
+    que construye y el que corre los tests tienen entornos distintos."""
+    import build
+
+    html = build.build_precios_page()
+
+    # Se busca el ELEMENTO, no la cadena "px-anchor" a secas: esa tambien
+    # aparece en la regla CSS del <style>, asi que un `"px-anchor" in html`
+    # pasaria incluso con el ancla apagada. Falso positivo detectado al
+    # comprobar que el ancla se apaga sola.
+    #
+    # Y se condiciona a que HAYA descuento: exigir el ancla siempre haria
+    # fallar el build el dia que el precio alcance al de lista, que es un
+    # cambio legitimo. Un test no debe bloquear una decision de negocio
+    # valida -- ya paso dos veces hoy con el precio hardcodeado.
+    hay_descuento = float(build.paddle_public_config()["amount"]) < float(
+        build.PRECIO_LISTA_USD
+    )
+    if hay_descuento:
+        assert 'class="px-anchor' in html
+        assert f"{build.PRECIO_LISTA_USD} USD" in html
+        assert "line-through" in html
+
+
+def test_anchor_disappears_when_price_reaches_list_price():
+    """Mostrar "antes $19" junto a "$19" se leeria como un bug, no como una
+    oferta. El ancla debe apagarse sola cuando deja de haber descuento."""
+    import build
+
+    monto = float(build.paddle_public_config()["amount"])
+    lista = float(build.PRECIO_LISTA_USD)
+    html = build.build_precios_page()
+
+    if monto < lista:
+        assert 'class="px-anchor' in html
+    else:
+        assert 'class="px-anchor' not in html
 
 
 def test_anchor_does_not_change_what_is_charged():
@@ -269,5 +307,6 @@ def test_anchor_does_not_change_what_is_charged():
 
     assert f"${monto} USD al mes" in html
     assert "PADDLE_PRICE_ID" in html
-    # El ancla nunca debe ser lo que se cobra.
-    assert monto != build.PRECIO_LISTA_USD or "px-anchor" not in html
+    # El ancla nunca debe ser lo que se cobra. Se busca el ELEMENTO, no la
+    # cadena suelta: "px-anchor" tambien esta en la regla CSS.
+    assert monto != build.PRECIO_LISTA_USD or 'class="px-anchor' not in html

@@ -5477,15 +5477,24 @@ como oferta: se lee como el valor real del producto. Y $1 sin referencia
 comunica "juguete", justo lo contrario de lo que se quiere ante el
 comprador objetivo (dev senior / tech lead).
 
-El numero no es inventado: docs/requirements/Vision.md documenta una
-disposicion a pagar de $299-799 MXN/mes, y el STRATEGY.md original fijaba
-Pro Individual en $299 MXN/mes. Se expresa en USD -- la moneda en que
-Paddle realmente cobra -- para no mezclar monedas en la misma tarjeta.
+De donde sale el numero, revisado 2026-08-07:
 
-NO cambia lo que se cobra: el checkout sigue en $1 USD/mes. Esto es
-exclusivamente como se comunica.
+El valor anterior ($16) derivaba de docs/requirements/Vision.md, que
+documenta una disposicion a pagar de $299-799 MXN/mes -- investigacion
+interna, sin contraste externo. Se reemplaza por un ancla con respaldo de
+mercado verificable: en 2026 GitHub Copilot Pro cuesta $10 USD/mes y
+Cursor Pro $20 USD/mes. $19 queda a la par de la referencia mas cara del
+segmento, que es lo que un ancla debe hacer, sin salirse de lo que un
+comprador reconoce como plausible para una herramienta de dev.
+
+Se expresa en USD -- la moneda en que Paddle realmente cobra -- para no
+mezclar monedas en la misma tarjeta.
+
+NO cambia lo que se cobra. El precio real vive en PADDLE_PRICE_AMOUNT_USD
+y esto es exclusivamente como se comunica. El ancla ademas se apaga sola
+si el precio vigente la alcanza (ver build_precios_page).
 """
-PRECIO_LISTA_USD = "16"
+PRECIO_LISTA_USD = "19"
 
 LEGAL_CONTACT_EMAIL = "soporte@lionsystems.com.mx"
 
