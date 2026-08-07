@@ -202,3 +202,34 @@ def test_sign_out_is_discoverable():
     reporto no encontrar donde cerrar sesion."""
     assert "aria-label" in INDEX_HTML
     assert "Cerrar sesión" in INDEX_HTML
+
+
+# ── Muro medido del modo guiado (propuesta de monetización) ──
+
+def test_guided_mode_is_metered_not_free_forever():
+    """El único muro de pago era 'crear un segundo proyecto': un disparador
+    administrativo que un dev individual puede no tocar nunca, mientras el
+    modo guiado -- asesoría, el valor recurrente -- era gratis e ilimitado.
+    El muro debe estar donde se concentra el valor."""
+    assert "GUIDED_FREE_USES" in INDEX_HTML
+    assert "AI_SDLC_guided_uses" in INDEX_HTML
+    assert "guidedFreeUsesLeft" in INDEX_HTML
+
+
+def test_guided_wall_appears_only_after_the_value_was_felt():
+    """Cobrar en el primer uso mataría el 'aha'. Las primeras aperturas son
+    libres incluso sin cuenta, y con Pro no hay contador."""
+    assert "if (isProUser()) { showGuidedModal(); return; }" in INDEX_HTML
+    assert "if (guidedFreeUsesLeft() > 0)" in INDEX_HTML
+
+
+def test_guided_quota_is_announced_before_running_out():
+    """Toparse con un muro sin verlo venir se lee como cambio de reglas."""
+    assert "renderGuidedQuotaNotice" in INDEX_HTML
+    assert "guided-quota" in INDEX_HTML
+
+
+def test_guided_gate_fails_open_on_error():
+    """Mismo principio que el resto del muro: nunca bloquear a un usuario
+    real por una falla transitoria de red o del SDK."""
+    assert ".catch(function() { showGuidedModal(); })" in INDEX_HTML
