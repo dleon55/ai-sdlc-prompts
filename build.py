@@ -671,6 +671,41 @@ def _model_hint_text(rec, lang):
     return base + f" Ejemplos ({MODEL_EXAMPLES_REVIEWED}): {_TIER_EXAMPLES[rec['tier']]}."
 
 
+def required_inputs_items(contract_lang):
+    """Separa `required_inputs` en la lista de datos que la persona aporta.
+
+    No se puede partir por comas a secas: 68 de los 112 contratos llevan
+    comas DENTRO de paréntesis o backticks, y un split ingenuo rompe un solo
+    dato en fragmentos sin sentido -- "estado local del repositorio (rama,
+    worktrees, commits recientes)" se convertiría en cuatro requisitos, tres
+    de ellos incomprensibles fuera de su paréntesis.
+
+    Se corta solo en los separadores de nivel cero. También se acepta `;`,
+    que varios contratos usan para agrupar ideas distintas.
+    """
+    texto = (contract_lang or {}).get("required_inputs", "").strip()
+    if not texto:
+        return []
+
+    items, actual, profundidad, en_codigo = [], [], 0, False
+    for ch in texto:
+        if ch == "`":
+            en_codigo = not en_codigo
+        elif not en_codigo and ch in "([":
+            profundidad += 1
+        elif not en_codigo and ch in ")]":
+            profundidad = max(0, profundidad - 1)
+        elif ch in ",;" and profundidad == 0 and not en_codigo:
+            items.append("".join(actual).strip())
+            actual = []
+            continue
+        actual.append(ch)
+    items.append("".join(actual).strip())
+
+    # Un fragmento de una o dos letras es residuo de puntuación, no un dato.
+    return [i for i in items if len(i) > 2]
+
+
 def _contract_badges_html(contract, lang):
     """Badges visuales de riesgo/autonomía para una card, a partir de los
     tags ya normalizados del contrato editorial (issue: conectar
@@ -707,6 +742,31 @@ def _contract_badges_html(contract, lang):
         parts.append(
             '<span class="badge-model badge-model-' + h(rec["tier"]) + '" title="'
             + h(hint) + '">' + h(tier_label) + marca + "</span>"
+        )
+
+    # "Necesitas N datos": lo que la persona debe tener a la mano ANTES de
+    # copiar. Solo 17 de los 112 prompts lo dicen en su propio texto, asi que
+    # para los otros 95 el contrato editorial es la unica fuente -- y la
+    # sorpresa llegaba a mitad de la conversacion con el agente.
+    #
+    # Aqui va solo el conteo, no la lista: es una senal de cuanta preparacion
+    # exige el prompt, para decidir de un vistazo. La lista completa vive en
+    # el modal, que es donde se evalua y donde se puede leer en movil (un
+    # tooltip con 4 renglones no se puede tocar). Repetirla en un title=
+    # duplicaria 38.7 KB de payload para no agregar nada.
+    inputs = required_inputs_items(contract)
+    if inputs:
+        # El tooltip es fijo, sin interpolar el conteo: repetir una cadena
+        # distinta en cada una de las 224 cards costaba ~14 KB sin decir nada
+        # que el propio badge no diga ya.
+        if lang == "es":
+            etiqueta = f"{len(inputs)} dato" + ("s" if len(inputs) != 1 else "")
+            pista = "Datos que necesitas a la mano — ábrelo en ⓘ"
+        else:
+            etiqueta = f"{len(inputs)} input" + ("s" if len(inputs) != 1 else "")
+            pista = "Inputs you need at hand — open ⓘ"
+        parts.append(
+            '<span class="badge-inputs" title="' + h(pista) + '">' + h(etiqueta) + "</span>"
         )
 
     if not parts:
@@ -1901,6 +1961,18 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
 .badge-model-rapido { background: rgba(34,197,94,.12); color: #22c55e; border-color: rgba(34,197,94,.3); }
 .badge-model-general { background: rgba(14,165,233,.12); color: #38bdf8; border-color: rgba(14,165,233,.3); }
 .badge-model-razonamiento { background: rgba(245,158,11,.12); color: #f59e0b; border-color: rgba(245,158,11,.3); }
+
+/* "Necesitas N datos": preparación requerida, no una advertencia. Se pinta
+   en gris deliberadamente -- riesgo, autonomía y modelo usan color porque
+   son decisiones de gobernanza; esto solo informa cuánto hay que juntar
+   antes de empezar, y competir con ellos por atención sería ruido. */
+.badge-inputs { border-radius: 999px; padding: .1rem .45rem; font-size: .62rem;
+  font-weight: 600; letter-spacing: .01em; background: rgba(136,146,192,.1);
+  color: var(--tx2); border: 1px solid var(--bdr2); }
+
+.modal-inputs { margin: .4rem 0 0; padding-left: 1.1rem; }
+.modal-inputs li { color: var(--tx2); font-size: .82rem; line-height: 1.5;
+  margin-bottom: .25rem; }
 
 /* ────── Facet chips (filtro por riesgo / autonomía) ────── */
 .facet-chips-container {
@@ -4544,6 +4616,30 @@ function openInfoLang(pid, lang) {
     descEl.textContent = desc || '';
   }
 
+  // Lo que la persona debe tener a la mano antes de copiar. Estaba escrito
+  // en los 224 contratos y no se mostraba en ningun lado: quien copiaba un
+  // prompt descubria a mitad de la conversacion con el agente que le faltaba
+  // el stack, la metodologia o el ambiente, y tenia que reiniciar.
+  var inputsSec = document.getElementById('modal-inputs-section');
+  var inputsEl  = document.getElementById('modal-inputs');
+  var inputsTitle = document.getElementById('modal-inputs-title');
+  if (inputsSec && inputsEl) {
+    var inputs = (lang === 'en' ? info.inputs_en : info.inputs_es) || [];
+    inputsEl.innerHTML = '';
+    inputsSec.style.display = inputs.length ? '' : 'none';
+    if (inputs.length) {
+      inputsTitle.textContent = lang === 'en'
+        ? 'What you need at hand (' + inputs.length + ')'
+        : 'Qué necesitas a la mano (' + inputs.length + ')';
+      inputs.forEach(function(texto) {
+        var li = document.createElement('li');
+        // textContent y no innerHTML: es texto editorial, no marcado.
+        li.textContent = texto;
+        inputsEl.appendChild(li);
+      });
+    }
+  }
+
   // Estado de uso en el proyecto activo (issue #139) -- solo se muestra si
   // hay un proyecto activo; el framework ('fw') no participa del checklist.
   var progressEl = document.getElementById('modal-progress-section');
@@ -6543,6 +6639,11 @@ def build():
                 # llegaban al agente que debe obedecerlos.
                 "contract_es": _operating_contract(contract.get("es", {})),
                 "contract_en": _operating_contract(contract.get("en", {})),
+                # Lo que la persona debe aportar. Vive aqui y NO en un title=
+                # de la card: es la unica copia, y el modal es el unico sitio
+                # donde se puede leer en movil.
+                "inputs_es": required_inputs_items(contract.get("es", {})),
+                "inputs_en": required_inputs_items(contract.get("en", {})),
             }
             _titles_by_id[pid] = {"es": p["title_es"], "en": p["title_en"]}
     prompt_info_js = "var PROMPT_INFO = " + json.dumps(info_data, ensure_ascii=False) + ";"
@@ -7375,6 +7476,13 @@ def build():
         '      <div class="modal-section" id="modal-desc-section">'
         '<h3>Descripci\u00f3n y cu\u00e1ndo usarlo</h3>'
         '<p class="modal-desc" id="modal-desc"></p>'
+        '</div>\n'
+        # Lo que hay que tener a la mano. Va inmediatamente despues de la
+        # descripcion porque responde la pregunta que sigue a "para que sirve":
+        # "¿puedo usarlo ahora, o tengo que ir a buscar informacion primero?"
+        '      <div class="modal-section" id="modal-inputs-section" style="display:none">'
+        '<h3 id="modal-inputs-title"></h3>'
+        '<ul class="modal-inputs" id="modal-inputs"></ul>'
         '</div>\n'
         '      <div id="modal-progress-section"></div>\n'
         '      <div id="modal-custom-section"></div>\n'

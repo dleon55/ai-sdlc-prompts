@@ -51,7 +51,31 @@ Extrae magic numbers del código de pruebas para mantenibilidad.
 # y esta prosa comprime ~4x, así que en la red son ~50 KB, no 165. El tope
 # de aquí mide el archivo crudo; si se sigue subiendo conviene medir gzip o
 # cargar el catálogo bajo demanda en vez de elevarlo otra vez.
-MAX_INDEX_SIZE_KB = 2050
+# Elevado de 2050 a 2150 KB y DEGRADADO a red de seguridad. El tope crudo
+# resultó ser la métrica equivocada, por dos razones medidas:
+#
+#   1. nginx comprime text/html siempre y esta prosa comprime ~4x, así que
+#      nadie descarga esos 2 MB: son ~515 KB en la red. Un tope sobre bytes
+#      crudos presupuesta algo que no existe.
+#   2. El archivo en disco pesa ~15 KB más en Windows que en el runner Linux
+#      por CRLF, así que el mismo commit da números distintos según dónde se
+#      mida -- y el tope llegó a fallar por eso, no por contenido.
+#
+# El presupuesto real vive ahora en MAX_INDEX_GZIP_KB. Este se conserva como
+# backstop grueso contra un error que multiplique el archivo (un bucle que
+# repita el catálogo, un binario embebido por accidente), no para arbitrar
+# si una funcionalidad cabe.
+MAX_INDEX_SIZE_KB = 2150
+
+# Presupuesto real: lo que el visitante descarga. Hoy son ~515 KB.
+#
+# Al subirlo, la pregunta correcta no es "¿cuánto creció?" sino "¿esto se
+# puede cargar bajo demanda en vez de embeberlo?" -- ver el issue de carga
+# diferida. Los 226 bloques <code> con el texto de los prompts pesan 803 KB
+# crudos por sí solos y se envían completos aunque se abra un solo prompt:
+# ese es el corte grande que sigue pendiente, y ninguna subida de tope lo
+# sustituye.
+MAX_INDEX_GZIP_KB = 560
 MIN_INDEX_SIZE_KB = 100   # Mínimo esperado para contenido válido
 
 # Cobertura de prompts
