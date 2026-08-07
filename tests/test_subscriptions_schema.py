@@ -227,9 +227,17 @@ def test_anchor_does_not_change_what_is_charged():
     configuracion, asi que sigue siendo valido a cualquier precio."""
     import build
 
+    # Se genera la pagina AQUI en vez de leer precios.html del disco.
+    # En CI el paso que construye recibe las variables de Paddle y el paso
+    # que corre los tests no, asi que el archivo en disco y la config
+    # pueden venir de configuraciones distintas: el test comparaba $1 de la
+    # config contra un archivo construido con $9. Generandola con la misma
+    # config que se consulta, la comparacion es coherente pase lo que pase
+    # en el entorno.
     monto = build.paddle_public_config()["amount"]
+    html = build.build_precios_page()
 
-    assert f"${monto} USD al mes" in PRECIOS_HTML
-    assert "PADDLE_PRICE_ID" in PRECIOS_HTML
+    assert f"${monto} USD al mes" in html
+    assert "PADDLE_PRICE_ID" in html
     # El ancla nunca debe ser lo que se cobra.
-    assert monto != build.PRECIO_LISTA_USD or "px-anchor" not in PRECIOS_HTML
+    assert monto != build.PRECIO_LISTA_USD or "px-anchor" not in html
