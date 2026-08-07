@@ -33,7 +33,13 @@ Extrae magic numbers del código de pruebas para mantenibilidad.
 # alto: necesita un modelo de razonamiento; se sube un nivel porque
 # ejecuta cambios...") a propósito -- una recomendación sin justificación
 # es un oráculo, y el usuario nunca aprende a decidir solo.
-MAX_INDEX_SIZE_KB = 1800
+# Elevado de 1800 a 1900 KB al sacar el "siguiente paso" del modal a la
+# tarjeta: 324 chips navegables en 220 cards (ES+EN), +76 KB medidos. El
+# grafo de 175 aristas ya viajaba al navegador; solo se consumía tres
+# clics adentro del modal de información, así que casi nadie lo veía.
+# El costo es payload; lo que compra es que el producto deje de leerse
+# como catálogo de 226 tarjetas y se lea como el flujo que ya es.
+MAX_INDEX_SIZE_KB = 1900
 MIN_INDEX_SIZE_KB = 100   # Mínimo esperado para contenido válido
 
 # Cobertura de prompts

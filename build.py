@@ -633,6 +633,59 @@ def _contract_badges_html(contract, lang):
     return '<div class="card-badges">' + "".join(parts) + "</div>"
 
 
+# Cuantos siguientes se muestran en la tarjeta. Algunos prompts declaran
+# hasta 4; pintarlos todos convierte una pista en otro muro. Los demas
+# siguen estando en el modal de informacion, que no pierde nada.
+_MAX_NEXT_ON_CARD = 2
+
+
+def _next_steps_html(next_ids, titles_by_id, lang):
+    """Chips de "siguiente paso" directamente en la tarjeta.
+
+    110 de los 112 prompts declaran a donde seguir -- 175 aristas de un
+    grafo de flujo curado a mano. Ese dato ya viajaba al navegador de cada
+    visitante, pero solo se consumia dentro del modal de informacion: tres
+    clics adentro (icono pequeño, abrir, bajar hasta el final). La mayoria
+    nunca lo veia.
+
+    El resultado era que el producto se presentaba como catalogo de 226
+    tarjetas cuando en los datos es un flujo de trabajo. Un emprendedor no
+    piensa "estoy en la fase 07"; piensa "ya hice esto, ¿ahora que?" -- y
+    esa respuesta ya existia, escondida.
+    """
+    if not next_ids:
+        return ""
+
+    visibles = next_ids[:_MAX_NEXT_ON_CARD]
+    restantes = len(next_ids) - len(visibles)
+
+    chips = []
+    for nid in visibles:
+        titulo = (titles_by_id.get(nid) or {}).get(lang)
+        if not titulo:
+            continue
+        # El titulo completo va en el tooltip: en el chip se corta para que
+        # dos siguientes quepan en una linea sin romper la tarjeta.
+        corto = titulo if len(titulo) <= 34 else titulo[:33].rstrip() + "…"
+        chips.append(
+            '<button class="next-chip" onclick="goToPrompt(\'' + nid + "', '" + lang + '\')"'
+            ' title="' + h(titulo) + '">' + h(corto) + "</button>"
+        )
+
+    if not chips:
+        return ""
+
+    etiqueta = "Sigue con" if lang == "es" else "Next"
+    extra = ""
+    if restantes > 0:
+        extra = '<span class="next-more">+' + str(restantes) + "</span>"
+
+    return (
+        '<div class="card-next"><span class="next-label">' + etiqueta + "</span>"
+        + "".join(chips) + extra + "</div>"
+    )
+
+
 CSS = """
 :root {
   --hdr:  58px;
@@ -1728,6 +1781,22 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
 }
 
 /* ────── Contract badges (riesgo / autonomía por card) ────── */
+/* "Sigue con": el siguiente paso del flujo, en la tarjeta y no enterrado
+   en el modal. Deliberadamente discreto -- es una pista de navegacion,
+   no una llamada a la accion que compita con Copiar. */
+.card-next {
+  display: flex; align-items: center; gap: .35rem; flex-wrap: wrap;
+  padding: 0 .9rem .55rem; font-size: .68rem;
+}
+.next-label { color: var(--tx3); flex-shrink: 0; }
+.next-chip {
+  background: transparent; border: 1px solid var(--bdr); color: var(--tx2);
+  border-radius: 999px; padding: .1rem .5rem; font-size: .68rem;
+  cursor: pointer; font-family: inherit; max-width: 100%;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.next-chip:hover { border-color: #818cf8; color: #a5b4fc; }
+.next-more { color: var(--tx3); }
 .card-badges {
   display: flex; gap: .35rem; flex-wrap: wrap;
   padding: 0 .75rem .5rem;
@@ -6297,6 +6366,9 @@ def build():
     # prompts-index.json (issue #63) pero nunca llegaba al front-end
     # (issue #94, mismo patrón que #78 con los badges de riesgo/autonomía).
     # Se unen es/en por si el texto editorial difiere entre idiomas.
+    # Titulos por id, para que los chips de "sigue con" puedan mostrar el
+    # nombre del prompt destino y no su identificador.
+    _titles_by_id = {}
     info_data = {}
     for sk, items in sections.items():
         for p in items:
@@ -6312,12 +6384,14 @@ def build():
                 "desc_es":  p.get("description_es", ""), "desc_en": p.get("description_en", ""),
                 "formulas_es": p.get("formulas_es", []), "formulas_en": p.get("formulas_en", []),
                 "next_ids": next_ids,
+                # (se copia abajo a _titles_by_id para los chips de la card)
                 # sección del prompt (ej. "07", "00-D") -- issue #139, checklist de
                 # progreso por proyecto: el frontend agrupa el conteo de prompts
                 # usados por sección a partir de este campo, sin tener que
                 # recalcular la pertenencia de cada prompt del lado del cliente.
                 "section": sk,
             }
+            _titles_by_id[pid] = {"es": p["title_es"], "en": p["title_en"]}
     prompt_info_js = "var PROMPT_INFO = " + json.dumps(info_data, ensure_ascii=False) + ";"
 
     # ── mcp-server/data/prompts-full.json (issue #106) ──
@@ -6499,6 +6573,12 @@ def build():
             badges_es_html = _contract_badges_html(contract_es_tags, "es")
             badges_en_html = _contract_badges_html(contract_en_tags, "en")
 
+            # "Sigue con": el grafo de flujo ya existia en los datos pero
+            # solo se veia tres clics adentro del modal de informacion.
+            _next_ids = info_data.get(pid, {}).get("next_ids", [])
+            next_es_html = _next_steps_html(_next_ids, _titles_by_id, "es")
+            next_en_html = _next_steps_html(_next_ids, _titles_by_id, "en")
+
             # Card en Español
             groups_html += (
                 '<div class="card" data-lang="es">'
@@ -6524,7 +6604,7 @@ def build():
                 + COPY_ICO + ' Copiar'
                 '</button>'
                 '</div>'
-                + badges_es_html +
+                + badges_es_html + next_es_html +
                 '<div class="card-body" id="cb-' + pid + '-es">'
                 '<pre><code id="code-' + pid + '-es">' + h(p["prompt_es"]) + '</code></pre>'
                 '</div>'
@@ -6556,7 +6636,7 @@ def build():
                 + COPY_ICO + ' Copy'
                 '</button>'
                 '</div>'
-                + badges_en_html +
+                + badges_en_html + next_en_html +
                 '<div class="card-body" id="cb-' + pid + '-en">'
                 '<pre><code id="code-' + pid + '-en">' + h(p["prompt_en"]) + '</code></pre>'
                 '</div>'
