@@ -5045,6 +5045,9 @@ def build_precios_page():
         '.px-cta{display:inline-block;margin-top:1rem;background:linear-gradient(90deg,#818cf8,#c084fc);'
         'color:#0a0c16;font-weight:600;text-decoration:none;padding:.65rem 1.3rem;border-radius:8px;'
         'font-size:.9rem;}\n'
+        # Ancla tachada: el patron universal de "esto costaba mas". Tenue a
+        # proposito -- acompaña al precio real, no compite con el.
+        '.px-anchor{color:var(--tx3);font-size:.85rem;font-weight:400;text-decoration:line-through;}\n'
         '.px-foot{margin-top:3rem;color:var(--tx3);font-size:.8rem;}\n'
         '</style>\n</head>\n<body>\n'
         '<header>\n'
@@ -5086,12 +5089,20 @@ def build_precios_page():
         '  <div class="px-card px-future">\n'
         '    <h2><span class="px-badge fw-lang-es">Plan Pro</span><span class="px-badge fw-lang-en">Pro plan</span>'
         '<span class="fw-lang-es">&nbsp;$1 USD/mes</span>'
-        '<span class="fw-lang-en">&nbsp;$1 USD/month</span></h2>\n'
-        '    <p class="fw-lang-es">Precio introductorio de lanzamiento: <strong>$1 USD al mes</strong>, acceso Pro '
+        '<span class="fw-lang-en">&nbsp;$1 USD/month</span>'
+        # El ancla, junto al precio y no en la letra chica: es lo que
+        # convierte "$1" de "vale poco" a "esto es una ganga".
+        '<span class="px-anchor fw-lang-es">&nbsp;antes $' + PRECIO_LISTA_USD + ' USD</span>'
+        '<span class="px-anchor fw-lang-en">&nbsp;was $' + PRECIO_LISTA_USD + ' USD</span></h2>\n'
+        '    <p class="fw-lang-es">Precio de lista: <strong>$' + PRECIO_LISTA_USD + ' USD al mes</strong>. '
+        'Durante el piloto pagas <strong>$1 USD al mes</strong> — y ese precio se te respeta mientras no canceles. '
+        'Acceso Pro '
         'ilimitado (proyectos, personalización, resultados de IA) sin muro de prueba. Copiar prompts es y seguirá '
         'siendo gratis para todos, con o sin Pro. Cualquier cambio de precio se comunicará antes de que aplique a tu '
         'siguiente renovación y podrás cancelar sin penalización.</p>\n'
-        '    <p class="fw-lang-en">Launch introductory price: <strong>$1 USD per month</strong>, unlimited Pro access '
+        '    <p class="fw-lang-en">List price: <strong>$' + PRECIO_LISTA_USD + ' USD per month</strong>. '
+        'During the pilot you pay <strong>$1 USD per month</strong> — and that price stays yours for as long as you '
+        'keep the subscription. Unlimited Pro access '
         '(projects, personalization, AI output storage) with no trial wall. Copying prompts is and will remain free '
         'for everyone, Pro or not. Any price change will be communicated before it applies to your next renewal, '
         'and you may cancel without penalty.</p>\n'
@@ -5278,6 +5289,24 @@ def build_precios_page():
 # legales y es la vía operativa para solicitudes de privacidad, cancelación
 # y reembolso. El routing del dominio debe permanecer verificado antes de
 # cualquier cambio posterior a esta dirección.
+"""Precio de lista (ancla), distinto del precio que se cobra hoy.
+
+`precios.html` decia "Precio introductorio de lanzamiento: $1 USD al mes"
+sin decir introductorio *respecto a que*. Un precio sin ancla no se lee
+como oferta: se lee como el valor real del producto. Y $1 sin referencia
+comunica "juguete", justo lo contrario de lo que se quiere ante el
+comprador objetivo (dev senior / tech lead).
+
+El numero no es inventado: docs/requirements/Vision.md documenta una
+disposicion a pagar de $299-799 MXN/mes, y el STRATEGY.md original fijaba
+Pro Individual en $299 MXN/mes. Se expresa en USD -- la moneda en que
+Paddle realmente cobra -- para no mezclar monedas en la misma tarjeta.
+
+NO cambia lo que se cobra: el checkout sigue en $1 USD/mes. Esto es
+exclusivamente como se comunica.
+"""
+PRECIO_LISTA_USD = "16"
+
 LEGAL_CONTACT_EMAIL = "soporte@lionsystems.com.mx"
 
 # Fecha de última actualización que se muestra en las tres páginas.
