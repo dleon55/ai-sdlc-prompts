@@ -163,6 +163,12 @@ jobs:
           cp reembolsos.html dist/reembolsos.html
           cp robots.txt dist/robots.txt
           cp sitemap.xml dist/sitemap.xml
+          # og-image.png: la tarjeta que ven LinkedIn, WhatsApp y Slack al
+          # compartir el enlace. El HTML la referencia desde hace meses y el
+          # archivo no existia -- nginx respondia index.html con HTTP 200, asi
+          # que ninguna comprobacion de codigo de estado lo detectaba y las
+          # vistas previas salian vacias. Ver tools/generar_og_image.py.
+          cp og-image.png dist/og-image.png
 
       - name: Upload artifact (shared by Pages and GCP)
         if: github.event_name != 'pull_request'
@@ -345,6 +351,8 @@ jobs:
               dist/robots.txt "${U}@${H}:/home/${U}/robots.txt.new"
           scp -P "$P" -i ~/.ssh/gcp_key -o BatchMode=yes \
               dist/sitemap.xml "${U}@${H}:/home/${U}/sitemap.xml.new"
+          scp -P "$P" -i ~/.ssh/gcp_key -o BatchMode=yes \
+              dist/og-image.png "${U}@${H}:/home/${U}/og-image.png.new"
 
       - name: Atomic replace in production dir
         env:
@@ -361,8 +369,9 @@ jobs:
           CMD="${CMD}; sudo cp /home/${U}/reembolsos.html.new ${D}/reembolsos.html"
           CMD="${CMD}; sudo cp /home/${U}/robots.txt.new ${D}/robots.txt"
           CMD="${CMD}; sudo cp /home/${U}/sitemap.xml.new ${D}/sitemap.xml"
-          CMD="${CMD}; sudo chown www-data:www-data ${D}/index.html ${D}/precios.html ${D}/terminos.html ${D}/privacidad.html ${D}/reembolsos.html ${D}/robots.txt ${D}/sitemap.xml"
-          CMD="${CMD}; sudo chmod 644 ${D}/index.html ${D}/precios.html ${D}/terminos.html ${D}/privacidad.html ${D}/reembolsos.html ${D}/robots.txt ${D}/sitemap.xml"
+          CMD="${CMD}; sudo cp /home/${U}/og-image.png.new ${D}/og-image.png"
+          CMD="${CMD}; sudo chown www-data:www-data ${D}/index.html ${D}/precios.html ${D}/terminos.html ${D}/privacidad.html ${D}/reembolsos.html ${D}/robots.txt ${D}/sitemap.xml ${D}/og-image.png"
+          CMD="${CMD}; sudo chmod 644 ${D}/index.html ${D}/precios.html ${D}/terminos.html ${D}/privacidad.html ${D}/reembolsos.html ${D}/robots.txt ${D}/sitemap.xml ${D}/og-image.png"
           CMD="${CMD}; rm -f /home/${U}/index.html.new /home/${U}/precios.html.new /home/${U}/terminos.html.new /home/${U}/privacidad.html.new /home/${U}/reembolsos.html.new /home/${U}/robots.txt.new /home/${U}/sitemap.xml.new"
           CMD="${CMD}; echo DEPLOY_PROD_OK"
           CMD="${CMD}; stat ${D}/index.html"
