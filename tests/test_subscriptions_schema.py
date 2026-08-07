@@ -202,3 +202,22 @@ def test_sign_out_is_discoverable():
     reporto no encontrar donde cerrar sesion."""
     assert "aria-label" in INDEX_HTML
     assert "Cerrar sesión" in INDEX_HTML
+
+
+# ── Ancla de precio ──
+
+def test_list_price_anchors_the_introductory_price():
+    """precios.html decía "precio introductorio" sin decir respecto a qué.
+    Un precio sin ancla no se lee como oferta: se lee como el valor real
+    del producto -- y $1 sin referencia comunica "juguete"."""
+    assert "px-anchor" in PRECIOS_HTML
+    assert "16 USD" in PRECIOS_HTML
+    assert "line-through" in PRECIOS_HTML
+
+
+def test_anchor_does_not_change_what_is_charged():
+    """El ancla es solo comunicación. El checkout sigue cobrando $1 USD:
+    cambiar el cobro requeriría un precio nuevo en Paddle y actualizar los
+    documentos legales, que es otra decisión."""
+    assert "$1 USD al mes" in PRECIOS_HTML
+    assert "PADDLE_PRICE_ID" in PRECIOS_HTML
