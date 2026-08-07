@@ -1,0 +1,76 @@
+# Publica el servidor MCP en npm al crear un tag `mcp-v*`.
+#
+# Por qué por tag y no en cada push a main: publicar es irreversible (una
+# versión de npm no se puede reemplazar, solo deprecar). El tag es el acto
+# deliberado; main sigue siendo el flujo normal de desarrollo.
+#
+# Antes de que esto funcione hacen falta dos cosas que no viven en el repo:
+#   1. El secreto NPM_TOKEN (token de publicación de npm, tipo "Automation").
+#   2. Resolver la licencia: LICENSE es "All Rights Reserved" y prohíbe la
+#      reproducción y el uso sin permiso escrito. Instalar es copiar y
+#      ejecutar es usar, así que tal como está, cada usuario del paquete
+#      estaría en violación. Ver docs/publicar-mcp.md.
+name: Publicar servidor MCP
+
+on:
+  push:
+    tags:
+      - "mcp-v*"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # procedencia (provenance) de npm
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Instalar dependencias
+        working-directory: mcp-server
+        run: npm ci
+
+      # El paquete lleva los 112 prompts embebidos (data/prompts-full.json,
+      # generado por build.py). Si alguien publica sin regenerarlo, se
+      # distribuye un catálogo viejo sin que nada avise.
+      - name: Regenerar y verificar que los datos están al día
+        run: |
+          python build.py
+          if ! git diff --quiet -- mcp-server/data/prompts-full.json; then
+            echo "::error::mcp-server/data/prompts-full.json está desactualizado."
+            echo "Corre 'python build.py' y commitea el resultado antes de taggear."
+            git diff --stat -- mcp-server/data/prompts-full.json
+            exit 1
+          fi
+
+      - name: Pruebas
+        working-directory: mcp-server
+        run: npm test
+
+      # El tag manda: si dice mcp-v1.2.0, el paquete debe ser 1.2.0. Publicar
+      # una versión distinta de la taggeada hace imposible saber después qué
+      # código quedó en npm.
+      - name: Verificar que el tag coincide con la versión del paquete
+        working-directory: mcp-server
+        run: |
+          TAG="${GITHUB_REF_NAME#mcp-v}"
+          PKG=$(node -p "require('./package.json').version")
+          if [ "$TAG" != "$PKG" ]; then
+            echo "::error::el tag ($TAG) no coincide con package.json ($PKG)"
+            exit 1
+          fi
+
+      - name: Previsualizar el contenido del paquete
+        working-directory: mcp-server
+        run: npm pack --dry-run
+
+      - name: Publicar
+        working-directory: mcp-server
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -4,7 +4,24 @@ Expone la biblioteca de prompts [AI-SDLC Pro](../README.md) (112 prompts, ES/EN)
 
 Solo lectura: ningún tool escribe en el repositorio, en GitHub ni en ningún sistema externo. Todo el contenido se sirve desde `data/prompts-full.json`, generado por `python build.py` en la raíz del repo — este servidor nunca parsea Markdown por su cuenta.
 
+Todo prompt que sale de aquí viaja con su **contrato de operación**: techo de
+autonomía, herramientas permitidas, criterios de detención y evidencia mínima.
+Es el mismo bloque que pega quien copia desde el sitio, y `resolve_prompt` lo
+anexa por defecto — ver [Contrato de operación](#contrato-de-operación).
+
 ## Instalación
+
+> **Aún no publicado en npm.** Ver [`docs/publicar-mcp.md`](../docs/publicar-mcp.md):
+> falta resolver la licencia (`LICENSE` es *All Rights Reserved* y prohíbe la
+> reproducción y el uso sin permiso escrito). Hasta entonces, usa el clon local.
+
+Una vez publicado, sin clonar el repositorio:
+
+```bash
+npx ai-sdlc-prompts-mcp
+```
+
+Desde el clon local:
 
 ```bash
 cd mcp-server
@@ -34,6 +51,47 @@ Agrega esto a la configuración de servidores MCP del cliente (`claude_desktop_c
   }
 }
 ```
+
+Una vez publicado en npm, sin ruta absoluta ni clon:
+
+```json
+{
+  "mcpServers": {
+    "ai-sdlc-prompts": {
+      "command": "npx",
+      "args": ["-y", "ai-sdlc-prompts-mcp"]
+    }
+  }
+}
+```
+
+## Contrato de operación
+
+Cada uno de los 112 prompts declara en su contrato editorial hasta dónde puede
+llegar el agente. `resolve_prompt` anexa ese contrato al texto que devuelve:
+
+```markdown
+## Contrato de operación
+
+Estas restricciones vienen del contrato editorial de este prompt.
+Si la tarea las contradice, decláralo en vez de excederlas.
+
+- **Autonomía máxima:** A1 — Proponer
+- **Herramientas permitidas:** lectura opcional de la estructura actual…
+- **Detente y pregunta cuando:** si el tipo de proyecto o el stack son ambiguos…
+- **Evidencia mínima de tu salida:** el árbol de directorios y la tabla…
+```
+
+Importa más por MCP que en el navegador: quien copia desde el sitio pega y lee;
+un agente que pide el prompt por MCP normalmente **ejecuta**. Entregarlo sin su
+techo de autonomía es la peor de las dos rutas para perderlo.
+
+No se le ordena obedecer *por encima de todo*: si la tarea contradice al
+contrato, el agente debe declararlo, no elegir en silencio. Hay pruebas que
+impiden que alguien lo redacte así (`tests/test_mcp_contract_parity.py`).
+
+Se desactiva con `append_contract: false` — pensado para inspeccionar el texto
+crudo, no para uso normal.
 
 ## Herramientas expuestas
 

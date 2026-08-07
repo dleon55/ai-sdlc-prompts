@@ -7,6 +7,7 @@ import {
   getTokenRegistry,
 } from "./dataStore.js";
 import { resolvePrompt } from "./resolvePrompt.js";
+import { operatingContractBlock } from "./operatingContract.js";
 
 const LANG = z.enum(["es", "en"]).optional().describe("Idioma de salida (es/en). Por defecto: es.");
 
@@ -95,9 +96,10 @@ export function createServer() {
         lang: LANG,
         variables: z.record(z.string(), z.string()).optional().describe("Campo canónico -> valor."),
         prepend_framework: z.boolean().optional().describe("Antepone el preámbulo obligatorio del framework (default: true)."),
+        append_contract: z.boolean().optional().describe("Anexa el contrato de operación del prompt -- techo de autonomía, herramientas permitidas, criterios de detención y evidencia mínima (default: true). Desactivarlo entrega el prompt sin sus límites."),
       },
     },
-    async ({ id, lang, variables, prepend_framework }) => {
+    async ({ id, lang, variables, prepend_framework, append_contract }) => {
       const p = getPrompt(id);
       if (!p) return errorResult(`Prompt no encontrado: ${id}`);
       const l = lang || "es";
@@ -118,11 +120,20 @@ export function createServer() {
         unresolvedOptional = [...fwResolved.unresolvedOptional, ...unresolvedOptional];
       }
 
+      // El contrato va al final, igual que en el sitio. Sin esto, un agente
+      // que consume la biblioteca por MCP recibiria el prompt sin ninguno de
+      // sus limites -- y por MCP el agente suele ejecutar, no solo redactar.
+      const contractBlock = append_contract === false
+        ? ""
+        : operatingContractBlock(p.contract[l] || p.contract.es, l);
+      if (contractBlock) text = text + "\n\n---\n\n" + contractBlock;
+
       return textResult({
         id: p.id,
         text,
         unresolved_required: unresolvedRequired,
         unresolved_optional: unresolvedOptional,
+        contract_included: Boolean(contractBlock),
       });
     }
   );
