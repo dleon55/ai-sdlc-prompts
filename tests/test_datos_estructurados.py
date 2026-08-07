@@ -52,39 +52,54 @@ def test_se_declara_como_software_y_no_solo_como_sitio():
 
 
 def test_el_precio_publicado_es_el_que_se_cobra():
-    """Se compara artefacto contra artefacto, nunca contra la configuración viva.
+    """Se prueba la función, no el archivo generado.
 
-    La primera versión de este test llamaba a `build.precio_mensual_usd()` y
-    lo comparaba con el `index.html` del disco. Falló en CI con `'9' == '1'`:
-    la página se genera con las variables de producción y el test leía el
-    entorno vacío del runner. Dos fuentes distintas para el mismo dato --
-    exactamente el error que este archivo existe para evitar, y el mismo que
-    ya rompió el build cuatro veces antes en este repositorio.
+    Este test falló dos veces en CI antes de quedar bien, y las dos por leer
+    archivos del disco:
 
-    `index.html` y `terminos.html` salen de la MISMA corrida de build.py, así
-    que compararlos entre sí verifica la coherencia real sin depender de qué
-    variables tenga el proceso que ejecuta las pruebas.
+      1. Comparaba `index.html` (construido con las variables de producción,
+         9 USD) contra `build.precio_mensual_usd()` leído en el proceso de
+         pruebas, sin variables (1 USD).
+      2. Al corregirlo comparando `index.html` contra `terminos.html`, falló
+         igual: varias pruebas de la suite regeneran los estáticos con la
+         configuración por defecto a mitad de la corrida -- el propio
+         workflow lo documenta y por eso reconstruye antes de desplegar. Los
+         dos archivos ya no venían del mismo build.
+
+    `ofertas_structured_data()` no toca disco, así que da el mismo resultado
+    sin importar qué pruebas corrieron antes ni con qué configuración.
     """
-    ofertas = {o["name"]: o for o in _por_tipo("SoftwareApplication")["offers"]}
+    ofertas = {o["name"]: o for o in build.ofertas_structured_data()}
 
-    terminos = (RAIZ / "terminos.html").read_text(encoding="utf-8", errors="replace")
-    cobrado = re.search(r"([\d.]+) USD al mes", terminos)
-    assert cobrado, "terminos.html no declara el monto mensual"
-    assert ofertas["Pro mensual"]["price"] == cobrado.group(1), (
-        f"los datos estructurados anuncian {ofertas['Pro mensual']['price']} USD y los "
-        f"términos dicen {cobrado.group(1)} USD; quien busca en Google vería el precio "
-        "equivocado antes de entrar al sitio"
+    assert ofertas["Pro mensual"]["price"] == build.precio_mensual_usd(), (
+        "los datos estructurados anunciarían un precio distinto al que cobra Paddle; "
+        "quien busca en Google lo vería antes de entrar al sitio"
     )
 
-    # El plan anual solo debe anunciarse si está configurado para cobrarse.
-    # precios.html es el artefacto que sabe si existe.
-    precios = (RAIZ / "precios.html").read_text(encoding="utf-8", errors="replace")
-    hay_anual = bool(re.search(r'PADDLE_PRICE_ID_ANNUAL\s*=\s*"[^"]+"', precios))
-    assert ("Pro anual" in ofertas) == hay_anual, (
-        "se anuncia un plan anual que no está configurado para cobrarse"
-        if "Pro anual" in ofertas else
-        "hay plan anual configurado y no se declara en los datos estructurados"
-    )
+    anual = build.paddle_public_config()["annual_amount"]
+    if anual:
+        assert ofertas["Pro anual"]["price"] == anual
+    else:
+        assert "Pro anual" not in ofertas, (
+            "no debe anunciarse un plan anual que no está configurado para cobrarse"
+        )
+
+
+def test_la_portada_publica_las_ofertas_declaradas():
+    """Que la función sea correcta no sirve si la página no la usa.
+
+    Aquí solo se comprueba la estructura, nunca el monto: el `index.html` del
+    disco puede venir de otro build (ver el test anterior), y afirmar sobre
+    su precio es justo lo que hizo fallar la CI dos veces.
+    """
+    ofertas = _por_tipo("SoftwareApplication")["offers"]
+    nombres = {o["name"] for o in ofertas}
+    assert {"Free", "Pro mensual"} <= nombres, f"faltan ofertas en la portada: {nombres}"
+    for oferta in ofertas:
+        assert oferta["priceCurrency"] == "USD"
+        assert re.fullmatch(r"\d+(\.\d{1,2})?", oferta["price"]), (
+            f"precio con formato inválido para schema.org: {oferta['price']!r}"
+        )
 
 
 def test_el_plan_gratuito_se_declara():

@@ -75,6 +75,49 @@ def paddle_public_config():
         "annual_amount": annual_amount,
     }
 
+def ofertas_structured_data():
+    """Ofertas para el JSON-LD de la portada, en el orden en que se muestran.
+
+    Vive como función y no incrustado en el HTML para poder probarse sin
+    generar la página. Suena a detalle y no lo es: las pruebas que leen
+    archivos del disco se contaminan entre sí -- varias regeneran los
+    estáticos con la configuración por defecto en mitad de la corrida, así
+    que un test que compare index.html contra terminos.html puede estar
+    comparando dos builds distintos y fallar por una razón inventada. Ya
+    ocurrió dos veces con este mismo dato.
+
+    Los montos salen de la configuración que cobra Paddle, nunca de una
+    constante aparte: publicar en los datos estructurados un precio distinto
+    al que se cobra lo ve quien busca en Google antes de entrar al sitio.
+    """
+    ofertas = [
+        {
+            "@type": "Offer",
+            "name": "Free",
+            "price": "0",
+            "priceCurrency": "USD",
+            "description": f"Los {TOTAL_PROMPTS} prompts, copia ilimitada y para siempre, sin cuenta.",
+        },
+        {
+            "@type": "Offer",
+            "name": "Pro mensual",
+            "price": precio_mensual_usd(),
+            "priceCurrency": "USD",
+            "description": "Proyectos ilimitados, personalización por prompt y guardado de resultados de IA.",
+        },
+    ]
+    anual = paddle_public_config()["annual_amount"]
+    if anual:
+        ofertas.append({
+            "@type": "Offer",
+            "name": "Pro anual",
+            "price": anual,
+            "priceCurrency": "USD",
+            "description": "Plan Pro con facturación anual.",
+        })
+    return ofertas
+
+
 def precio_mensual_usd():
     """Monto mensual vigente en USD, sin simbolo. Lo usan la pagina de
     precios Y los documentos legales, para que no puedan contradecirse."""
@@ -6824,30 +6867,7 @@ def build():
             "description": i18n_strings.LANDING_STRINGS["es"]["meta_description"].format(n=TOTAL_PROMPTS),
             "inLanguage": ["es", "en"],
             "isAccessibleForFree": True,
-            "offers": [
-                {
-                    "@type": "Offer",
-                    "name": "Free",
-                    "price": "0",
-                    "priceCurrency": "USD",
-                    "description": f"Los {TOTAL_PROMPTS} prompts, copia ilimitada y para siempre, sin cuenta.",
-                },
-                {
-                    "@type": "Offer",
-                    "name": "Pro mensual",
-                    "price": precio_mensual_usd(),
-                    "priceCurrency": "USD",
-                    "description": "Proyectos ilimitados, personalización por prompt y guardado de resultados de IA.",
-                },
-            ] + ([
-                {
-                    "@type": "Offer",
-                    "name": "Pro anual",
-                    "price": paddle_public_config()["annual_amount"],
-                    "priceCurrency": "USD",
-                    "description": "Plan Pro con facturación anual.",
-                },
-            ] if paddle_public_config()["annual_amount"] else []),
+            "offers": ofertas_structured_data(),
             "featureList": [
                 "Riesgo esperado y techo de autonomía declarados por prompt",
                 "Contrato de operación que viaja con el prompt al agente",
