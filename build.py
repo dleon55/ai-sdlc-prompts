@@ -36,7 +36,50 @@ def paddle_public_config():
     if environment == "production" and (client_token == PADDLE_DISABLED_VALUE or price_id == PADDLE_DISABLED_VALUE):
         raise ValueError("Production Paddle checkout requires PADDLE_CLIENT_TOKEN and PADDLE_PRICE_ID")
 
-    return {"environment": environment, "client_token": client_token, "price_id": price_id}
+    # El MONTO viaja junto al price id, no hardcodeado en el copy.
+    #
+    # Antes "$1 USD" estaba escrito a mano en 10 lugares de este archivo --
+    # incluidos terminos.html y reembolsos.html. Cambiar el cobro sin tocar
+    # los diez dejaba documentos legales contradiciendo al sitio, que es
+    # exactamente el defecto que ya se corrigio con el $499 de Gumroad.
+    # Atandolo a la misma variable de entorno que el price id, el precio
+    # cobrado y el comunicado no pueden divergir: se mueven en el mismo
+    # cambio de configuracion o no se mueven.
+    amount = os.getenv("PADDLE_PRICE_AMOUNT_USD", "1").strip() or "1"
+    if not re.fullmatch(r"\d+(?:\.\d{1,2})?", amount):
+        raise ValueError("PADDLE_PRICE_AMOUNT_USD must be a plain USD amount, e.g. 9 or 9.99")
+
+    # Plan anual opcional. Vacio = no se ofrece y la UI no lo menciona.
+    # A precios bajos es el mayor arreglo de economia unitaria que existe:
+    # Paddle cobra 5% + $0.50 POR TRANSACCION, asi que facturar una vez al
+    # año en vez de doce ahorra 11 cargos fijos de $0.50.
+    annual_id = os.getenv("PADDLE_PRICE_ID_ANNUAL", "").strip()
+    annual_amount = os.getenv("PADDLE_PRICE_AMOUNT_ANNUAL_USD", "").strip()
+    if annual_id and not re.fullmatch(r"pri_[A-Za-z0-9]+", annual_id):
+        raise ValueError("PADDLE_PRICE_ID_ANNUAL must be a Paddle price identifier")
+    if annual_amount and not re.fullmatch(r"\d+(?:\.\d{1,2})?", annual_amount):
+        raise ValueError("PADDLE_PRICE_AMOUNT_ANNUAL_USD must be a plain USD amount")
+    # Se exigen juntos: un id sin monto pintaria un boton sin precio, y un
+    # monto sin id abriria un checkout vacio.
+    if bool(annual_id) != bool(annual_amount):
+        raise ValueError(
+            "PADDLE_PRICE_ID_ANNUAL and PADDLE_PRICE_AMOUNT_ANNUAL_USD must be set together"
+        )
+
+    return {
+        "environment": environment,
+        "client_token": client_token,
+        "price_id": price_id,
+        "amount": amount,
+        "annual_price_id": annual_id,
+        "annual_amount": annual_amount,
+    }
+
+def precio_mensual_usd():
+    """Monto mensual vigente en USD, sin simbolo. Lo usan la pagina de
+    precios Y los documentos legales, para que no puedan contradecirse."""
+    return paddle_public_config()["amount"]
+
 
 def _is_deprecated_or_empty(content):
     """Contenido vacío/insuficiente o marcado DEPRECATED: no debe contarse
@@ -5069,6 +5112,51 @@ def build_precios_page():
     localStorage + fw-lang-es/fw-lang-en) para que la preferencia de idioma
     del usuario se mantenga entre ambas páginas."""
     paddle_config = paddle_public_config()
+    _precio = paddle_config["amount"]
+    _anual = paddle_config["annual_amount"]
+
+    # El ancla solo se pinta si el precio vigente esta POR DEBAJO del de
+    # lista. Cuando alcancen el mismo valor, mostrar "antes $X" con el mismo
+    # numero se leeria como un error, no como una oferta.
+    _hay_descuento = float(_precio) < float(PRECIO_LISTA_USD)
+    if _hay_descuento:
+        _ancla_html = (
+            '<span class="px-anchor fw-lang-es">&nbsp;antes $' + PRECIO_LISTA_USD + ' USD</span>'
+            '<span class="px-anchor fw-lang-en">&nbsp;was $' + PRECIO_LISTA_USD + ' USD</span>'
+        )
+        _lista_es = ('Precio de lista: <strong>$' + PRECIO_LISTA_USD + ' USD al mes</strong>. '
+                     'Hoy pagas <strong>$' + _precio + ' USD al mes</strong> — y ese precio se te '
+                     'respeta mientras no canceles. ')
+        _lista_en = ('List price: <strong>$' + PRECIO_LISTA_USD + ' USD per month</strong>. '
+                     'Today you pay <strong>$' + _precio + ' USD per month</strong> — and that price '
+                     'stays yours for as long as you keep the subscription. ')
+    else:
+        _ancla_html = ''
+        _lista_es = '<strong>$' + _precio + ' USD al mes.</strong> '
+        _lista_en = '<strong>$' + _precio + ' USD per month.</strong> '
+
+    # Plan anual: solo aparece si esta configurado. Se muestra el ahorro
+    # calculado, no uno escrito a mano que pueda quedar desfasado.
+    if _anual:
+        _meses_gratis = round(12 - (float(_anual) / float(_precio)), 1)
+        _meses_txt = str(int(_meses_gratis)) if _meses_gratis == int(_meses_gratis) else str(_meses_gratis)
+        _anual_html = (
+            '    <p class="px-annual">'
+            '<span class="fw-lang-es">O <strong>$' + _anual + ' USD al año</strong> — equivale a '
+            + _meses_txt + ' meses gratis.</span>'
+            '<span class="fw-lang-en">Or <strong>$' + _anual + ' USD per year</strong> — that is '
+            + _meses_txt + ' months free.</span></p>\n'
+        )
+        _anual_btn = (
+            '    <button id="px-subscribe-annual-btn" class="px-cta px-cta-alt" '
+            'style="border:none;cursor:pointer;" onclick="pxStartCheckout(true)">'
+            '<span class="fw-lang-es">Pagar anual</span>'
+            '<span class="fw-lang-en">Pay yearly</span></button>\n'
+        )
+    else:
+        _anual_html = ''
+        _anual_btn = ''
+
     return (
         '<!DOCTYPE html>\n<html lang="es" data-lang="es">\n<head>\n'
         '<meta charset="UTF-8">\n'
@@ -5087,7 +5175,7 @@ def build_precios_page():
         '})();</script>\n'
         '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n'
         '<title>Precios — AI-SDLC Pro / Pricing — AI-SDLC Pro</title>\n'
-        f'<meta name="description" content="AI-SDLC Pro: copia los {TOTAL_PROMPTS} prompts gratis siempre. Gestiona más de un proyecto, personaliza prompts y guarda resultados de IA con 1 semana de prueba Pro o el plan introductorio de 1 USD al mes.">\n'
+        f'<meta name="description" content="AI-SDLC Pro: copia los {TOTAL_PROMPTS} prompts gratis siempre. Gestiona más de un proyecto, personaliza prompts y guarda resultados de IA con 1 semana de prueba Pro o el plan de {_precio} USD al mes.">\n'
         '<meta name="robots" content="index,follow">\n'
         '<meta name="theme-color" content="#0f172a">\n'
         '<link rel="canonical" href="https://prompts.lionsystems.com.mx/precios.html">\n'
@@ -5127,6 +5215,14 @@ def build_precios_page():
         '.px-cta{display:inline-block;margin-top:1rem;background:linear-gradient(90deg,#818cf8,#c084fc);'
         'color:#0a0c16;font-weight:600;text-decoration:none;padding:.65rem 1.3rem;border-radius:8px;'
         'font-size:.9rem;}\n'
+        # Ancla tachada: el patron universal de "esto costaba mas". Tenue a
+        # proposito -- acompaña al precio real, no compite con el.
+        # Boton anual: secundario a proposito. El mensual es la puerta de
+        # entrada de menor friccion; el anual es para quien ya decidio.
+        '.px-cta-alt{background:transparent;border:1px solid var(--bdr) !important;'
+        'color:var(--tx2);margin-left:.5rem;}\n'
+        '.px-annual{color:var(--tx2);font-size:.85rem;margin:-.5rem 0 .75rem;}\n'
+        '.px-anchor{color:var(--tx3);font-size:.85rem;font-weight:400;text-decoration:line-through;}\n'
         '.px-foot{margin-top:3rem;color:var(--tx3);font-size:.8rem;}\n'
         '</style>\n</head>\n<body>\n'
         '<header>\n'
@@ -5167,16 +5263,23 @@ def build_precios_page():
         '  </div>\n'
         '  <div class="px-card px-future">\n'
         '    <h2><span class="px-badge fw-lang-es">Plan Pro</span><span class="px-badge fw-lang-en">Pro plan</span>'
-        '<span class="fw-lang-es">&nbsp;$1 USD/mes</span>'
-        '<span class="fw-lang-en">&nbsp;$1 USD/month</span></h2>\n'
-        '    <p class="fw-lang-es">Precio introductorio de lanzamiento: <strong>$1 USD al mes</strong>, acceso Pro '
+        '<span class="fw-lang-es">&nbsp;$' + _precio + ' USD/mes</span>'
+        '<span class="fw-lang-en">&nbsp;$' + _precio + ' USD/month</span>'
+        # El ancla solo tiene sentido si hay algo que anclar: cuando el
+        # precio vigente ya ES el de lista, mostrar "antes $X" con el mismo
+        # numero se lee como error, no como oferta.
+        + _ancla_html +
+        '</h2>\n'
+        + _anual_html +
+        '    <p class="fw-lang-es">' + _lista_es + 'Acceso Pro '
         'ilimitado (proyectos, personalización, resultados de IA) sin muro de prueba. Copiar prompts es y seguirá '
         'siendo gratis para todos, con o sin Pro. Cualquier cambio de precio se comunicará antes de que aplique a tu '
         'siguiente renovación y podrás cancelar sin penalización.</p>\n'
-        '    <p class="fw-lang-en">Launch introductory price: <strong>$1 USD per month</strong>, unlimited Pro access '
+        '    <p class="fw-lang-en">' + _lista_en + 'Unlimited Pro access '
         '(projects, personalization, AI output storage) with no trial wall. Copying prompts is and will remain free '
         'for everyone, Pro or not. Any price change will be communicated before it applies to your next renewal, '
         'and you may cancel without penalty.</p>\n'
+        + _anual_btn +
         '    <button id="px-subscribe-btn" class="px-cta" style="border:none;cursor:pointer;" onclick="pxStartCheckout()">'
         '<span class="fw-lang-es">Suscribirme</span><span class="fw-lang-en">Subscribe</span></button>\n'
         '    <p class="px-foot fw-lang-es">La suscripción se renueva mensualmente hasta que la canceles. Puedes cancelarla desde el enlace de gestión incluido en el recibo de Paddle o solicitándola a <a href="mailto:soporte@lionsystems.com.mx">soporte@lionsystems.com.mx</a>. Consulta <a href="/terminos.html" onclick="pxTrack(\'legal_policy_opened\',{policy:\'terms\'});">términos</a>, <a href="/privacidad.html" onclick="pxTrack(\'legal_policy_opened\',{policy:\'privacy\'});">privacidad</a> y <a href="/reembolsos.html" onclick="pxTrack(\'legal_policy_opened\',{policy:\'refunds\'});">reembolsos</a> antes de pagar.</p>\n'
@@ -5223,6 +5326,7 @@ def build_precios_page():
         'var SUPABASE_ANON_KEY="sb_publishable_qLmbKA8tlIUdW4xzmB1Z-w_kN3ygt7j";\n'
         f'var PADDLE_CLIENT_TOKEN={json.dumps(paddle_config["client_token"])};\n'
         f'var PADDLE_PRICE_ID={json.dumps(paddle_config["price_id"])};\n'
+        f'var PADDLE_PRICE_ID_ANNUAL={json.dumps(paddle_config["annual_price_id"])};\n'
         f'var PADDLE_ENVIRONMENT={json.dumps(paddle_config["environment"])};\n'
         'var _pxUser=null;\n'
         'function pxTrack(name,params){if(typeof gtag==="function")gtag("event",name,params||{});}\n'
@@ -5325,8 +5429,13 @@ def build_precios_page():
         '    return;\n'
         '  }\n'
         '  pxTrack("checkout_open_requested",{source:"pricing"});\n'
+        # El plan anual solo se abre si de verdad hay un precio anual
+        # configurado; si no, cae al mensual en vez de abrir un checkout
+        # vacio.
+        '  var precio=(anual&&PADDLE_PRICE_ID_ANNUAL)?PADDLE_PRICE_ID_ANNUAL:PADDLE_PRICE_ID;\n'
+        '  pxTrack("checkout_opened",{plan:(precio===PADDLE_PRICE_ID_ANNUAL)?"annual":"monthly"});\n'
         '  Paddle.Checkout.open({\n'
-        '    items:[{priceId:PADDLE_PRICE_ID,quantity:1}],\n'
+        '    items:[{priceId:precio,quantity:1}],\n'
         '    customData:{user_id:_pxUser.id},\n'
         '    settings:{successUrl:window.location.origin+"/precios.html?checkout=success"}\n'
         '  });\n'
@@ -5360,6 +5469,24 @@ def build_precios_page():
 # legales y es la vía operativa para solicitudes de privacidad, cancelación
 # y reembolso. El routing del dominio debe permanecer verificado antes de
 # cualquier cambio posterior a esta dirección.
+"""Precio de lista (ancla), distinto del precio que se cobra hoy.
+
+`precios.html` decia "Precio introductorio de lanzamiento: $1 USD al mes"
+sin decir introductorio *respecto a que*. Un precio sin ancla no se lee
+como oferta: se lee como el valor real del producto. Y $1 sin referencia
+comunica "juguete", justo lo contrario de lo que se quiere ante el
+comprador objetivo (dev senior / tech lead).
+
+El numero no es inventado: docs/requirements/Vision.md documenta una
+disposicion a pagar de $299-799 MXN/mes, y el STRATEGY.md original fijaba
+Pro Individual en $299 MXN/mes. Se expresa en USD -- la moneda en que
+Paddle realmente cobra -- para no mezclar monedas en la misma tarjeta.
+
+NO cambia lo que se cobra: el checkout sigue en $1 USD/mes. Esto es
+exclusivamente como se comunica.
+"""
+PRECIO_LISTA_USD = "16"
+
 LEGAL_CONTACT_EMAIL = "soporte@lionsystems.com.mx"
 
 # Fecha de última actualización que se muestra en las tres páginas.
@@ -5549,10 +5676,10 @@ def build_terminos_page():
         + _lg_section(
             'Suscripción, precio y renovación', 'Subscription, price and renewal',
             [('p',
-              'El plan Individual cuesta <strong>1 USD al mes</strong>. Es un precio introductorio de '
+              'El plan Individual cuesta <strong>' + precio_mensual_usd() + ' USD al mes</strong>. Es un precio introductorio de '
               'lanzamiento y puede cambiar; si cambia, te avisaremos antes de que aplique a tu '
               'siguiente cobro y podrás cancelar sin penalización.',
-              'The Individual plan costs <strong>1 USD per month</strong>. This is an introductory launch '
+              'The Individual plan costs <strong>' + precio_mensual_usd() + ' USD per month</strong>. This is an introductory launch '
               'price and may change; if it does, we will notify you before it applies to your next charge '
               'and you may cancel without penalty.'),
              ('p',
@@ -5642,7 +5769,7 @@ def build_terminos_page():
     return _legal_shell(
         'terminos',
         'Términos y condiciones — AI-SDLC Pro', 'Terms and Conditions — AI-SDLC Pro',
-        'Términos y condiciones de AI-SDLC Pro: suscripción de 1 USD al mes, renovación, cancelación, '
+        'Términos y condiciones de AI-SDLC Pro: suscripción de ' + precio_mensual_usd() + ' USD al mes, renovación, cancelación, '
         'licencia de uso de los prompts y Paddle como Merchant of Record.',
         'Términos y condiciones', 'Terms and Conditions',
         body,
@@ -5854,10 +5981,10 @@ def build_reembolsos_page():
               'progress. What you can do at any time is <strong>cancel</strong>: you stop being charged '
               'from the next cycle and keep full access until the period you already paid for ends.'),
              ('p',
-              'Como el plan es mensual y cuesta 1 USD, cancelar a tiempo evita cualquier cobro que no '
+              'Como el plan es mensual y cuesta ' + precio_mensual_usd() + ' USD, cancelar a tiempo evita cualquier cobro que no '
               'quieras. Fuera de los casos de error operativo comprobado descritos en esta política, no '
               'hacemos reembolsos ni prorrateos después de los 14 días.',
-              'Since the plan is monthly and costs 1 USD, cancelling in time avoids any charge you do not '
+              'Since the plan is monthly and costs ' + precio_mensual_usd() + ' USD, cancelling in time avoids any charge you do not '
               'want. Other than the confirmed operational errors described in this policy, we do not issue '
               'refunds or prorations after the 14-day window.')]
         )

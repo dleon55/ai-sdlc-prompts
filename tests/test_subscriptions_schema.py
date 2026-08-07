@@ -233,3 +233,41 @@ def test_guided_gate_fails_open_on_error():
     """Mismo principio que el resto del muro: nunca bloquear a un usuario
     real por una falla transitoria de red o del SDK."""
     assert ".catch(function() { showGuidedModal(); })" in INDEX_HTML
+
+# ── Ancla de precio ──
+
+def test_list_price_anchors_the_introductory_price():
+    """precios.html decía "precio introductorio" sin decir respecto a qué.
+    Un precio sin ancla no se lee como oferta: se lee como el valor real
+    del producto -- y $1 sin referencia comunica "juguete"."""
+    assert "px-anchor" in PRECIOS_HTML
+    assert "16 USD" in PRECIOS_HTML
+    assert "line-through" in PRECIOS_HTML
+
+
+def test_anchor_does_not_change_what_is_charged():
+    """El ancla es solo comunicación: el precio mostrado debe ser el
+    configurado, no el de lista.
+
+    La primera version de este test afirmaba `"$1 USD al mes" in
+    PRECIOS_HTML`, o sea una foto del precio de ese dia en vez del
+    invariante. Al mover el precio a $9 rompio el build -- correctamente,
+    pero por la razon equivocada: no habia defecto, solo un test que
+    codificaba un supuesto caduco. Ahora se compara contra la
+    configuracion, asi que sigue siendo valido a cualquier precio."""
+    import build
+
+    # Se genera la pagina AQUI en vez de leer precios.html del disco.
+    # En CI el paso que construye recibe las variables de Paddle y el paso
+    # que corre los tests no, asi que el archivo en disco y la config
+    # pueden venir de configuraciones distintas: el test comparaba $1 de la
+    # config contra un archivo construido con $9. Generandola con la misma
+    # config que se consulta, la comparacion es coherente pase lo que pase
+    # en el entorno.
+    monto = build.paddle_public_config()["amount"]
+    html = build.build_precios_page()
+
+    assert f"${monto} USD al mes" in html
+    assert "PADDLE_PRICE_ID" in html
+    # El ancla nunca debe ser lo que se cobra.
+    assert monto != build.PRECIO_LISTA_USD or "px-anchor" not in html
