@@ -100,7 +100,9 @@ jobs:
         run: python extract_vars.py
 
       - name: QA gate - JS runtime tests
-        run: node tests/js/test_variables_runtime.js
+        run: |
+          node tests/js/test_variables_runtime.js
+          node tests/js/test_precios_runtime.js
 
       - name: Run tests
         run: |
