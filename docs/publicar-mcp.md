@@ -85,6 +85,42 @@ enlazarlo. Una vez publicado y verificado con el paso 3, agregarlo.
 
 ---
 
+## Dependencias y alcance real
+
+`mcp-server` no declara más que `@modelcontextprotocol/sdk` y `zod`. Todo lo
+que aparece en las alertas de seguridad es **transitivo del SDK**, y conviene
+saber qué es alcanzable antes de reaccionar a un aviso.
+
+Este servidor usa **únicamente el transporte stdio**. Siguiendo los imports
+desde sus dos puntos de entrada reales (`server/stdio.js`, `server/mcp.js`) se
+alcanzan 16 archivos del SDK y estos paquetes externos:
+
+    ajv, ajv-formats, zod, zod-to-json-schema
+
+Es decir, la pila HTTP del SDK (`hono`, `@hono/node-server`,
+`express-rate-limit` y su `ip-address`) **no se carga nunca**. Un aviso sobre
+CORS, rate limiting o path traversal en `serve-static` no aplica aquí, porque
+no hay servidor HTTP: el proceso habla por stdin/stdout y no abre red.
+
+Lo que sí es alcanzable es `ajv` (valida los esquemas de entrada de cada tool)
+y, por debajo, `fast-uri`.
+
+**Importante sobre lo que recibe quien instala.** El paquete publicado no lleva
+`package-lock.json` (ver `files` en `package.json`), así que cada instalación
+resuelve su propio árbol desde los rangos declarados. `ajv` pide
+`fast-uri: ^3.0.1` y `express-rate-limit` pide `ip-address: ^10.2.0`: una
+instalación nueva toma la versión parchada por sí sola. Las alertas de
+Dependabot se referían al lockfile **de este repositorio** — que afecta a la CI
+y a quien clona, no a quien hace `npx`.
+
+Para reproducir el análisis de alcance, seguir los imports desde
+`node_modules/@modelcontextprotocol/sdk/dist/esm/server/{stdio,mcp}.js`.
+
+El workflow de publicación corre `npm audit --audit-level=high` y **no publica**
+con vulnerabilidades altas conocidas.
+
+---
+
 ## Subir de versión
 
 `data/prompts-full.json` se regenera con `python build.py`, así que **cualquier
