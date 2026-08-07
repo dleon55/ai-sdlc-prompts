@@ -52,17 +52,39 @@ def test_se_declara_como_software_y_no_solo_como_sitio():
 
 
 def test_el_precio_publicado_es_el_que_se_cobra():
+    """Se compara artefacto contra artefacto, nunca contra la configuración viva.
+
+    La primera versión de este test llamaba a `build.precio_mensual_usd()` y
+    lo comparaba con el `index.html` del disco. Falló en CI con `'9' == '1'`:
+    la página se genera con las variables de producción y el test leía el
+    entorno vacío del runner. Dos fuentes distintas para el mismo dato --
+    exactamente el error que este archivo existe para evitar, y el mismo que
+    ya rompió el build cuatro veces antes en este repositorio.
+
+    `index.html` y `terminos.html` salen de la MISMA corrida de build.py, así
+    que compararlos entre sí verifica la coherencia real sin depender de qué
+    variables tenga el proceso que ejecuta las pruebas.
+    """
     ofertas = {o["name"]: o for o in _por_tipo("SoftwareApplication")["offers"]}
-    assert ofertas["Pro mensual"]["price"] == build.precio_mensual_usd(), (
-        "el precio de los datos estructurados no coincide con el que cobra Paddle"
+
+    terminos = (RAIZ / "terminos.html").read_text(encoding="utf-8", errors="replace")
+    cobrado = re.search(r"([\d.]+) USD al mes", terminos)
+    assert cobrado, "terminos.html no declara el monto mensual"
+    assert ofertas["Pro mensual"]["price"] == cobrado.group(1), (
+        f"los datos estructurados anuncian {ofertas['Pro mensual']['price']} USD y los "
+        f"términos dicen {cobrado.group(1)} USD; quien busca en Google vería el precio "
+        "equivocado antes de entrar al sitio"
     )
-    anual = build.paddle_public_config()["annual_amount"]
-    if anual:
-        assert ofertas["Pro anual"]["price"] == anual
-    else:
-        assert "Pro anual" not in ofertas, (
-            "no debe anunciarse un plan anual que no está configurado para cobrarse"
-        )
+
+    # El plan anual solo debe anunciarse si está configurado para cobrarse.
+    # precios.html es el artefacto que sabe si existe.
+    precios = (RAIZ / "precios.html").read_text(encoding="utf-8", errors="replace")
+    hay_anual = bool(re.search(r'PADDLE_PRICE_ID_ANNUAL\s*=\s*"[^"]+"', precios))
+    assert ("Pro anual" in ofertas) == hay_anual, (
+        "se anuncia un plan anual que no está configurado para cobrarse"
+        if "Pro anual" in ofertas else
+        "hay plan anual configurado y no se declara en los datos estructurados"
+    )
 
 
 def test_el_plan_gratuito_se_declara():
