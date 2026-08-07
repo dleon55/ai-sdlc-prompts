@@ -27,7 +27,13 @@ Extrae magic numbers del código de pruebas para mantenibilidad.
 # privacidad de datos, documentación pública de API, capacitación/rollout
 # para usuarios finales, y revisión de éxito post-lanzamiento -- crecimiento
 # de contenido real, no bloat; con margen moderado para crecimiento futuro.
-MAX_INDEX_SIZE_KB = 1720
+# Elevado de 1720 a 1800 KB al agregar la recomendación de modelo por
+# prompt: un badge con tooltip explicativo en cada una de las 222 cards
+# (ES+EN), +41.6 KB medidos. El tooltip lleva el porqué completo ("riesgo
+# alto: necesita un modelo de razonamiento; se sube un nivel porque
+# ejecuta cambios...") a propósito -- una recomendación sin justificación
+# es un oráculo, y el usuario nunca aprende a decidir solo.
+MAX_INDEX_SIZE_KB = 1800
 MIN_INDEX_SIZE_KB = 100   # Mínimo esperado para contenido válido
 
 # Cobertura de prompts

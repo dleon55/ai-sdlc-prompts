@@ -470,6 +470,125 @@ _RISK_LABEL = {
     "variable": {"es": "Variable", "en": "Variable"},
 }
 
+# ══════════════════════════════════════════════════════════════════
+#  RECOMENDACION DE MODELO  (etapa 2 de la capa de gobernanza)
+#
+#  No se puede pedirle lo mismo a un modelo de razonamiento profundo
+#  que a uno rapido: al primero, sobre-instruirlo lo empeora (deja de
+#  razonar y ejecuta la lista); al segundo, quitarle los pasos lo hace
+#  divagar. La biblioteca daba una sola version y el usuario adivinaba.
+#
+#  Esta etapa NO reescribe los prompts: solo expone una recomendacion
+#  derivada de datos que YA existen en el contrato editorial de cada
+#  uno (`Riesgo esperado` y `Autonomia permitida`). Cero contenido
+#  nuevo que mantener, y el juicio queda explicito en un solo lugar.
+#
+#  Se razona en NIVELES DE CAPACIDAD, no en nombres de modelo. Los
+#  nombres caducan en meses; "necesita razonamiento profundo" no. Los
+#  ejemplos concretos viven en una sola tabla fechada (abajo), que es
+#  lo unico que hay que revisar cuando cambie el mercado.
+# ══════════════════════════════════════════════════════════════════
+
+# Ordenados de menor a mayor capacidad exigida. El indice importa: la
+# logica sube y baja de nivel sobre esta secuencia.
+_MODEL_TIERS = ("rapido", "general", "razonamiento")
+
+_TIER_LABEL = {
+    "rapido": {"es": "Modelo rápido", "en": "Fast model"},
+    "general": {"es": "Modelo general", "en": "General model"},
+    "razonamiento": {"es": "Modelo de razonamiento", "en": "Reasoning model"},
+}
+
+# Ejemplos concretos, FECHADOS a proposito. Es el unico punto del
+# codigo que envejece: si esta tabla lleva seis meses sin revisarse,
+# recomendar un modelo descontinuado es peor que no recomendar nada.
+MODEL_EXAMPLES_REVIEWED = "2026-08"
+_TIER_EXAMPLES = {
+    "rapido": "Haiku, GPT-5 mini, Gemini Flash",
+    "general": "Sonnet, GPT-5, Gemini Pro",
+    "razonamiento": "Opus, GPT-5 Pro, o-series",
+}
+
+
+def recommend_model_tier(risk_tags, autonomy_tags):
+    """Nivel de modelo sugerido para un prompt, con su justificacion.
+
+    La regla, en una linea: el riesgo fija el piso, y la autonomia lo
+    mueve -- ejecutar cambios sube el listón, solo analizar lo baja.
+
+    Devuelve None cuando el contrato no declara riesgo: es preferible no
+    recomendar a inventar una recomendacion sin base.
+    """
+    risk = (risk_tags or [None])[0]
+    autonomy = sorted(autonomy_tags or [])
+
+    base = {
+        "low": "rapido",
+        "medium": "general",
+        "high": "razonamiento",
+        # Los meta-prompts de enrutamiento (ej. 12-orquestador) heredan el
+        # riesgo del prompt al que derivan: no hay nivel fijo que sugerir.
+        "variable": None,
+    }.get(risk)
+    if base is None:
+        return None
+
+    idx = _MODEL_TIERS.index(base)
+    razones = []
+
+    # A2/A3 = el agente ejecuta cambios, no solo propone. Un error deja de
+    # ser un mal parrafo y pasa a ser codigo o infraestructura tocada.
+    ejecuta = any(a in ("A2", "A3") for a in autonomy)
+    solo_analiza = bool(autonomy) and autonomy == ["A0"]
+
+    if ejecuta and idx < len(_MODEL_TIERS) - 1:
+        idx += 1
+        razones.append("ejecuta_cambios")
+    elif solo_analiza and idx > 0:
+        idx -= 1
+        razones.append("solo_analiza")
+
+    return {
+        "tier": _MODEL_TIERS[idx],
+        # Alto riesgo + ejecucion es la combinacion donde un humano debe
+        # mirar antes de que el resultado toque nada real.
+        "revision_humana": risk == "high" and ejecuta,
+        "razones": razones,
+        "riesgo": risk,
+        "ejecuta": ejecuta,
+    }
+
+
+def _model_hint_text(rec, lang):
+    """Explicacion de POR QUE se sugiere ese nivel. Sin el porque, la
+    recomendacion es un oraculo y el usuario no aprende a decidir solo."""
+    if lang == "en":
+        base = {
+            "low": "Low risk: a fast model is enough.",
+            "medium": "Medium risk: use a general-purpose model.",
+            "high": "High risk: needs a reasoning model.",
+        }[rec["riesgo"]]
+        if "ejecuta_cambios" in rec["razones"]:
+            base += " Raised one tier because this prompt executes changes (A2/A3), not just proposes."
+        if "solo_analiza" in rec["razones"]:
+            base += " Lowered one tier because it only analyses (A0) and writes nothing."
+        if rec["revision_humana"]:
+            base += " Have a human review the output before applying it."
+        return base + f" Examples ({MODEL_EXAMPLES_REVIEWED}): {_TIER_EXAMPLES[rec['tier']]}."
+
+    base = {
+        "low": "Riesgo bajo: basta un modelo rápido.",
+        "medium": "Riesgo medio: usa un modelo de propósito general.",
+        "high": "Riesgo alto: necesita un modelo de razonamiento.",
+    }[rec["riesgo"]]
+    if "ejecuta_cambios" in rec["razones"]:
+        base += " Se sube un nivel porque este prompt ejecuta cambios (A2/A3), no solo propone."
+    if "solo_analiza" in rec["razones"]:
+        base += " Se baja un nivel porque solo analiza (A0) y no escribe nada."
+    if rec["revision_humana"]:
+        base += " Revisa el resultado con un humano antes de aplicarlo."
+    return base + f" Ejemplos ({MODEL_EXAMPLES_REVIEWED}): {_TIER_EXAMPLES[rec['tier']]}."
+
 
 def _contract_badges_html(contract, lang):
     """Badges visuales de riesgo/autonomía para una card, a partir de los
@@ -496,6 +615,19 @@ def _contract_badges_html(contract, lang):
             '<span class="badge-autonomy" title="' + auton_word + ": " + h(auton_text) + '">'
             + h(auton_text) + "</span>"
         )
+    # Recomendacion de modelo: derivada de riesgo + autonomia, no un dato
+    # nuevo. Es lo que convierte la biblioteca en una guia de gobernanza:
+    # no solo "que pedir" sino "a que modelo, con cuanta autonomia".
+    rec = recommend_model_tier(risk_tags, autonomy_tags)
+    if rec:
+        tier_label = _TIER_LABEL[rec["tier"]][lang]
+        hint = _model_hint_text(rec, lang)
+        marca = " ⚠" if rec["revision_humana"] else ""
+        parts.append(
+            '<span class="badge-model badge-model-' + h(rec["tier"]) + '" title="'
+            + h(hint) + '">' + h(tier_label) + marca + "</span>"
+        )
+
     if not parts:
         return ""
     return '<div class="card-badges">' + "".join(parts) + "</div>"
@@ -1610,6 +1742,15 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
 .badge-risk-high { background: rgba(239,68,68,.12); color: #f87171; border-color: rgba(239,68,68,.3); }
 .badge-risk-variable { background: rgba(148,163,184,.12); color: #94a3b8; border-color: rgba(148,163,184,.3); }
 .badge-autonomy { background: rgba(99,102,241,.12); color: #a5b4fc; border-color: rgba(99,102,241,.3); }
+/* Recomendacion de modelo. El color sube con la capacidad exigida, para
+   que "esto necesita el modelo caro" se lea de un vistazo sin abrir el
+   tooltip. Comparte forma con los otros badges: es informacion del mismo
+   contrato editorial, no una alerta aparte. */
+.badge-model { border-radius: 999px; padding: .1rem .45rem; font-size: .62rem;
+  font-weight: 600; border: 1px solid; letter-spacing: .01em; }
+.badge-model-rapido { background: rgba(34,197,94,.12); color: #22c55e; border-color: rgba(34,197,94,.3); }
+.badge-model-general { background: rgba(14,165,233,.12); color: #38bdf8; border-color: rgba(14,165,233,.3); }
+.badge-model-razonamiento { background: rgba(245,158,11,.12); color: #f59e0b; border-color: rgba(245,158,11,.3); }
 
 /* ────── Facet chips (filtro por riesgo / autonomía) ────── */
 .facet-chips-container {
