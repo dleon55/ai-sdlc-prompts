@@ -52,6 +52,16 @@ jobs:
         working-directory: mcp-server
         run: npm test
 
+      # No publicar con vulnerabilidades altas conocidas. Un producto sobre
+      # gobernanza que distribuye dependencias vulnerables se desmiente solo.
+      #
+      # Bloquea solo en `high`/`critical` a propósito: un aviso nuevo de
+      # severidad media no debe impedir publicar un cambio de contenido, pero
+      # sí debe verse. Ver docs/publicar-mcp.md para el análisis de alcance.
+      - name: Auditoría de dependencias
+        working-directory: mcp-server
+        run: npm audit --audit-level=high
+
       # El tag manda: si dice mcp-v1.2.0, el paquete debe ser 1.2.0. Publicar
       # una versión distinta de la taggeada hace imposible saber después qué
       # código quedó en npm.
