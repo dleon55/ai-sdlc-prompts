@@ -1760,6 +1760,13 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
    en el hueco del footer y colapsan a bloque propio en movil. */
 /* Badge PRO del header: unica señal visible de suscripcion de pago
    activa. Verde para leerse como "estado bueno", no como aviso. */
+/* Aviso de usos restantes de la ruta guiada. Discreto a proposito: es un
+   recordatorio, no una alarma -- ambar, no rojo. */
+.guided-quota {
+  margin: 0 0 .75rem; padding: .4rem .6rem; border-radius: 6px;
+  font-size: .72rem; color: var(--warn, #f59e0b);
+  background: rgba(245,158,11,.10); border: 1px solid rgba(245,158,11,.28);
+}
 .auth-pro-badge {
   display: inline-block; margin-right: .4rem; padding: .1rem .4rem;
   border-radius: 999px; font-size: .62rem; font-weight: 700;
@@ -2640,16 +2647,67 @@ function setGuidedPosition(index) {
   } catch (e) {}
 }
 
-function openGuidedModal() {
+/* Muro medido del modo guiado.
+   El unico muro de pago que existia era "crear un segundo proyecto": un
+   disparador administrativo que un dev individual puede no tocar nunca.
+   Podia usar el producto meses, obtener todo el valor y jamas ver una
+   oferta. Mientras tanto el modo guiado -- que responde "cual es el
+   siguiente prompt segun donde voy", o sea asesoria, no almacenamiento --
+   estaba gratis y sin limite.
+   Este contador mueve el muro a donde se concentra el valor recurrente,
+   pero DESPUES de sentirlo: las primeras GUIDED_FREE_USES aperturas son
+   libres incluso sin cuenta. Cobrar en el primer uso mataria el "aha". */
+var GUIDED_FREE_USES = 3;
+var GUIDED_USES_KEY = 'AI_SDLC_guided_uses';
+
+function getGuidedUses() {
+  try { return parseInt(localStorage.getItem(GUIDED_USES_KEY) || '0', 10) || 0; }
+  catch (e) { return 0; }
+}
+
+function bumpGuidedUses() {
+  try { localStorage.setItem(GUIDED_USES_KEY, String(getGuidedUses() + 1)); }
+  catch (e) {}
+}
+
+function guidedFreeUsesLeft() {
+  return Math.max(0, GUIDED_FREE_USES - getGuidedUses());
+}
+
+function showGuidedModal() {
   var modal = document.getElementById('guided-modal');
   if (!modal) return;
-  var active = getActiveProject();
-  if (!active) { openProjectsModal(); return; } // sin proyecto activo no hay ruta que trazar
   _lastFocusedBeforeModal = document.activeElement;
   renderGuidedStep(getGuidedPosition());
   modal.classList.add('open');
   var closeBtn = modal.querySelector('.modal-close-btn');
   if (closeBtn) closeBtn.focus();
+}
+
+function openGuidedModal() {
+  var modal = document.getElementById('guided-modal');
+  if (!modal) return;
+  var active = getActiveProject();
+  if (!active) { openProjectsModal(); return; } // sin proyecto activo no hay ruta que trazar
+
+  // Con Pro no hay contador que valga.
+  if (isProUser()) { showGuidedModal(); return; }
+
+  // Usos de cortesia: se consumen incluso sin cuenta, para que el valor
+  // se sienta antes de pedir nada.
+  if (guidedFreeUsesLeft() > 0) {
+    bumpGuidedUses();
+    showGuidedModal();
+    return;
+  }
+
+  // Agotados: la prueba activa sigue contando como acceso Pro. Fail-open
+  // ante error de red o SDK sin cargar, igual que el resto del muro.
+  checkProFeatureGate().then(function(gate) {
+    if (gate.allowed) { showGuidedModal(); return; }
+    if (gate.reason === 'trial_expired') openFeedbackWall();
+    else openRegisterWall();
+  }).catch(function() { showGuidedModal(); });
 }
 
 function closeGuidedModal() {
@@ -2682,6 +2740,29 @@ function guidedJumpToFirstUnused() {
   guidedGoTo(idx === -1 ? seq.length - 1 : idx);
 }
 
+/* Avisa cuantos usos de cortesia quedan ANTES de que se acaben. Toparse
+   con un muro sin haberlo visto venir se lee como cambio de reglas; verlo
+   agotarse convierte la ultima apertura en una decision informada.
+   Con Pro no se muestra nada: nadie quiere que le recuerden un limite que
+   ya no le aplica. */
+function renderGuidedQuotaNotice(body, lang) {
+  if (isProUser()) return;
+  var left = guidedFreeUsesLeft();
+  if (left > GUIDED_FREE_USES - 1) return; // aun no ha gastado ninguno
+  var note = document.createElement('p');
+  note.className = 'guided-quota';
+  if (left > 0) {
+    note.textContent = lang === 'en'
+      ? 'Guided route: ' + left + ' free ' + (left === 1 ? 'use' : 'uses') + ' left.'
+      : 'Ruta guiada: te ' + (left === 1 ? 'queda 1 uso gratis' : 'quedan ' + left + ' usos gratis') + '.';
+  } else {
+    note.textContent = lang === 'en'
+      ? 'Last free use of the guided route.'
+      : 'Último uso gratis de la ruta guiada.';
+  }
+  body.appendChild(note);
+}
+
 function renderGuidedStep(index) {
   var body = document.getElementById('guided-body');
   if (!body) return;
@@ -2689,6 +2770,7 @@ function renderGuidedStep(index) {
   var seq = getGuidedSequence();
   if (!seq.length) return;
   var lang = getCurrentLanguage();
+  renderGuidedQuotaNotice(body, lang);
   var pid = seq[index];
   var info = PROMPT_INFO[pid];
   if (!info) return;
