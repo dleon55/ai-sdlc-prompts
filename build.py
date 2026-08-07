@@ -6802,6 +6802,66 @@ def build():
                 "logo": "https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png",
             },
         }, ensure_ascii=False) + '</script>\n'
+        # SoftwareApplication, además de WebSite. WebSite le dice a Google que
+        # esto es un sitio; no que es software para desarrolladores con un
+        # precio, que es como la gente lo busca. Sin esto el resultado sale
+        # como un enlace azul más, sin la ficha con categoría y precio.
+        #
+        # Los montos salen de la MISMA configuración que cobra Paddle
+        # (precio_mensual_usd), no de una constante aparte: publicar en los
+        # datos estructurados un precio distinto al que se cobra es la clase
+        # de incoherencia que ya obligó a corregir los documentos legales.
+        #
+        # A propósito NO se declara aggregateRating: inventar reseñas es
+        # fabricar evidencia, y Google penaliza el marcado no verificable.
+        + '<script type="application/ld+json">' + json.dumps({
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            "name": "AI-SDLC Pro",
+            "applicationCategory": "DeveloperApplication",
+            "operatingSystem": "Web",
+            "url": "https://prompts.lionsystems.com.mx",
+            "description": i18n_strings.LANDING_STRINGS["es"]["meta_description"].format(n=TOTAL_PROMPTS),
+            "inLanguage": ["es", "en"],
+            "isAccessibleForFree": True,
+            "offers": [
+                {
+                    "@type": "Offer",
+                    "name": "Free",
+                    "price": "0",
+                    "priceCurrency": "USD",
+                    "description": f"Los {TOTAL_PROMPTS} prompts, copia ilimitada y para siempre, sin cuenta.",
+                },
+                {
+                    "@type": "Offer",
+                    "name": "Pro mensual",
+                    "price": precio_mensual_usd(),
+                    "priceCurrency": "USD",
+                    "description": "Proyectos ilimitados, personalización por prompt y guardado de resultados de IA.",
+                },
+            ] + ([
+                {
+                    "@type": "Offer",
+                    "name": "Pro anual",
+                    "price": paddle_public_config()["annual_amount"],
+                    "priceCurrency": "USD",
+                    "description": "Plan Pro con facturación anual.",
+                },
+            ] if paddle_public_config()["annual_amount"] else []),
+            "featureList": [
+                "Riesgo esperado y techo de autonomía declarados por prompt",
+                "Contrato de operación que viaja con el prompt al agente",
+                "Recomendación de modelo según riesgo y autonomía",
+                "Grafo de siguiente paso entre prompts",
+                "Servidor MCP para consumo por agentes",
+            ],
+            "publisher": {
+                "@type": "Organization",
+                "name": "LionSystems",
+                "url": "https://lionsystems.com.mx",
+                "logo": "https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png",
+            },
+        }, ensure_ascii=False) + '</script>\n'
         # El stub de dataLayer/gtag() debe cargar temprano (captura el
         # timestamp "js" real y encola cualquier evento posterior), pero el
         # script remoto de gtag.js se difiere hasta window.load: los únicos
