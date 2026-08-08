@@ -174,6 +174,11 @@ jobs:
           # fetch responde index.html con HTTP 200 y JSON.parse revienta.
           cp prompts-text.es.json dist/prompts-text.es.json
           cp prompts-text.en.json dist/prompts-text.en.json
+          # Iconos propios: el sitio los pedia a lionsystems.com.mx, que
+          # redirige a www, y la CSP del servidor solo permite el dominio sin
+          # www -- el navegador los bloqueaba y no habia favicon en produccion.
+          cp favicon-32.png dist/favicon-32.png
+          cp apple-touch-icon.png dist/apple-touch-icon.png
 
       - name: Upload artifact (shared by Pages and GCP)
         if: github.event_name != 'pull_request'
@@ -360,6 +365,8 @@ jobs:
               dist/og-image.png "${U}@${H}:/home/${U}/og-image.png.new"
           scp -P "$P" -i ~/.ssh/gcp_key -o BatchMode=yes               dist/prompts-text.es.json "${U}@${H}:/home/${U}/prompts-text.es.json.new"
           scp -P "$P" -i ~/.ssh/gcp_key -o BatchMode=yes               dist/prompts-text.en.json "${U}@${H}:/home/${U}/prompts-text.en.json.new"
+          scp -P "$P" -i ~/.ssh/gcp_key -o BatchMode=yes               dist/favicon-32.png "${U}@${H}:/home/${U}/favicon-32.png.new"
+          scp -P "$P" -i ~/.ssh/gcp_key -o BatchMode=yes               dist/apple-touch-icon.png "${U}@${H}:/home/${U}/apple-touch-icon.png.new"
 
       - name: Atomic replace in production dir
         env:
@@ -379,8 +386,10 @@ jobs:
           CMD="${CMD}; sudo cp /home/${U}/og-image.png.new ${D}/og-image.png"
           CMD="${CMD}; sudo cp /home/${U}/prompts-text.es.json.new ${D}/prompts-text.es.json"
           CMD="${CMD}; sudo cp /home/${U}/prompts-text.en.json.new ${D}/prompts-text.en.json"
-          CMD="${CMD}; sudo chown www-data:www-data ${D}/index.html ${D}/precios.html ${D}/terminos.html ${D}/privacidad.html ${D}/reembolsos.html ${D}/robots.txt ${D}/sitemap.xml ${D}/og-image.png ${D}/prompts-text.es.json ${D}/prompts-text.en.json"
-          CMD="${CMD}; sudo chmod 644 ${D}/index.html ${D}/precios.html ${D}/terminos.html ${D}/privacidad.html ${D}/reembolsos.html ${D}/robots.txt ${D}/sitemap.xml ${D}/og-image.png ${D}/prompts-text.es.json ${D}/prompts-text.en.json"
+          CMD="${CMD}; sudo cp /home/${U}/favicon-32.png.new ${D}/favicon-32.png"
+          CMD="${CMD}; sudo cp /home/${U}/apple-touch-icon.png.new ${D}/apple-touch-icon.png"
+          CMD="${CMD}; sudo chown www-data:www-data ${D}/index.html ${D}/precios.html ${D}/terminos.html ${D}/privacidad.html ${D}/reembolsos.html ${D}/robots.txt ${D}/sitemap.xml ${D}/og-image.png ${D}/prompts-text.es.json ${D}/prompts-text.en.json ${D}/favicon-32.png ${D}/apple-touch-icon.png"
+          CMD="${CMD}; sudo chmod 644 ${D}/index.html ${D}/precios.html ${D}/terminos.html ${D}/privacidad.html ${D}/reembolsos.html ${D}/robots.txt ${D}/sitemap.xml ${D}/og-image.png ${D}/prompts-text.es.json ${D}/prompts-text.en.json ${D}/favicon-32.png ${D}/apple-touch-icon.png"
           CMD="${CMD}; rm -f /home/${U}/index.html.new /home/${U}/precios.html.new /home/${U}/terminos.html.new /home/${U}/privacidad.html.new /home/${U}/reembolsos.html.new /home/${U}/robots.txt.new /home/${U}/sitemap.xml.new"
           CMD="${CMD}; echo DEPLOY_PROD_OK"
           CMD="${CMD}; stat ${D}/index.html"

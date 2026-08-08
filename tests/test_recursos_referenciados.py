@@ -131,3 +131,62 @@ def test_la_tarjeta_social_tiene_la_proporcion_correcta():
     ancho = int.from_bytes(datos[0:4], "big")
     alto = int.from_bytes(datos[4:8], "big")
     assert (ancho, alto) == (1200, 630), f"se esperaba 1200x630, es {ancho}x{alto}"
+
+
+# ── Imágenes externas vs la política de seguridad ─────────────────────
+
+def _img_src_permitido():
+    conf = (RAIZ / "nginx_prompts.conf").read_text(encoding="utf-8")
+    m = re.search(r"img-src([^;]*)", conf)
+    assert m, "nginx_prompts.conf no declara img-src"
+    return set(m.group(1).split())
+
+
+def test_la_csp_permite_las_imagenes_que_el_sitio_carga():
+    """El sitio no debe cargar imágenes que su propia CSP bloquea.
+
+    Este test nace de un defecto real en producción: el favicon se pedía a
+    `lionsystems.com.mx`, que responde 301 hacia `www.lionsystems.com.mx`, y
+    la CSP solo permitía el dominio sin `www`. El navegador lo bloqueaba y el
+    sitio quedaba **sin favicon**, sin que nada fallara: la página carga, los
+    tests pasan, y el error solo aparece en la consola del visitante.
+
+    Se comprueba contra `nginx_prompts.conf`, que es la fuente de verdad del
+    repositorio. Ojo: la configuración desplegada puede ir por detrás -- el
+    workflow copia HTML pero no aplica la configuración de nginx.
+    """
+    permitidos = _img_src_permitido()
+    externas = set()
+    for pagina in PAGINAS:
+        f = RAIZ / pagina
+        if not f.exists():
+            continue
+        html = f.read_text(encoding="utf-8", errors="replace")
+        for url in re.findall(r'(?:src|href)="(https?://[^"]+)"', html):
+            if re.search(r"\.(png|jpe?g|svg|gif|webp|ico)(\?|$)", url, re.I):
+                externas.add(url)
+
+    bloqueadas = []
+    for url in externas:
+        origen = "/".join(url.split("/")[:3])
+        if origen not in permitidos:
+            bloqueadas.append(url)
+
+    assert not bloqueadas, (
+        "estas imágenes se cargan desde un origen que la CSP no permite: "
+        f"{bloqueadas}. No falla el build ni las pruebas: simplemente no se ven."
+    )
+
+
+def test_los_iconos_se_sirven_desde_el_propio_origen():
+    """Alojarlos local es lo que hace innecesario abrir la CSP.
+
+    Además evita 1.3 MB por icono (el original mide 2048x2048) y un salto 301
+    en cada carga. Si alguien vuelve a enlazar el externo, esto lo detiene.
+    """
+    html = (RAIZ / "index.html").read_text(encoding="utf-8", errors="replace")
+    assert "lionsystems_icon.png" not in html, (
+        "el icono vuelve a pedirse a otro dominio: 1.3 MB, un redirect y CSP"
+    )
+    assert 'rel="icon" type="image/png" href="favicon-32.png"' in html
+    assert 'rel="apple-touch-icon" href="apple-touch-icon.png"' in html
