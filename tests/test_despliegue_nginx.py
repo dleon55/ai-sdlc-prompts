@@ -139,3 +139,47 @@ def test_hsts_no_vuelve_a_valores_irreversibles():
     assert "preload" not in valor, (
         "`preload` exige enviarlo a hstspreload.org y salir de esa lista tarda meses"
     )
+
+
+def test_el_job_de_gcp_clona_el_repositorio():
+    """`deploy-gcp` solo bajaba el artefacto con el sitio construido.
+
+    El primer despliegue de la configuración de nginx falló por esto:
+
+        scp: stat local "nginx_prompts.conf": No such file or directory
+
+    Ni la configuración ni `scripts/` viajan en el artefacto. Y no deben
+    meterse ahí: ese artefacto lo comparte `deploy-pages`, así que la
+    configuración de nginx acabaría publicada en el propio sitio.
+
+    El `checkout` debe ir ANTES de `download-artifact`, porque limpia el
+    directorio de trabajo y borraría `dist/` si fuera después.
+    """
+    import yaml
+
+    with open(WORKFLOW, encoding="utf-8") as f:
+        pasos = yaml.safe_load(f)["jobs"]["deploy-gcp"]["steps"]
+
+    usos = [p.get("uses", "") for p in pasos]
+    i_checkout = next((i for i, u in enumerate(usos) if "actions/checkout" in u), None)
+    i_artefacto = next((i for i, u in enumerate(usos) if "download-artifact" in u), None)
+
+    assert i_checkout is not None, (
+        "deploy-gcp no clona el repositorio: nginx_prompts.conf y scripts/ no existirían"
+    )
+    assert i_artefacto is not None, "deploy-gcp no descarga el artefacto del sitio"
+    assert i_checkout < i_artefacto, (
+        "checkout después de download-artifact borraría dist/ y no habría sitio que desplegar"
+    )
+
+
+def test_la_configuracion_de_nginx_no_se_publica_en_el_sitio():
+    """`dist/` lo sirve GitHub Pages: lo que entre ahí queda público.
+
+    La configuración ya es visible en el repositorio, así que no es una fuga
+    de secretos -- pero servirla desde el propio sitio es ruido y facilita
+    enumerar la infraestructura.
+    """
+    w = WORKFLOW.read_text(encoding="utf-8")
+    for archivo in ("nginx_prompts.conf", "aplicar-nginx.sh"):
+        assert f"cp {archivo} dist/" not in w, f"{archivo} se estaría publicando en el sitio"
