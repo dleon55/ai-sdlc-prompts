@@ -27,8 +27,35 @@ sync_playwright = playwright_sync_api.sync_playwright
 
 PROJECT_ROOT = pathlib.Path(__file__).parent.parent.parent
 INDEX_HTML = PROJECT_ROOT / "index.html"
-APP_URL = INDEX_HTML.resolve().as_uri() + "#app"
 CHROMIUM_PATH = os.environ.get("CHROMIUM_PATH", "/opt/pw-browsers/chromium")
+
+
+# La app se sirve por HTTP, no por file://.
+#
+# El texto de los prompts dejó de viajar dentro de index.html y se pide con
+# fetch a prompts-text.<lang>.json (issue #202). En file:// el navegador
+# bloquea ese fetch por CORS, así que las cards quedarían sin prompt y estas
+# pruebas fallarían por el esquema de URL, no por el producto.
+#
+# Servirlo por HTTP además acerca el e2e a producción: es como lo recibe un
+# visitante real.
+@pytest.fixture(scope="session")
+def app_url():
+    import functools
+    import http.server
+    import threading
+
+    handler = functools.partial(http.server.SimpleHTTPRequestHandler,
+                                directory=str(PROJECT_ROOT))
+    # Puerto 0: el sistema asigna uno libre, para no chocar con otra corrida.
+    servidor = http.server.ThreadingHTTPServer(("127.0.0.1", 0), handler)
+    hilo = threading.Thread(target=servidor.serve_forever, daemon=True)
+    hilo.start()
+    try:
+        yield f"http://127.0.0.1:{servidor.server_port}/index.html#app"
+    finally:
+        servidor.shutdown()
+        servidor.server_close()
 
 
 def _launch_browser(playwright):
@@ -39,7 +66,7 @@ def _launch_browser(playwright):
 
 
 @pytest.fixture
-def app_page():
+def app_page(app_url):
     """Página de la app ya cargada, en español, sin onboarding/banner de
     bienvenida (se seedea localStorage antes del primer render real)."""
     with sync_playwright() as p:
@@ -47,7 +74,7 @@ def app_page():
         context = browser.new_context(viewport={"width": 1400, "height": 1000})
         context.grant_permissions(["clipboard-read", "clipboard-write"])
         page = context.new_page()
-        page.goto(APP_URL)
+        page.goto(app_url)
         page.evaluate(
             """
             localStorage.setItem('AI_SDLC_welcome_seen', '1');
@@ -367,12 +394,12 @@ def test_buttons_do_not_suppress_focus_outline_in_css():
     assert "button, .info-btn { outline: none" not in source.replace("\n", " ")
 
 
-def test_no_horizontal_overflow_at_320px_viewport():
+def test_no_horizontal_overflow_at_320px_viewport(app_url):
     with sync_playwright() as p:
         browser = _launch_browser(p)
         context = browser.new_context(viewport={"width": 320, "height": 800})
         page = context.new_page()
-        page.goto(APP_URL)
+        page.goto(app_url)
         page.evaluate(
             """
             localStorage.setItem('AI_SDLC_welcome_seen', '1');
@@ -393,7 +420,7 @@ def test_no_horizontal_overflow_at_320px_viewport():
     )
 
 
-def test_dismissing_onboarding_with_close_button_persists_across_reload():
+def test_dismissing_onboarding_with_close_button_persists_across_reload(app_url):
     """Cerrar el onboarding con el botón 'X' debe descartarlo permanentemente,
     igual que 'No volver a mostrar' (antes solo ese enlace persistía el
     descarte; la 'X' -el patrón universal de cierre de modal- lo mostraba
@@ -402,7 +429,7 @@ def test_dismissing_onboarding_with_close_button_persists_across_reload():
         browser = _launch_browser(p)
         context = browser.new_context(viewport={"width": 1400, "height": 1000})
         page = context.new_page()
-        page.goto(APP_URL)
+        page.goto(app_url)
         page.evaluate(
             """
             localStorage.setItem('AI_SDLC_welcome_seen', '1');

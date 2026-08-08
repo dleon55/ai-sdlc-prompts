@@ -123,6 +123,14 @@ const formatPlaceholder = context.resolvePrompt("permisos definidos: [SÍ / NO]"
 assert.deepStrictEqual(Array.from(formatPlaceholder.unresolvedRequired), []);
 assert.deepStrictEqual(Array.from(formatPlaceholder.unresolvedOptional), []);
 
+// El texto de los prompts se pide con fetch a prompts-text.<lang>.json
+// (issue #202), y en esta VM no hay fetch. Este harness inyecta los textos
+// directamente en RAW_PROMPTS -- que es exactamente el estado en el que
+// queda el navegador despues de cargarlos --, asi que se marcan como ya
+// cargados. Sin esto, copySelected intentaria descargarlos y reventaria por
+// el entorno de prueba, no por el codigo que se quiere probar.
+context._textosCargados = { es: true, en: true };
+
 context.RAW_PROMPTS["code-demo-es"] = "[NOMBRE O URL] [MODULO]";
 elements.set("code-demo-es", { textContent: "PREVIEW ALTERADO" });
 elements.set("code-fw-es", { textContent: "FW ALTERADO" });
