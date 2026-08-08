@@ -51,31 +51,31 @@ Extrae magic numbers del código de pruebas para mantenibilidad.
 # y esta prosa comprime ~4x, así que en la red son ~50 KB, no 165. El tope
 # de aquí mide el archivo crudo; si se sigue subiendo conviene medir gzip o
 # cargar el catálogo bajo demanda en vez de elevarlo otra vez.
-# Elevado de 2050 a 2150 KB y DEGRADADO a red de seguridad. El tope crudo
-# resultó ser la métrica equivocada, por dos razones medidas:
+# BAJADOS al separar el texto de los prompts de index.html (issue #202).
 #
-#   1. nginx comprime text/html siempre y esta prosa comprime ~4x, así que
-#      nadie descarga esos 2 MB: son ~515 KB en la red. Un tope sobre bytes
-#      crudos presupuesta algo que no existe.
-#   2. El archivo en disco pesa ~15 KB más en Windows que en el runner Linux
-#      por CRLF, así que el mismo commit da números distintos según dónde se
-#      mida -- y el tope llegó a fallar por eso, no por contenido.
+# Los 226 bloques <code> pesaban 803 KB crudos -- el 40% del archivo -- y
+# viajaban a cada visitante duplicados en ES y EN, aunque `.card-body` esta
+# oculto por defecto y aunque abriera un solo prompt. Ahora se sirven en
+# prompts-text.<lang>.json y se piden una vez, solo del idioma que se lee.
 #
-# El presupuesto real vive ahora en MAX_INDEX_GZIP_KB. Este se conserva como
-# backstop grueso contra un error que multiplique el archivo (un bucle que
-# repita el catálogo, un binario embebido por accidente), no para arbitrar
-# si una funcionalidad cabe.
-MAX_INDEX_SIZE_KB = 2150
+#     index.html   513 -> 221 KB comprimidos   (-57%)
+#
+# Los topes se bajan a proposito en vez de dejarlos altos: si se queda el
+# margen viejo, la ganancia se consume en silencio con el siguiente cambio y
+# volvemos al punto de partida. Un tope solo sirve si duele.
+#
+# El presupuesto que manda sigue siendo el comprimido: nginx sirve text/html
+# con gzip siempre, y el archivo en disco pesa ~15 KB mas en Windows que en
+# el runner Linux por CRLF, asi que los bytes crudos no son comparables entre
+# entornos.
+MAX_INDEX_SIZE_KB = 1400
 
-# Presupuesto real: lo que el visitante descarga. Hoy son ~515 KB.
+# Lo que el visitante descarga en la primera carga. Hoy son ~221 KB.
 #
-# Al subirlo, la pregunta correcta no es "¿cuánto creció?" sino "¿esto se
-# puede cargar bajo demanda en vez de embeberlo?" -- ver el issue de carga
-# diferida. Los 226 bloques <code> con el texto de los prompts pesan 803 KB
-# crudos por sí solos y se envían completos aunque se abra un solo prompt:
-# ese es el corte grande que sigue pendiente, y ninguna subida de tope lo
-# sustituye.
-MAX_INDEX_GZIP_KB = 560
+# Al subirlo, la pregunta correcta sigue siendo "¿esto se puede pedir bajo
+# demanda?" -- ahora ya existe el mecanismo (ver ensurePromptTexts en
+# build.py), asi que agregar contenido no tiene por que engordar el HTML.
+MAX_INDEX_GZIP_KB = 260
 MIN_INDEX_SIZE_KB = 100   # Mínimo esperado para contenido válido
 
 # Cobertura de prompts

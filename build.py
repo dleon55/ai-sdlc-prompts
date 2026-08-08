@@ -16,6 +16,23 @@ OUTPUT_FILE = Path(__file__).parent / "index.html"
 PRECIOS_OUTPUT_FILE = Path(__file__).parent / "precios.html"
 INDEX_OUTPUT_FILE = Path(__file__).parent / "prompts-index.json"
 MCP_DATA_OUTPUT_FILE = Path(__file__).parent / "mcp-server" / "data" / "prompts-full.json"
+
+# El texto ejecutable de los prompts, uno por idioma, servido aparte en vez de
+# embebido en index.html.
+#
+# Por qué: los 226 bloques <code> pesaban 803 KB crudos (40% del archivo) y
+# viajaban completos a cada visitante aunque abriera un solo prompt -- y
+# duplicados, porque la página lleva las cards de ES y EN a la vez y esconde
+# una con CSS. Además `.card-body` está oculto por defecto, así que ese texto
+# ni siquiera se pintaba en la primera carga.
+#
+# Cada mejora que agregaba valor hacía la página más pesada y obligaba a
+# discutir el tope de tamaño. Separando el texto, agregar prompts deja de
+# engordar el HTML.
+PROMPTS_TEXT_OUTPUT = {
+    lang: Path(__file__).parent / f"prompts-text.{lang}.json"
+    for lang in ("es", "en")
+}
 PADDLE_DISABLED_VALUE = "PENDIENTE_CONFIGURAR"
 
 
@@ -4251,6 +4268,15 @@ function setLanguage(lang) {
   document.documentElement.lang = lang;
   document.documentElement.setAttribute('data-lang', lang);
 
+  // El texto del otro idioma no viaja en index.html: se pide la primera vez
+  // que se cambia a el. Sin esto, cambiar a ingles dejaba las cards sin
+  // prompt y la busqueda sin nada que buscar.
+  if (typeof ensurePromptTexts === 'function') {
+    ensurePromptTexts(lang)
+      .then(function() { if (typeof applyFilters === 'function') applyFilters(); })
+      .catch(function() {});
+  }
+
   // Sincroniza el <title> de la pestaña con el idioma activo (el <title>
   // estático del <head> solo cubre lo que ven crawlers/scrapers, en ES)
   if (typeof PAGE_TITLES === 'object' && PAGE_TITLES[lang]) {
@@ -4575,6 +4601,22 @@ function copyPromptLang(pid, lang, btn) {
   var codeId = 'code-' + pid + '-' + lang;
   var codeEl = document.getElementById(codeId);
   if (!codeEl) return;
+
+  // El texto puede no haber llegado todavia (se pide aparte). Copiar aqui
+  // sin esperar dejaria el portapapeles vacio, que es peor que tardar:
+  // el usuario pega y no se entera hasta que el agente no responde nada.
+  if (!RAW_PROMPTS[codeId] && !codeEl.textContent) {
+    ensurePromptTexts(lang)
+      .then(function() { copyPromptLang(pid, lang, btn); })
+      .catch(function() {
+        showToast(
+          lang === 'en' ? 'Could not load the prompt text. Check your connection.'
+                        : 'No se pudo cargar el texto del prompt. Revisa tu conexión.',
+          'warn'
+        );
+      });
+    return;
+  }
   
   // Leer plantilla limpia de RAW_PROMPTS para evitar copiar etiquetas de highlight HTML
   var raw = RAW_PROMPTS[codeId] || codeEl.textContent;
@@ -4887,6 +4929,11 @@ function toggleCard(pid) {
   if (!b) return;
   ACTIVE_PROMPT_ID = pid;
   ACTIVE_PROMPT_LANG = getCurrentLanguage();
+  // Expandir es justo cuando el texto pasa a ser visible: si todavia no
+  // llego, se pide ahora en vez de mostrar un bloque en blanco.
+  ensurePromptTexts(ACTIVE_PROMPT_LANG)
+    .then(function() { if (typeof updateLivePreview === 'function') updateLivePreview(); })
+    .catch(function() {});
   updateContextualVariablePanel();
   var isOpen = b.classList.toggle('open');
   if (t) { t.classList.toggle('open', isOpen); t.setAttribute('aria-expanded', isOpen ? 'true' : 'false'); }
@@ -4984,6 +5031,15 @@ function copySelected(btn) {
   var checks = getSelected();
   if (!checks.length) return;
   var lang = getCurrentLanguage();
+  // Igual que en copyPromptLang: sin el texto cargado esto copiaria una
+  // ristra de separadores vacios, que es peor que esperar.
+  if (!promptTextsReady(lang)) {
+    ensurePromptTexts(lang).then(function() { copySelected(btn); }).catch(function() {
+      showToast(lang === 'en' ? 'Could not load the prompt texts.'
+                              : 'No se pudo cargar el texto de los prompts.', 'warn');
+    });
+    return;
+  }
   // obtener prompts en orden DOM (orden de proceso)
   var aggregate = { unresolvedRequired: [], unresolvedOptional: [] };
   var seenPids = {};
@@ -5060,7 +5116,11 @@ function applyFilters() {
     cards.forEach(function(card) {
       var title = (card.querySelector('.card-title') || {}).textContent || '';
       var codeEl = card.querySelector('code');
-      var code = codeEl ? codeEl.textContent : '';
+      // RAW_PROMPTS primero: es la plantilla limpia y, sobre todo, el <code>
+      // esta vacio hasta que llega prompts-text.<lang>.json. Buscar solo por
+      // titulo mientras carga daria menos resultados de los que hay, por eso
+      // initAppData() vuelve a aplicar los filtros cuando el texto aterriza.
+      var code = (codeEl && (RAW_PROMPTS[codeEl.id] || codeEl.textContent)) || '';
       var textMatch = !q || title.toLowerCase().includes(q) || code.toLowerCase().includes(q);
       var facetMatch = true;
       if (facetKinds.length) {
@@ -5335,14 +5395,63 @@ function isAppRoute() {
   return path === '/app' || path.startsWith('/app/') || search.includes('view=app') || hash === '#app';
 }
 
+// ── Texto de los prompts, cargado bajo demanda ────────────────────────
+//
+// Antes los 226 bloques <code> viajaban dentro de index.html: 803 KB crudos,
+// el 40% del archivo, duplicados en ES y EN porque la pagina lleva las cards
+// de los dos idiomas y esconde una con CSS. Y `.card-body` esta oculto por
+// defecto, asi que ese texto ni siquiera se pintaba en la primera carga.
+//
+// Ahora se pide prompts-text.<lang>.json una sola vez, y solo del idioma que
+// se esta leyendo. index.html paso de 513 a 221 KB comprimidos.
+var _textosCargados = {};
+var _textosPendientes = {};
+
+function ensurePromptTexts(lang) {
+  var l = lang || getCurrentLanguage();
+  if (_textosCargados[l]) return Promise.resolve();
+  if (_textosPendientes[l]) return _textosPendientes[l];
+
+  _textosPendientes[l] = fetch('prompts-text.' + l + '.json')
+    .then(function(r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function(mapa) {
+      Object.keys(mapa).forEach(function(id) {
+        RAW_PROMPTS[id] = mapa[id];
+        var el = document.getElementById(id);
+        // Solo se pinta si sigue vacio: si el usuario ya resolvio variables,
+        // el <code> lleva el texto sustituido y no hay que pisarlo.
+        if (el && !el.textContent) el.textContent = mapa[id];
+      });
+      _textosCargados[l] = true;
+    })
+    .catch(function(err) {
+      // Se limpia la promesa para que un fallo de red no deje la pagina
+      // permanentemente sin texto: el siguiente intento vuelve a pedirlo.
+      _textosPendientes[l] = null;
+      console.error('No se pudo cargar el texto de los prompts:', err);
+      throw err;
+    });
+  return _textosPendientes[l];
+}
+
+// ¿Ya se puede leer el texto de este idioma? Lo consulta la busqueda, que
+// no puede esperar a una promesa sin trabar cada tecla.
+function promptTextsReady(lang) {
+  return !!_textosCargados[lang || getCurrentLanguage()];
+}
+
 function initAppData() {
   if (_appInitialized) return;
   _appInitialized = true;
 
-  // Capturar plantillas limpias para Live Preview antes de inyectar variables
-  document.querySelectorAll('code[id^="code-"]').forEach(function(codeEl) {
-    RAW_PROMPTS[codeEl.id] = codeEl.textContent;
-  });
+  // El texto llega aparte; se pide sin bloquear el primer pintado y, cuando
+  // esta, se reaplican los filtros por si el visitante ya escribio algo.
+  ensurePromptTexts(getCurrentLanguage())
+    .then(function() { if (typeof applyFilters === 'function') applyFilters(); })
+    .catch(function() {});
 
   // ── Inicializar proyectos ──
   if (!loadProjects()) createProject('Default');
@@ -6613,6 +6722,8 @@ def build():
     # Titulos por id, para que los chips de "sigue con" puedan mostrar el
     # nombre del prompt destino y no su identificador.
     _titles_by_id = {}
+    # Texto ejecutable por idioma, para prompts-text.<lang>.json.
+    _prompt_texts = {"es": {}, "en": {}}
     info_data = {}
     for sk, items in sections.items():
         for p in items:
@@ -6731,6 +6842,8 @@ def build():
 
     # ── framework banner bilingüe ──
     chevron = chevron_svg()
+    _prompt_texts["es"]["code-fw-es"] = fw_prompt_es
+    _prompt_texts["en"]["code-fw-en"] = fw_prompt_en
     fw_escaped_es = h(fw_prompt_es)
     fw_escaped_en = h(fw_prompt_en)
     
@@ -6749,7 +6862,7 @@ def build():
         '<div class="fw-body" id="fb-00-es">'
         '<p class="fw-desc">Este bloque define el rol del agente, el contexto multi-agente y las reglas obligatorias de ingenier\u00eda. '
         'Sin \u00e9l, el agente responde de forma gen\u00e9rica. C\u00f3pialo y p\u00e9galo <strong>siempre primero</strong> en tu conversaci\u00f3n con el agente IA.</p>'
-        '<pre><code id="code-fw-es">' + fw_escaped_es + '</code></pre>'
+        '<pre><code id="code-fw-es"></code></pre>'
         '</div>'
         '<div class="fw-copy-row">'
         '<button class="fw-copy-btn" onclick="copyPromptLang(\'fw\', \'es\', this)">'
@@ -6774,7 +6887,7 @@ def build():
         '<div class="fw-body" id="fb-00-en">'
         '<p class="fw-desc">This block defines the agent role, multi-agent context, and mandatory engineering rules. '
         'Without it, the agent responds generically. Copy and paste it <strong>always first</strong> in your conversation with the AI agent.</p>'
-        '<pre><code id="code-fw-en">' + fw_escaped_en + '</code></pre>'
+        '<pre><code id="code-fw-en"></code></pre>'
         '</div>'
         '<div class="fw-copy-row">'
         '<button class="fw-copy-btn" onclick="copyPromptLang(\'fw\', \'en\', this)">'
@@ -6822,6 +6935,12 @@ def build():
             t_es_attr = clean_t_es.replace('"', '&quot;')
             t_en_attr = clean_t_en.replace('"', '&quot;')
 
+            # El texto ejecutable ya no va en el HTML: se acumula aquí y se
+            # sirve en prompts-text.<lang>.json, que el navegador pide una
+            # sola vez y solo del idioma que está leyendo.
+            _prompt_texts["es"]["code-" + pid + "-es"] = p["prompt_es"]
+            _prompt_texts["en"]["code-" + pid + "-en"] = p["prompt_en"]
+
             contract_es_tags = contract_by_id.get(pid, {}).get("es", {})
             contract_en_tags = contract_by_id.get(pid, {}).get("en", {})
             badges_es_html = _contract_badges_html(contract_es_tags, "es")
@@ -6860,7 +6979,7 @@ def build():
                 '</div>'
                 + badges_es_html + next_es_html +
                 '<div class="card-body" id="cb-' + pid + '-es">'
-                '<pre><code id="code-' + pid + '-es">' + h(p["prompt_es"]) + '</code></pre>'
+                '<pre><code id="code-' + pid + '-es"></code></pre>'
                 '</div>'
                 '</div>'
             )
@@ -6892,7 +7011,7 @@ def build():
                 '</div>'
                 + badges_en_html + next_en_html +
                 '<div class="card-body" id="cb-' + pid + '-en">'
-                '<pre><code id="code-' + pid + '-en">' + h(p["prompt_en"]) + '</code></pre>'
+                '<pre><code id="code-' + pid + '-en"></code></pre>'
                 '</div>'
                 '</div>'
             )
@@ -7783,8 +7902,21 @@ def build():
     )
 
     OUTPUT_FILE.write_text(html, encoding="utf-8")
+
+    # El texto ejecutable, uno por idioma. Se escribe con separadores
+    # compactos: son ~113 entradas de texto largo y los espacios de json.dumps
+    # cuestan sin aportar nada legible en un archivo que nadie edita a mano.
+    for _lang, _ruta in PROMPTS_TEXT_OUTPUT.items():
+        _ruta.write_text(
+            json.dumps(_prompt_texts[_lang], ensure_ascii=False, separators=(",", ":")),
+            encoding="utf-8",
+        )
+
     size_kb = OUTPUT_FILE.stat().st_size / 1024
     print(f"OK  -> {OUTPUT_FILE.name}")
+    for _lang, _ruta in PROMPTS_TEXT_OUTPUT.items():
+        print(f"OK  -> {_ruta.name} ({len(_prompt_texts[_lang])} textos, "
+              f"{_ruta.stat().st_size / 1024:.0f} KB)")
     print(f"Secciones : {len(sections)}")
     print(f"Prompts   : {total}")
     print(f"Framework : incluido")

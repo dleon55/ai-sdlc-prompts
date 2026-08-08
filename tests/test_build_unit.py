@@ -10,6 +10,7 @@ para poder ejercitar casos borde que no existen hoy en ai_sdlc_pro_prompts/
 depender del contenido real del repo.
 """
 import sys
+import json
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -69,12 +70,22 @@ def test_build_writes_html_and_skips_unknown_section_prefix(tmp_path, monkeypatc
     monkeypatch.setattr(build, "PROMPTS_DIR", tmp_path)
     monkeypatch.setattr(build, "OUTPUT_FILE", out_file)
     monkeypatch.setattr(build, "INDEX_OUTPUT_FILE", tmp_path / "out-index.json")
+    # El texto de los prompts ahora se escribe aparte (issue #202). Sin
+    # redirigirlo, este build de juguete pisaba los prompts-text.*.json
+    # reales del repositorio con su puñado de prompts de prueba, y las
+    # pruebas siguientes fallaban por contaminacion, no por su codigo.
+    monkeypatch.setattr(build, "PROMPTS_TEXT_OUTPUT", {
+        lang: tmp_path / f"out-text.{lang}.json" for lang in ("es", "en")
+    })
 
     build.build()
 
     assert out_file.exists()
     html = out_file.read_text(encoding="utf-8")
-    assert "Contenido del prompt valido." in html
+    # El texto ya no va en el HTML sino en prompts-text.<lang>.json
+    # (issue #202): se comprueba donde vive ahora, no que haya desaparecido.
+    textos = json.loads((tmp_path / "out-text.es.json").read_text(encoding="utf-8"))
+    assert any("Contenido del prompt valido." in t for t in textos.values())
     assert "01-01-prompt-valido" in html
     assert "99-01-seccion-desconocida" not in html
 
@@ -107,10 +118,19 @@ def test_build_excludes_deprecated_prompts_same_as_count_prompts(tmp_path, monke
     monkeypatch.setattr(build, "PROMPTS_DIR", tmp_path)
     monkeypatch.setattr(build, "OUTPUT_FILE", out_file)
     monkeypatch.setattr(build, "INDEX_OUTPUT_FILE", tmp_path / "out-index.json")
+    # El texto de los prompts ahora se escribe aparte (issue #202). Sin
+    # redirigirlo, este build de juguete pisaba los prompts-text.*.json
+    # reales del repositorio con su puñado de prompts de prueba, y las
+    # pruebas siguientes fallaban por contaminacion, no por su codigo.
+    monkeypatch.setattr(build, "PROMPTS_TEXT_OUTPUT", {
+        lang: tmp_path / f"out-text.{lang}.json" for lang in ("es", "en")
+    })
 
     assert build.count_prompts() == 1  # excluye el DEPRECATED
 
     build.build()
     html = out_file.read_text(encoding="utf-8")
     assert "01-02-deprecated" not in html  # build() ahora lo excluye también
-    assert "Prompt normal." in html
+    textos = json.loads((tmp_path / "out-text.es.json").read_text(encoding="utf-8"))
+    assert any("Prompt normal." in t for t in textos.values())
+    assert not any("deprecated" in k for k in textos), "el DEPRECATED tampoco debe llegar al texto servido"

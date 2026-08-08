@@ -169,6 +169,11 @@ jobs:
           # que ninguna comprobacion de codigo de estado lo detectaba y las
           # vistas previas salian vacias. Ver tools/generar_og_image.py.
           cp og-image.png dist/og-image.png
+          # El texto de los prompts ya no va dentro de index.html (issue #202).
+          # Si estos no se copian, la pagina carga pero queda sin prompts: el
+          # fetch responde index.html con HTTP 200 y JSON.parse revienta.
+          cp prompts-text.es.json dist/prompts-text.es.json
+          cp prompts-text.en.json dist/prompts-text.en.json
 
       - name: Upload artifact (shared by Pages and GCP)
         if: github.event_name != 'pull_request'
@@ -353,6 +358,8 @@ jobs:
               dist/sitemap.xml "${U}@${H}:/home/${U}/sitemap.xml.new"
           scp -P "$P" -i ~/.ssh/gcp_key -o BatchMode=yes \
               dist/og-image.png "${U}@${H}:/home/${U}/og-image.png.new"
+          scp -P "$P" -i ~/.ssh/gcp_key -o BatchMode=yes               dist/prompts-text.es.json "${U}@${H}:/home/${U}/prompts-text.es.json.new"
+          scp -P "$P" -i ~/.ssh/gcp_key -o BatchMode=yes               dist/prompts-text.en.json "${U}@${H}:/home/${U}/prompts-text.en.json.new"
 
       - name: Atomic replace in production dir
         env:
@@ -370,8 +377,10 @@ jobs:
           CMD="${CMD}; sudo cp /home/${U}/robots.txt.new ${D}/robots.txt"
           CMD="${CMD}; sudo cp /home/${U}/sitemap.xml.new ${D}/sitemap.xml"
           CMD="${CMD}; sudo cp /home/${U}/og-image.png.new ${D}/og-image.png"
-          CMD="${CMD}; sudo chown www-data:www-data ${D}/index.html ${D}/precios.html ${D}/terminos.html ${D}/privacidad.html ${D}/reembolsos.html ${D}/robots.txt ${D}/sitemap.xml ${D}/og-image.png"
-          CMD="${CMD}; sudo chmod 644 ${D}/index.html ${D}/precios.html ${D}/terminos.html ${D}/privacidad.html ${D}/reembolsos.html ${D}/robots.txt ${D}/sitemap.xml ${D}/og-image.png"
+          CMD="${CMD}; sudo cp /home/${U}/prompts-text.es.json.new ${D}/prompts-text.es.json"
+          CMD="${CMD}; sudo cp /home/${U}/prompts-text.en.json.new ${D}/prompts-text.en.json"
+          CMD="${CMD}; sudo chown www-data:www-data ${D}/index.html ${D}/precios.html ${D}/terminos.html ${D}/privacidad.html ${D}/reembolsos.html ${D}/robots.txt ${D}/sitemap.xml ${D}/og-image.png ${D}/prompts-text.es.json ${D}/prompts-text.en.json"
+          CMD="${CMD}; sudo chmod 644 ${D}/index.html ${D}/precios.html ${D}/terminos.html ${D}/privacidad.html ${D}/reembolsos.html ${D}/robots.txt ${D}/sitemap.xml ${D}/og-image.png ${D}/prompts-text.es.json ${D}/prompts-text.en.json"
           CMD="${CMD}; rm -f /home/${U}/index.html.new /home/${U}/precios.html.new /home/${U}/terminos.html.new /home/${U}/privacidad.html.new /home/${U}/reembolsos.html.new /home/${U}/robots.txt.new /home/${U}/sitemap.xml.new"
           CMD="${CMD}; echo DEPLOY_PROD_OK"
           CMD="${CMD}; stat ${D}/index.html"
