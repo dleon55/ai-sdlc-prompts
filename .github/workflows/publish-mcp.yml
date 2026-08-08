@@ -20,6 +20,13 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    # Todos los secretos de este repositorio viven en el environment
+    # `production` (GCP_*, SUPABASE_ACCESS_TOKEN), no a nivel repositorio. Un
+    # job que no declara environment SOLO ve los de repositorio, asi que el
+    # primer intento de publicar fallo con ENEEDAUTH: NPM_TOKEN no llegaba
+    # aunque estuviera configurado. Declararlo da acceso a ambos ambitos.
+    environment:
+      name: production
     permissions:
       contents: read
       id-token: write # procedencia (provenance) de npm
@@ -30,6 +37,21 @@ jobs:
         with:
           node-version: "20"
           registry-url: "https://registry.npmjs.org"
+
+      # Se comprueba ANTES de instalar y empaquetar. Sin esto, el fallo
+      # aparecia al final como `npm error code ENEEDAUTH`, que no dice donde
+      # falta el secreto ni en que ambito buscarlo.
+      - name: Verificar que el token de npm esta disponible
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "${NPM_TOKEN}" ]; then
+            echo "::error::falta el secreto NPM_TOKEN en el environment 'production'."
+            echo "Crearlo en GitHub: Settings -> Environments -> production -> Add secret."
+            echo "El token debe ser de tipo Automation (npmjs.com -> Access Tokens)."
+            exit 1
+          fi
+          echo "NPM_TOKEN presente (${#NPM_TOKEN} caracteres)"
 
       - name: Instalar dependencias
         working-directory: mcp-server
