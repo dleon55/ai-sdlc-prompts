@@ -395,6 +395,27 @@ jobs:
           CMD="${CMD}; stat ${D}/index.html"
           ssh -p "$P" -i ~/.ssh/gcp_key -o BatchMode=yes "${U}@${H}" "$CMD"
 
+      # Aplica nginx_prompts.conf, validando antes y revirtiendo si falla.
+      #
+      # Existe porque el deploy copiaba HTML pero nunca la configuracion, y
+      # el archivo del repositorio llevaba meses divergiendo del servidor sin
+      # que nada avisara (se vio en el PR #206: la CSP del servidor bloqueaba
+      # el favicon del propio sitio, y la compresion era nivel 1 y no 6).
+      #
+      # Toda la logica vive en scripts/aplicar-nginx.sh, que documenta por
+      # que es tan defensivo: este nginx sirve 8 sitios, incluido un Odoo de
+      # produccion, y un reload con configuracion invalida los tumba todos.
+      - name: Aplicar configuracion de nginx (validada, con rollback)
+        env:
+          H: ${{ secrets.GCP_HOST }}
+          U: ${{ secrets.GCP_USER }}
+          P: ${{ secrets.GCP_PORT }}
+        run: |
+          set -euo pipefail
+          scp -P "$P" -i ~/.ssh/gcp_key -o BatchMode=yes               nginx_prompts.conf "${U}@${H}:/home/${U}/nginx_prompts.conf.new"
+          scp -P "$P" -i ~/.ssh/gcp_key -o BatchMode=yes               scripts/aplicar-nginx.sh "${U}@${H}:/home/${U}/aplicar-nginx.sh"
+          ssh -p "$P" -i ~/.ssh/gcp_key -o BatchMode=yes "${U}@${H}"               "chmod +x /home/${U}/aplicar-nginx.sh && /home/${U}/aplicar-nginx.sh"
+
       - name: Smoke test GCP production
         env:
           EXPECTED: ${{ needs.build.outputs.card_count }}
