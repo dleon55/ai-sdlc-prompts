@@ -154,21 +154,35 @@ def test_el_job_de_gcp_clona_el_repositorio():
 
     El `checkout` debe ir ANTES de `download-artifact`, porque limpia el
     directorio de trabajo y borraría `dist/` si fuera después.
+
+    Se compara por posición en el texto y no parseando YAML a propósito: la
+    CI instala únicamente pytest, y una primera versión de este test importó
+    `yaml` -- pasaba en local y rompía el build con ModuleNotFoundError. Una
+    comprobación de orden no justifica una dependencia nueva.
     """
-    import yaml
+    w = WORKFLOW.read_text(encoding="utf-8")
 
-    with open(WORKFLOW, encoding="utf-8") as f:
-        pasos = yaml.safe_load(f)["jobs"]["deploy-gcp"]["steps"]
+    inicio = w.index("\n  deploy-gcp:")
+    resto = w[inicio + 1:]
+    # El bloque del job termina donde empieza el siguiente job (dos espacios
+    # de indentación) o al final del archivo.
+    fin = re.search(r"\n  [a-z][a-z0-9-]*:\n", resto)
+    bloque = resto[:fin.start()] if fin else resto
 
-    usos = [p.get("uses", "") for p in pasos]
-    i_checkout = next((i for i, u in enumerate(usos) if "actions/checkout" in u), None)
-    i_artefacto = next((i for i, u in enumerate(usos) if "download-artifact" in u), None)
+    # Sin comentarios, por segunda vez en este archivo: el comentario que
+    # explica el paso menciona `download-artifact` ANTES de la línea real de
+    # `checkout`, así que comparar posiciones sobre el texto crudo daba un
+    # falso negativo. Es la misma trampa que ya obligó a introducir la
+    # fixture `codigo` para las otras pruebas de orden.
+    bloque = "\n".join(
+        l for l in bloque.splitlines() if not l.lstrip().startswith("#")
+    )
 
-    assert i_checkout is not None, (
+    assert "actions/checkout" in bloque, (
         "deploy-gcp no clona el repositorio: nginx_prompts.conf y scripts/ no existirían"
     )
-    assert i_artefacto is not None, "deploy-gcp no descarga el artefacto del sitio"
-    assert i_checkout < i_artefacto, (
+    assert "download-artifact" in bloque, "deploy-gcp no descarga el artefacto del sitio"
+    assert bloque.index("actions/checkout") < bloque.index("download-artifact"), (
         "checkout después de download-artifact borraría dist/ y no habría sitio que desplegar"
     )
 
