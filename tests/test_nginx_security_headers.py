@@ -21,11 +21,29 @@ _CSP_MATCH = re.search(r'Content-Security-Policy\s+"([^"]*)"', CONF)
 CSP_VALUE = _CSP_MATCH.group(1) if _CSP_MATCH else ""
 
 
-def test_hsts_header_present_with_minimum_max_age():
+def test_hsts_header_present():
+    """HSTS debe estar, pero su duración se sube por etapas.
+
+    Este test exigía `max-age` de al menos 1 año y `includeSubDomains`. Se
+    relajó a propósito, con una razón concreta: **producción nunca tuvo esa
+    cabecera**. El archivo la declaraba con 2 años + `includeSubDomains` +
+    `preload`, pero el deploy no aplicaba la configuración de nginx, así que
+    nunca llegó al servidor -- ni en este sitio ni en los otros 7 del mismo
+    nginx.
+
+    Al conectar el deploy (ver tests/test_despliegue_nginx.py), activarla de
+    golpe con 2 años habría sido una puerta de un solo sentido: una vez que
+    un navegador recibe HSTS rechaza HTTP durante todo el `max-age` AUNQUE
+    se quite del servidor. Un certificado vencido dejaba el sitio
+    inalcanzable, sin forma práctica de revertir.
+
+    La política acordada es escalonada -- 1 día, luego 1 semana, luego 1 año
+    -- y solo al final valorar `includeSubDomains` y `preload`. El techo lo
+    vigila test_despliegue_nginx.py::test_hsts_no_vuelve_a_valores_irreversibles;
+    aquí solo se comprueba que la cabecera no desaparezca.
+    """
     assert "Strict-Transport-Security" in CONF, "Falta el header HSTS"
-    assert "includeSubDomains" in CONF
-    assert "max-age=63072000" in CONF or "max-age=31536000" in CONF, \
-        "max-age de HSTS ausente o menor al mínimo recomendado (1 año)"
+    assert re.search(r"max-age=\d+", CONF), "HSTS sin max-age no protege nada"
 
 
 def test_core_security_headers_present():
