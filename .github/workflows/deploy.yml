@@ -325,6 +325,21 @@ jobs:
       name: production
       url: https://prompts.lionsystems.com.mx
     steps:
+      # Este job no clonaba el repositorio: solo bajaba el artefacto con el
+      # sitio ya construido. Al agregar el paso que aplica la configuracion
+      # de nginx fallo con "scp: stat local nginx_prompts.conf: No such file
+      # or directory", porque ese archivo y scripts/aplicar-nginx.sh no
+      # existen en el artefacto.
+      #
+      # Se clona el repositorio en vez de meterlos en dist/: ese artefacto lo
+      # comparte deploy-pages, asi que la configuracion de nginx terminaria
+      # publicada en el propio sitio.
+      #
+      # Va ANTES de download-artifact: checkout limpia el directorio de
+      # trabajo y borraria dist/ si fuera despues.
+      - name: Checkout (necesario para nginx_prompts.conf y scripts/)
+        uses: actions/checkout@v4
+
       - name: Download site artifact
         uses: actions/download-artifact@v4
         with:
