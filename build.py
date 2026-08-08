@@ -5584,7 +5584,7 @@ def get_landing_html(n):
         f'<div id="landing-root" class="landing">\n'
         f'  <nav class="landing-nav">\n'
         f'    <div class="landing-nav-logo">\n'
-        f'      <img src="https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png" width="28" height="28" alt="Lionsystems" style="border-radius:4px;flex-shrink:0;">\n'
+        f'      <img src="apple-touch-icon.png" width="28" height="28" alt="Lionsystems" style="border-radius:4px;flex-shrink:0;">\n'
         f'      <h1>AI-SDLC Pro</h1>\n'
         f'    </div>\n'
         f'    <a class="landing-nav-cta" href="/app">{ls["cta_nav"]}</a>\n'
@@ -5745,7 +5745,7 @@ def build_precios_page():
         '<link rel="alternate" hreflang="es" href="https://prompts.lionsystems.com.mx/precios.html">\n'
         '<link rel="alternate" hreflang="en" href="https://prompts.lionsystems.com.mx/precios.html">\n'
         '<link rel="alternate" hreflang="x-default" href="https://prompts.lionsystems.com.mx/precios.html">\n'
-        '<link rel="icon" type="image/png" href="https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png">\n'
+        '<link rel="icon" type="image/png" href="favicon-32.png">\n'
         '<style>\n'
         ':root{--bg:#080b14;--bg2:#0f1220;--bg3:#161929;--bdr:#1f2340;--tx:#dde1f5;--tx2:#8892c0;'
         '--tx3:#7b86b8;--grn:#22c55e;--warn:#f59e0b;'
@@ -6127,7 +6127,7 @@ def _legal_shell(slug, title_es, title_en, desc, h1_es, h1_en, body_html):
         '<link rel="alternate" hreflang="es" href="' + url + '">\n'
         '<link rel="alternate" hreflang="en" href="' + url + '">\n'
         '<link rel="alternate" hreflang="x-default" href="' + url + '">\n'
-        '<link rel="icon" type="image/png" href="https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png">\n'
+        '<link rel="icon" type="image/png" href="favicon-32.png">\n'
         '<style>\n'
         ':root{--bg:#080b14;--bg2:#0f1220;--bg3:#161929;--bdr:#1f2340;--tx:#dde1f5;--tx2:#8892c0;'
         '--tx3:#7b86b8;--grn:#22c55e;--warn:#f59e0b;}\n'
@@ -7047,8 +7047,8 @@ def build():
         '<link rel="alternate" hreflang="es" href="https://prompts.lionsystems.com.mx">\n'
         '<link rel="alternate" hreflang="en" href="https://prompts.lionsystems.com.mx">\n'
         '<link rel="alternate" hreflang="x-default" href="https://prompts.lionsystems.com.mx">\n'
-        '<link rel="icon" type="image/png" href="https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png">\n'
-        '<link rel="apple-touch-icon" href="https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png">\n'
+        '<link rel="icon" type="image/png" href="favicon-32.png">\n'
+        '<link rel="apple-touch-icon" href="apple-touch-icon.png">\n'
         '<link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">\n'
         '<script type="application/ld+json">' + json.dumps({
             "@context": "https://schema.org",
@@ -7062,7 +7062,7 @@ def build():
                 "@type": "Organization",
                 "name": "LionSystems",
                 "url": "https://lionsystems.com.mx",
-                "logo": "https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png",
+                "logo": "https://prompts.lionsystems.com.mx/apple-touch-icon.png",
             },
         }, ensure_ascii=False) + '</script>\n'
         # SoftwareApplication, además de WebSite. WebSite le dice a Google que
@@ -7099,7 +7099,7 @@ def build():
                 "@type": "Organization",
                 "name": "LionSystems",
                 "url": "https://lionsystems.com.mx",
-                "logo": "https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png",
+                "logo": "https://prompts.lionsystems.com.mx/apple-touch-icon.png",
             },
         }, ensure_ascii=False) + '</script>\n'
         # El stub de dataLayer/gtag() debe cargar temprano (captura el
@@ -7139,7 +7139,7 @@ def build():
         '      </svg>'
         '    </button>'
         '    <div class="hdr-logo-icon">'
-        '      <img src="https://lionsystems.com.mx/assets/images/icons/lionsystems_icon.png" width="28" height="28" alt="Lionsystems" style="border-radius:4px;flex-shrink:0;">'
+        '      <img src="apple-touch-icon.png" width="28" height="28" alt="Lionsystems" style="border-radius:4px;flex-shrink:0;">'
         '    </div>'
         '    <div>'
         '      <h1>AI-SDLC Pro</h1>'
