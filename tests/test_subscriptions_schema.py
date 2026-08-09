@@ -340,6 +340,76 @@ def test_checkout_function_declares_the_annual_parameter():
         )
 
 
+# ── Programa Fundador (decisión 2026-08-09) ──
+# El precio congelado es el default de Paddle Billing y no requiere código
+# de cobro. Lo que sí se implementó: el orden de llegada de la cohorte y un
+# contador público de solo-agregado. Estos tests fijan sus invariantes de
+# seguridad y el fail-closed del banner.
+
+MIGRATION_FOUNDING = (
+    PROJECT_ROOT / "supabase" / "migrations" / "20260809_founding_members.sql"
+).read_text(encoding="utf-8")
+
+
+def test_founding_cohort_order_is_fixed_at_first_insert():
+    """created_at es el marcador de quiénes son los primeros 50. Si el
+    upsert del webhook lo pisara en cada evento, el orden de la cohorte se
+    reescribiría con cada renovación y la promesa sería inauditable."""
+    assert "created_at" in SCHEMA
+    assert "created_at" in MIGRATION_FOUNDING
+    # El bloque ON CONFLICT ... DO UPDATE SET de apply_paddle_subscription_event
+    # no debe tocar created_at.
+    m = re.search(r"on conflict \(user_id\) do update set(.*?)where", SCHEMA, re.DOTALL | re.IGNORECASE)
+    assert m, "no se encontró el upsert del webhook"
+    assert "created_at" not in m.group(1), (
+        "el upsert del webhook pisa created_at -- el orden de la cohorte "
+        "fundadora se reescribiría en cada evento de renovación"
+    )
+
+
+def test_founding_counter_exposes_only_the_aggregate():
+    """founding_spots_left() se otorga a anon: si devolviera filas o
+    columnas de subscriptions en vez de solo el conteo, cualquier visitante
+    podría enumerar datos de clientes con el anon key público."""
+    for name, sql in (("subscriptions.sql", SCHEMA), ("migración", MIGRATION_FOUNDING)):
+        m = re.search(
+            r"create or replace function founding_spots_left\(\)[\s\S]*?\$\$;",
+            sql, re.IGNORECASE,
+        )
+        assert m, f"founding_spots_left() no está en {name}"
+        body = m.group(0).lower()
+        assert "security definer" in body, f"{name}: sin security definer, anon contaría 0 por RLS"
+        assert "count(*)" in body
+        # Solo agregados: nada de user_id, status ni ids de Paddle en el retorno.
+        for col in ("user_id", "paddle_subscription_id", "paddle_customer_id", "status"):
+            assert col not in body, f"{name}: founding_spots_left() expone {col} a anon"
+        assert "grant execute on function founding_spots_left() to anon" in sql.lower()
+
+
+def test_founder_banner_is_hidden_until_real_data_arrives():
+    """El copy del programa exige dato real, no un número inventado. El
+    banner debe nacer oculto, pedirle el conteo al RPC, y quedarse oculto
+    si el checkout no está configurado o el RPC falla (fail-closed)."""
+    import build
+
+    html = build.build_precios_page()
+
+    assert 'id="px-founder-banner"' in html
+    banner = html[html.index('id="px-founder-banner"') - 200: html.index('id="px-founder-banner"') + 100]
+    assert 'display:none' in banner, "el banner debe nacer oculto"
+    assert 'rpc("founding_spots_left")' in html
+    # Gate de checkout: sin token de Paddle no se promete lo que no se
+    # puede cobrar.
+    fn = html[html.index("function pxFounderBanner"):]
+    fn = fn[: fn.index("}\n") + 2] if "}\n" in fn else fn
+    banner_fn = html[html.index("function pxFounderBanner"): html.index('rpc("founding_spots_left")')]
+    assert "PENDIENTE_CONFIGURAR" in banner_fn, (
+        "pxFounderBanner debe abortar si el checkout no está configurado"
+    )
+    # Y ningún número de lugares hardcodeado visible: el placeholder es "…".
+    assert 'class="px-founder-left">…<' in html
+
+
 def test_checkout_refuses_to_open_for_an_active_subscriber():
     """Un suscriptor activo que abriera el checkout crearia una SEGUNDA
     suscripcion y se le cobraria dos veces. Ocultar el boton no basta: la

@@ -5787,6 +5787,11 @@ def build_precios_page():
         '.px-annual{color:var(--tx2);font-size:.85rem;margin:-.5rem 0 .75rem;}\n'
         '.px-anchor{color:var(--tx3);font-size:.85rem;font-weight:400;text-decoration:line-through;}\n'
         '.px-foot{margin-top:3rem;color:var(--tx3);font-size:.8rem;}\n'
+        # Banner Fundador: oculto por defecto y solo lo enciende JS con el
+        # conteo REAL de founding_spots_left() -- nunca un numero inventado.
+        '.px-founder{border-color:rgba(245,158,11,.45);}\n'
+        '.px-founder p{color:var(--tx2);margin:0;}\n'
+        '.px-founder strong{color:var(--warn);}\n'
         '</style>\n</head>\n<body>\n'
         '<header>\n'
         '  <a class="px-logo" href="/">AI-SDLC Pro</a>\n'
@@ -5797,6 +5802,25 @@ def build_precios_page():
         '  <h1><span class="fw-lang-es">Precios</span><span class="fw-lang-en">Pricing</span></h1>\n'
         '  <p class="px-sub fw-lang-es">Oferta de lanzamiento: así funciona el acceso actual.</p>\n'
         '  <p class="px-sub fw-lang-en">Launch offer: this is how access works today.</p>\n'
+        # Banner del Programa Fundador (decision 2026-08-09, ver
+        # docs/marketing/early-adopters-program.md). Oculto por defecto:
+        # solo se muestra si founding_spots_left() devuelve lugares
+        # disponibles reales -- si Supabase falla o el checkout no esta
+        # configurado, el banner simplemente no aparece (fail-closed: es
+        # preferible no anunciar el programa a anunciarlo con datos
+        # inventados o sin poder cobrar).
+        '  <div id="px-founder-banner" class="px-card px-founder" style="display:none;">\n'
+        '    <p class="fw-lang-es">🎖️ <strong>Programa Fundador</strong> — quedan '
+        '<strong><span class="px-founder-left">…</span> de <span class="px-founder-total">50</span></strong> lugares. '
+        'Activa tu Pro hoy a $' + _precio + ' USD/mes y consérvalo de por vida, incluso cuando el precio '
+        'suba para nuevos usuarios. Sin trucos: es el mismo precio de hoy, congelado mientras tu '
+        'suscripción siga activa.</p>\n'
+        '    <p class="fw-lang-en">🎖️ <strong>Founding Member Program</strong> — '
+        '<strong><span class="px-founder-left">…</span> of <span class="px-founder-total">50</span></strong> spots left. '
+        'Activate Pro today at $' + _precio + ' USD/month and keep it for life, even after the price '
+        'goes up for new users. No catch: it\'s today\'s price, locked in while your subscription '
+        'stays active.</p>\n'
+        '  </div>\n'
         '  <div class="px-card">\n'
         '    <h2><span class="px-badge fw-lang-es">Gratis</span><span class="px-badge fw-lang-en">Free</span>'
         '<span class="fw-lang-es">&nbsp;Sin registro</span><span class="fw-lang-en">&nbsp;No sign-up</span></h2>\n'
@@ -6030,9 +6054,29 @@ def build_precios_page():
         '    settings:{successUrl:window.location.origin+"/precios.html?checkout=success"}\n'
         '  });\n'
         '}\n'
+        # Banner Fundador: enciende el banner SOLO con el conteo real de
+        # founding_spots_left(). Fail-closed en cada rama: sin checkout
+        # configurado no se promete lo que no se puede cobrar; sin Supabase,
+        # con error de RPC, o con 0 lugares, el banner se queda oculto. El
+        # copy del programa exige "dato real de Supabase, no un numero
+        # inventado en el copy".
+        'function pxFounderBanner(){\n'
+        '  if(PADDLE_CLIENT_TOKEN==="PENDIENTE_CONFIGURAR")return;\n'
+        '  var c=pxClient();if(!c)return;\n'
+        '  c.rpc("founding_spots_left").then(function(r){\n'
+        '    var d=r&&r.data;\n'
+        '    if(!d||r.error||typeof d.left!=="number"||typeof d.total!=="number")return;\n'
+        '    if(d.left<1||d.left>d.total)return;\n'
+        '    document.querySelectorAll(".px-founder-left").forEach(function(el){el.textContent=d.left;});\n'
+        '    document.querySelectorAll(".px-founder-total").forEach(function(el){el.textContent=d.total;});\n'
+        '    var b=document.getElementById("px-founder-banner");if(b)b.style.display="block";\n'
+        '    pxTrack("founder_banner_shown",{spots_left:d.left});\n'
+        '  }).catch(function(){});\n'
+        '}\n'
         'pxTrack("pricing_view",{product:"ai_sdlc_pro"});\n'
         'pxInitPaddle();\n'
         'pxInitAuth();\n'
+        'pxFounderBanner();\n'
         '</script>\n'
         '</body>\n</html>\n'
     )

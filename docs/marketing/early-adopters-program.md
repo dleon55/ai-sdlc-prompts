@@ -24,33 +24,46 @@
   promesa es **congelar** el precio de hoy, no bajarlo más. Esto es honesto
   con el hecho de que $1 USD/mes ya es un precio introductorio agresivo.
 
-## ⚠️ Limitación técnica real — no implementado todavía
+## ✅ Mecanismo técnico — decidido 2026-08-09
 
-Este documento define el programa a nivel de **producto/mensaje**, no
-implementa el mecanismo técnico de "congelar" el precio por usuario. Hoy
-`build.py`/Paddle usan un único `PADDLE_PRICE_ID` global (ver
-`docs/trial-gate-setup.md` y la config de Paddle en `build.py` línea
-~22-39) — no existe todavía un concepto de "precio distinto por cohorte de
-usuario" en el checkout real.
+El "precio congelado" **no requiere implementación en el flujo de cobro**:
+es el comportamiento por defecto de Paddle Billing. Cambiar un precio (o
+crear uno nuevo) solo afecta a las suscripciones **nuevas** — las activas
+siguen cobrándose al monto con el que se crearon, indefinidamente, salvo
+migración explícita suscripción por suscripción vía API. Las dos opciones
+que este documento planteaba originalmente (segundo price manual / webhook
+con price por flag) resolvían un problema que Paddle ya resuelve solo.
 
-Antes de anunciar este programa públicamente hace falta una decisión de
-ingeniería (fuera del alcance de este documento, requiere acceso a la
-cuenta de Paddle):
-- **Opción simple**: Paddle permite crear un segundo `price` para el mismo
-  producto y asignarlo manualmente a las primeras 50 suscripciones — no
-  requiere cambios de esquema, sí requiere seguimiento manual de quién es
-  fundador (ej. una tabla `founding_members` en Supabase, similar a
-  `user_trial`).
-- **Opción robusta**: automatizar el conteo (trigger en Supabase que marca
-  `is_founding_member = true` en la suscripción #1-50) y que el webhook de
-  Paddle aplique el price ID correcto según ese flag.
+El mecanismo operativo completo es:
 
-No implemento ninguna de las dos automáticamente en este PR porque cambia
-el flujo de cobro real (dinero real, suscripciones reales) — es una
-decisión que debe tomarse con acceso a la cuenta de Paddle y confirmación
-explícita, no algo para decidir por mi cuenta.
+1. **Hoy**: nada que cambiar en Paddle. Toda suscripción a $1 USD/mes queda
+   congelada por defecto.
+2. **Cuando termine el piloto y el precio suba**: crear un price **nuevo**
+   en Paddle para el mismo producto (no editar el actual — así el price ID
+   de $1 queda como marcador limpio de la cohorte), actualizar la variable
+   `PADDLE_PRICE_ID` en GitHub Actions y redeployar. Los checkouts nuevos
+   cobran el precio nuevo; nadie existente cambia.
+3. **Cumplir la promesa Fundador** = nunca migrar esas suscripciones.
+4. **Suscriptores 51+ que entren antes de la subida** (decisión de producto,
+   opción "a"): también conservan $1 por el mismo default de Paddle. La
+   garantía *pública* es solo para los primeros 50; el resto recibe más de
+   lo prometido, nadie recibe menos. No se migrará activamente a nadie.
 
-## Copy de campaña (una vez que el mecanismo técnico exista)
+Lo que sí se implementó (porque faltaba de verdad) es el **tracking de la
+cohorte y el contador real**:
+
+- `subscriptions.created_at` (migración
+  `supabase/migrations/20260809_founding_members.sql`): orden de llegada,
+  fijado al primer insert, nunca pisado por el upsert del webhook. Los
+  primeros 50 por `created_at` son la cohorte fundadora.
+- RPC `founding_spots_left()`: expone solo el agregado `{left, total}` para
+  el banner de `/precios` — dato real, jamás filas de usuarios. Un lugar se
+  consume al crearse la suscripción y no se libera al cancelar.
+- Banner Fundador en `/precios` (`build.py`): oculto por defecto,
+  fail-closed — solo aparece si el RPC devuelve lugares disponibles reales
+  y el checkout de Paddle está configurado.
+
+## Copy de campaña
 
 **Banner / anuncio corto (ES):**
 ```
@@ -87,13 +100,16 @@ quieres ser de los primeros 50: https://prompts.lionsystems.com.mx
 
 ## Checklist de ejecución
 
-- [ ] Decidir el mecanismo técnico de precio congelado (ver limitación
-      arriba) — requiere acceso a Paddle, fuera de este documento.
-- [ ] Si se implementa, agregar el tracking de "fundador" (tabla o flag en
-      Supabase) antes de anunciar el programa — anunciarlo sin poder
-      cumplirlo dañaría más que no anunciarlo.
-- [ ] Publicar el banner en `/precios` una vez el mecanismo exista (cambio
-      de código real en `build.py`, no incluido en este PR).
-- [ ] Publicar el post de lanzamiento en LinkedIn.
-- [ ] Llevar un contador real de cuántos lugares quedan (dato real de
-      Supabase, no un número inventado en el copy).
+- [x] Decidir el mecanismo técnico de precio congelado — **decidido
+      2026-08-09** (ver sección "Mecanismo técnico" arriba): grandfathering
+      por defecto de Paddle + price nuevo al subir + nunca migrar
+      fundadores.
+- [x] Tracking de "fundador" en Supabase — `subscriptions.created_at` +
+      RPC `founding_spots_left()`
+      (`supabase/migrations/20260809_founding_members.sql`).
+- [x] Banner en `/precios` (`build.py`) — oculto hasta que el contador
+      real devuelva lugares disponibles y el checkout esté configurado.
+- [ ] **Ejecutar la migración** `20260809_founding_members.sql` en el SQL
+      Editor de Supabase (instalación existente — un solo paso manual).
+- [ ] Publicar el post de lanzamiento en LinkedIn (manual, cuenta del
+      propietario).
