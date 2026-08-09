@@ -38,6 +38,9 @@ h1{font-size:1.75rem;font-weight:700;margin-bottom:.5rem;}
 .px-annual{color:var(--tx2);font-size:.85rem;margin:-.5rem 0 .75rem;}
 .px-anchor{color:var(--tx3);font-size:.85rem;font-weight:400;text-decoration:line-through;}
 .px-foot{margin-top:3rem;color:var(--tx3);font-size:.8rem;}
+.px-founder{border-color:rgba(245,158,11,.45);}
+.px-founder p{color:var(--tx2);margin:0;}
+.px-founder strong{color:var(--warn);}
 </style>
 </head>
 <body>
@@ -49,6 +52,10 @@ h1{font-size:1.75rem;font-weight:700;margin-bottom:.5rem;}
   <h1><span class="fw-lang-es">Precios</span><span class="fw-lang-en">Pricing</span></h1>
   <p class="px-sub fw-lang-es">Oferta de lanzamiento: así funciona el acceso actual.</p>
   <p class="px-sub fw-lang-en">Launch offer: this is how access works today.</p>
+  <div id="px-founder-banner" class="px-card px-founder" style="display:none;">
+    <p class="fw-lang-es">🎖️ <strong>Programa Fundador</strong> — quedan <strong><span class="px-founder-left">…</span> de <span class="px-founder-total">50</span></strong> lugares. Activa tu Pro hoy a $1 USD/mes y consérvalo de por vida, incluso cuando el precio suba para nuevos usuarios. Sin trucos: es el mismo precio de hoy, congelado mientras tu suscripción siga activa.</p>
+    <p class="fw-lang-en">🎖️ <strong>Founding Member Program</strong> — <strong><span class="px-founder-left">…</span> of <span class="px-founder-total">50</span></strong> spots left. Activate Pro today at $1 USD/month and keep it for life, even after the price goes up for new users. No catch: it's today's price, locked in while your subscription stays active.</p>
+  </div>
   <div class="px-card">
     <h2><span class="px-badge fw-lang-es">Gratis</span><span class="px-badge fw-lang-en">Free</span><span class="fw-lang-es">&nbsp;Sin registro</span><span class="fw-lang-en">&nbsp;No sign-up</span></h2>
     <ul class="fw-lang-es">
@@ -204,9 +211,23 @@ function pxStartCheckout(anual){
     settings:{successUrl:window.location.origin+"/precios.html?checkout=success"}
   });
 }
+function pxFounderBanner(){
+  if(PADDLE_CLIENT_TOKEN==="PENDIENTE_CONFIGURAR")return;
+  var c=pxClient();if(!c)return;
+  c.rpc("founding_spots_left").then(function(r){
+    var d=r&&r.data;
+    if(!d||r.error||typeof d.left!=="number"||typeof d.total!=="number")return;
+    if(d.left<1||d.left>d.total)return;
+    document.querySelectorAll(".px-founder-left").forEach(function(el){el.textContent=d.left;});
+    document.querySelectorAll(".px-founder-total").forEach(function(el){el.textContent=d.total;});
+    var b=document.getElementById("px-founder-banner");if(b)b.style.display="block";
+    pxTrack("founder_banner_shown",{spots_left:d.left});
+  }).catch(function(){});
+}
 pxTrack("pricing_view",{product:"ai_sdlc_pro"});
 pxInitPaddle();
 pxInitAuth();
+pxFounderBanner();
 </script>
 </body>
 </html>

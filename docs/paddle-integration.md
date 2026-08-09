@@ -25,6 +25,13 @@ La migración también registra la fecha del último evento y encapsula el
 procesamiento en una función SQL atómica: reintentos concurrentes no aplican
 dos veces un cobro y eventos atrasados no sustituyen un estado más reciente.
 
+Después, aplica
+[`supabase/migrations/20260809_founding_members.sql`](../supabase/migrations/20260809_founding_members.sql)
+(Programa Fundador): agrega `subscriptions.created_at` (orden de llegada de
+la cohorte) y el RPC público de solo-conteo `founding_spots_left()` que
+alimenta el banner "quedan N de 50" en `/precios`. Sin esta migración el
+banner simplemente no aparece (fail-closed) — nada más se rompe.
+
 **Verificación de seguridad**: en **Database → Tables → subscriptions**,
 confirma que aparece con **RLS habilitado** y **una sola política**, de
 tipo `SELECT`. Si ves `UPDATE`/`INSERT`/`ALL`, algo salió mal: cualquiera

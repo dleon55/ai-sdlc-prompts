@@ -17,6 +17,9 @@ create table if not exists subscriptions (
   status              text not null,
   current_period_end timestamptz,
   last_event_occurred_at timestamptz,
+  -- Orden de llegada de la cohorte fundadora (Programa Fundador, decisión
+  -- 2026-08-09): fijada al primer insert; el upsert del webhook no la toca.
+  created_at          timestamptz not null default now(),
   updated_at          timestamptz not null default now()
 );
 
@@ -211,3 +214,31 @@ end;
 $$;
 
 grant execute on function check_trial_status() to authenticated;
+
+-- ───────────── founding_spots_left(): contador público del Programa Fundador ─────────────
+-- (decisión 2026-08-09, ver docs/marketing/early-adopters-program.md). El
+-- "precio congelado" en sí no requiere código: es el comportamiento por
+-- defecto de Paddle Billing (un cambio de precio solo afecta suscripciones
+-- nuevas). Este RPC solo alimenta el banner "quedan N de 50" de /precios
+-- con dato real. Expone ÚNICAMENTE el agregado — nunca filas ni columnas de
+-- usuarios — y por eso es seguro otorgarlo a anon. security definer es
+-- necesario: con RLS, anon no ve ninguna fila y contaría siempre 0.
+--
+-- Un lugar se CONSUME al crearse la suscripción y no se libera al cancelar:
+-- liberar lugares haría el contador reversible en público y permitiría
+-- "reciclar" una promesa condicionada a suscripción activa sin interrupción.
+create or replace function founding_spots_left()
+returns jsonb
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select jsonb_build_object(
+    'total', 50,
+    'left', greatest(0, 50 - (select count(*) from subscriptions))::int
+  );
+$$;
+
+revoke all on function founding_spots_left() from public;
+grant execute on function founding_spots_left() to anon, authenticated;
