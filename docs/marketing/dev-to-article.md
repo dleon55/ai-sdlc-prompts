@@ -54,8 +54,8 @@ el postmortem de producción. Cada prompt sigue el mismo contrato editorial:
 - **Inputs requeridos** — qué contexto mínimo necesita el agente antes de
   poder responder algo útil.
 - **Autonomía permitida** (A0 a A3) — desde "solo puede leer y analizar"
-  hasta "puede ejecutar con supervisión mínima". No todos los prompts
-  deberían darle el mismo permiso a un agente.
+  hasta "puede publicar: commit, push, PR o despliegue". No todos los
+  prompts deberían darle el mismo permiso a un agente.
 - **Criterio de parada** — qué debe hacer el agente si algo es ambiguo:
   declarar la ambigüedad, no adivinar.
 - **Salida esperada** y **evidencia mínima** — cómo se ve un resultado
@@ -76,11 +76,14 @@ rehacer una vez que el equipo ya construyó sobre ella.
 La parte que más ha cambiado cómo mi equipo usa IA es declarar
 explícitamente cuánta autonomía tiene el agente en cada tarea:
 
-- **A0** — solo lectura y análisis, cero cambios.
-- **A1** — puede proponer cambios, un humano decide.
-- **A2** — puede ejecutar cambios acotados y de bajo riesgo.
-- **A3** — ejecución con supervisión mínima, para tareas bien definidas y
-  de bajo riesgo real.
+- **A0 — Analizar**: solo lectura, inventario y recomendaciones. Cero
+  cambios.
+- **A1 — Proponer**: genera el plan, el diff o el artefacto, pero no lo
+  aplica — un humano decide.
+- **A2 — Ejecutar controlado**: puede editar y validar, pero solo en un
+  workspace o rama aislada.
+- **A3 — Publicar**: commit, push, PR o despliegue — siempre con
+  aprobación explícita o una política preautorizada.
 
 Un prompt de revisión arquitectónica no debería tener el mismo nivel de
 autonomía que uno de formateo de código. Definir esto por prompt, no por

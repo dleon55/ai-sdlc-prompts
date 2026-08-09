@@ -204,9 +204,10 @@ mismo permiso que uno que puede hacer commit directo (implementación
 acotada, bajo riesgo).
 
 En el catálogo AI-SDLC Pro cada prompt declara su "autonomía permitida"
-explícita: A0 (solo lectura/análisis) hasta A3 (ejecución con mínima
-supervisión). Es la diferencia entre dejar que un agente "opine" sobre tu
-arquitectura y dejar que la modifique sin que nadie la haya revisado.
+explícita: desde A0 (solo analizar) hasta A3 (publicar — commit, push, PR
+o despliegue, siempre con aprobación explícita). Es la diferencia entre
+dejar que un agente "opine" sobre tu arquitectura y dejar que la modifique
+sin que nadie la haya revisado.
 
 Si coordinas varios agentes en el mismo proyecto, definir esto por
 adelantado evita sorpresas — no después de que algo ya se rompió.
