@@ -62,13 +62,14 @@ FR-04 (Ciclo Forzado)
 | **MR-01** | Tier Free | Los 112 prompts completos, copia ilimitada, sin cuenta y para siempre. 1 proyecto activo. El muro gatea la **plataforma**, no el texto (issue #7) | 🔴 Crítica |
 | **MR-02** | Tier Pro Individual | $1 USD/mes (introductorio) — quita el muro de prueba: proyectos ilimitados, personalización por prompt, guardado de resultados de IA | 🔴 Crítica |
 | **MR-03** | Tier Pro Equipo | Por definir con datos del piloto — no construir antes de validar demanda | 🟡 Alta |
-| **MR-04** | Canal alternativo | Gumroad no es integración de cobro ni oferta activa; cualquier canal alternativo exige decisión comercial y material actualizado | 🟢 Media |
+| **MR-04** | Canal alternativo | Gumroad es canal de **adquisición**, no de ingreso (decisión 2026-08-09, `docs/STRATEGY.md`): pack completo "pay what you want" con mínimo $0, descripción que declara el contenido como público, publicación manual del propietario. Nunca venderlo como contenido exclusivo | 🟢 Media |
 | **MR-05** | Enterprise | Por definir con datos del piloto | 🟢 Media |
 
 > **Decisión histórica.** El pack Gumroad de $499 MXN se retiró al adoptar el
 > modelo de plataforma: el catálogo es público y el valor monetizable reside en
-> las capacidades Pro. La trazabilidad de esa decisión vive en el issue de
-> producto correspondiente; esta especificación no define un pack activo.
+> las capacidades Pro. El 2026-08-09 el pack se ratificó como canal de
+> adquisición en modalidad "pay what you want" (mínimo $0) — material en
+> `docs/gumroad-listing.md`; no es una vía de ingreso ni una oferta exclusiva.
 
 ### 2.2 Reglas de Gate de Conversión
 
