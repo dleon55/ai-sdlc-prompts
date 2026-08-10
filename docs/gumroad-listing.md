@@ -4,7 +4,7 @@
 > registradas" en `docs/STRATEGY.md`). Esta decisión reemplaza el archivo del
 > 2026-08-02: Gumroad opera como canal de **adquisición**, no de ingreso — el
 > producto es "pay what you want" con mínimo $0 y su `LEEME.md` dirige a la
-> suscripción de la plataforma ($1 USD/mes vía Paddle).
+> suscripción de la plataforma (precio vigente en `/precios`, vía Paddle).
 >
 > Este documento es solo texto de referencia para crear el producto
 > manualmente en https://gumroad.com — no hay forma de publicarlo desde este
@@ -25,7 +25,7 @@
 | Archivo a subir | `dist/ai-sdlc-pro-pack-completo.zip` (112 prompts × ES/EN + framework de contexto) |
 
 > **Nota sobre el precio.** El precio fijo original ($499 MXN) se calibró
-> cuando la suscripción costaba $299 MXN/mes. Con la suscripción en $1 USD/mes
+> cuando la suscripción costaba $299 MXN/mes. Con la suscripción entonces en $1 USD/mes
 > ese precio equivalía a ~27 meses de plataforma a cambio de una copia del
 > catálogo que el tier Free ya regala para siempre (issue #7). Este canal se
 > posiciona como **adquisición, no ingreso**: Gumroad aporta tráfico propio, y

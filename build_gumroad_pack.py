@@ -67,7 +67,8 @@ automáticamente y siempre tiene la versión más reciente.
 Los {prompt_count} prompts son gratis para siempre, aquí y en la web: no hay
 muro que desbloquear para leerlos ni para copiarlos.
 
-Lo que sí cuesta es la **plataforma**, por **$1 USD al mes**:
+Lo que sí cuesta es la **plataforma**, por el precio introductorio vigente
+publicado en {"https://prompts.lionsystems.com.mx/precios.html"}:
 
 - Resuelve las 19 variables de tu proyecto automáticamente en cada prompt,
   en vez de reemplazar placeholders a mano.
@@ -126,7 +127,8 @@ always has the latest version.
 The {prompt_count} prompts are free forever, here and on the web: there is no
 wall to unlock in order to read or copy them.
 
-What does cost money is the **platform**, at **$1 USD per month**:
+What does cost money is the **platform**, at the current introductory price
+published at {"https://prompts.lionsystems.com.mx/precios.html"}:
 
 - Resolves your project's 19 variables automatically in every prompt, instead
   of replacing placeholders by hand.

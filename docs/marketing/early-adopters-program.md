@@ -2,27 +2,31 @@
 
 > Sprint 4, `docs/STRATEGY.md`. El issue original (abril 2026) pedía
 > "$99 MXN/mes de por vida" para los primeros 50 Pro — desactualizado: el
-> sitio vigente ya tiene un precio introductorio distinto ($1 USD/mes,
-> `precios.html`/`terminos.html`). En vez de inventar un tercer número,
-> este programa reutiliza el precio real que ya existe y le da la urgencia
-> que pedía el issue original: **los primeros 50 aseguran $1 USD/mes de por
-> vida**, incluso después de que el precio suba para nuevos usuarios cuando
-> termine el piloto. Mismo espíritu del issue (urgencia + trato fundador),
-> precio consistente con lo que el sitio ya promete hoy.
+> sitio vigente tiene su propio precio introductorio, publicado en
+> `/precios` (**$9 USD/mes al 2026-08-09**, ancla de lista $19 — la página
+> deriva el monto de `PADDLE_PRICE_AMOUNT_USD`, así que `/precios` es
+> siempre la fuente de verdad; verificar ahí antes de publicar cualquier
+> copy). En vez de inventar otro número, este programa reutiliza el precio
+> real vigente y le da la urgencia que pedía el issue original: **los
+> primeros 50 aseguran el precio de hoy de por vida**, incluso después de
+> que suba para nuevos usuarios cuando termine el piloto. Mismo espíritu
+> del issue (urgencia + trato fundador), precio consistente con lo que el
+> sitio promete.
 
 ## Propuesta del programa
 
 **Nombre:** Programa Fundador / Founding Member Program
 
 **Mecánica:**
-- Los primeros 50 usuarios en activar una suscripción Pro ($1 USD/mes)
-  quedan marcados como "fundadores".
+- Los primeros 50 usuarios en activar una suscripción Pro (al precio
+  introductorio vigente de `/precios`) quedan marcados como "fundadores".
 - Cuando el piloto termine y el precio introductorio suba para usuarios
-  nuevos, los 50 fundadores **mantienen $1 USD/mes de por vida** mientras
-  la suscripción siga activa sin interrupción.
+  nuevos, los 50 fundadores **mantienen el precio con el que entraron, de
+  por vida**, mientras la suscripción siga activa sin interrupción.
 - No hay una promesa de descuento adicional sobre el precio actual — la
   promesa es **congelar** el precio de hoy, no bajarlo más. Esto es honesto
-  con el hecho de que $1 USD/mes ya es un precio introductorio agresivo.
+  con el hecho de que el introductorio ya es agresivo frente al ancla de
+  lista.
 
 ## ✅ Mecanismo técnico — decidido 2026-08-09
 
@@ -36,16 +40,16 @@ con price por flag) resolvían un problema que Paddle ya resuelve solo.
 
 El mecanismo operativo completo es:
 
-1. **Hoy**: nada que cambiar en Paddle. Toda suscripción a $1 USD/mes queda
-   congelada por defecto.
+1. **Hoy**: nada que cambiar en Paddle. Toda suscripción al precio vigente
+   queda congelada por defecto.
 2. **Cuando termine el piloto y el precio suba**: crear un price **nuevo**
    en Paddle para el mismo producto (no editar el actual — así el price ID
-   de $1 queda como marcador limpio de la cohorte), actualizar la variable
+   introductorio queda como marcador limpio de la cohorte), actualizar la variable
    `PADDLE_PRICE_ID` en GitHub Actions y redeployar. Los checkouts nuevos
    cobran el precio nuevo; nadie existente cambia.
 3. **Cumplir la promesa Fundador** = nunca migrar esas suscripciones.
 4. **Suscriptores 51+ que entren antes de la subida** (decisión de producto,
-   opción "a"): también conservan $1 por el mismo default de Paddle. La
+   opción "a"): también conservan su precio por el mismo default de Paddle. La
    garantía *pública* es solo para los primeros 50; el resto recibe más de
    lo prometido, nadie recibe menos. No se migrará activamente a nadie.
 
@@ -65,10 +69,14 @@ cohorte y el contador real**:
 
 ## Copy de campaña
 
+> El monto citado abajo ($9 USD/mes) es el vigente al 2026-08-09 — el banner
+> real de `/precios` lo deriva automáticamente de la configuración, pero
+> este copy estático no: **verificar contra `/precios` antes de publicar**.
+
 **Banner / anuncio corto (ES):**
 ```
 🎖️ Programa Fundador — quedan [N] de 50 lugares
-Activa tu Pro hoy a $1 USD/mes y consérvalo de por vida, incluso cuando el
+Activa tu Pro hoy a $9 USD/mes y consérvalo de por vida, incluso cuando el
 precio suba para nuevos usuarios. Sin trucos: es el mismo precio de hoy,
 congelado para siempre mientras tu suscripción siga activa.
 ```
@@ -76,14 +84,14 @@ congelado para siempre mientras tu suscripción siga activa.
 **Banner / anuncio corto (EN):**
 ```
 🎖️ Founding Member Program — [N] of 50 spots left
-Activate Pro today at $1 USD/month and keep it for life, even after the
+Activate Pro today at $9 USD/month and keep it for life, even after the
 price goes up for new users. No catch: it's today's price, locked in
 forever while your subscription stays active.
 ```
 
 **Post de LinkedIn para lanzar el programa (ES):**
 ```
-Los primeros 50 usuarios Pro de AI-SDLC Pro se quedan con $1 USD/mes de por
+Los primeros 50 usuarios Pro de AI-SDLC Pro se quedan con $9 USD/mes de por
 vida — aunque el precio suba después para quien se una más tarde.
 
 No es un descuento temporal. Es congelar el precio de hoy para quien confía

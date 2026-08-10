@@ -60,7 +60,7 @@ FR-04 (Ciclo Forzado)
 | ID | Nombre | Descripción | Severidad |
 |----|--------|-------------|-----------|
 | **MR-01** | Tier Free | Los 112 prompts completos, copia ilimitada, sin cuenta y para siempre. 1 proyecto activo. El muro gatea la **plataforma**, no el texto (issue #7) | 🔴 Crítica |
-| **MR-02** | Tier Pro Individual | $1 USD/mes (introductorio) — quita el muro de prueba: proyectos ilimitados, personalización por prompt, guardado de resultados de IA | 🔴 Crítica |
+| **MR-02** | Tier Pro Individual | Precio introductorio vigente publicado en `/precios` ($9 USD/mes al 2026-08-09, vía `PADDLE_PRICE_AMOUNT_USD`) — quita el muro de prueba: proyectos ilimitados, personalización por prompt, guardado de resultados de IA | 🔴 Crítica |
 | **MR-03** | Tier Pro Equipo | Por definir con datos del piloto — no construir antes de validar demanda | 🟡 Alta |
 | **MR-04** | Canal alternativo | Gumroad es canal de **adquisición**, no de ingreso (decisión 2026-08-09, `docs/STRATEGY.md`): pack completo "pay what you want" con mínimo $0, descripción que declara el contenido como público, publicación manual del propietario. Nunca venderlo como contenido exclusivo | 🟢 Media |
 | **MR-05** | Enterprise | Por definir con datos del piloto | 🟢 Media |
@@ -83,7 +83,7 @@ FR-04 (Ciclo Forzado)
 
 | ID | Regla | Justificación |
 |----|-------|---------------|
-| **MR-09** | Precio piloto | Pro Individual se ofrece a $1 USD/mes mientras se valida demanda; cualquier cambio exige decisión de producto y actualización de la página pública |
+| **MR-09** | Precio piloto | Pro Individual se ofrece al precio introductorio configurado en `PADDLE_PRICE_AMOUNT_USD` (fuente de verdad: `/precios`) mientras se valida demanda; cualquier cambio exige decisión de producto — la página pública se actualiza sola porque deriva el monto de la misma variable que cobra Paddle |
 | **MR-10** | Prueba Pro | La sesión con GitHub habilita una prueba de una semana; el feedback puede renovar el periodo durante el piloto |
 | **MR-11** | Activación de pago | Sólo un evento Paddle firmado y procesado de forma idempotente puede conceder o mantener acceso Pro de pago |
 
