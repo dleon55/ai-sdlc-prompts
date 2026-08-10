@@ -2,8 +2,10 @@
 
 > Sprint 4, `docs/STRATEGY.md`. El issue original (abril 2026) pedía cotizar
 > "licencia equipo $799 MXN/mes (hasta 5 devs)" — desactualizado: el sitio
-> vigente (`/precios`, `terminos.html`) solo tiene el plan Individual a
-> **$1 USD/mes** (introductorio de piloto); el tier de Equipo/Enterprise
+> vigente (`/precios`, `terminos.html`) solo tiene el plan Individual al
+> precio introductorio publicado en `/precios` (**$9 USD/mes al 2026-08-09**,
+> ancla de lista $19 — verificar contra la página antes de cada envío, es la
+> fuente de verdad); el tier de Equipo/Enterprise
 > está explícitamente "por definir con datos del piloto" en
 > `docs/STRATEGY.md`. Los mensajes de abajo usan el precio real vigente y
 > **no inventan un número de equipo** — lo tratan como una conversación
@@ -87,8 +89,8 @@ No cotizar un precio de equipo en el mensaje inicial — el tier de equipo
 todavía no existe formalmente. En la llamada, si hay interés real:
 
 ```
-Ahora mismo el plan individual está a $1 USD/mes, precio introductorio
-mientras validamos el piloto. Para equipos como el de ustedes ([3-15] devs)
+Ahora mismo el plan individual está a $9 USD/mes (precio introductorio del
+piloto — antes de la llamada, confirma el monto vigente en /precios). Para equipos como el de ustedes ([3-15] devs)
 todavía estamos definiendo el tier — si les interesa, los primeros equipos
 en sumarse ayudan a definir qué necesitan (SSO, proyectos compartidos,
 miembros) y se quedan con condiciones preferenciales cuando el tier de

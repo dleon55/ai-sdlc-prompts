@@ -5,8 +5,9 @@ configurados (ver [`docs/auth-setup.md`](auth-setup.md) y
 [`docs/trial-gate-setup.md`](trial-gate-setup.md)) — complétalos primero si
 no lo has hecho.
 
-Un usuario logueado con GitHub puede suscribirse a $1 USD/mes desde
-`/precios.html`. Al pagar, `check_trial_status()` reporta acceso ilimitado
+Un usuario logueado con GitHub puede suscribirse desde `/precios.html` al
+precio vigente (el monto viaja en `PADDLE_PRICE_AMOUNT_USD` junto al price id
+de Paddle — nunca hardcodeado en el copy). Al pagar, `check_trial_status()` reporta acceso ilimitado
 sin importar el estado de su prueba gratuita — el gate revisa primero la
 tabla `subscriptions`, que solo escribe una Supabase Edge Function al
 recibir el webhook de Paddle.
