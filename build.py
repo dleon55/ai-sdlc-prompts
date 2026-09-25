@@ -6132,6 +6132,31 @@ PRECIO_LISTA_USD = "19"
 
 LEGAL_CONTACT_EMAIL = "soporte@lionsystems.com.mx"
 
+# Identidad legal que se publica en terminos.html y privacidad.html.
+#
+# ATENCION: los valores actuales son INCORRECTOS y estan pendientes de corregir.
+# "Lion Systems MX, S.A. de C.V." es una sociedad que NO esta constituida, y el
+# domicilio de Mina 210 nunca correspondio al titular real del negocio. Ver
+# dleonsystem/www-lionsystems-odoo#35 (P0).
+#
+# Se extraen a constantes ahora, sin cambiar su valor, por dos razones: el
+# nombre estaba escrito a mano en cuatro sitios —ES y EN de cada pagina— y una
+# copia puede divergir de otra; y cuando se conozca el texto correcto el cambio
+# sera de una linea en vez de cuatro.
+#
+# Por que no se corrige el valor en este mismo commit: el titular es persona
+# fisica, pero su Constancia de Situacion Fiscal declara unicamente regimen de
+# Sueldos y Salarios. Hasta aclarar con contador si procede un aumento de
+# obligaciones, no se puede redactar una descripcion que sea cierta al
+# publicarla. Y el domicilio a publicar tampoco esta decidido: el fiscal es
+# particular y publicarlo es irreversible.
+#
+# El mismo patron ya existe en Form2PDF: `src/modules/legal/entity.ts`, un
+# unico punto de verdad para la identidad legal.
+LEGAL_ENTITY_NAME = "Lion Systems MX, S.A. de C.V."
+LEGAL_ENTITY_ADDRESS_ES = "Calle Mina 210, Buenavista, Cuauhtémoc, 06350 Ciudad de México"
+LEGAL_ENTITY_ADDRESS_EN = "Calle Mina 210, Buenavista, Cuauhtémoc, 06350 Mexico City"
+
 # Fecha de última actualización que se muestra en las tres páginas.
 # Se actualiza a mano cuando cambie el contenido legal, no en cada
 # build: una fecha que se mueve sola no significa nada para nadie.
@@ -6275,12 +6300,12 @@ def build_terminos_page():
         _lg_section(
             'Quién opera este servicio', 'Who operates this service',
             [('p',
-              'AI-SDLC Pro es un producto de <strong>Lion Systems MX, S.A. de C.V.</strong> '
+              f'AI-SDLC Pro es un producto de <strong>{LEGAL_ENTITY_NAME}</strong> '
               '(<a href="https://lionsystems.com.mx" target="_blank" rel="noopener">lionsystems.com.mx</a>), '
-              'con domicilio en Calle Mina 210, Buenavista, Cuauhtémoc, 06350 Ciudad de México. Al usar el sitio o suscribirte aceptas estos términos.',
-              'AI-SDLC Pro is a product of <strong>Lion Systems MX, S.A. de C.V.</strong> '
+              f'con domicilio en {LEGAL_ENTITY_ADDRESS_ES}. Al usar el sitio o suscribirte aceptas estos términos.',
+              f'AI-SDLC Pro is a product of <strong>{LEGAL_ENTITY_NAME}</strong> '
               '(<a href="https://lionsystems.com.mx" target="_blank" rel="noopener">lionsystems.com.mx</a>), '
-              'with its address at Calle Mina 210, Buenavista, Cuauhtémoc, 06350 Mexico City. By using the site or subscribing you accept these terms.')]
+              f'with its address at {LEGAL_ENTITY_ADDRESS_EN}. By using the site or subscribing you accept these terms.')]
         )
         + _lg_section(
             'Qué es AI-SDLC Pro', 'What AI-SDLC Pro is',
@@ -6429,13 +6454,13 @@ def build_privacidad_page():
         _lg_section(
             'Quién es el responsable', 'Who is the data controller',
             [('p',
-              '<strong>Lion Systems MX, S.A. de C.V.</strong>, con domicilio en Calle Mina 210, Buenavista, '
-              'Cuauhtémoc, 06350 Ciudad de México, es responsable del '
+              f'<strong>{LEGAL_ENTITY_NAME}</strong>, con domicilio en {LEGAL_ENTITY_ADDRESS_ES}'
+              ', es responsable del '
               'tratamiento de los datos personales que recabamos a través de '
               'prompts.lionsystems.com.mx. Este aviso explica qué recabamos, para qué, con quién lo '
               'compartimos y cómo ejercer tus derechos.',
-              '<strong>Lion Systems MX, S.A. de C.V.</strong>, with its address at Calle Mina 210, Buenavista, '
-              'Cuauhtémoc, 06350 Mexico City, is the controller for the personal '
+              f'<strong>{LEGAL_ENTITY_NAME}</strong>, with its address at {LEGAL_ENTITY_ADDRESS_EN}'
+              ', is the controller for the personal '
               'data we collect through prompts.lionsystems.com.mx. This notice explains what we collect, '
               'why, who we share it with and how to exercise your rights.')]
         )
