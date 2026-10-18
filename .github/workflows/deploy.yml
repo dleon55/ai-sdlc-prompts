@@ -453,6 +453,20 @@ jobs:
           [ "$SITEMAP_STATUS" = "200" ] || { echo "ERROR: sitemap.xml HTTP $SITEMAP_STATUS"; exit 1; }
           echo "SMOKE_OK: robots.txt y sitemap.xml verificados"
 
+      # Smoke test del precio publicado (issue #232, T4): el precio que ven
+      # precios/terminos/reembolsos en PRODUCCION debe ser el que cobra
+      # Paddle. build.py ya los ata en el artefacto; esto comprueba lo que
+      # sirve nginx tras el reemplazo atomico, que es lo que lee el cliente.
+      # El `|| '1'` replica el valor por defecto de build.py cuando la
+      # variable no esta definida, para no comparar contra vacio.
+      - name: Smoke test precio publicado vs PADDLE_PRICE_AMOUNT_USD
+        env:
+          PADDLE_PRICE_AMOUNT_USD: ${{ vars.PADDLE_PRICE_AMOUNT_USD || '1' }}
+          SITIO_URL: https://prompts.lionsystems.com.mx
+        run: |
+          chmod +x scripts/verificar-precio-publicado.sh
+          scripts/verificar-precio-publicado.sh
+
       - name: Cleanup SSH key
         if: always()
         run: rm -f ~/.ssh/gcp_key
