@@ -6,6 +6,7 @@ Uso:  cd WEB_PROMPTS && python build.py
 import re
 import json
 import os
+import sys
 from pathlib import Path
 from collections import defaultdict
 
@@ -35,6 +36,18 @@ PROMPTS_TEXT_OUTPUT = {
 }
 PADDLE_DISABLED_VALUE = "PENDIENTE_CONFIGURAR"
 
+# CTAs hacia el sitio corporativo (Odoo). Llevan UTM para que el lead que
+# llega a lionsystems.com.mx quede atribuido a este producto en el CRM:
+# sin `utm_product` un contacto desde aqui era indistinguible de uno que
+# entro por Google. Un solo punto de verdad para que las tres CTAs
+# (landing, precios, pie) no diverjan (issue #232, T7).
+LIONSYSTEMS_CTA_UTM = "utm_source=ai-sdlc-pro&amp;utm_medium=cta&amp;utm_product=ai-sdlc-pro"
+LIONSYSTEMS_AUDIT_CTA_URL = (
+    "https://www.lionsystems.com.mx/contactus?subject=ai-sdlc-pro-product-auditoria&amp;"
+    + LIONSYSTEMS_CTA_UTM
+)
+LIONSYSTEMS_HOME_CTA_URL = "https://lionsystems.com.mx/?" + LIONSYSTEMS_CTA_UTM
+
 
 def paddle_public_config():
     """Return validated public Paddle.js settings for the generated price page."""
@@ -51,7 +64,14 @@ def paddle_public_config():
     if price_id != PADDLE_DISABLED_VALUE and not re.fullmatch(r"pri_[A-Za-z0-9]+", price_id):
         raise ValueError("PADDLE_PRICE_ID must be a Paddle price identifier")
     if environment == "production" and (client_token == PADDLE_DISABLED_VALUE or price_id == PADDLE_DISABLED_VALUE):
-        raise ValueError("Production Paddle checkout requires PADDLE_CLIENT_TOKEN and PADDLE_PRICE_ID")
+        # Guarda T4 (issue #232): con el centinela en produccion el sitio
+        # publicaria un boton "Suscribirme" que no puede cobrar. build()
+        # llama esto antes de escribir cualquier archivo y __main__ sale
+        # con codigo distinto de cero, para que el deploy se detenga.
+        raise ValueError(
+            "PADDLE_ENVIRONMENT=production requires a real PADDLE_CLIENT_TOKEN and "
+            f"PADDLE_PRICE_ID (got the {PADDLE_DISABLED_VALUE} sentinel); refusing to build"
+        )
 
     # El MONTO viaja junto al price id, no hardcodeado en el copy.
     #
@@ -5636,7 +5656,7 @@ def get_landing_html(n):
         f'    <p>{ls["final_subtitle"]}</p>\n'
         f'    <div class="landing-cta-group">\n'
         f'      <a class="landing-cta-primary" href="/app">{ls["cta_nav"]}</a>\n'
-        '      <a class="landing-cta-secondary" href="https://www.lionsystems.com.mx/contactus?subject=ai-sdlc-pro-product-auditoria" target="_blank" rel="noopener" onclick="if(typeof gtag===\'function\')gtag(\'event\',\'b2b_audit_cta_click\',{source:\'landing\'});"><span class="fw-lang-es">Solicitar auditoría empresarial</span><span class="fw-lang-en">Request an enterprise audit</span></a>\n'
+        '      <a class="landing-cta-secondary" href="' + LIONSYSTEMS_AUDIT_CTA_URL + '" target="_blank" rel="noopener" onclick="if(typeof gtag===\'function\')gtag(\'event\',\'b2b_audit_cta_click\',{source:\'landing\'});"><span class="fw-lang-es">Solicitar auditoría empresarial</span><span class="fw-lang-en">Request an enterprise audit</span></a>\n'
         f'    </div>\n'
         f'  </section>\n'
         f'  <footer class="landing-footer">\n'
@@ -5651,7 +5671,7 @@ def get_landing_html(n):
         f'      <a href="/reembolsos.html">{ls["footer_refunds"]}</a>\n'
         f'      <a href="/precios.html">{ls["footer_pricing"]}</a>\n'
         f'    </span>\n'
-        f'    <a class="landing-cta-secondary" style="font-size:.72rem;padding:.25rem .75rem;" href="https://lionsystems.com.mx" target="_blank" rel="noopener">lionsystems.com.mx \u2197</a>\n'
+        f'    <a class="landing-cta-secondary" style="font-size:.72rem;padding:.25rem .75rem;" href="{LIONSYSTEMS_HOME_CTA_URL}" target="_blank" rel="noopener">lionsystems.com.mx \u2197</a>\n'
         f'  </footer>\n'
         f'</div>\n'
     )
@@ -5742,6 +5762,7 @@ def build_precios_page():
         '<meta name="robots" content="index,follow">\n'
         '<meta name="theme-color" content="#0f172a">\n'
         '<link rel="canonical" href="https://prompts.lionsystems.com.mx/precios.html">\n'
+        + _precio_meta_tag(_precio) +
         '<link rel="alternate" hreflang="es" href="https://prompts.lionsystems.com.mx/precios.html">\n'
         '<link rel="alternate" hreflang="en" href="https://prompts.lionsystems.com.mx/precios.html">\n'
         '<link rel="alternate" hreflang="x-default" href="https://prompts.lionsystems.com.mx/precios.html">\n'
@@ -5866,6 +5887,8 @@ def build_precios_page():
         '(projects, personalization, AI output storage) with no trial wall. Copying prompts is and will remain free '
         'for everyone, Pro or not. Any price change will be communicated before it applies to your next renewal, '
         'and you may cancel without penalty.</p>\n'
+        '    <p class="px-foot fw-lang-es">' + NOTA_IMPUESTOS_ES + '</p>\n'
+        '    <p class="px-foot fw-lang-en">' + NOTA_IMPUESTOS_EN + '</p>\n'
         + _anual_btn +
         '    <button id="px-subscribe-btn" class="px-cta" style="border:none;cursor:pointer;" onclick="pxStartCheckout()">'
         '<span class="fw-lang-es">Suscribirme</span><span class="fw-lang-en">Subscribe</span></button>\n'
@@ -5877,7 +5900,7 @@ def build_precios_page():
         '    <h2><span class="fw-lang-es">¿Necesitas implementación empresarial?</span><span class="fw-lang-en">Need enterprise implementation?</span></h2>\n'
         '    <p class="fw-lang-es">Lion Systems ofrece auditoría de arquitectura, implementación y soporte especializado bajo cotización.</p>\n'
         '    <p class="fw-lang-en">Lion Systems provides architecture audits, implementation, and specialized support by quotation.</p>\n'
-        '    <a class="px-cta" href="https://www.lionsystems.com.mx/contactus?subject=ai-sdlc-pro-product-auditoria" target="_blank" rel="noopener" onclick="pxTrack(\'b2b_audit_cta_click\',{source:\'pricing\'});"><span class="fw-lang-es">Solicitar auditoría</span><span class="fw-lang-en">Request an audit</span></a>\n'
+        '    <a class="px-cta" href="' + LIONSYSTEMS_AUDIT_CTA_URL + '" target="_blank" rel="noopener" onclick="pxTrack(\'b2b_audit_cta_click\',{source:\'pricing\'});"><span class="fw-lang-es">Solicitar auditoría</span><span class="fw-lang-en">Request an audit</span></a>\n'
         '  </div>\n'
         '  <a class="px-cta fw-lang-es" href="/">Volver a la biblioteca de prompts</a>\n'
         '  <a class="px-cta fw-lang-en" href="/">Back to the prompt library</a>\n'
@@ -5915,6 +5938,12 @@ def build_precios_page():
         f'var PADDLE_PRICE_ID={json.dumps(paddle_config["price_id"])};\n'
         f'var PADDLE_PRICE_ID_ANNUAL={json.dumps(paddle_config["annual_price_id"])};\n'
         f'var PADDLE_ENVIRONMENT={json.dumps(paddle_config["environment"])};\n'
+        # Montos para el evento GA4 `purchase` (issue #232, T7). Se emiten
+        # desde la misma config que cobra Paddle para que el valor reportado
+        # a analitica no pueda divergir del cobrado.
+        f'var PADDLE_PRICE_AMOUNT_USD={json.dumps(paddle_config["amount"])};\n'
+        f'var PADDLE_PRICE_AMOUNT_ANNUAL_USD={json.dumps(paddle_config["annual_amount"])};\n'
+        'var PX_PLAN_KEY="AI_SDLC_checkout_plan";\n'
         'var _pxUser=null;\n'
         'function pxTrack(name,params){if(typeof gtag==="function")gtag("event",name,params||{});}\n'
         'function pxSetStatus(es,en){\n'
@@ -5960,10 +5989,27 @@ def build_precios_page():
         # mostrando "Suscribirme" a alguien que acababa de pagar. Se sondea
         # con backoff hasta ~20s antes de rendirse, y al rendirse se dice
         # que el pago SI se recibio -- nunca dejar creer que se perdio.
+        # Conversion GA4 (issue #232, T7): `purchase` se dispara SOLO cuando
+        # el webhook ya confirmo la suscripcion, no al abrir el checkout --
+        # un checkout abierto no es una venta. Como pxPollPro solo corre al
+        # volver con ?checkout=success, despues de registrar la compra se
+        # limpia ese parametro de la URL para que una recarga no la cuente
+        # dos veces. El plan se recuerda en localStorage al abrir el
+        # checkout porque Paddle redirige y la pagina se recarga entera.
+        # Sin transaction_id: el webhook es asincrono y la pagina no lo ve;
+        # el valor sale de la config de precio, nunca de datos del usuario.
+        'function pxTrackPurchase(){\n'
+        '  var plan="monthly";\n'
+        '  try{if(localStorage.getItem(PX_PLAN_KEY)==="annual")plan="annual";localStorage.removeItem(PX_PLAN_KEY);}catch(e){}\n'
+        '  var monto=(plan==="annual"&&PADDLE_PRICE_AMOUNT_ANNUAL_USD)?PADDLE_PRICE_AMOUNT_ANNUAL_USD:PADDLE_PRICE_AMOUNT_USD;\n'
+        '  var valor=parseFloat(monto)||0;\n'
+        '  pxTrack("purchase",{value:valor,currency:"USD",items:[{item_id:"ai-sdlc-pro-"+plan,item_name:"AI-SDLC Pro",price:valor,quantity:1}]});\n'
+        '  try{history.replaceState(null,"",window.location.pathname);}catch(e){}\n'
+        '}\n'
         'function pxPollPro(intentos){\n'
         '  var c=pxClient();if(!c||!_pxUser)return;\n'
         '  c.rpc("check_trial_status").then(function(r){\n'
-        '    if(r&&r.data&&r.data.subscribed){pxShowPro();return;}\n'
+        '    if(r&&r.data&&r.data.subscribed){pxTrackPurchase();pxShowPro();return;}\n'
         '    if(intentos<6){\n'
         '      pxSetStatus("Pago recibido — activando tu acceso…","Payment received — activating your access…");\n'
         '      setTimeout(function(){pxPollPro(intentos+1);},Math.min(1000*Math.pow(2,intentos),8000));\n'
@@ -6047,7 +6093,9 @@ def build_precios_page():
         # configurado; si no, cae al mensual en vez de abrir un checkout
         # vacio.
         '  var precio=(anual&&PADDLE_PRICE_ID_ANNUAL)?PADDLE_PRICE_ID_ANNUAL:PADDLE_PRICE_ID;\n'
-        '  pxTrack("checkout_opened",{plan:(precio===PADDLE_PRICE_ID_ANNUAL)?"annual":"monthly"});\n'
+        '  var plan=(precio===PADDLE_PRICE_ID_ANNUAL)?"annual":"monthly";\n'
+        '  pxTrack("checkout_opened",{plan:plan});\n'
+        '  try{localStorage.setItem(PX_PLAN_KEY,plan);}catch(e){}\n'
         '  Paddle.Checkout.open({\n'
         '    items:[{priceId:precio,quantity:1}],\n'
         '    customData:{user_id:_pxUser.id},\n'
@@ -6130,8 +6178,6 @@ si el precio vigente la alcanza (ver build_precios_page).
 """
 PRECIO_LISTA_USD = "19"
 
-LEGAL_CONTACT_EMAIL = "soporte@lionsystems.com.mx"
-
 # Identidad legal que se publica en terminos.html y privacidad.html.
 #
 # El titular es una persona fisica que opera con el nombre comercial "Lion
@@ -6146,15 +6192,96 @@ LEGAL_CONTACT_EMAIL = "soporte@lionsystems.com.mx"
 # 2026-10-01. El mismo texto se publico ese dia en www.lionsystems.com.mx.
 #
 # El mismo patron ya existe en Form2PDF: `src/modules/legal/entity.ts`, un
-# unico punto de verdad para la identidad legal.
-LEGAL_ENTITY_NAME_ES = "David León Gómez (RFC LEGD870627K11), bajo el nombre comercial Lion Systems"
-LEGAL_ENTITY_NAME_EN = "David León Gómez (RFC LEGD870627K11), under the trade name Lion Systems"
+# unico punto de verdad para la identidad legal. Misma forma aqui (issue
+# #232, T1): las tres paginas legales se renderizan desde este dict y no
+# hay identidad escrita a mano fuera de el.
+LEGAL_ENTITY = {
+    # Nombre fiscal tal cual la Constancia de Situacion Fiscal: mayusculas
+    # y sin acentos. No se publica solo; va dentro de `responsable`.
+    "nombre": "DAVID LEON GOMEZ",
+    "nombre_comercial": "Lion Systems",
+    "responsable": "David León Gómez (RFC LEGD870627K11), bajo el nombre comercial Lion Systems",
+    "responsable_en": "David León Gómez (RFC LEGD870627K11), under the trade name Lion Systems",
+    # None hasta que el titular elija un domicilio de notificaciones (no
+    # el fiscal, que es particular y publicarlo es irreversible). Las
+    # paginas lo omiten en vez de publicar un marcador.
+    "domicilio": None,
+    "rfc": "LEGD870627K11",
+    "correo_privacidad": "privacidad@lionsystems.com.mx",
+    "correo_soporte": "soporte@lionsystems.com.mx",
+    "sitio": "https://prompts.lionsystems.com.mx",
+    "producto": "AI-SDLC Pro",
+    # Encargados reales, verificables en el codigo de este repo: solo los
+    # que este producto usa. Se listan en privacidad.html tal cual.
+    "encargados": (
+        {"nombre": "Paddle",
+         "es": "comerciante registrado (Merchant of Record): procesa el pago, emite el recibo y "
+               "aplica los impuestos; nunca vemos tu tarjeta.",
+         "en": "merchant of record: processes the payment, issues the receipt and applies taxes; "
+               "we never see your card."},
+        {"nombre": "Supabase",
+         "es": "autenticación y base de datos donde vive tu cuenta y el estado de tu suscripción.",
+         "en": "authentication and the database holding your account and subscription status."},
+        {"nombre": "GitHub",
+         "es": "únicamente como proveedor de identidad (OAuth) al iniciar sesión.",
+         "en": "solely as identity provider (OAuth) when you sign in."},
+        {"nombre": "Google Analytics",
+         "es": "métricas de uso agregadas del sitio.",
+         "en": "aggregated site usage metrics."},
+        {"nombre": "Google Cloud",
+         "es": "hospedaje del sitio.",
+         "en": "site hosting."},
+    ),
+    # Se actualiza a mano cuando cambie el contenido legal, no en cada
+    # build: una fecha que se mueve sola no significa nada para nadie.
+    "actualizado": "18 de octubre de 2026",
+    "actualizado_en": "October 18, 2026",
+}
 
-# Fecha de última actualización que se muestra en las tres páginas.
-# Se actualiza a mano cuando cambie el contenido legal, no en cada
-# build: una fecha que se mueve sola no significa nada para nadie.
-LEGAL_LAST_UPDATED_ES = "1 de octubre de 2026"
-LEGAL_LAST_UPDATED_EN = "October 1, 2026"
+# Alias derivados del dict: siguen siendo el nombre que usan las paginas y
+# las pruebas, pero ya no son una segunda copia de la identidad.
+LEGAL_CONTACT_EMAIL = LEGAL_ENTITY["correo_soporte"]
+LEGAL_PRIVACY_EMAIL = LEGAL_ENTITY["correo_privacidad"]
+LEGAL_ENTITY_NAME_ES = LEGAL_ENTITY["responsable"]
+LEGAL_ENTITY_NAME_EN = LEGAL_ENTITY["responsable_en"]
+LEGAL_LAST_UPDATED_ES = LEGAL_ENTITY["actualizado"]
+LEGAL_LAST_UPDATED_EN = LEGAL_ENTITY["actualizado_en"]
+
+# Impuestos y comprobantes (issue #232, T1). Un solo texto para precios,
+# terminos y reembolsos: Paddle es comerciante registrado, asi que el IVA
+# lo aplica Paddle segun el pais del comprador y el recibo lo emite
+# Paddle. Nosotros no timbramos CFDI -- decirlo evita solicitudes que no
+# podemos atender y contradicciones entre paginas.
+NOTA_IMPUESTOS_ES = (
+    'El precio se muestra <strong>antes de impuestos</strong>: Paddle, como comerciante registrado, '
+    'aplica el IVA o impuesto equivalente de tu país al momento del pago y lo desglosa en tu recibo. '
+    '<strong>No emitimos CFDI</strong>; el recibo que te envía Paddle es tu comprobante de pago.'
+)
+NOTA_IMPUESTOS_EN = (
+    'The price is shown <strong>before taxes</strong>: Paddle, as merchant of record, applies the VAT or '
+    'equivalent tax of your country at checkout and itemises it on your receipt. '
+    '<strong>We do not issue a CFDI</strong> (Mexican tax invoice); the receipt Paddle sends you is your '
+    'proof of payment.'
+)
+
+
+def _precio_meta_tag(precio):
+    """Etiqueta legible por maquina con el precio mensual publicado.
+
+    La lee scripts/verificar-precio-publicado.sh (smoke test de deploy.yml,
+    issue #232 T4) para comprobar que precios, terminos y reembolsos en
+    produccion dicen el mismo numero que PADDLE_PRICE_AMOUNT_USD. Buscar el
+    numero en la prosa seria fragil (el ancla "antes $19" tambien contiene
+    "9 USD"); una meta con nombre propio no."""
+    return '<meta name="precio-mensual-usd" content="' + precio + '">\n'
+
+
+def _domicilio_html():
+    """(es, en): frase del domicilio solo si existe; vacia si es None."""
+    d = LEGAL_ENTITY["domicilio"]
+    if not d:
+        return "", ""
+    return ", con domicilio en " + d, ", with address at " + d
 
 LEGAL_OUTPUT_FILES = {
     "terminos": Path(__file__).parent / "terminos.html",
@@ -6168,7 +6295,10 @@ def _legal_shell(slug, title_es, title_en, desc, h1_es, h1_en, body_html):
     que precios.html: detección de idioma síncrona en <head> (evita el
     parpadeo de idioma), tokens de color compartidos, botón de idioma y
     el mecanismo fw-lang-es/fw-lang-en."""
-    url = "https://prompts.lionsystems.com.mx/%s.html" % slug
+    url = LEGAL_ENTITY["sitio"] + "/%s.html" % slug
+    # Solo las paginas que citan el precio llevan la meta: son exactamente
+    # las que el smoke test compara contra PADDLE_PRICE_AMOUNT_USD.
+    precio_meta = _precio_meta_tag(precio_mensual_usd()) if slug in ("terminos", "reembolsos") else ""
     return (
         '<!DOCTYPE html>\n<html lang="es" data-lang="es">\n<head>\n'
         '<meta charset="UTF-8">\n'
@@ -6186,6 +6316,7 @@ def _legal_shell(slug, title_es, title_en, desc, h1_es, h1_en, body_html):
         '<meta name="robots" content="index,follow">\n'
         '<meta name="theme-color" content="#0f172a">\n'
         '<link rel="canonical" href="' + url + '">\n'
+        + precio_meta +
         '<link rel="alternate" hreflang="es" href="' + url + '">\n'
         '<link rel="alternate" hreflang="en" href="' + url + '">\n'
         '<link rel="alternate" hreflang="x-default" href="' + url + '">\n'
@@ -6343,6 +6474,7 @@ def build_terminos_page():
               'The Individual plan costs <strong>' + precio_mensual_usd() + ' USD per month</strong>. This is an introductory launch '
               'price and may change; if it does, we will notify you before it applies to your next charge '
               'and you may cancel without penalty.'),
+             ('p', NOTA_IMPUESTOS_ES, NOTA_IMPUESTOS_EN),
              ('p',
               'La suscripción se <strong>renueva automáticamente cada mes</strong> hasta que la canceles. '
               'Puedes cancelarla en cualquier momento y conservas el acceso hasta el final del periodo ya '
@@ -6443,25 +6575,41 @@ def build_privacidad_page():
     los encargados reales que se pueden verificar en el código:
     Supabase (auth + base de datos), Paddle (pagos), Google Analytics."""
     mail = LEGAL_CONTACT_EMAIL
+    mail_priv = LEGAL_PRIVACY_EMAIL
+    _dom_es, _dom_en = _domicilio_html()
+    # Lista de encargados renderizada desde LEGAL_ENTITY: si se agrega o
+    # quita un proveedor, se cambia ahi y la pagina lo refleja sola.
+    _enc_es = ['<strong>' + e['nombre'] + '</strong> — ' + e['es'] for e in LEGAL_ENTITY['encargados']]
+    _enc_en = ['<strong>' + e['nombre'] + '</strong> — ' + e['en'] for e in LEGAL_ENTITY['encargados']]
     body = (
         _lg_section(
             'Quién es el responsable', 'Who is the data controller',
             [('p',
-              f'<strong>{LEGAL_ENTITY_NAME_ES}</strong>'
+              f'<strong>{LEGAL_ENTITY_NAME_ES}</strong>{_dom_es}'
               ', es responsable del '
               'tratamiento de los datos personales que recabamos a través de '
-              'prompts.lionsystems.com.mx. Este aviso explica qué recabamos, para qué, con quién lo '
-              'compartimos y cómo ejercer tus derechos.',
-              f'<strong>{LEGAL_ENTITY_NAME_EN}</strong>'
+              'prompts.lionsystems.com.mx, conforme a la Ley Federal de Protección de Datos Personales '
+              'en Posesión de los Particulares (LFPDPPP). Este aviso explica qué recabamos, para qué, '
+              'con quién lo compartimos y cómo ejercer tus derechos.',
+              f'<strong>{LEGAL_ENTITY_NAME_EN}</strong>{_dom_en}'
               ', is the controller for the personal '
-              'data we collect through prompts.lionsystems.com.mx. This notice explains what we collect, '
-              'why, who we share it with and how to exercise your rights.')]
+              'data we collect through prompts.lionsystems.com.mx, under Mexico’s Federal Law on '
+              'Protection of Personal Data Held by Private Parties (LFPDPPP). This notice explains what '
+              'we collect, why, who we share it with and how to exercise your rights.'),
+             ('p',
+              'Para cualquier asunto relacionado con este aviso escribe a '
+              '<a href="mailto:' + mail_priv + '">' + mail_priv + '</a>. Para soporte del producto: '
+              '<a href="mailto:' + mail + '">' + mail + '</a>.',
+              'For anything related to this notice, email '
+              '<a href="mailto:' + mail_priv + '">' + mail_priv + '</a>. For product support: '
+              '<a href="mailto:' + mail + '">' + mail + '</a>.')]
         )
         + _lg_section(
             'Qué datos recabamos', 'What data we collect',
             [('ul',
-              ['<strong>Si no creas cuenta:</strong> un contador local en tu navegador de cuántos prompts '
-               'has copiado, y métricas de uso agregadas y anónimas. No te identificamos.',
+              ['<strong>Si no creas cuenta:</strong> tus proyectos, variables y progreso se guardan '
+               'únicamente en el almacenamiento local de tu navegador y no nos los envías; solo '
+               'recibimos métricas de uso agregadas y anónimas. No te identificamos.',
                '<strong>Al iniciar sesión con GitHub:</strong> tu identificador de usuario y tu correo '
                'electrónico, que GitHub nos comparte al autorizar. No obtenemos tu contraseña de GitHub ni '
                'accedemos a tus repositorios.',
@@ -6471,9 +6619,9 @@ def build_privacidad_page():
                'tu periodo de prueba.',
                '<strong>Si te suscribes:</strong> el estado de tu suscripción (activa, cancelada, vencida) '
                'y el identificador que nos da Paddle.'],
-              ['<strong>If you do not create an account:</strong> a local counter in your browser of how '
-               'many prompts you have copied, plus aggregated, anonymous usage metrics. We do not identify '
-               'you.',
+              ['<strong>If you do not create an account:</strong> your projects, variables and progress are '
+               'stored only in your browser’s local storage and are not sent to us; we only receive '
+               'aggregated, anonymous usage metrics. We do not identify you.',
                '<strong>When you sign in with GitHub:</strong> your user identifier and email address, '
                'which GitHub shares with us upon authorisation. We do not receive your GitHub password and '
                'do not access your repositories.',
@@ -6521,27 +6669,15 @@ def build_privacidad_page():
               'nuestra cuenta son:',
               'We do not sell your data or share it with advertisers. The processors handling data on our '
               'behalf are:'),
-             ('ul',
-              ['<strong>Supabase</strong> — autenticación y base de datos donde vive tu cuenta y el estado '
-               'de tu suscripción.',
-               '<strong>Paddle</strong> — procesamiento del pago, como se describe arriba.',
-               '<strong>GitHub</strong> — únicamente como proveedor de identidad al iniciar sesión.',
-               '<strong>Google Analytics</strong> — métricas de uso agregadas del sitio.',
-               '<strong>Google Cloud</strong> — hospedaje del sitio.'],
-              ['<strong>Supabase</strong> — authentication and the database holding your account and '
-               'subscription status.',
-               '<strong>Paddle</strong> — payment processing, as described above.',
-               '<strong>GitHub</strong> — solely as identity provider when you sign in.',
-               '<strong>Google Analytics</strong> — aggregated site usage metrics.',
-               '<strong>Google Cloud</strong> — site hosting.'])]
+             ('ul', _enc_es, _enc_en)]
         )
         + _lg_section(
             'Cookies y almacenamiento local', 'Cookies and local storage',
             [('p',
-              'Usamos el almacenamiento local de tu navegador para recordar tu idioma, tu contador de '
-              'copias y tu sesión. Google Analytics instala sus propias cookies de medición. Puedes borrar '
+              'Usamos el almacenamiento local de tu navegador para recordar tu idioma, tus proyectos y '
+              'tu sesión. Google Analytics instala sus propias cookies de medición. Puedes borrar '
               'todo esto desde tu navegador; si lo haces, perderás la sesión y las preferencias guardadas.',
-              'We use your browser’s local storage to remember your language, your copy counter and '
+              'We use your browser’s local storage to remember your language, your projects and '
               'your session. Google Analytics sets its own measurement cookies. You can clear all of this '
               'from your browser; if you do, you will lose your session and saved preferences.')]
         )
@@ -6567,10 +6703,12 @@ def build_privacidad_page():
               '<strong>erasure</strong> or <strong>objection</strong> regarding the processing of your data, '
               'and withdraw your consent.'),
              ('p',
-              'Escríbenos a <a href="mailto:' + mail + '">' + mail + '</a> desde el correo de tu cuenta, '
-              'indicando qué derecho quieres ejercer. Respondemos dentro de 20 días hábiles.',
-              'Email us at <a href="mailto:' + mail + '">' + mail + '</a> from your account address, stating '
-              'which right you wish to exercise. We respond within 20 business days.')]
+              'Escríbenos a <a href="mailto:' + mail_priv + '">' + mail_priv + '</a> desde el correo de tu '
+              'cuenta, indicando qué derecho quieres ejercer y un medio para responderte. Respondemos '
+              'dentro de 20 días hábiles. Si consideras que tu derecho no fue atendido, puedes acudir al INAI.',
+              'Email us at <a href="mailto:' + mail_priv + '">' + mail_priv + '</a> from your account '
+              'address, stating which right you wish to exercise and how to reach you. We respond within '
+              '20 business days. If you believe your request was not honoured, you may turn to the INAI.')]
         )
         + _lg_section(
             'Cambios a este aviso', 'Changes to this notice',
@@ -6586,8 +6724,8 @@ def build_privacidad_page():
     return _legal_shell(
         'privacidad',
         'Aviso de privacidad — AI-SDLC Pro', 'Privacy Notice — AI-SDLC Pro',
-        'Aviso de privacidad de AI-SDLC Pro: qué datos recabamos, encargados (Supabase, Paddle, GitHub), '
-        'y cómo ejercer tus derechos ARCO.',
+        'Aviso de privacidad de AI-SDLC Pro: qué datos recabamos, encargados ('
+        + ', '.join(e['nombre'] for e in LEGAL_ENTITY['encargados']) + ') y cómo ejercer tus derechos ARCO.',
         'Aviso de privacidad', 'Privacy Notice',
         body,
     )
@@ -6671,6 +6809,15 @@ def build_reembolsos_page():
               'the service was unavailable due to a failure on our side. Email us and we will sort it out.')]
         )
         + _lg_section(
+            'Impuestos y comprobantes', 'Taxes and receipts',
+            [('p', NOTA_IMPUESTOS_ES, NOTA_IMPUESTOS_EN),
+             ('p',
+              'Si se aprueba un reembolso, Paddle devuelve el importe completo que pagaste, impuestos '
+              'incluidos, y actualiza el recibo correspondiente.',
+              'If a refund is approved, Paddle returns the full amount you paid, taxes included, and '
+              'updates the corresponding receipt.')]
+        )
+        + _lg_section(
             'Contacto', 'Contact',
             [('p',
               'Todo lo relacionado con reembolsos: <a href="mailto:' + mail + '">' + mail + '</a>. '
@@ -6692,6 +6839,12 @@ def build_reembolsos_page():
 
 
 def build():
+    # Guarda T4 (issue #232): validar la configuracion de cobro ANTES de
+    # escribir nada. Antes se validaba al final, al generar precios.html,
+    # y un build con centinela en produccion dejaba index.html ya escrito
+    # y precios.html viejo: artefactos a medias que el deploy copiaba.
+    paddle_public_config()
+
     # ── leer framework en ambos idiomas ──
     fw_file_es = PROMPTS_DIR / "00-framework.md"
     fw_file_en = PROMPTS_DIR / "00-framework.en.md"
@@ -8003,4 +8156,10 @@ def build():
 
 
 if __name__ == "__main__":
-    build()
+    try:
+        build()
+    except ValueError as exc:
+        # Codigo de salida distinto de cero: deploy.yml corre `python
+        # build.py` como primer gate y debe detenerse aqui, no publicar.
+        print(f"ERROR: {exc}", file=sys.stderr)
+        sys.exit(1)

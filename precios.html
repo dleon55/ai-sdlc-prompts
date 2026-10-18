@@ -9,6 +9,7 @@
 <meta name="robots" content="index,follow">
 <meta name="theme-color" content="#0f172a">
 <link rel="canonical" href="https://prompts.lionsystems.com.mx/precios.html">
+<meta name="precio-mensual-usd" content="1">
 <link rel="alternate" hreflang="es" href="https://prompts.lionsystems.com.mx/precios.html">
 <link rel="alternate" hreflang="en" href="https://prompts.lionsystems.com.mx/precios.html">
 <link rel="alternate" hreflang="x-default" href="https://prompts.lionsystems.com.mx/precios.html">
@@ -84,6 +85,8 @@ h1{font-size:1.75rem;font-weight:700;margin-bottom:.5rem;}
     <h2><span class="px-badge fw-lang-es">Plan Pro</span><span class="px-badge fw-lang-en">Pro plan</span><span class="fw-lang-es">&nbsp;$1 USD/mes</span><span class="fw-lang-en">&nbsp;$1 USD/month</span><span class="px-anchor fw-lang-es">&nbsp;antes $19 USD</span><span class="px-anchor fw-lang-en">&nbsp;was $19 USD</span></h2>
     <p class="fw-lang-es">Precio de lista: <strong>$19 USD al mes</strong>. Hoy pagas <strong>$1 USD al mes</strong> — y ese precio se te respeta mientras no canceles. Acceso Pro ilimitado (proyectos, personalización, resultados de IA) sin muro de prueba. Copiar prompts es y seguirá siendo gratis para todos, con o sin Pro. Cualquier cambio de precio se comunicará antes de que aplique a tu siguiente renovación y podrás cancelar sin penalización.</p>
     <p class="fw-lang-en">List price: <strong>$19 USD per month</strong>. Today you pay <strong>$1 USD per month</strong> — and that price stays yours for as long as you keep the subscription. Unlimited Pro access (projects, personalization, AI output storage) with no trial wall. Copying prompts is and will remain free for everyone, Pro or not. Any price change will be communicated before it applies to your next renewal, and you may cancel without penalty.</p>
+    <p class="px-foot fw-lang-es">El precio se muestra <strong>antes de impuestos</strong>: Paddle, como comerciante registrado, aplica el IVA o impuesto equivalente de tu país al momento del pago y lo desglosa en tu recibo. <strong>No emitimos CFDI</strong>; el recibo que te envía Paddle es tu comprobante de pago.</p>
+    <p class="px-foot fw-lang-en">The price is shown <strong>before taxes</strong>: Paddle, as merchant of record, applies the VAT or equivalent tax of your country at checkout and itemises it on your receipt. <strong>We do not issue a CFDI</strong> (Mexican tax invoice); the receipt Paddle sends you is your proof of payment.</p>
     <button id="px-subscribe-btn" class="px-cta" style="border:none;cursor:pointer;" onclick="pxStartCheckout()"><span class="fw-lang-es">Suscribirme</span><span class="fw-lang-en">Subscribe</span></button>
     <p class="px-foot fw-lang-es">La suscripción se renueva mensualmente hasta que la canceles. Puedes cancelarla desde el enlace de gestión incluido en el recibo de Paddle o solicitándola a <a href="mailto:soporte@lionsystems.com.mx">soporte@lionsystems.com.mx</a>. Consulta <a href="/terminos.html" onclick="pxTrack('legal_policy_opened',{policy:'terms'});">términos</a>, <a href="/privacidad.html" onclick="pxTrack('legal_policy_opened',{policy:'privacy'});">privacidad</a> y <a href="/reembolsos.html" onclick="pxTrack('legal_policy_opened',{policy:'refunds'});">reembolsos</a> antes de pagar.</p>
     <p class="px-foot fw-lang-en">The subscription renews monthly until you cancel it. You can cancel through the management link in your Paddle receipt or by requesting it at <a href="mailto:soporte@lionsystems.com.mx">soporte@lionsystems.com.mx</a>. Review the <a href="/terminos.html" onclick="pxTrack('legal_policy_opened',{policy:'terms'});">terms</a>, <a href="/privacidad.html" onclick="pxTrack('legal_policy_opened',{policy:'privacy'});">privacy notice</a>, and <a href="/reembolsos.html" onclick="pxTrack('legal_policy_opened',{policy:'refunds'});">refund policy</a> before paying.</p>
@@ -93,7 +96,7 @@ h1{font-size:1.75rem;font-weight:700;margin-bottom:.5rem;}
     <h2><span class="fw-lang-es">¿Necesitas implementación empresarial?</span><span class="fw-lang-en">Need enterprise implementation?</span></h2>
     <p class="fw-lang-es">Lion Systems ofrece auditoría de arquitectura, implementación y soporte especializado bajo cotización.</p>
     <p class="fw-lang-en">Lion Systems provides architecture audits, implementation, and specialized support by quotation.</p>
-    <a class="px-cta" href="https://www.lionsystems.com.mx/contactus?subject=ai-sdlc-pro-product-auditoria" target="_blank" rel="noopener" onclick="pxTrack('b2b_audit_cta_click',{source:'pricing'});"><span class="fw-lang-es">Solicitar auditoría</span><span class="fw-lang-en">Request an audit</span></a>
+    <a class="px-cta" href="https://www.lionsystems.com.mx/contactus?subject=ai-sdlc-pro-product-auditoria&amp;utm_source=ai-sdlc-pro&amp;utm_medium=cta&amp;utm_product=ai-sdlc-pro" target="_blank" rel="noopener" onclick="pxTrack('b2b_audit_cta_click',{source:'pricing'});"><span class="fw-lang-es">Solicitar auditoría</span><span class="fw-lang-en">Request an audit</span></a>
   </div>
   <a class="px-cta fw-lang-es" href="/">Volver a la biblioteca de prompts</a>
   <a class="px-cta fw-lang-en" href="/">Back to the prompt library</a>
@@ -121,6 +124,9 @@ var PADDLE_CLIENT_TOKEN="PENDIENTE_CONFIGURAR";
 var PADDLE_PRICE_ID="PENDIENTE_CONFIGURAR";
 var PADDLE_PRICE_ID_ANNUAL="";
 var PADDLE_ENVIRONMENT="sandbox";
+var PADDLE_PRICE_AMOUNT_USD="1";
+var PADDLE_PRICE_AMOUNT_ANNUAL_USD="";
+var PX_PLAN_KEY="AI_SDLC_checkout_plan";
 var _pxUser=null;
 function pxTrack(name,params){if(typeof gtag==="function")gtag("event",name,params||{});}
 function pxSetStatus(es,en){
@@ -147,10 +153,18 @@ function pxShowPro(){
   });
   pxSetStatus("Ya tienes acceso Pro activo — ¡gracias!","You already have active Pro access — thank you!");
 }
+function pxTrackPurchase(){
+  var plan="monthly";
+  try{if(localStorage.getItem(PX_PLAN_KEY)==="annual")plan="annual";localStorage.removeItem(PX_PLAN_KEY);}catch(e){}
+  var monto=(plan==="annual"&&PADDLE_PRICE_AMOUNT_ANNUAL_USD)?PADDLE_PRICE_AMOUNT_ANNUAL_USD:PADDLE_PRICE_AMOUNT_USD;
+  var valor=parseFloat(monto)||0;
+  pxTrack("purchase",{value:valor,currency:"USD",items:[{item_id:"ai-sdlc-pro-"+plan,item_name:"AI-SDLC Pro",price:valor,quantity:1}]});
+  try{history.replaceState(null,"",window.location.pathname);}catch(e){}
+}
 function pxPollPro(intentos){
   var c=pxClient();if(!c||!_pxUser)return;
   c.rpc("check_trial_status").then(function(r){
-    if(r&&r.data&&r.data.subscribed){pxShowPro();return;}
+    if(r&&r.data&&r.data.subscribed){pxTrackPurchase();pxShowPro();return;}
     if(intentos<6){
       pxSetStatus("Pago recibido — activando tu acceso…","Payment received — activating your access…");
       setTimeout(function(){pxPollPro(intentos+1);},Math.min(1000*Math.pow(2,intentos),8000));
@@ -204,7 +218,9 @@ function pxStartCheckout(anual){
   }
   pxTrack("checkout_open_requested",{source:"pricing"});
   var precio=(anual&&PADDLE_PRICE_ID_ANNUAL)?PADDLE_PRICE_ID_ANNUAL:PADDLE_PRICE_ID;
-  pxTrack("checkout_opened",{plan:(precio===PADDLE_PRICE_ID_ANNUAL)?"annual":"monthly"});
+  var plan=(precio===PADDLE_PRICE_ID_ANNUAL)?"annual":"monthly";
+  pxTrack("checkout_opened",{plan:plan});
+  try{localStorage.setItem(PX_PLAN_KEY,plan);}catch(e){}
   Paddle.Checkout.open({
     items:[{priceId:precio,quantity:1}],
     customData:{user_id:_pxUser.id},
