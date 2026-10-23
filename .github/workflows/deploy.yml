@@ -458,10 +458,13 @@ jobs:
       # Paddle. build.py ya los ata en el artefacto; esto comprueba lo que
       # sirve nginx tras el reemplazo atomico, que es lo que lee el cliente.
       # El `|| '1'` replica el valor por defecto de build.py cuando la
-      # variable no esta definida, para no comparar contra vacio.
+      # variable no esta definida, para no comparar contra vacio. El anual
+      # va sin valor por defecto: vacio significa "no se vende anual", igual
+      # que en build.py. Mismas vars que "Rebuild deploy artifacts".
       - name: Smoke test precio publicado vs PADDLE_PRICE_AMOUNT_USD
         env:
           PADDLE_PRICE_AMOUNT_USD: ${{ vars.PADDLE_PRICE_AMOUNT_USD || '1' }}
+          PADDLE_PRICE_AMOUNT_ANNUAL_USD: ${{ vars.PADDLE_PRICE_AMOUNT_ANNUAL_USD }}
           SITIO_URL: https://prompts.lionsystems.com.mx
         run: |
           chmod +x scripts/verificar-precio-publicado.sh

@@ -5762,7 +5762,7 @@ def build_precios_page():
         '<meta name="robots" content="index,follow">\n'
         '<meta name="theme-color" content="#0f172a">\n'
         '<link rel="canonical" href="https://prompts.lionsystems.com.mx/precios.html">\n'
-        + _precio_meta_tag(_precio) +
+        + _precio_meta_tag(_precio) + _precio_anual_meta_tag(_anual) +
         '<link rel="alternate" hreflang="es" href="https://prompts.lionsystems.com.mx/precios.html">\n'
         '<link rel="alternate" hreflang="en" href="https://prompts.lionsystems.com.mx/precios.html">\n'
         '<link rel="alternate" hreflang="x-default" href="https://prompts.lionsystems.com.mx/precios.html">\n'
@@ -6280,6 +6280,15 @@ def _precio_meta_tag(precio):
     numero en la prosa seria fragil (el ancla "antes $19" tambien contiene
     "9 USD"); una meta con nombre propio no."""
     return '<meta name="precio-mensual-usd" content="' + precio + '">\n'
+
+
+def _precio_anual_meta_tag(anual):
+    """Igual que _precio_meta_tag para el plan anual, solo en precios.html
+    (la unica pagina que lo cita) y solo si hay plan anual configurado: el
+    smoke test lo compara con PADDLE_PRICE_AMOUNT_ANNUAL_USD."""
+    if not anual:
+        return ""
+    return '<meta name="precio-anual-usd" content="' + anual + '">\n'
 
 
 def _domicilio_html():

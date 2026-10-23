@@ -176,6 +176,50 @@ def test_price_smoke_script_passes_and_fails_for_real(tmp_path, monkeypatch):
     assert "no declara" in viejo.stdout
 
 
+@pytest.mark.skipif(shutil.which("curl") is None, reason="el script usa curl")
+def test_price_smoke_script_also_checks_the_annual_price(tmp_path, monkeypatch):
+    """Producción vende también el plan anual: su precio publicado debe ser
+    el que cobra Paddle (PADDLE_PRICE_AMOUNT_ANNUAL_USD), con la misma
+    tolerancia a espacios que tiene build.py al leer la variable."""
+    monkeypatch.setenv("PADDLE_PRICE_AMOUNT_USD", "9")
+    monkeypatch.setenv("PADDLE_PRICE_ID_ANNUAL", "pri_02anual")
+    monkeypatch.setenv("PADDLE_PRICE_AMOUNT_ANNUAL_USD", "90")
+    paginas = _paginas_en_memoria()
+    assert '<meta name="precio-anual-usd" content="90">' in paginas["precios"]
+    for slug in ("terminos", "reembolsos", "privacidad"):
+        assert "precio-anual-usd" not in paginas[slug], slug
+    for slug in PAGINAS_CON_PRECIO:
+        (tmp_path / f"{slug}.html").write_text(paginas[slug], encoding="utf-8")
+
+    def correr(mensual, anual):
+        env = dict(os.environ, PADDLE_PRICE_AMOUNT_USD=mensual, SITIO_URL=tmp_path.as_uri())
+        env.pop("PADDLE_PRICE_AMOUNT_ANNUAL_USD", None)
+        if anual is not None:
+            env["PADDLE_PRICE_AMOUNT_ANNUAL_USD"] = anual
+        return subprocess.run(["bash", str(SCRIPT)], env=env, capture_output=True, text=True)
+
+    ok = correr("9", "90")
+    assert ok.returncode == 0, ok.stdout + ok.stderr
+    assert "anual" in ok.stdout
+    # Espacios en la variable de GitHub: build.py los recorta; el smoke
+    # también, o fallaría un deploy correcto.
+    assert correr(" 9 ", " 90\n").returncode == 0
+
+    mal = correr("9", "80")
+    assert mal.returncode == 1
+    assert "80 USD" in mal.stdout
+
+    # La página ofrece un anual que la configuración ya no cobra.
+    sin_anual = correr("9", "")
+    assert sin_anual.returncode == 1
+    assert "precio-anual-usd" in sin_anual.stdout
+
+    # La configuración cobra un anual que la página no publica.
+    viejo = paginas["precios"].replace('<meta name="precio-anual-usd" content="90">\n', "")
+    (tmp_path / "precios.html").write_text(viejo, encoding="utf-8")
+    assert correr("9", "90").returncode == 1
+
+
 def test_price_smoke_script_is_executable_and_wired_into_deploy():
     assert SCRIPT.stat().st_mode & stat.S_IXUSR, "scripts/verificar-precio-publicado.sh sin bit de ejecución"
     paso = WORKFLOW.index("scripts/verificar-precio-publicado.sh")
@@ -187,6 +231,7 @@ def test_price_smoke_script_is_executable_and_wired_into_deploy():
     assert paso < WORKFLOW.index("Cleanup SSH key")
     bloque = WORKFLOW[WORKFLOW.index("Smoke test precio publicado"):paso]
     assert "vars.PADDLE_PRICE_AMOUNT_USD" in bloque
+    assert "PADDLE_PRICE_AMOUNT_ANNUAL_USD: ${{ vars.PADDLE_PRICE_AMOUNT_ANNUAL_USD }}" in bloque
     assert "SITIO_URL: https://prompts.lionsystems.com.mx" in bloque
 
 

@@ -56,7 +56,14 @@ cambia lo que se cobra por accidente.
 
    El script lee la etiqueta `<meta name="precio-mensual-usd">` que
    `build.py` emite en esas tres páginas (y solo en esas) y además exige
-   que el número aparezca en el texto visible.
+   que el número aparezca en el texto visible. Con plan anual, compara
+   también `<meta name="precio-anual-usd">` de `precios.html` con
+   `PADDLE_PRICE_AMOUNT_ANNUAL_USD` (vacía = sin plan anual, y entonces la
+   página no debe declararlo):
+
+   ```bash
+   PADDLE_PRICE_AMOUNT_USD=9 PADDLE_PRICE_AMOUNT_ANNUAL_USD=90 scripts/verificar-precio-publicado.sh
+   ```
 
 Las tres páginas dicen también que el precio es **antes de impuestos**:
 Paddle aplica el IVA del país del comprador y emite el recibo; no se emite
