@@ -45,9 +45,16 @@ export interface OpcionesAlertador {
   log?: (mensaje: string, datos: Record<string, unknown>) => void;
   /** Slug que identifica al producto en un canal compartido. */
   producto?: string;
+  /** Tope del POST en ms. Por defecto TIMEOUT_POST_MS. */
+  timeoutMs?: number;
 }
 
 export const VENTANA_DEDUP_MS = 60 * 60 * 1000;
+
+// Paddle da unos 5 s para responder al webhook y `alertar` se espera antes
+// de responder: un destino colgado (DNS, IP que descarta paquetes) sin tope
+// convertia un evento valido en un timeout que Paddle marca como fallido.
+export const TIMEOUT_POST_MS = 2500;
 
 // Claves que jamás deben viajar en una alerta aunque un llamador las pase
 // por descuido. Se filtra por nombre y no por valor porque el valor de un
@@ -79,6 +86,12 @@ export function crearAlertador(opciones: OpcionesAlertador = {}) {
   const ahora = opciones.ahora ?? (() => Date.now());
   const log = opciones.log ?? ((mensaje, datos) => console.error(mensaje, JSON.stringify(datos)));
   const producto = opciones.producto ?? "ai-sdlc-pro";
+  const timeoutMs = opciones.timeoutMs ?? TIMEOUT_POST_MS;
+  // La URL de un incoming webhook (Slack, Discord) es una credencial: basta
+  // para publicar en el canal. El fetch de Deno la incluye en sus mensajes
+  // de error, asi que se tacha antes de escribir cualquier error al log.
+  const sinUrl = (mensaje: string) =>
+    webhookUrl ? mensaje.split(webhookUrl).join("[ALERTAS_WEBHOOK_URL]") : mensaje;
   const recientes = new Map<string, number>();
 
   return async function alertar(
@@ -118,6 +131,7 @@ export function crearAlertador(opciones: OpcionesAlertador = {}) {
             text: resumen,
             content: resumen,
           }),
+          signal: AbortSignal.timeout(timeoutMs),
         });
         if (!respuesta.ok) {
           log("ALERTA webhook respondió con error", { status: respuesta.status, clave: entrada.clave });
@@ -125,13 +139,13 @@ export function crearAlertador(opciones: OpcionesAlertador = {}) {
         }
         return "enviada";
       } catch (error) {
-        log("ALERTA webhook inalcanzable", { clave: entrada.clave, error: mensajeDe(error) });
+        log("ALERTA webhook inalcanzable", { clave: entrada.clave, error: sinUrl(mensajeDe(error)) });
         return "fallo_webhook";
       }
     } catch (error) {
       // Último recurso: que nada de lo anterior tumbe al llamador.
       try {
-        console.error("alertar() falló", mensajeDe(error));
+        console.error("alertar() falló", sinUrl(mensajeDe(error)));
       } catch {
         // ignorado a propósito
       }

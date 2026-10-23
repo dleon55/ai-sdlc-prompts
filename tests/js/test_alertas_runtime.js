@@ -151,6 +151,51 @@ const modulo = pathToFileURL(
     assert(!peticiones[0].includes("whsec_x"), "el secreto no debe salir en el POST");
   }
 
+  // ── 6. Un destino que no responde no retiene al webhook ──
+  //
+  // Paddle da unos 5 s para responder; `alertar` se espera ANTES de
+  // responder (y antes del RPC en adjustment.created). Sin limite, un
+  // destino colgado convertia un evento valido en un timeout que Paddle
+  // marca como fallido y reintenta.
+  {
+    let senal = null;
+    const colgado = crearAlertador({
+      webhookUrl: "https://hooks.example/abc",
+      fetchImpl: (url, init) => new Promise((_, rechazar) => {
+        senal = init.signal;
+        if (init.signal) init.signal.addEventListener("abort", () => rechazar(new Error("aborted")));
+      }),
+      log: () => {},
+      timeoutMs: 30,
+    });
+    const inicio = Date.now();
+    const r = await Promise.race([
+      colgado({ clave: "webhook_error", detalle: { event_id: "evt_10" } }),
+      new Promise((resolver) => setTimeout(() => resolver("colgado"), 2000)),
+    ]);
+    assert.strictEqual(r, "fallo_webhook", "un destino colgado debe abortarse, no esperarse para siempre");
+    assert(senal, "el POST debe llevar una AbortSignal");
+    assert(Date.now() - inicio < 1500);
+  }
+
+  // ── 7. La URL del destino es una credencial: nunca va al log ──
+  //
+  // El fetch de Deno incluye la URL en el mensaje de error ("error sending
+  // request for url (https://hooks.slack.com/services/...)"), y una URL de
+  // incoming webhook de Slack basta para publicar en el canal.
+  {
+    const URL_SECRETA = "https://hooks.slack.com/services/T000/B000/SECRETO123";
+    const logs = [];
+    const alertar = crearAlertador({
+      webhookUrl: URL_SECRETA,
+      fetchImpl: async () => { throw new TypeError(`error sending request for url (${URL_SECRETA}): dns error`); },
+      log: (m, d) => logs.push(m + " " + JSON.stringify(d)),
+    });
+    assert.strictEqual(await alertar({ clave: "webhook_error", detalle: { event_id: "evt_11" } }), "fallo_webhook");
+    assert(logs.length >= 2);
+    assert(!logs.join("\n").includes("SECRETO123"), "la URL del destino se filtro al log: " + logs.join("\n"));
+  }
+
   console.log("runtime alertas tests: ok");
 })().catch((err) => {
   console.error(err);

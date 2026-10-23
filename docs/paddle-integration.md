@@ -168,8 +168,10 @@ con el resumen, más `producto`, `clave`, `detalle` y `fecha`.
 Reglas: la misma clave + `event_id` no se repite durante una hora (los
 reintentos de Paddle no inundan el canal); el `detalle` nunca incluye el
 cuerpo del webhook, la firma ni ningún secreto (se filtran por nombre de
-clave); y `alertar()` nunca lanza — una alerta que tumba al webhook que la
-emite es peor que ninguna. Implementación en
+clave); la URL del destino nunca se escribe en el log (es una credencial);
+el `POST` se aborta a los 2.5 s para que un destino colgado no haga que
+Paddle dé el webhook por fallido; y `alertar()` nunca lanza — una alerta que
+tumba al webhook que la emite es peor que ninguna. Implementación en
 [`supabase/functions/paddle-webhook/alertas.ts`](../supabase/functions/paddle-webhook/alertas.ts),
 probada en Node con `node tests/js/test_alertas_runtime.js`.
 
