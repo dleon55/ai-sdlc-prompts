@@ -5998,13 +5998,19 @@ def build_precios_page():
         # checkout porque Paddle redirige y la pagina se recarga entera.
         # Sin transaction_id: el webhook es asincrono y la pagina no lo ve;
         # el valor sale de la config de precio, nunca de datos del usuario.
+        # La marca del plan es ademas la prueba de que ESTE navegador abrio
+        # un checkout: sin ella no se cuenta venta. Un ?checkout=success sin
+        # marca es un suscriptor que vuelve por el historial (antes de #232
+        # la URL nunca se limpiaba), un enlace compartido u otra pestaña que
+        # ya la conto. Se consume al leerla: una sola venta por checkout.
         'function pxTrackPurchase(){\n'
-        '  var plan="monthly";\n'
-        '  try{if(localStorage.getItem(PX_PLAN_KEY)==="annual")plan="annual";localStorage.removeItem(PX_PLAN_KEY);}catch(e){}\n'
+        '  var plan=null;\n'
+        '  try{plan=localStorage.getItem(PX_PLAN_KEY);localStorage.removeItem(PX_PLAN_KEY);}catch(e){}\n'
+        '  try{history.replaceState(null,"",window.location.pathname);}catch(e){}\n'
+        '  if(plan!=="monthly"&&plan!=="annual")return;\n'
         '  var monto=(plan==="annual"&&PADDLE_PRICE_AMOUNT_ANNUAL_USD)?PADDLE_PRICE_AMOUNT_ANNUAL_USD:PADDLE_PRICE_AMOUNT_USD;\n'
         '  var valor=parseFloat(monto)||0;\n'
         '  pxTrack("purchase",{value:valor,currency:"USD",items:[{item_id:"ai-sdlc-pro-"+plan,item_name:"AI-SDLC Pro",price:valor,quantity:1}]});\n'
-        '  try{history.replaceState(null,"",window.location.pathname);}catch(e){}\n'
         '}\n'
         'function pxPollPro(intentos){\n'
         '  var c=pxClient();if(!c||!_pxUser)return;\n'

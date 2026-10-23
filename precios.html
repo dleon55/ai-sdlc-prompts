@@ -154,12 +154,13 @@ function pxShowPro(){
   pxSetStatus("Ya tienes acceso Pro activo — ¡gracias!","You already have active Pro access — thank you!");
 }
 function pxTrackPurchase(){
-  var plan="monthly";
-  try{if(localStorage.getItem(PX_PLAN_KEY)==="annual")plan="annual";localStorage.removeItem(PX_PLAN_KEY);}catch(e){}
+  var plan=null;
+  try{plan=localStorage.getItem(PX_PLAN_KEY);localStorage.removeItem(PX_PLAN_KEY);}catch(e){}
+  try{history.replaceState(null,"",window.location.pathname);}catch(e){}
+  if(plan!=="monthly"&&plan!=="annual")return;
   var monto=(plan==="annual"&&PADDLE_PRICE_AMOUNT_ANNUAL_USD)?PADDLE_PRICE_AMOUNT_ANNUAL_USD:PADDLE_PRICE_AMOUNT_USD;
   var valor=parseFloat(monto)||0;
   pxTrack("purchase",{value:valor,currency:"USD",items:[{item_id:"ai-sdlc-pro-"+plan,item_name:"AI-SDLC Pro",price:valor,quantity:1}]});
-  try{history.replaceState(null,"",window.location.pathname);}catch(e){}
 }
 function pxPollPro(intentos){
   var c=pxClient();if(!c||!_pxUser)return;

@@ -185,6 +185,28 @@ const checkoutHabilitado = context.PADDLE_CLIENT_TOKEN !== "PENDIENTE_CONFIGURAR
   await flush();
   assert.strictEqual(context.dataLayer.filter(a => a[1] === "purchase").length, 0,
     "un suscriptor que visita precios no genera purchase");
+
+  // Un suscriptor que vuelve a ?checkout=success SIN haber abierto un
+  // checkout en este navegador (entrada vieja del historial -- antes de
+  // #232 la URL nunca se limpiaba --, un enlace compartido, otra pestaña
+  // que ya conto la venta) tampoco es una venta nueva. La marca del plan
+  // que deja pxStartCheckout es la prueba de que hubo un checkout aqui.
+  reset();
+  context.dataLayer.length = 0;
+  context.window.location.search = "?checkout=success";
+  stubSupabase = {
+    auth: { getSession: () => Promise.resolve({ data: { session: { user: { id: "u1" } } } }) },
+    rpc: () => Promise.resolve({ data: { subscribed: true } }),
+  };
+  context._pxClient = null;
+  urlTrasCompra = null;
+  context.pxInitAuth();
+  await flush();
+  assert.strictEqual(context.dataLayer.filter(a => a[1] === "purchase").length, 0,
+    "?checkout=success sin checkout abierto en este navegador no es una venta");
+  assert.strictEqual(urlTrasCompra, "/precios.html", "aun asi se limpia ?checkout=success");
+  assert.strictEqual(elements.get("px-subscribe-btn").style.display, "none", "y se muestra el estado Pro");
+  context.window.location.search = "";
   context.history.replaceState = () => {};
   // Las pruebas siguientes esperan el stub original (con signInWithOAuth).
   stubSupabase = stubInicial;
