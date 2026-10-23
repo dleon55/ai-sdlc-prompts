@@ -6585,7 +6585,7 @@ def build_terminos_page():
 
 
 def build_privacidad_page():
-    """Aviso de privacidad. Redactado para la LFPDPPP mexicana (derechos
+    """Aviso de privacidad. Redactado para la LFPDPPP mexicana de 2025 (derechos
     ARCO explícitos) porque LionSystems opera desde México, y listando a
     los encargados reales que se pueden verificar en el código:
     Supabase (auth + base de datos), Paddle (pagos), Google Analytics."""
@@ -6604,12 +6604,14 @@ def build_privacidad_page():
               ', es responsable del '
               'tratamiento de los datos personales que recabamos a través de '
               'prompts.lionsystems.com.mx, conforme a la Ley Federal de Protección de Datos Personales '
-              'en Posesión de los Particulares (LFPDPPP). Este aviso explica qué recabamos, para qué, '
+              'en Posesión de los Particulares publicada en el DOF el 20 de marzo de 2025. Este aviso '
+              'explica qué recabamos, para qué, '
               'con quién lo compartimos y cómo ejercer tus derechos.',
               f'<strong>{LEGAL_ENTITY_NAME_EN}</strong>{_dom_en}'
               ', is the controller for the personal '
               'data we collect through prompts.lionsystems.com.mx, under Mexico’s Federal Law on '
-              'Protection of Personal Data Held by Private Parties (LFPDPPP). This notice explains what '
+              'Protection of Personal Data Held by Private Parties published in the Official Gazette (DOF) '
+              'on March 20, 2025. This notice explains what '
               'we collect, why, who we share it with and how to exercise your rights.'),
              ('p',
               'Para cualquier asunto relacionado con este aviso escribe a '
@@ -6720,10 +6722,14 @@ def build_privacidad_page():
              ('p',
               'Escríbenos a <a href="mailto:' + mail_priv + '">' + mail_priv + '</a> desde el correo de tu '
               'cuenta, indicando qué derecho quieres ejercer y un medio para responderte. Respondemos '
-              'dentro de 20 días hábiles. Si consideras que tu derecho no fue atendido, puedes acudir al INAI.',
+              'dentro de 20 días hábiles. Si consideras que tu derecho no fue atendido, puedes acudir a la '
+              'Secretaría Anticorrupción y Buen Gobierno, autoridad competente en materia de protección de '
+              'datos personales en posesión de particulares.',
               'Email us at <a href="mailto:' + mail_priv + '">' + mail_priv + '</a> from your account '
               'address, stating which right you wish to exercise and how to reach you. We respond within '
-              '20 business days. If you believe your request was not honoured, you may turn to the INAI.')]
+              '20 business days. If you believe your request was not honoured, you may turn to the '
+              'Secretariat of Anti-Corruption and Good Governance (Secretaría Anticorrupción y Buen '
+              'Gobierno), the authority competent for personal data held by private parties.')]
         )
         + _lg_section(
             'Cambios a este aviso', 'Changes to this notice',

@@ -102,7 +102,26 @@ def test_legal_pages_render_responsable_processors_and_date():
         assert "<strong>" + encargado["nombre"] + "</strong> — " + encargado["en"] in privacidad
     assert e["correo_privacidad"] in privacidad
     assert e["correo_soporte"] in privacidad
-    assert "LFPDPPP" in privacidad
+    assert "Ley Federal de Protección de Datos Personales" in privacidad
+
+
+def test_privacy_notice_cites_the_2025_law_not_the_extinct_inai():
+    """La LFPDPPP de 2010 fue abrogada por la ley publicada en el DOF el 20 de
+    marzo de 2025, y el INAI se extinguió: sus funciones en datos en posesión
+    de particulares pasaron a la Secretaría Anticorrupción y Buen Gobierno.
+    Remitir al INAI o al Reglamento de la ley abrogada es afirmar algo falso."""
+    paginas = _paginas_en_memoria()
+    for slug, html in paginas.items():
+        for prohibido in ("INAI", "su Reglamento", "its Regulations", "Lineamientos del Aviso"):
+            assert prohibido not in html, f"{slug}: cita {prohibido!r}"
+    for slug in ("privacidad", "terminos", "reembolsos"):
+        disco = _read(slug + ".html")
+        assert "INAI" not in disco and "su Reglamento" not in disco, f"{slug}.html en disco"
+    privacidad = paginas["privacidad"]
+    assert "publicada en el DOF el 20 de marzo de 2025" in privacidad
+    assert "published in the Official Gazette (DOF) on March 20, 2025" in privacidad
+    assert "Secretaría Anticorrupción y Buen Gobierno" in privacidad
+    assert "Secretariat of Anti-Corruption and Good Governance" in privacidad
 
 
 def test_privacy_notice_no_longer_claims_a_local_copy_counter():
