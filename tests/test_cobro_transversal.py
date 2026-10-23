@@ -217,9 +217,9 @@ def test_price_smoke_script_also_checks_the_annual_price(tmp_path, monkeypatch):
     monkeypatch.setenv("PADDLE_PRICE_ID_ANNUAL", "pri_02anual")
     monkeypatch.setenv("PADDLE_PRICE_AMOUNT_ANNUAL_USD", "90")
     paginas = _paginas_en_memoria()
-    assert '<meta name="precio-anual-usd" content="90">' in paginas["precios"]
-    for slug in ("terminos", "reembolsos", "privacidad"):
-        assert "precio-anual-usd" not in paginas[slug], slug
+    for slug in PAGINAS_CON_PRECIO:
+        assert '<meta name="precio-anual-usd" content="90">' in paginas[slug], slug
+    assert "precio-anual-usd" not in paginas["privacidad"]
     for slug in PAGINAS_CON_PRECIO:
         (tmp_path / f"{slug}.html").write_text(paginas[slug], encoding="utf-8")
 
@@ -246,10 +246,86 @@ def test_price_smoke_script_also_checks_the_annual_price(tmp_path, monkeypatch):
     assert sin_anual.returncode == 1
     assert "precio-anual-usd" in sin_anual.stdout
 
-    # La configuración cobra un anual que la página no publica.
+    # La configuración cobra un anual que la página no publica. Se prueba
+    # en términos, que antes de #236 ni siquiera se revisaba.
+    viejo = paginas["terminos"].replace('<meta name="precio-anual-usd" content="90">\n', "")
+    (tmp_path / "terminos.html").write_text(viejo, encoding="utf-8")
+    sin_meta = correr("9", "90")
+    assert sin_meta.returncode == 1
+    assert "terminos.html publica precio-anual-usd=(ninguno)" in sin_meta.stdout
+    (tmp_path / "terminos.html").write_text(paginas["terminos"], encoding="utf-8")
+
     viejo = paginas["precios"].replace('<meta name="precio-anual-usd" content="90">\n', "")
     (tmp_path / "precios.html").write_text(viejo, encoding="utf-8")
     assert correr("9", "90").returncode == 1
+
+
+# ── #236: términos y reembolsos cubren el plan anual ─────────────────────
+
+def _con_anual(monkeypatch):
+    monkeypatch.setenv("PADDLE_PRICE_AMOUNT_USD", "9")
+    monkeypatch.setenv("PADDLE_PRICE_ID_ANNUAL", "pri_02anual")
+    monkeypatch.setenv("PADDLE_PRICE_AMOUNT_ANNUAL_USD", "90")
+    return _paginas_en_memoria()
+
+
+def _texto(html, lang):
+    """Solo los párrafos/elementos de un idioma, sin etiquetas."""
+    partes = re.findall(r'<(p|li|span)[^>]*class="[^"]*fw-lang-' + lang + r'[^"]*"[^>]*>(.*?)</\1>', html, re.S)
+    return re.sub(r"<[^>]+>", "", " ".join(t for _, t in partes))
+
+
+def test_terms_describe_annual_price_renewal_and_cancellation(monkeypatch):
+    """Un cliente anual debe encontrar en los términos su precio, que se
+    cobra por adelantado, que se renueva cada año y que al cancelar
+    conserva el acceso hasta el fin del año pagado. En ES y en EN."""
+    terminos = _con_anual(monkeypatch)["terminos"]
+    es, en = _texto(terminos, "es"), _texto(terminos, "en")
+    for frase in ("90 USD al año", "por adelantado", "cada año en el plan anual",
+                  "hasta que termine el año pagado", "9 USD al mes"):
+        assert frase in es, frase
+    for frase in ("90 USD per year", "upfront", "every year on the annual plan",
+                  "until the paid year ends", "9 USD per month"):
+        assert frase in en, frase
+    assert "renueva automáticamente cada mes</strong> hasta" not in terminos
+    assert "9 USD al mes o 90 USD al año" in terminos  # meta description
+
+
+def test_refunds_cover_the_annual_plan(monkeypatch):
+    reembolsos = _con_anual(monkeypatch)["reembolsos"]
+    es, en = _texto(reembolsos, "es"), _texto(reembolsos, "en")
+    for frase in ("Aplica igual al plan mensual y al anual", "pago anual completo",
+                  "sea un mes o un año", "en el anual (90 USD)"):
+        assert frase in es, frase
+    for frase in ("applies equally to the monthly and the annual plan", "full annual payment",
+                  "whether a month or a year", "on the annual plan (90 USD)"):
+        assert frase in en, frase
+    assert "Como el plan es mensual" not in reembolsos
+    assert "Since the plan is monthly" not in reembolsos
+
+
+def test_pricing_footer_does_not_say_monthly_only_when_annual_is_sold(monkeypatch):
+    precios = _con_anual(monkeypatch)["precios"]
+    assert "se renueva mensualmente" not in precios
+    assert "renews monthly" not in precios
+    assert "cada mes o cada año" in precios
+    assert "every month or every year" in precios
+
+
+def test_without_annual_plan_legal_pages_stay_monthly_only(monkeypatch):
+    """Sin plan anual configurado no se menciona: prometer un plan que no
+    se vende es el mismo defecto al revés."""
+    monkeypatch.setenv("PADDLE_PRICE_AMOUNT_USD", "9")
+    monkeypatch.delenv("PADDLE_PRICE_ID_ANNUAL", raising=False)
+    monkeypatch.delenv("PADDLE_PRICE_AMOUNT_ANNUAL_USD", raising=False)
+    paginas = _paginas_en_memoria()
+    for slug in PAGINAS_CON_PRECIO:
+        assert "precio-anual-usd" not in paginas[slug], slug
+        assert "al año" not in paginas[slug], slug
+        assert "per year" not in paginas[slug], slug
+    assert "renueva automáticamente cada mes" in paginas["terminos"]
+    assert "Como el plan es mensual y cuesta 9 USD" in paginas["reembolsos"]
+    assert "se renueva mensualmente" in paginas["precios"]
 
 
 def test_price_smoke_script_is_executable_and_wired_into_deploy():

@@ -161,6 +161,14 @@ def precio_mensual_usd():
     return paddle_public_config()["amount"]
 
 
+def precio_anual_usd():
+    """Monto anual vigente en USD, o "" si no se vende plan anual. Misma
+    razon que precio_mensual_usd: terminos y reembolsos describian solo el
+    plan mensual mientras produccion vendia tambien el anual (issue #236),
+    y un cliente anual no encontraba su renovacion ni su reembolso."""
+    return paddle_public_config()["annual_amount"]
+
+
 def _is_deprecated_or_empty(content):
     """Contenido vacío/insuficiente o marcado DEPRECATED: no debe contarse
     ni renderizarse como prompt real (ni en TOTAL_PROMPTS ni en build())."""
@@ -5739,6 +5747,13 @@ def build_precios_page():
     else:
         _anual_html = ''
         _anual_btn = ''
+    # Con plan anual el pie no puede decir solo "mensualmente" (#236).
+    if _anual:
+        _renueva_es = 'La suscripción se renueva al final de cada periodo (cada mes o cada año, según el plan que elijas) hasta que la canceles.'
+        _renueva_en = 'The subscription renews at the end of each period (every month or every year, depending on the plan you choose) until you cancel it.'
+    else:
+        _renueva_es = 'La suscripción se renueva mensualmente hasta que la canceles.'
+        _renueva_en = 'The subscription renews monthly until you cancel it.'
 
     return (
         '<!DOCTYPE html>\n<html lang="es" data-lang="es">\n<head>\n'
@@ -5892,8 +5907,8 @@ def build_precios_page():
         + _anual_btn +
         '    <button id="px-subscribe-btn" class="px-cta" style="border:none;cursor:pointer;" onclick="pxStartCheckout()">'
         '<span class="fw-lang-es">Suscribirme</span><span class="fw-lang-en">Subscribe</span></button>\n'
-        '    <p class="px-foot fw-lang-es">La suscripción se renueva mensualmente hasta que la canceles. Puedes cancelarla desde el enlace de gestión incluido en el recibo de Paddle o solicitándola a <a href="mailto:soporte@lionsystems.com.mx">soporte@lionsystems.com.mx</a>. Consulta <a href="/terminos.html" onclick="pxTrack(\'legal_policy_opened\',{policy:\'terms\'});">términos</a>, <a href="/privacidad.html" onclick="pxTrack(\'legal_policy_opened\',{policy:\'privacy\'});">privacidad</a> y <a href="/reembolsos.html" onclick="pxTrack(\'legal_policy_opened\',{policy:\'refunds\'});">reembolsos</a> antes de pagar.</p>\n'
-        '    <p class="px-foot fw-lang-en">The subscription renews monthly until you cancel it. You can cancel through the management link in your Paddle receipt or by requesting it at <a href="mailto:soporte@lionsystems.com.mx">soporte@lionsystems.com.mx</a>. Review the <a href="/terminos.html" onclick="pxTrack(\'legal_policy_opened\',{policy:\'terms\'});">terms</a>, <a href="/privacidad.html" onclick="pxTrack(\'legal_policy_opened\',{policy:\'privacy\'});">privacy notice</a>, and <a href="/reembolsos.html" onclick="pxTrack(\'legal_policy_opened\',{policy:\'refunds\'});">refund policy</a> before paying.</p>\n'
+        '    <p class="px-foot fw-lang-es">' + _renueva_es + ' Puedes cancelarla desde el enlace de gestión incluido en el recibo de Paddle o solicitándola a <a href="mailto:soporte@lionsystems.com.mx">soporte@lionsystems.com.mx</a>. Consulta <a href="/terminos.html" onclick="pxTrack(\'legal_policy_opened\',{policy:\'terms\'});">términos</a>, <a href="/privacidad.html" onclick="pxTrack(\'legal_policy_opened\',{policy:\'privacy\'});">privacidad</a> y <a href="/reembolsos.html" onclick="pxTrack(\'legal_policy_opened\',{policy:\'refunds\'});">reembolsos</a> antes de pagar.</p>\n'
+        '    <p class="px-foot fw-lang-en">' + _renueva_en + ' You can cancel through the management link in your Paddle receipt or by requesting it at <a href="mailto:soporte@lionsystems.com.mx">soporte@lionsystems.com.mx</a>. Review the <a href="/terminos.html" onclick="pxTrack(\'legal_policy_opened\',{policy:\'terms\'});">terms</a>, <a href="/privacidad.html" onclick="pxTrack(\'legal_policy_opened\',{policy:\'privacy\'});">privacy notice</a>, and <a href="/reembolsos.html" onclick="pxTrack(\'legal_policy_opened\',{policy:\'refunds\'});">refund policy</a> before paying.</p>\n'
         '    <p id="px-sub-status" class="px-foot" style="margin-top:.75rem;"></p>\n'
         '  </div>\n'
         '  <div class="px-card">\n'
@@ -6283,9 +6298,9 @@ def _precio_meta_tag(precio):
 
 
 def _precio_anual_meta_tag(anual):
-    """Igual que _precio_meta_tag para el plan anual, solo en precios.html
-    (la unica pagina que lo cita) y solo si hay plan anual configurado: el
-    smoke test lo compara con PADDLE_PRICE_AMOUNT_ANNUAL_USD."""
+    """Igual que _precio_meta_tag para el plan anual, en las tres paginas
+    que citan precio y solo si hay plan anual configurado: el smoke test lo
+    compara con PADDLE_PRICE_AMOUNT_ANNUAL_USD."""
     if not anual:
         return ""
     return '<meta name="precio-anual-usd" content="' + anual + '">\n'
@@ -6314,6 +6329,10 @@ def _legal_shell(slug, title_es, title_en, desc, h1_es, h1_en, body_html):
     # Solo las paginas que citan el precio llevan la meta: son exactamente
     # las que el smoke test compara contra PADDLE_PRICE_AMOUNT_USD.
     precio_meta = _precio_meta_tag(precio_mensual_usd()) if slug in ("terminos", "reembolsos") else ""
+    # Si hay plan anual, terminos y reembolsos tambien lo citan (#236) y el
+    # smoke test compara su meta igual que la de precios.html.
+    if precio_meta:
+        precio_meta += _precio_anual_meta_tag(precio_anual_usd())
     return (
         '<!DOCTYPE html>\n<html lang="es" data-lang="es">\n<head>\n'
         '<meta charset="UTF-8">\n'
@@ -6435,6 +6454,39 @@ def build_terminos_page():
     reflejarlo -- presentarnos como el cobrador directo contradiría el
     recibo que el cliente efectivamente recibe."""
     mail = LEGAL_CONTACT_EMAIL
+    mensual, anual = precio_mensual_usd(), precio_anual_usd()
+    if anual:
+        precio_es = ('El plan Individual cuesta <strong>' + mensual + ' USD al mes</strong> o <strong>'
+                     + anual + ' USD al año</strong> si eliges la facturación anual, que se cobra por '
+                     'adelantado en un solo pago. Son precios introductorios de lanzamiento y pueden cambiar; '
+                     'si cambian, te avisaremos antes de que apliquen a tu siguiente cobro y podrás cancelar '
+                     'sin penalización.')
+        precio_en = ('The Individual plan costs <strong>' + mensual + ' USD per month</strong> or <strong>'
+                     + anual + ' USD per year</strong> if you choose annual billing, charged upfront in a '
+                     'single payment. These are introductory launch prices and may change; if they do, we will '
+                     'notify you before they apply to your next charge and you may cancel without penalty.')
+        renov_es = ('La suscripción se <strong>renueva automáticamente al final de cada periodo</strong>: '
+                    'cada mes en el plan mensual y cada año en el plan anual, hasta que la canceles. Puedes '
+                    'cancelarla en cualquier momento y conservas el acceso hasta el final del periodo ya '
+                    'pagado; en el plan anual, hasta que termine el año pagado.')
+        renov_en = ('The subscription <strong>renews automatically at the end of each period</strong>: '
+                    'every month on the monthly plan and every year on the annual plan, until you cancel. '
+                    'You may cancel at any time and keep access until the end of the period already paid '
+                    'for; on the annual plan, until the paid year ends.')
+        desc_precio = mensual + ' USD al mes o ' + anual + ' USD al año'
+    else:
+        precio_es = ('El plan Individual cuesta <strong>' + mensual + ' USD al mes</strong>. Es un precio '
+                     'introductorio de lanzamiento y puede cambiar; si cambia, te avisaremos antes de que '
+                     'aplique a tu siguiente cobro y podrás cancelar sin penalización.')
+        precio_en = ('The Individual plan costs <strong>' + mensual + ' USD per month</strong>. This is an '
+                     'introductory launch price and may change; if it does, we will notify you before it '
+                     'applies to your next charge and you may cancel without penalty.')
+        renov_es = ('La suscripción se <strong>renueva automáticamente cada mes</strong> hasta que la '
+                    'canceles. Puedes cancelarla en cualquier momento y conservas el acceso hasta el final '
+                    'del periodo ya pagado.')
+        renov_en = ('The subscription <strong>renews automatically each month</strong> until you cancel. '
+                    'You may cancel at any time and keep access until the end of the period already paid for.')
+        desc_precio = mensual + ' USD al mes'
     body = (
         _lg_section(
             'Quién opera este servicio', 'Who operates this service',
@@ -6482,20 +6534,9 @@ def build_terminos_page():
         )
         + _lg_section(
             'Suscripción, precio y renovación', 'Subscription, price and renewal',
-            [('p',
-              'El plan Individual cuesta <strong>' + precio_mensual_usd() + ' USD al mes</strong>. Es un precio introductorio de '
-              'lanzamiento y puede cambiar; si cambia, te avisaremos antes de que aplique a tu '
-              'siguiente cobro y podrás cancelar sin penalización.',
-              'The Individual plan costs <strong>' + precio_mensual_usd() + ' USD per month</strong>. This is an introductory launch '
-              'price and may change; if it does, we will notify you before it applies to your next charge '
-              'and you may cancel without penalty.'),
+            [('p', precio_es, precio_en),
              ('p', NOTA_IMPUESTOS_ES, NOTA_IMPUESTOS_EN),
-             ('p',
-              'La suscripción se <strong>renueva automáticamente cada mes</strong> hasta que la canceles. '
-              'Puedes cancelarla en cualquier momento y conservas el acceso hasta el final del periodo ya '
-              'pagado.',
-              'The subscription <strong>renews automatically each month</strong> until you cancel. You may '
-              'cancel at any time and keep access until the end of the period already paid for.'),
+             ('p', renov_es, renov_en),
              ('p',
               'Los pagos los procesa <strong>Paddle.com Market Limited</strong>, que actúa como '
               '<strong>Merchant of Record</strong>. Esto significa que Paddle es el vendedor legal frente a '
@@ -6577,7 +6618,7 @@ def build_terminos_page():
     return _legal_shell(
         'terminos',
         'Términos y condiciones — AI-SDLC Pro', 'Terms and Conditions — AI-SDLC Pro',
-        'Términos y condiciones de AI-SDLC Pro: suscripción de ' + precio_mensual_usd() + ' USD al mes, renovación, cancelación, '
+        'Términos y condiciones de AI-SDLC Pro: suscripción de ' + desc_precio + ', renovación, cancelación, '
         'licencia de uso de los prompts y Paddle como Merchant of Record.',
         'Términos y condiciones', 'Terms and Conditions',
         body,
@@ -6757,14 +6798,38 @@ def build_reembolsos_page():
     dueño del producto. Es el documento que Paddle revisa con más
     atención en la verificación, y el que faltaba por completo."""
     mail = LEGAL_CONTACT_EMAIL
+    mensual, anual = precio_mensual_usd(), precio_anual_usd()
+    # El plan anual (#236) usa la misma ventana de 14 dias desde su primer
+    # cobro: no es una politica nueva, es la vigente dicha para ese plan.
+    if anual:
+        ambos_es = (' Aplica igual al plan mensual y al anual: en el anual te devolvemos el pago anual '
+                    'completo.')
+        ambos_en = (' It applies equally to the monthly and the annual plan: on the annual plan we refund '
+                    'the full annual payment.')
+        consumido_es = ('no hacemos reembolsos por periodos ya consumidos ni prorrateos del periodo en curso, '
+                        'sea un mes o un año')
+        consumido_en = ('we do not refund periods already used, nor prorate the period in progress, whether '
+                        'a month or a year')
+        a_tiempo_es = ('En el plan mensual (' + mensual + ' USD) y en el anual (' + anual + ' USD), cancelar '
+                       'antes de la siguiente renovación evita cualquier cobro que no quieras.')
+        a_tiempo_en = ('On the monthly plan (' + mensual + ' USD) and on the annual plan (' + anual + ' USD), '
+                       'cancelling before the next renewal avoids any charge you do not want.')
+    else:
+        ambos_es = ambos_en = ''
+        consumido_es = 'no hacemos reembolsos por meses ya consumidos ni prorrateos de un mes en curso'
+        consumido_en = 'we do not refund months already used, nor prorate a month in progress'
+        a_tiempo_es = ('Como el plan es mensual y cuesta ' + mensual + ' USD, cancelar a tiempo evita '
+                       'cualquier cobro que no quieras.')
+        a_tiempo_en = ('Since the plan is monthly and costs ' + mensual + ' USD, cancelling in time avoids '
+                       'any charge you do not want.')
     body = (
         '  <div class="lg-box lg-key">\n'
         '    <p class="fw-lang-es" style="margin:0;"><strong>14 días, sin preguntas.</strong> Si te '
         'suscribes y no te convence, escríbenos dentro de los 14 días naturales siguientes a tu primer '
-        'cobro y te devolvemos el importe completo. No tienes que explicar por qué.</p>\n'
+        'cobro y te devolvemos el importe completo. No tienes que explicar por qué.' + ambos_es + '</p>\n'
         '    <p class="fw-lang-en" style="margin:0;"><strong>14 days, no questions asked.</strong> If you '
         'subscribe and it is not for you, email us within 14 calendar days of your first charge and we '
-        'refund the full amount. You do not have to explain why.</p>\n'
+        'refund the full amount. You do not have to explain why.' + ambos_en + '</p>\n'
         '  </div>\n'
         + _lg_section(
             'Cómo solicitarlo', 'How to request it',
@@ -6793,19 +6858,15 @@ def build_reembolsos_page():
         + _lg_section(
             'Después de los 14 días', 'After the 14 days',
             [('p',
-              'Pasada la ventana de 14 días no hacemos reembolsos por meses ya consumidos ni prorrateos de '
-              'un mes en curso. Lo que sí puedes hacer en cualquier momento es <strong>cancelar</strong>: '
+              'Pasada la ventana de 14 días ' + consumido_es + '. Lo que sí puedes hacer en cualquier momento es <strong>cancelar</strong>: '
               'dejas de ser cobrado a partir del siguiente ciclo y conservas el acceso completo hasta que '
               'termine el periodo que ya pagaste.',
-              'After the 14-day window we do not refund months already used, nor prorate a month in '
-              'progress. What you can do at any time is <strong>cancel</strong>: you stop being charged '
+              'After the 14-day window ' + consumido_en + '. What you can do at any time is <strong>cancel</strong>: you stop being charged '
               'from the next cycle and keep full access until the period you already paid for ends.'),
              ('p',
-              'Como el plan es mensual y cuesta ' + precio_mensual_usd() + ' USD, cancelar a tiempo evita cualquier cobro que no '
-              'quieras. Fuera de los casos de error operativo comprobado descritos en esta política, no '
+              a_tiempo_es + ' Fuera de los casos de error operativo comprobado descritos en esta política, no '
               'hacemos reembolsos ni prorrateos después de los 14 días.',
-              'Since the plan is monthly and costs ' + precio_mensual_usd() + ' USD, cancelling in time avoids any charge you do not '
-              'want. Other than the confirmed operational errors described in this policy, we do not issue '
+              a_tiempo_en + ' Other than the confirmed operational errors described in this policy, we do not issue '
               'refunds or prorations after the 14-day window.')]
         )
         + _lg_section(
