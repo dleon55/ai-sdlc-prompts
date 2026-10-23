@@ -6827,10 +6827,10 @@ def build_reembolsos_page():
             'Impuestos y comprobantes', 'Taxes and receipts',
             [('p', NOTA_IMPUESTOS_ES, NOTA_IMPUESTOS_EN),
              ('p',
-              'Si se aprueba un reembolso, Paddle devuelve el importe completo que pagaste, impuestos '
-              'incluidos, y actualiza el recibo correspondiente.',
-              'If a refund is approved, Paddle returns the full amount you paid, taxes included, and '
-              'updates the corresponding receipt.')]
+              'Cuando se aprueba un reembolso, Paddle devuelve también el impuesto correspondiente al '
+              'importe reembolsado y actualiza el recibo.',
+              'When a refund is approved, Paddle also returns the tax charged on the refunded amount and '
+              'updates the receipt.')]
         )
         + _lg_section(
             'Contacto', 'Contact',

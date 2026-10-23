@@ -123,8 +123,9 @@ y no se emite CFDI.
 Runbook del operador, en este orden:
 
 1. **Reembolsar**: Paddle → Transactions → la transacción → *Refund*
-   (total o parcial). Paddle devuelve el importe completo, impuestos
-   incluidos, y emite `adjustment.created` con `action = refund`.
+   (total o parcial). Paddle devuelve el importe reembolsado más el
+   impuesto que le corresponde, y emite `adjustment.created` con
+   `action = refund`.
 2. **Degradar el acceso**: Paddle → Subscriptions → la suscripción →
    *Cancel* (inmediata). Reembolsar **no** cancela la suscripción por sí
    solo. La cancelación emite `subscription.canceled`, la Edge Function

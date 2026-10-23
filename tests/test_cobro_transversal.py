@@ -125,6 +125,19 @@ def test_tax_note_is_shared_by_pricing_terms_and_refunds():
         assert frase in build.NOTA_IMPUESTOS_EN
 
 
+def test_refund_tax_sentence_does_not_promise_a_full_refund_for_every_case():
+    """La política también reembolsa periodos sin servicio por falla nuestra,
+    que pueden ser parciales: la frase de impuestos no puede prometer «el
+    importe completo que pagaste» para cualquier reembolso aprobado. Lo
+    verdadero en todos los casos es que el impuesto se devuelve en
+    proporción a lo reembolsado."""
+    html = build.build_reembolsos_page()
+    assert "importe completo que pagaste, impuestos incluidos" not in html
+    assert "full amount you paid, taxes included" not in html
+    assert "el impuesto correspondiente al importe reembolsado" in html
+    assert "the tax charged on the refunded amount" in html
+
+
 # ── T4: el precio publicado es uno solo ──────────────────────────────────
 
 def test_price_meta_and_prose_agree_on_the_three_priced_pages(monkeypatch):
