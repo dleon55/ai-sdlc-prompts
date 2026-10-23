@@ -42,7 +42,32 @@ cambia lo que se cobra por accidente.
    legales con el precio nuevo, de forma coherente.
 
 5. **Verifica en producción** que `precios.html`, `terminos.html` y
-   `reembolsos.html` digan el mismo número.
+   `reembolsos.html` digan el mismo número. Lo hace solo el smoke test
+   `Smoke test precio publicado` de `deploy.yml` (job `deploy-gcp`, después
+   del reemplazo atómico): descarga las tres páginas y falla el deploy si
+   alguna publica un precio distinto de `PADDLE_PRICE_AMOUNT_USD`. Para
+   correrlo a mano:
+
+   ```bash
+   PADDLE_PRICE_AMOUNT_USD=9 scripts/verificar-precio-publicado.sh
+   # o contra el build local:
+   PADDLE_PRICE_AMOUNT_USD=9 SITIO_URL=file://$PWD scripts/verificar-precio-publicado.sh
+   ```
+
+   El script lee la etiqueta `<meta name="precio-mensual-usd">` que
+   `build.py` emite en esas tres páginas (y solo en esas) y además exige
+   que el número aparezca en el texto visible. Con plan anual, compara
+   también `<meta name="precio-anual-usd">` de `precios.html` con
+   `PADDLE_PRICE_AMOUNT_ANNUAL_USD` (vacía = sin plan anual, y entonces la
+   página no debe declararlo):
+
+   ```bash
+   PADDLE_PRICE_AMOUNT_USD=9 PADDLE_PRICE_AMOUNT_ANNUAL_USD=90 scripts/verificar-precio-publicado.sh
+   ```
+
+Las tres páginas dicen también que el precio es **antes de impuestos**:
+Paddle aplica el IVA del país del comprador y emite el recibo; no se emite
+CFDI. Ese texto vive una sola vez en `build.py` (`NOTA_IMPUESTOS_ES/EN`).
 
 ## El ancla de precio
 

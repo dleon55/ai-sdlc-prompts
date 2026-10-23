@@ -19,3 +19,6 @@ node_modules/
 # OS
 .DS_Store
 Thumbs.db
+
+# Secretos locales de Edge Functions (ver supabase/functions/.env.example)
+supabase/functions/.env

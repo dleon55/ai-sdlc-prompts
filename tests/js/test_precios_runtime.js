@@ -134,8 +134,86 @@ const checkoutHabilitado = context.PADDLE_CLIENT_TOKEN !== "PENDIENTE_CONFIGURAR
   assert(/anual/.test(firma[1]),
     "pxStartCheckout debe declarar el parametro que usa para elegir el precio");
 
+  // ── 0b. La venta se reporta a GA4 cuando el webhook la confirma ──
+  //
+  // Tambien corre con el checkout deshabilitado: pxPollPro no depende de
+  // Paddle, solo de Supabase. `purchase` debe salir UNA vez, con valor
+  // numerico y moneda, sin datos del usuario, y solo en el retorno con
+  // ?checkout=success -- abrir el checkout no es vender, y volver a la
+  // pagina ya siendo Pro tampoco (issue #232, T7).
+  const stubInicial = stubSupabase;
+  reset();
+  context.dataLayer.length = 0;
+  let consultasCompra = 0;
+  stubSupabase = {
+    auth: { getSession: () => Promise.resolve({ data: { session: { user: { id: "u1" } } } }) },
+    rpc: () => { consultasCompra++; return Promise.resolve({ data: { subscribed: consultasCompra >= 2 } }); },
+  };
+  context._pxClient = null;
+  let urlTrasCompra = null;
+  context.history.replaceState = (a, b, url) => { urlTrasCompra = url; };
+  context.window.location.search = "?checkout=success";
+  storage.set("AI_SDLC_checkout_plan", "monthly");
+
+  context.pxInitAuth();
+  await flush();
+
+  const compras = context.dataLayer.filter(args => args[0] === "event" && args[1] === "purchase");
+  assert.strictEqual(compras.length, 1, `purchase debe registrarse exactamente una vez (${compras.length})`);
+  const compra = compras[0][2];
+  assert.strictEqual(compra.currency, "USD");
+  assert.strictEqual(typeof compra.value, "number", "GA4 exige value numerico, no cadena");
+  assert.strictEqual(compra.value, parseFloat(context.PADDLE_PRICE_AMOUNT_USD),
+    "el valor reportado debe ser el que cobra Paddle (PADDLE_PRICE_AMOUNT_USD)");
+  assert(compra.value > 0);
+  assert(!("user_id" in compra) && !("email" in compra), "purchase no lleva datos del usuario");
+  assert.strictEqual(compra.items[0].item_id, "ai-sdlc-pro-monthly");
+  assert.strictEqual(urlTrasCompra, "/precios.html",
+    "tras registrar la venta se limpia ?checkout=success: una recarga no debe contarla dos veces");
+  assert(!storage.has("AI_SDLC_checkout_plan"), "la marca del plan se consume al registrar la venta");
+
+  // Volver a precios ya siendo Pro (sin ?checkout=success) no es una venta.
+  reset();
+  context.dataLayer.length = 0;
+  context.window.location.search = "";
+  stubSupabase = {
+    auth: { getSession: () => Promise.resolve({ data: { session: { user: { id: "u1" } } } }) },
+    rpc: () => Promise.resolve({ data: { subscribed: true } }),
+  };
+  context._pxClient = null;
+  context.pxInitAuth();
+  await flush();
+  assert.strictEqual(context.dataLayer.filter(a => a[1] === "purchase").length, 0,
+    "un suscriptor que visita precios no genera purchase");
+
+  // Un suscriptor que vuelve a ?checkout=success SIN haber abierto un
+  // checkout en este navegador (entrada vieja del historial -- antes de
+  // #232 la URL nunca se limpiaba --, un enlace compartido, otra pestaña
+  // que ya conto la venta) tampoco es una venta nueva. La marca del plan
+  // que deja pxStartCheckout es la prueba de que hubo un checkout aqui.
+  reset();
+  context.dataLayer.length = 0;
+  context.window.location.search = "?checkout=success";
+  stubSupabase = {
+    auth: { getSession: () => Promise.resolve({ data: { session: { user: { id: "u1" } } } }) },
+    rpc: () => Promise.resolve({ data: { subscribed: true } }),
+  };
+  context._pxClient = null;
+  urlTrasCompra = null;
+  context.pxInitAuth();
+  await flush();
+  assert.strictEqual(context.dataLayer.filter(a => a[1] === "purchase").length, 0,
+    "?checkout=success sin checkout abierto en este navegador no es una venta");
+  assert.strictEqual(urlTrasCompra, "/precios.html", "aun asi se limpia ?checkout=success");
+  assert.strictEqual(elements.get("px-subscribe-btn").style.display, "none", "y se muestra el estado Pro");
+  context.window.location.search = "";
+  context.history.replaceState = () => {};
+  // Las pruebas siguientes esperan el stub original (con signInWithOAuth).
+  stubSupabase = stubInicial;
+  context._pxClient = null;
+
   if (!checkoutHabilitado) {
-    console.log("runtime checkout tests: ok (checkout deshabilitado, solo firma)");
+    console.log("runtime checkout tests: ok (checkout deshabilitado, solo firma y purchase)");
     return;
   }
 
@@ -150,6 +228,10 @@ const checkoutHabilitado = context.PADDLE_CLIENT_TOKEN !== "PENDIENTE_CONFIGURAR
     "el boton mensual debe abrir el precio mensual");
   assert.strictEqual(checkoutAbierto.customData.user_id, "u1",
     "el checkout debe enviar el user_id: sin el, el webhook no sabe a quien dar acceso");
+  assert.strictEqual(storage.get("AI_SDLC_checkout_plan"), "monthly",
+    "al abrir el checkout se recuerda el plan: Paddle recarga la pagina y purchase necesita saberlo");
+  assert.strictEqual(context.dataLayer.filter(a => a[1] === "purchase").length, 0,
+    "abrir el checkout no es vender: purchase solo sale cuando el webhook confirma");
 
   checkoutAbierto = null;
   context.pxStartCheckout(true);

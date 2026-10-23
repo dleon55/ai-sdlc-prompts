@@ -65,11 +65,16 @@ https://sqdzoreqfatpdainlhrm.supabase.co/functions/v1/paddle-webhook
 1. En tu dashboard de Paddle (Sandbox primero): **Developer Tools → Notifications** (o "Webhooks").
 2. Crea un destino nuevo con la URL del paso 3.
 3. Suscríbete al menos a: `subscription.created`, `subscription.updated`,
-   `subscription.canceled`, `subscription.past_due`.
+   `subscription.canceled`, `subscription.past_due` y `adjustment.created`
+   (reembolsos y contracargos, ver §7).
 4. Paddle te da un **Notification signing secret** (o "Webhook secret") — cópialo.
 5. En **Supabase → Edge Functions → paddle-webhook → Secrets** (o vía
    `supabase secrets set`), agrega: nombre `PADDLE_WEBHOOK_SECRET`, valor el
    secreto que copiaste. Este NO va en GitHub ni en el repo.
+6. Opcional: en el mismo lugar agrega `ALERTAS_WEBHOOK_URL` (ver §8).
+   Para `supabase functions serve` local, copia
+   [`supabase/functions/.env.example`](../supabase/functions/.env.example)
+   a `supabase/functions/.env` (ignorado por git).
 
 ## 5. Configurar el checkout por ambiente
 
@@ -105,6 +110,76 @@ disponible", igual que Supabase antes de tener sus claves reales.
    en la cuenta **productiva** de Paddle: token `live_`, precio live, destino
    webhook live y `PADDLE_WEBHOOK_SECRET` live en Supabase. Configura el
    dominio aprobado y el default payment link en Paddle antes del deploy.
+
+## 7. Reembolsos y contracargos
+
+AI-SDLC Pro no ejecuta reembolsos desde código: Paddle es el comerciante
+registrado (Merchant of Record) y el reembolso se emite desde su dashboard.
+La política pública es la de [`/reembolsos.html`](../reembolsos.html)
+(14 días sin preguntas desde el primer cobro); el precio publicado es antes
+de impuestos, Paddle aplica el IVA del país del comprador y emite el recibo,
+y no se emite CFDI.
+
+Runbook del operador, en este orden:
+
+1. **Reembolsar**: Paddle → Transactions → la transacción → *Refund*
+   (total o parcial). Paddle devuelve el importe reembolsado más el
+   impuesto que le corresponde, y emite `adjustment.created` con
+   `action = refund`.
+2. **Degradar el acceso**: Paddle → Subscriptions → la suscripción →
+   *Cancel* (inmediata). Reembolsar **no** cancela la suscripción por sí
+   solo. La cancelación emite `subscription.canceled`, la Edge Function
+   pone `subscriptions.status = 'canceled'` y `check_trial_status()` deja
+   de reportar acceso Pro. Sin este paso el cliente conserva acceso pagado
+   por un cobro ya devuelto.
+3. **Verificar** en Table Editor → `subscriptions` que la fila quedó en
+   `canceled`, y en `paddle_webhook_events` que existen los dos eventos con
+   `processed_at` no nulo.
+
+Qué hace la Edge Function con cada evento:
+
+| Evento | Efecto |
+|---|---|
+| `adjustment.created` (reembolso, crédito o contracargo) | Lo registra en `paddle_webhook_events` como procesado **sin tocar** `subscriptions`, lo escribe en el log y manda la alerta `reembolso` (§8) con el id del ajuste, para que el operador confirme el paso 2. |
+| `subscription.canceled` | Degrada el acceso (status `canceled`). Es el único camino por el que un reembolso quita el acceso. |
+| Reembolso parcial | Igual que el total: solo registro y alerta; el acceso no cambia. |
+
+Un reembolso o contracargo recibido por `adjustment.created` **nunca**
+modifica `subscriptions` desde la función: la función SQL
+`apply_paddle_subscription_event` solo cambia estado para eventos
+`subscription.%`, así que un ajuste mal interpretado no puede quitar ni dar
+acceso.
+
+## 8. Alertas operativas (`ALERTAS_WEBHOOK_URL`)
+
+La Edge Function avisa al operador cuando algo que afecta cobros falla o
+merece revisión. Siempre escribe un log estructurado nivel `error`
+(Supabase → Edge Functions → paddle-webhook → Logs). Si además existe el
+secreto **`ALERTAS_WEBHOOK_URL`** en Supabase (Edge Functions →
+paddle-webhook → Secrets, o `supabase secrets set ALERTAS_WEBHOOK_URL=…`),
+manda un `POST` JSON a esa URL. Sirve una URL de Slack (incoming webhook),
+Discord o cualquier receptor genérico: el cuerpo lleva `text` y `content`
+con el resumen, más `producto`, `clave`, `detalle` y `fecha`.
+
+| Clave | Cuándo |
+|---|---|
+| `webhook_error` | La función va a responder **500**: `apply_paddle_subscription_event` devolvió error o la llamada lanzó una excepción. Paddle reintentará, pero si el error es permanente (migración sin aplicar, evento sin `user_id`) el cliente pagó y no tiene acceso — hay que mirar. |
+| `reembolso` | Llegó `adjustment.created` (§7). |
+
+Reglas: la misma clave + `event_id` no se repite durante una hora (los
+reintentos de Paddle no inundan el canal); el `detalle` nunca incluye el
+cuerpo del webhook, la firma ni ningún secreto (se filtran por nombre de
+clave); la URL del destino nunca se escribe en el log (es una credencial);
+el `POST` se aborta a los 2.5 s para que un destino colgado no haga que
+Paddle dé el webhook por fallido; y `alertar()` nunca lanza — una alerta que
+tumba al webhook que la emite es peor que ninguna. Implementación en
+[`supabase/functions/paddle-webhook/alertas.ts`](../supabase/functions/paddle-webhook/alertas.ts),
+probada en Node con `node tests/js/test_alertas_runtime.js`.
+
+Prueba manual: con `ALERTAS_WEBHOOK_URL` configurada, manda desde Paddle un
+*Send test event* de `adjustment.created`; debe llegar un mensaje
+`[ai-sdlc-pro] reembolso — …` al canal y una fila nueva en
+`paddle_webhook_events`.
 
 ## Notas de diseño
 
