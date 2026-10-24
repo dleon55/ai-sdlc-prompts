@@ -2,7 +2,7 @@
 
 ## Description
 
-Prompt and reference for configuring the behavior, instructions, and restrictions of each AI agent type according to their capabilities and own mechanisms: GitHub Copilot (Agent / Chat / Edits), Claude (Anthropic), OpenAI Codex, Windsurf, Cursor, and Google Antigravity. Ensures each agent operates with project context and within team rules.
+Prompt and reference for configuring the behavior, instructions, and restrictions of each AI agent type according to their capabilities and own mechanisms: GitHub Copilot (Agent / Chat / Edits), Claude via chat/API, Claude Code, OpenAI Codex, Windsurf, Cursor, and Google Antigravity. Ensures each agent operates with project context and within team rules.
 
 **When to use:** when incorporating a new type of agent to the project, when detecting that an agent is not following conventions, or when configuring a multi-agent environment for the first time. Requires the baseline governance to already exist (see `00-B-02-gobernanza-ia-agentes`); this prompt configures agent-specific mechanisms, not the baseline.
 
@@ -14,8 +14,8 @@ Prompt and reference for configuring the behavior, instructions, and restriction
 |---|---|
 | Type | documentation |
 | Expected risk | medium — if a mandatory common rule (no exposing secrets, no migrations without approval, no push to protected branches) is missing from an agent's own mechanism, that agent may operate with more autonomy than intended; the prompt only drafts content, it does not apply it |
-| Required inputs | list of active agents (Copilot, Claude, Codex, Windsurf, Cursor, Antigravity), project stack, methodology, project critical rules, general autonomy level; baseline governance already in place (`00-B-02`) |
-| Allowed tools | read of the governance and configuration already existing in the repository to avoid duplication — no write or execution; the human decides whether to create the delivered files (`.github/copilot-instructions.md`, `.windsurfrules`, `.cursorrules`, `AGENTS.md`, `docs/ai-agents/*.md`) |
+| Required inputs | list of active agents (Copilot, Claude via chat/API, Claude Code, Codex, Windsurf, Cursor, Antigravity), project stack, methodology, project critical rules, general autonomy level; baseline governance already in place (`00-B-02`) |
+| Allowed tools | read of the governance and configuration already existing in the repository to avoid duplication — no write or execution; the human decides whether to create the delivered files (`.github/copilot-instructions.md`, `.windsurfrules`, `.cursorrules`, `AGENTS.md`, `CLAUDE.md`, `docs/ai-agents/*.md`) |
 | Permitted autonomy | A1 — Propose |
 | Stop criteria | if configuration is requested for an agent without baseline governance in place (`00-B-02`), or if the requested autonomy level for an agent conflicts with the mandatory common rules, flag the conflict before generating the agent-specific configuration |
 | Expected output | this prompt has no standalone `## Expected Output` section — the output format is the per-agent configuration blocks and the "MECHANISMS COMPARATIVE TABLE" inside the prompt block |
@@ -37,7 +37,7 @@ Objective:
 Generate the configuration instructions for each AI agent active in this project, according to their own control mechanisms and repository standards.
 
 Required inputs:
-- active agents: [list: Copilot / Claude / Codex / Windsurf / Cursor / Antigravity]
+- active agents: [list: Copilot / Claude (chat/API) / Claude Code / Codex / Windsurf / Cursor / Antigravity]
 - project stack: [STACK]
 - methodology: [METHODOLOGY]
 - project critical rules: [RULES THAT ALL MUST FOLLOW]
@@ -67,7 +67,7 @@ Additional Copilot files:
   - *.sql / migrations/ → "never modify without explicit approval"
 
 ─────────────────────────────────────
-CLAUDE (Anthropic — API / claude.ai)
+CLAUDE — CHAT / API (Anthropic, no project tools)
 ─────────────────────────────────────
 Mechanism: system prompt (first message of context)
 System prompt base content:
@@ -79,10 +79,27 @@ System prompt base content:
 - instruction of "do not execute until explicit human confirmation"
 
 File to create: docs/ai-agents/claude-system-prompt.md
-(template of the system prompt for use in each Claude session of the project)
+(template of the system prompt to paste manually into claude.ai or into each API call — this mechanism does not read repo files on its own)
 
 ─────────────────────────────────────
-OPENAI CODEX (API / GitHub Copilot X)
+CLAUDE CODE (CLI/IDE — reads the repository directly)
+─────────────────────────────────────
+Mechanism: a CLAUDE.md file at the repository root (plus an optional one per subfolder for path-specific context), read automatically at the start of every session — unlike the chat/API mechanism above, nothing needs to be pasted manually.
+CLAUDE.md content:
+- agent role and purpose of the repository
+- stack: [exact versions of language, framework, DB, infra]
+- the project's build, test, and lint commands (so the agent uses them instead of guessing)
+- code conventions and repo structure
+- what files/folders NOT to modify without approval: workflows/, migrations/, .env, CODEOWNERS
+- commit rules: Conventional Commits format, atomic commits
+- instruction of branch prefix: claude/[issue]/[description] (same prefix as the chat/API mechanism, since both are Claude)
+- how to act when faced with ambiguity: pause and ask the human user
+- reference to skills/[capability]/SKILL.md for specialized procedures that shouldn't live in the main CLAUDE.md
+
+File to create: CLAUDE.md (repository root) — not under docs/ai-agents/, because Claude Code only reads it automatically from the root (or the matching folder, for per-subfolder context)
+
+─────────────────────────────────────
+OPENAI CODEX (CLI / API — OpenAI's coding agent)
 ─────────────────────────────────────
 Mechanism: instructions in the prompt + AGENTS.md in the repo
 Configuration:
@@ -144,7 +161,8 @@ MECHANISMS COMPARATIVE TABLE
 | Agent | Instruction Mechanism | Repo File | Scope |
 |---|---|---|---|
 | GitHub Copilot | .github/copilot-instructions.md | Yes, in repo | Code + analysis |
-| Claude | System prompt | docs/ai-agents/claude-system-prompt.md | Analysis + code |
+| Claude (chat/API) | System prompt pasted manually | docs/ai-agents/claude-system-prompt.md | Analysis + code |
+| Claude Code | CLAUDE.md, read automatically | Yes, in repo | Analysis + code |
 | OpenAI Codex | AGENTS.md + prompt | AGENTS.md | Code + shell |
 | Windsurf | .windsurfrules | Yes, in repo | Code |
 | Cursor | .cursorrules | Yes, in repo | Code |
@@ -184,7 +202,12 @@ Use the configuration by agent type prompt and adapt it to:
 ```
 docs/ai-agents/
 ├── README.md                    ← index of configured agents and access level
-├── claude-system-prompt.md      ← base system prompt for Claude sessions
+├── claude-system-prompt.md      ← base system prompt for Claude chat/API sessions
 ├── codex-config.md              ← configuration and restrictions for Codex
 └── antigravity-config.md        ← config of environments and authorized flows for Antigravity
 ```
+
+`CLAUDE.md` is deliberately left out of this folder: Claude Code only reads
+it automatically when it sits at the repository root (or in the matching
+folder, for path-specific context) — moving it into `docs/ai-agents/` would
+make it invisible to the very mechanism it's meant to feed.

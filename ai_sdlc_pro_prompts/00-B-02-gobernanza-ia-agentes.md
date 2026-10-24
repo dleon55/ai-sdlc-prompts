@@ -2,7 +2,7 @@
 
 ## Descripción
 
-Prompt para generar los archivos de configuración y gobierno que controlan el comportamiento de los agentes IA sobre el repositorio: instrucciones de rol, reglas de codificación, restricciones de seguridad, contexto del proyecto y protocolo de trabajo. Compatible con GitHub Copilot, Claude, Windsurf, Cursor, Codex y otros agentes.
+Prompt para generar los archivos de configuración y gobierno que controlan el comportamiento de los agentes IA sobre el repositorio: instrucciones de rol, reglas de codificación, restricciones de seguridad, contexto del proyecto y protocolo de trabajo. Compatible con GitHub Copilot, Claude (chat/API y Claude Code), Windsurf, Cursor, Codex y otros agentes.
 
 **Cuándo usarlo:** al iniciar un repositorio nuevo, al incorporar agentes IA a un proyecto existente, o cuando los agentes no siguen las convenciones ni el marco de trabajo del proyecto. Es la configuración base de gobernanza (una sola vez por repositorio); para configurar en profundidad un mecanismo específico de un agente ya activo, usa `00-C-03-configuracion-por-agente`.
 
@@ -81,14 +81,20 @@ Entrega sólo los archivos aplicables con su contenido completo:
    - precedencia de instrucciones y reglas por subdirectorio
    - comandos de validación y límites del workspace
 
-4. skills/[capacidad]/SKILL.md
+4. CLAUDE.md (raíz del repositorio; opcionalmente uno por subcarpeta para contexto específico de esa ruta)
+   - mismo contenido base que AGENTS.md (rol, stack, convenciones, reglas críticas) para no duplicar criterio entre agentes
+   - comandos de build, test y lint del proyecto, para que Claude Code los use en vez de adivinarlos
+   - referencia a skills/[capacidad]/SKILL.md para procedimientos especializados que no deban vivir en el archivo principal
+   - nota: a diferencia de AGENTS.md, Claude Code solo lo lee automáticamente si está en la raíz (o en la carpeta correspondiente) — no sirve movido a docs/
+
+5. skills/[capacidad]/SKILL.md
    - propósito y cuándo cargar la capacidad
    - procedimiento mínimo
    - scripts y referencias reutilizables
    - entradas, salidas y criterios de éxito
    - evitar incluir conocimiento especializado extenso en instrucciones globales
 
-5. docs/ai-governance.md
+6. docs/ai-governance.md
    - política de uso de IA en el proyecto
    - ambientes donde está permitida la ejecución autónoma
    - checklist de seguridad antes de aprobar un cambio generado por IA
@@ -97,7 +103,7 @@ Entrega sólo los archivos aplicables con su contenido completo:
    - política de retención de prompts, trazas y evidencia
    - respuesta ante prompt injection, tool poisoning y exfiltración
 
-6. docs/ai-tool-permissions.md
+7. docs/ai-tool-permissions.md
    - herramienta o conector
    - operaciones permitidas
    - datos accesibles
@@ -136,7 +142,7 @@ Usa el prompt de gobernanza de agentes IA y adáptalo a:
 - nivel de autonomía: [NIVEL DE AUTONOMÍA]
 - reglas críticas del proyecto: [REGLAS ESPECÍFICAS]
 - documentos a revisar: README, CONTRIBUTING, estructura del repo, workflows existentes
-- objetivo puntual de salida: archivos .github/copilot-instructions.md, .windsurfrules, AGENTS.md, docs/ai-governance.md con contenido completo
+- objetivo puntual de salida: archivos .github/copilot-instructions.md, .windsurfrules, AGENTS.md, CLAUDE.md, docs/ai-governance.md con contenido completo
 - nivel de profundidad: alto
 ```
 
@@ -149,6 +155,7 @@ Usa el prompt de gobernanza de agentes IA y adáptalo a:
 | `.github/copilot-instructions.md` | Instrucciones de rol y contexto para Copilot | GitHub Copilot (Chat, Edits, Agent) | Obligatorio |
 | Instrucciones específicas del proveedor | Reglas compatibles con la versión activa | Agente correspondiente | Sólo si aplica |
 | `AGENTS.md` | Política de uso y protocolo de agentes en el repo | Todos los agentes | Obligatorio |
+| `CLAUDE.md` | Rol, stack, comandos de build/test/lint y reglas críticas, leído automáticamente al iniciar sesión | Claude Code | Obligatorio si Claude Code está activo |
 | `docs/ai-governance.md` | Política formal de gobierno de IA | Equipo humano + auditores | Recomendado |
 | `docs/ai-tool-permissions.md` | Permisos mínimos por herramienta y ambiente | Agentes + seguridad | Recomendado |
 | `skills/` | Capacidades especializadas cargadas bajo demanda | Agentes compatibles | Recomendado |
