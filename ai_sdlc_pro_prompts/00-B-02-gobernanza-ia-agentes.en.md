@@ -2,7 +2,7 @@
 
 ## Description
 
-Prompt to generate the configuration and governance files that control the behavior of AI agents over the repository: role instructions, coding rules, security restrictions, project context, and work protocol. Compatible with GitHub Copilot, Claude, Windsurf, Cursor, Codex, and other agents.
+Prompt to generate the configuration and governance files that control the behavior of AI agents over the repository: role instructions, coding rules, security restrictions, project context, and work protocol. Compatible with GitHub Copilot, Claude (chat/API and Claude Code), Windsurf, Cursor, Codex, and other agents.
 
 **When to use:** when starting a new repository, when incorporating AI agents into an existing project, or when agents are not following the project's conventions or framework. This is the baseline governance setup (once per repository); to deeply configure a specific mechanism of an already-active agent, use `00-C-03-configuracion-por-agente`.
 
@@ -76,18 +76,24 @@ Deliver only the applicable files with their complete content:
    - what decisions an agent should NEVER make alone
    - instruction precedence, subdirectory rules, validation commands, and workspace boundaries
 
-4. skills/[capability]/SKILL.md
+4. CLAUDE.md (repository root; optionally one per subfolder for path-specific context)
+   - same base content as AGENTS.md (role, stack, conventions, critical rules) to avoid duplicating criteria between agents
+   - the project's build, test, and lint commands, so Claude Code uses them instead of guessing
+   - reference to skills/[capability]/SKILL.md for specialized procedures that shouldn't live in the main file
+   - note: unlike AGENTS.md, Claude Code only reads it automatically when it's at the root (or the matching folder) — moving it to docs/ makes it inert
+
+5. skills/[capability]/SKILL.md
    - purpose, loading criteria, procedure, scripts, references, inputs, outputs, and success criteria
    - keep specialized knowledge out of global instructions
 
-5. docs/ai-governance.md
+6. docs/ai-governance.md
    - AI usage policy in the project
    - environments where autonomous execution is permitted
    - security checklist before approving an AI-generated change
    - registry of AI decisions that require audit
    - risk/autonomy/approval matrix, trace retention, and response to prompt injection, tool poisoning, and exfiltration
 
-6. docs/ai-tool-permissions.md
+7. docs/ai-tool-permissions.md
    - tool, operations, accessible data, environments, approval, logging, and revocation
 
 Rules that must appear in ALL files:
@@ -121,7 +127,7 @@ Use the AI agent governance prompt and adapt it to:
 - autonomy level: [AUTONOMY LEVEL]
 - project critical rules: [SPECIFIC RULES]
 - documents to review: README, CONTRIBUTING, repository structure, existing workflows
-- specific output goal: complete .github/copilot-instructions.md, .windsurfrules, AGENTS.md, docs/ai-governance.md files
+- specific output goal: complete .github/copilot-instructions.md, .windsurfrules, AGENTS.md, CLAUDE.md, docs/ai-governance.md files
 - depth level: high
 ```
 
@@ -134,6 +140,7 @@ Use the AI agent governance prompt and adapt it to:
 | `.github/copilot-instructions.md` | Role and context instructions for Copilot | GitHub Copilot (Chat, Edits, Agent) | Mandatory |
 | Provider-specific instructions | Rules compatible with the active version | Corresponding agent | Only when applicable |
 | `AGENTS.md` | Agent usage policy and protocol in the repo | All agents | Mandatory |
+| `CLAUDE.md` | Role, stack, build/test/lint commands, and critical rules, read automatically at session start | Claude Code | Mandatory if Claude Code is active |
 | `docs/ai-governance.md` | Formal AI governance policy | Human team + auditors | Recommended |
 | `docs/ai-tool-permissions.md` | Least privilege by tool and environment | Agents + security | Recommended |
 | `skills/` | Specialized capabilities loaded on demand | Compatible agents | Recommended |

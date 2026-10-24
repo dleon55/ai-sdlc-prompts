@@ -415,8 +415,8 @@
         "es": {
           "type": "documentación",
           "expected_risk": "medio — si una regla común obligatoria (no exponer secretos, no migraciones sin aprobación, no push a ramas protegidas) queda ausente en el mecanismo propio de un agente, ese agente puede operar con más autonomía de la prevista; el prompt solo redacta contenido, no lo aplica",
-          "required_inputs": "lista de agentes activos (Copilot, Claude, Codex, Windsurf, Cursor, Antigravity), stack del proyecto, metodología, reglas críticas del proyecto, nivel de autonomía general; gobernanza base ya existente (`00-B-02`)",
-          "allowed_tools": "lectura de la gobernanza y configuración ya existentes en el repositorio para no duplicarlas — sin escritura ni ejecución; el humano decide crear los archivos entregados (`.github/copilot-instructions.md`, `.windsurfrules`, `.cursorrules`, `AGENTS.md`, `docs/ai-agents/*.md`)",
+          "required_inputs": "lista de agentes activos (Copilot, Claude vía chat/API, Claude Code, Codex, Windsurf, Cursor, Antigravity), stack del proyecto, metodología, reglas críticas del proyecto, nivel de autonomía general; gobernanza base ya existente (`00-B-02`)",
+          "allowed_tools": "lectura de la gobernanza y configuración ya existentes en el repositorio para no duplicarlas — sin escritura ni ejecución; el humano decide crear los archivos entregados (`.github/copilot-instructions.md`, `.windsurfrules`, `.cursorrules`, `AGENTS.md`, `CLAUDE.md`, `docs/ai-agents/*.md`)",
           "permitted_autonomy": "A1 — Proponer",
           "stop_criteria": "si se solicita configurar un agente sin que exista la gobernanza base (`00-B-02`), o si el nivel de autonomía solicitado para un agente entra en conflicto con las reglas comunes obligatorias, señalar el conflicto antes de generar la configuración específica",
           "expected_output": "no existe una sección `## Salida esperada` independiente en este prompt — el formato de salida son los bloques de configuración por agente y la \"TABLA COMPARATIVA DE MECANISMOS\" dentro del bloque de prompt",
@@ -438,8 +438,8 @@
         "en": {
           "type": "documentation",
           "expected_risk": "medium — if a mandatory common rule (no exposing secrets, no migrations without approval, no push to protected branches) is missing from an agent's own mechanism, that agent may operate with more autonomy than intended; the prompt only drafts content, it does not apply it",
-          "required_inputs": "list of active agents (Copilot, Claude, Codex, Windsurf, Cursor, Antigravity), project stack, methodology, project critical rules, general autonomy level; baseline governance already in place (`00-B-02`)",
-          "allowed_tools": "read of the governance and configuration already existing in the repository to avoid duplication — no write or execution; the human decides whether to create the delivered files (`.github/copilot-instructions.md`, `.windsurfrules`, `.cursorrules`, `AGENTS.md`, `docs/ai-agents/*.md`)",
+          "required_inputs": "list of active agents (Copilot, Claude via chat/API, Claude Code, Codex, Windsurf, Cursor, Antigravity), project stack, methodology, project critical rules, general autonomy level; baseline governance already in place (`00-B-02`)",
+          "allowed_tools": "read of the governance and configuration already existing in the repository to avoid duplication — no write or execution; the human decides whether to create the delivered files (`.github/copilot-instructions.md`, `.windsurfrules`, `.cursorrules`, `AGENTS.md`, `CLAUDE.md`, `docs/ai-agents/*.md`)",
           "permitted_autonomy": "A1 — Propose",
           "stop_criteria": "if configuration is requested for an agent without baseline governance in place (`00-B-02`), or if the requested autonomy level for an agent conflicts with the mandatory common rules, flag the conflict before generating the agent-specific configuration",
           "expected_output": "this prompt has no standalone `## Expected Output` section — the output format is the per-agent configuration blocks and the \"MECHANISMS COMPARATIVE TABLE\" inside the prompt block",
