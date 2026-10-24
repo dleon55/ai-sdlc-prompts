@@ -43,6 +43,22 @@ hacer lo que GoTrue y PostgREST+RLS hacen gratis hoy:
   `docs/auth-setup.md`.
 - Supabase registra la OAuth App de GitHub, gestiona el `state`/PKCE del
   flujo OAuth, y emite el JWT de sesión que el cliente guarda.
+- **Dónde vive la sesión hoy** (`build.py`, `SB_AUTH_OPTS`/`PX_AUTH_OPTS`,
+  líneas ~2537-2548 y ~5977-5982): `persistSession: true` con
+  `storage: window.localStorage` — el JWT de sesión vive en
+  **`localStorage`**, con `autoRefreshToken: true` y
+  `detectSessionInUrl: true` (para capturar el token al volver del
+  callback de GitHub). Esto importa para el diseño del backend nuevo: pasar
+  la sesión a una cookie `httpOnly` (como propone §3) no es solo paridad,
+  es una **mejora real de seguridad** — hoy cualquier XSS en el sitio
+  podría leer el JWT directo de `localStorage` con JavaScript; una cookie
+  `httpOnly` se lo niega al propio script de la página. A cambio, hay que
+  diseñar explícitamente la protección CSRF (que `localStorage` no
+  necesitaba porque un script de otro origen no puede leerlo, pero una
+  cookie sí se manda sola en cada request del navegador) — `SameSite=Lax`
+  cubre la mayoría de los casos, pero el endpoint del webhook de Paddle
+  (que no usa cookies de sesión de usuario, llega de servidor a servidor)
+  queda fuera de esa protección por diseño, igual que hoy.
 
 ### 2.2 Base de datos (Postgres + PostgREST + RLS)
 
@@ -52,23 +68,33 @@ hacer lo que GoTrue y PostgREST+RLS hacen gratis hoy:
 | `projects` | usuario | cliente (CRUD directo) | RLS: `auth.uid() = user_id` |
 | `project_prompt_state` | proyecto+prompt | cliente (CRUD directo) | RLS indirecta vía `projects.user_id` |
 | `user_trial` | usuario | solo funciones `security definer` | RLS: cliente solo lee, nunca escribe |
-| `anon_usage` | IP | solo `check_anon_usage()` | RLS: sin políticas de cliente |
 | `feedback` | usuario | cliente (solo insert) + lectura propia | RLS: insert/select propios, sin update/delete |
 | `subscriptions` | usuario | solo la Edge Function (service role) | RLS: cliente solo lee |
 | `paddle_webhook_events` | evento Paddle | solo la Edge Function | RLS: sin políticas de cliente |
 | `prompt_copy_stats` | prompt | solo `track_prompt_copy()` | RLS: sin políticas de cliente |
 
 Funciones RPC (`security definer`, ejecutadas por el cliente vía
-`supabase.rpc(...)`): `check_trial_status()`, `check_anon_usage()`,
-`submit_feedback_and_renew()`, `track_prompt_copy()`,
-`founding_spots_left()`, y la función interna
+`supabase.rpc(...)`): `check_trial_status()`, `submit_feedback_and_renew()`,
+`track_prompt_copy()`, `founding_spots_left()`, y la función interna
 `apply_paddle_subscription_event()` (solo la llama la Edge Function, con
 service role). Trigger `on_auth_user_created_trial` crea la fila de
 prueba al registrarse.
 
-**No se usa Realtime** de Supabase en ningún lugar del código revisado —
-confirmar esto explícitamente no está en el alcance de este documento;
-quien apruebe el plan debería confirmarlo o se revisa en la Fase 1.
+**`anon_usage` / `check_anon_usage()` quedan FUERA de alcance — es código
+muerto.** Verificado en esta revisión: `build.py` no llama a
+`check_anon_usage` en ningún lado (`grep rpc(` no la encuentra), y el
+propio comentario en `build.py:3304` y el `CHANGELOG.md` (rediseño del
+muro Free/Pro, issue #7) confirman que quedó sin uso desde que el límite
+anónimo pasó a vivir en `localStorage`. No tiene sentido migrar una tabla
+y una función que nadie llama — se excluyen del inventario a migrar; si
+se quiere, se pueden borrar de Supabase antes del apagado final (Fase 4)
+en vez de portarlas.
+
+**Realtime: confirmado que no se usa.** Revisión anterior lo dejaba
+pendiente de confirmar; en esta pasada se buscó `.channel(`/`realtime` en
+todo `build.py` y no aparece ninguna coincidencia — todo el acceso a datos
+es request/response vía PostgREST o RPC, nunca suscripciones en vivo. No
+hay nada de Realtime que migrar.
 
 ### 2.3 Edge Function `paddle-webhook` (Deno)
 - Verifica la firma HMAC-SHA256 de Paddle (`Paddle-Signature`) sobre el
@@ -185,8 +211,8 @@ GitHub, email, fecha de creación) y recrear una tabla `users` propia
 
 1. Exportar desde Supabase (Settings → Database → Connection string da
    acceso directo a Postgres, no solo a la API): `pg_dump` de
-   `auth.users` (columnas necesarias) y de las 8 tablas propias listadas
-   en §2.2.
+   `auth.users` (columnas necesarias) y de las 7 tablas propias con uso
+   real listadas en §2.2 (`anon_usage` queda excluida — código muerto).
 2. Crear el esquema nuevo en el Postgres propio: mismas tablas, mismas
    `foreign key`, pero **sin RLS** (reemplazada por autorización en el
    backend) y **sin las funciones `security definer`** (reemplazadas por
@@ -268,7 +294,7 @@ este plan sea informada, no para disuadir.
 |---|---|---|
 | **1. Base** | Backend nuevo + Postgres propio corriendo en paralelo a Supabase, sin que el sitio real los use todavía. Probar OAuth con GitHub y las rutas CRUD contra datos de prueba. | Ninguno — nada en producción depende de esto aún. |
 | **2. Datos sin dinero** | Migrar `users`, `projects`, `project_prompt_state`, `prompt_copy_stats`. Apuntar el sitio al backend nuevo para estas rutas. | Molestia (un usuario pierde proyectos guardados) si la migración de datos falla — recuperable desde el export de Supabase. |
-| **3. Trial gate + pagos** | Migrar `user_trial`, `anon_usage`, `feedback`, `subscriptions`, `paddle_webhook_events`; mover el webhook de Paddle al endpoint nuevo; reconfigurar la URL de notificación en el dashboard de Paddle. | El más alto: un error deja a un cliente que pagó sin acceso, o dinero sin registrar. Por eso va al final, con Fases 1-2 ya verificadas. |
+| **3. Trial gate + pagos** | Migrar `user_trial`, `feedback`, `subscriptions`, `paddle_webhook_events`; mover el webhook de Paddle al endpoint nuevo; reconfigurar la URL de notificación en el dashboard de Paddle. | El más alto: un error deja a un cliente que pagó sin acceso, o dinero sin registrar. Por eso va al final, con Fases 1-2 ya verificadas. |
 | **4. Apagado** | Borrar el proyecto de Supabase (o dejarlo solo como respaldo de lectura un tiempo), quitar `SUPABASE_ACCESS_TOKEN`, actualizar CSP y toda la documentación (`docs/auth-setup.md`, `docs/paddle-integration.md`, `docs/trial-gate-setup.md`, `docs/ARQUITECTURA_PROCESOS.md`). | Bajo, si las fases anteriores ya están verificadas en producción por un tiempo razonable. |
 
 ## 8. Pendientes que solo el propietario puede resolver
