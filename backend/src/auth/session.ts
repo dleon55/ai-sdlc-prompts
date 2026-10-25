@@ -7,6 +7,8 @@
 import { SignJWT, jwtVerify } from "jose";
 import { parse as parseCookieHeader, serialize as serializeCookie } from "cookie";
 import type { Request, Response } from "express";
+import { pool } from "../db.ts";
+import { verificarTokenSupabase, type IdentidadSupabase } from "./supabase.ts";
 
 const SESSION_COOKIE_NAME = "ai_sdlc_session";
 const SESSION_TTL_SECONDS = 30 * 24 * 60 * 60; // 30 dias
@@ -59,12 +61,43 @@ export function clearSessionCookie(res: Response): void {
   );
 }
 
+// Usuarios de Supabase que ya tienen fila en users en este proceso: la
+// fila se asegura una vez, no en cada peticion.
+const usuariosAsegurados = new Set<string>();
+
+// Un usuario que se registra en Supabase DESPUES de la migracion no tiene
+// fila en users, y projects la exige (foreign key). Se crea con el mismo
+// UUID; si ya existe, se refrescan login y correo.
+async function asegurarUsuario(identidad: IdentidadSupabase): Promise<void> {
+  if (usuariosAsegurados.has(identidad.userId)) return;
+  await pool.query(
+    `insert into users (id, github_id, github_login, email)
+     values ($1, $2, $3, $4)
+     on conflict (id) do update set
+       github_login = excluded.github_login,
+       email = coalesce(excluded.email, users.email)`,
+    [identidad.userId, identidad.githubId, identidad.githubLogin, identidad.email],
+  );
+  usuariosAsegurados.add(identidad.userId);
+}
+
+// Fase 2: sin cookie propia, se acepta el access_token de Supabase en
+// Authorization: Bearer. Un header no viaja solo como una cookie, asi que
+// esta via no necesita proteccion CSRF.
+async function sesionDesdeSupabase(req: Request): Promise<SessionPayload | null> {
+  const auth = req.headers.authorization;
+  if (!auth || !auth.startsWith("Bearer ")) return null;
+  const identidad = await verificarTokenSupabase(auth.slice("Bearer ".length).trim());
+  if (!identidad) return null;
+  await asegurarUsuario(identidad);
+  return { userId: identidad.userId, githubLogin: identidad.githubLogin };
+}
+
 export async function readSession(req: Request): Promise<SessionPayload | null> {
   const header = req.headers.cookie;
-  if (!header) return null;
-  const cookies = parseCookieHeader(header);
+  const cookies = header ? parseCookieHeader(header) : {};
   const token = cookies[SESSION_COOKIE_NAME];
-  if (!token) return null;
+  if (!token) return sesionDesdeSupabase(req);
 
   try {
     const { payload } = await jwtVerify(token, signingKey());
