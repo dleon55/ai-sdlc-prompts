@@ -1,0 +1,20 @@
+# Postgres propio para desarrollo local, si la VM de destino no tiene ya
+# un Postgres nativo instalado (ver docs/PLAN_MIGRACION_SUPABASE_A_LOCAL.md
+# §3.2 -- esa decision todavia depende de que el propietario confirme que
+# hay en la VM real de GCP; esto es solo para desarrollar en una maquina
+# cualquiera mientras tanto).
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ai_sdlc_dev
+      POSTGRES_PASSWORD: dev_password_local_only
+      POSTGRES_DB: ai_sdlc_pro
+    ports:
+      - "5432:5432"
+    volumes:
+      - ai_sdlc_pg_data:/var/lib/postgresql/data
+
+volumes:
+  ai_sdlc_pg_data:

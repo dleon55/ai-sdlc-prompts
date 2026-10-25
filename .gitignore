@@ -22,3 +22,6 @@ Thumbs.db
 
 # Secretos locales de Edge Functions (ver supabase/functions/.env.example)
 supabase/functions/.env
+
+# Secretos locales del backend propio (ver backend/.env.example)
+backend/.env

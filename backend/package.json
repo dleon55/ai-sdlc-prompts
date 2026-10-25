@@ -1,0 +1,22 @@
+{
+  "name": "ai-sdlc-pro-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Backend propio de AI-SDLC Pro (Fase 1 de docs/PLAN_MIGRACION_SUPABASE_A_LOCAL.md) -- reemplaza auth, base de datos y el webhook de Paddle que hoy vive en Supabase. Corre con el type-stripping nativo de Node, sin paso de build.",
+  "engines": {
+    "node": ">=22.6.0"
+  },
+  "scripts": {
+    "dev": "node --env-file=.env --experimental-strip-types --no-warnings --watch src/index.ts",
+    "start": "node --env-file=.env --experimental-strip-types --no-warnings src/index.ts",
+    "migrate": "node --env-file=.env --experimental-strip-types --no-warnings src/migrate.ts",
+    "test": "node --experimental-strip-types --no-warnings --test test/*.test.ts"
+  },
+  "dependencies": {
+    "cookie": "^1.0.2",
+    "express": "^4.21.2",
+    "jose": "^5.9.6",
+    "pg": "^8.13.1"
+  }
+}
