@@ -14,6 +14,7 @@
 import { Router, type Request } from "express";
 import { pool } from "../../db.ts";
 import { crearAlertador, mensajeDe } from "./alertas.ts";
+import { asincrono } from "../../asincrono.ts";
 
 export const paddleWebhookRouter = Router();
 
@@ -71,7 +72,7 @@ interface ParametrosEvento {
 // req.body es un string crudo: ver backend/src/index.ts, donde esta ruta
 // se monta con express.text({ type: () => true }) ANTES del parser JSON
 // global, exactamente para conservar el body intacto que la firma firmo.
-paddleWebhookRouter.post("/", async (req: Request, res) => {
+paddleWebhookRouter.post("/", asincrono(async (req: Request, res) => {
   const PADDLE_WEBHOOK_SECRET = process.env.PADDLE_WEBHOOK_SECRET ?? "";
   const rawBody = typeof req.body === "string" ? req.body : "";
 
@@ -198,4 +199,4 @@ paddleWebhookRouter.post("/", async (req: Request, res) => {
     });
     res.status(500).send("DB error");
   }
-});
+}));
