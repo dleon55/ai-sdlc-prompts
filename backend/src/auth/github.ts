@@ -1,5 +1,4 @@
-// Flujo de OAuth con GitHub, implementado a mano (reemplaza a GoTrue).
-// Ver docs/PLAN_MIGRACION_SUPABASE_A_LOCAL.md §6.1: el riesgo real de este
+// Flujo de OAuth con GitHub, implementado a mano. El riesgo real de este
 // archivo es CSRF en el callback si `state` no se valida correctamente --
 // por eso authorizeUrl() y validateState() siempre van en pareja (ver
 // backend/src/routes/auth.ts).

@@ -1,8 +1,5 @@
-# Postgres propio para desarrollo local, si la VM de destino no tiene ya
-# un Postgres nativo instalado (ver docs/PLAN_MIGRACION_SUPABASE_A_LOCAL.md
-# §3.2 -- esa decision todavia depende de que el propietario confirme que
-# hay en la VM real de GCP; esto es solo para desarrollar en una maquina
-# cualquiera mientras tanto).
+# Postgres para desarrollo local. En produccion el backend usa el
+# PostgreSQL nativo de la VM (base ai_sdlc_pro, rol ai_sdlc_backend).
 services:
   postgres:
     image: postgres:16-alpine

@@ -18,7 +18,7 @@ interface PromptStateRow {
 }
 
 // RLS equivalente a "cada quien ve y edita solo el estado de sus propios
-// proyectos" (supabase/project_prompt_state.sql) -- esta tabla no tiene
+// proyectos" -- esta tabla no tiene
 // user_id propio, la propiedad se verifica indirectamente por projects.
 
 // Espejo de pullCloudPromptState(): trae el estado de TODOS los

@@ -2,9 +2,7 @@ import { Router } from "express";
 import { pool } from "../db.ts";
 import { asincrono } from "../asincrono.ts";
 
-// Rutas sin autenticacion -- equivalentes a las funciones RPC otorgadas a
-// `anon` (y tambien a `authenticated`) en supabase/prompt_copy_stats.sql y
-// supabase/subscriptions.sql. Ninguna de las dos expone datos de usuarios
+// Rutas sin autenticacion. Ninguna de las dos expone datos de usuarios
 // individuales.
 export const publicRouter = Router();
 
@@ -29,11 +27,10 @@ publicRouter.post("/prompt-stats/track", asincrono(async (req, res) => {
   res.status(204).end();
 }));
 
-// Puerto de founding_spots_left() -- expone UNICAMENTE el agregado (nunca
+// Plazas del programa Fundador -- expone UNICAMENTE el agregado (nunca
 // filas ni columnas de usuarios). Un lugar se consume al crearse la
-// suscripcion y no se libera al cancelar (ver supabase/subscriptions.sql
-// para la justificacion: evita "reciclar" una promesa condicionada a
-// suscripcion activa sin interrupcion).
+// suscripcion y no se libera al cancelar: evita "reciclar" una promesa
+// condicionada a suscripcion activa sin interrupcion.
 const FOUNDING_TOTAL = 50;
 
 publicRouter.get("/founding/spots-left", asincrono(async (_req, res) => {

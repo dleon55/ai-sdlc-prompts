@@ -13,11 +13,10 @@ interface TrialStatus {
   subscribed: boolean;
 }
 
-// Puerto de check_trial_status() (supabase/subscriptions.sql) -- revisa
-// primero si hay una suscripcion de pago activa (acceso ilimitado sin
+// Estado de la prueba: revisa primero si hay una suscripcion de pago activa (acceso ilimitado sin
 // importar la prueba), y solo si no la hay cae al estado de user_trial,
-// autocreando la fila si falta (mismo "auto-reparable" documentado en el
-// original: una fila ausente nunca debe leerse como "prueba vencida").
+// autocreando la fila si falta (una fila ausente nunca debe leerse como
+// "prueba vencida").
 export async function checkTrialStatus(userId: string): Promise<TrialStatus> {
   const { rows: subRows } = await pool.query<{ status: string; current_period_end: string | null }>(
     "select status, current_period_end from subscriptions where user_id = $1",
@@ -61,8 +60,7 @@ trialRouter.get("/status", asincrono(async (req, res) => {
   res.json(await checkTrialStatus(req.session!.userId));
 }));
 
-// Puerto de submit_feedback_and_renew() (supabase/trial_gate.sql):
-// inserta el feedback y extiende la prueba 1 semana desde ahora, en una
+// Feedback y renovacion: inserta el feedback y extiende la prueba 1 semana desde ahora, en una
 // sola transaccion.
 trialRouter.post("/feedback", asincrono(async (req, res) => {
   const rating = Number(req.body?.rating);

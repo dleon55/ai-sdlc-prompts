@@ -14,7 +14,7 @@ interface ProjectRow {
 }
 
 // RLS equivalente: "cada quien ve y edita solo lo suyo"
-// (using/with check: auth.uid() = user_id) -- ver supabase/schema.sql.
+// (using/with check: auth.uid() = user_id).
 // Cada query de este archivo filtra o fuerza user_id = req.session.userId
 // explicitamente, nunca confia en un user_id que venga en el body.
 
