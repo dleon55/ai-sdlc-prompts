@@ -21,6 +21,17 @@ test("esquema + checkTrialStatus + aislamiento por usuario", { skip: !tieneDb },
   const schemaSql = readFileSync(path.join(here, "..", "src", "schema.sql"), "utf8");
   await pool.query(schemaSql);
 
+  // Limpieza antes de correr: estas pruebas usaban github_id fijos sin
+  // limpiar lo que dejaban, asi que una segunda corrida contra la misma
+  // base persistente (cualquier Postgres de desarrollo que no se tire
+  // entre corridas) chocaba con "duplicate key" en subscriptions y con
+  // el evento de paddle_webhook_events ya marcado como procesado. Borrar
+  // primero vuelve esta prueba segura de re-correr las veces que sea.
+  await pool.query(
+    "delete from users where github_id in ('test-integration-user-1', 'test-integration-user-2', 'test-integration-user-3')",
+  );
+  await pool.query("delete from paddle_webhook_events where event_id = 'evt_integration_1'");
+
   await t.test("checkTrialStatus autocrea la fila de prueba si no existe", async () => {
     const { rows } = await pool.query<{ id: string }>(
       `insert into users (github_id, github_login) values ($1, 'test-integration-1')
