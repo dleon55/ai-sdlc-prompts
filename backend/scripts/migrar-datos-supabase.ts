@@ -34,10 +34,26 @@
 //     node --experimental-strip-types --no-warnings scripts/migrar-datos-supabase.ts
 //   (agregar --apply para escribir de verdad; sin esa bandera, solo
 //   cuenta filas en el origen y simula, sin tocar el destino)
+//
+// Banderas de la Fase 2 (login todavia en Supabase, solo datos sin dinero):
+//   --fase2       copia solo users, projects, project_prompt_state y
+//                 prompt_copy_stats. La prueba, el feedback y los pagos
+//                 siguen viviendo en Supabase hasta la Fase 3: copiarlos
+//                 ahora dejaria en el destino una foto que se desfasa con
+//                 cada webhook.
+//   --sincronizar en vez de "do nothing", actualiza las filas que ya
+//                 existen cuando el origen es mas reciente (updated_at); en
+//                 los contadores de copias gana el mayor. Sirve para
+//                 re-correrlo despues del corte, mientras queden paginas
+//                 viejas abiertas escribiendo en Supabase. No propaga
+//                 borrados: un proyecto borrado en Supabase tras la carga
+//                 inicial sigue en el destino.
 
 import pg from "pg";
 
 const APLICAR = process.argv.includes("--apply");
+const FASE2 = process.argv.includes("--fase2");
+const SINCRONIZAR = process.argv.includes("--sincronizar");
 
 function requerida(nombre: string): string {
   const valor = process.env[nombre];
@@ -54,7 +70,9 @@ const destino = new pg.Pool({ connectionString: requerida("DATABASE_URL") });
 interface ResumenTabla {
   tabla: string;
   filasOrigen: number;
+  // Con --sincronizar incluye las filas actualizadas, no solo las nuevas.
   filasInsertadas: number;
+  omitidas?: number;
 }
 
 const resumen: ResumenTabla[] = [];
@@ -92,7 +110,9 @@ async function migrarUsers(): Promise<Map<string, string>> {
       const { rowCount } = await destino.query(
         `insert into users (id, github_id, github_login, email, created_at)
          values ($1, $2, $3, $4, $5)
-         on conflict (id) do nothing`,
+         on conflict (id) do ${SINCRONIZAR
+           ? "update set github_login = excluded.github_login, email = excluded.email where (users.github_login, users.email) is distinct from (excluded.github_login, excluded.email)"
+           : "nothing"}`,
         [row.id, row.github_id, row.github_login, row.email, row.created_at],
       );
       insertadas += rowCount ?? 0;
@@ -103,42 +123,83 @@ async function migrarUsers(): Promise<Map<string, string>> {
   return new Map(rows.map((r) => [r.id, r.id]));
 }
 
+// `alActualizar`: la clausula `do update ...` que se usa con --sincronizar.
+// Sin ella (o sin la bandera) el conflicto se resuelve con `do nothing`.
 async function copiarTabla(
   tabla: string,
   columnas: string[],
   conflictoPor: string,
+  alActualizar?: string,
 ): Promise<void> {
   const { rows } = await origen.query(`select ${columnas.join(", ")} from ${tabla}`);
+  const resolucion = SINCRONIZAR && alActualizar ? alActualizar : "do nothing";
 
   let insertadas = 0;
+  let omitidas = 0;
   if (APLICAR) {
     for (const row of rows) {
       const valores = columnas.map((c) => row[c]);
       const marcadores = columnas.map((_, i) => `$${i + 1}`);
-      const { rowCount } = await destino.query(
-        `insert into ${tabla} (${columnas.join(", ")})
-         values (${marcadores.join(", ")})
-         on conflict (${conflictoPor}) do nothing`,
-        valores,
-      );
-      insertadas += rowCount ?? 0;
+      try {
+        const { rowCount } = await destino.query(
+          `insert into ${tabla} (${columnas.join(", ")})
+           values (${marcadores.join(", ")})
+           on conflict (${conflictoPor}) ${resolucion}`,
+          valores,
+        );
+        insertadas += rowCount ?? 0;
+      } catch (error) {
+        // 23503: la fila apunta a un usuario o proyecto que no se migro (por
+        // ejemplo, un usuario sin identidad de GitHub, que migrarUsers omite).
+        // Se avisa y se sigue: una fila huerfana no debe abortar el resto.
+        if ((error as { code?: string }).code === "23503") {
+          omitidas += 1;
+          console.warn(`${tabla}: fila omitida por referencia inexistente (${columnas[0]}=${String(row[columnas[0]!])})`);
+          continue;
+        }
+        throw error;
+      }
     }
   }
-  resumen.push({ tabla, filasOrigen: rows.length, filasInsertadas: insertadas });
+  resumen.push({ tabla, filasOrigen: rows.length, filasInsertadas: insertadas, ...(omitidas ? { omitidas } : {}) });
 }
 
 async function main() {
   console.log(APLICAR ? "Modo: APLICANDO cambios de verdad." : "Modo: solo lectura (dry-run). Pasa --apply para escribir.");
+  if (FASE2) console.log("Alcance: Fase 2 (users, projects, project_prompt_state, prompt_copy_stats).");
+  if (SINCRONIZAR) console.log("Conflictos: se actualizan las filas cuyo origen es mas reciente.");
 
   // Orden por dependencia de foreign key: users primero, luego lo que
   // depende de ella, projects antes de project_prompt_state.
   await migrarUsers();
-  await copiarTabla("projects", ["id", "user_id", "name", "is_default", "vars", "updated_at"], "id");
+  await copiarTabla(
+    "projects",
+    ["id", "user_id", "name", "is_default", "vars", "updated_at"],
+    "id",
+    `do update set name = excluded.name, is_default = excluded.is_default, vars = excluded.vars,
+       updated_at = excluded.updated_at
+     where projects.user_id = excluded.user_id and projects.updated_at < excluded.updated_at`,
+  );
   await copiarTabla(
     "project_prompt_state",
     ["project_id", "prompt_id", "used_at", "custom_additions", "ai_output", "updated_at"],
     "project_id, prompt_id",
+    `do update set used_at = excluded.used_at, custom_additions = excluded.custom_additions,
+       ai_output = excluded.ai_output, updated_at = excluded.updated_at
+     where project_prompt_state.updated_at < excluded.updated_at`,
   );
+  await copiarTabla(
+    "prompt_copy_stats",
+    ["prompt_id", "copy_count", "updated_at"],
+    "prompt_id",
+    `do update set copy_count = greatest(prompt_copy_stats.copy_count, excluded.copy_count),
+       updated_at = greatest(prompt_copy_stats.updated_at, excluded.updated_at)
+     where prompt_copy_stats.copy_count < excluded.copy_count`,
+  );
+  if (FASE2) {
+    await cerrar();
+    return;
+  }
   await copiarTabla(
     "user_trial",
     ["user_id", "trial_started_at", "trial_expires_at", "renewed_count"],
@@ -164,14 +225,16 @@ async function main() {
     ["event_id", "event_type", "occurred_at", "received_at", "processed_at"],
     "event_id",
   );
-  await copiarTabla("prompt_copy_stats", ["prompt_id", "copy_count", "updated_at"], "prompt_id");
+  await cerrar();
+}
 
+async function cerrar(): Promise<void> {
   console.log("\nResumen:");
   console.table(resumen);
 
   if (!APLICAR) {
     console.log("\nEsto fue un dry-run -- no se escribio nada en el destino. Revisa los conteos y corre de nuevo con --apply.");
-  } else {
+  } else if (!FASE2) {
     console.log("\nVerifica manualmente: toma 3-5 usuarios con subscriptions.status='active' en el destino y confirma que su paddle_subscription_id coincide con el de Supabase (ver plan §4.2 paso 5).");
   }
 

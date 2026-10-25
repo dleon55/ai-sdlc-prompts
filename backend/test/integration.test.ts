@@ -7,9 +7,6 @@
 // desarrollo), SI corren y ejercitan el esquema real.
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
-import path from "node:path";
 
 const tieneDb = Boolean(process.env.DATABASE_URL);
 
@@ -17,9 +14,8 @@ test("esquema + checkTrialStatus + aislamiento por usuario", { skip: !tieneDb },
   const { pool } = await import("../src/db.ts");
   const { checkTrialStatus } = await import("../src/routes/trial.ts");
 
-  const here = path.dirname(fileURLToPath(import.meta.url));
-  const schemaSql = readFileSync(path.join(here, "..", "src", "schema.sql"), "utf8");
-  await pool.query(schemaSql);
+  const { aplicarEsquema } = await import("./esquema.ts");
+  await aplicarEsquema(pool);
 
   // Limpieza antes de correr: estas pruebas usaban github_id fijos sin
   // limpiar lo que dejaban, asi que una segunda corrida contra la misma

@@ -128,4 +128,55 @@ test("migrar-datos-supabase.ts: dry-run cuenta sin escribir, --apply conserva UU
     const { rows } = await destino.query("select count(*)::int as n from users");
     assert.equal(rows[0]!.n, 1);
   });
+
+  await t.test("sin --sincronizar, un cambio posterior en el origen NO pisa el destino", async () => {
+    await origen.query(`update projects set name = 'Renombrado en Supabase', updated_at = now() + interval '1 minute' where id = $1`, [projectId]);
+    await run(process.execPath, ["--experimental-strip-types", "--no-warnings", scriptPath, "--apply"], { env });
+    const { rows } = await destino.query("select name from projects where id = $1", [projectId]);
+    assert.equal(rows[0]!.name, "Proyecto migrado");
+  });
+
+  await t.test("--sincronizar actualiza solo si el origen es mas reciente, y el contador toma el mayor", async () => {
+    await origen.query(`insert into prompt_copy_stats values ('p-1', 7, now())`);
+    await destino.query(`insert into prompt_copy_stats values ('p-1', 9, now()) on conflict (prompt_id) do update set copy_count = 9`);
+    await run(process.execPath, ["--experimental-strip-types", "--no-warnings", scriptPath, "--apply", "--fase2", "--sincronizar"], { env });
+    const { rows } = await destino.query("select name from projects where id = $1", [projectId]);
+    assert.equal(rows[0]!.name, "Renombrado en Supabase");
+    const { rows: stats } = await destino.query("select copy_count from prompt_copy_stats where prompt_id = 'p-1'");
+    assert.equal(stats[0]!.copy_count, 9, "el destino ya tenia mas copias: no se baja");
+
+    // Un cambio local mas reciente en el destino no lo pisa el origen.
+    await destino.query(`update projects set name = 'Editado ya en el backend', updated_at = now() + interval '1 hour' where id = $1`, [projectId]);
+    await run(process.execPath, ["--experimental-strip-types", "--no-warnings", scriptPath, "--apply", "--fase2", "--sincronizar"], { env });
+    const { rows: r2 } = await destino.query("select name from projects where id = $1", [projectId]);
+    assert.equal(r2[0]!.name, "Editado ya en el backend");
+  });
+
+  await t.test("--fase2 no copia prueba, feedback ni pagos", async () => {
+    const segundo = "55555555-5555-5555-5555-555555555555";
+    await origen.query(`insert into auth.users (id, email) values ($1, 'b@example.com')`, [segundo]);
+    await origen.query(`insert into auth.identities values ($1, 'github', '888888', '{"user_name": "segunda"}'::jsonb)`, [segundo]);
+    await origen.query(
+      `insert into subscriptions (user_id, paddle_subscription_id, status, created_at, updated_at) values ($1, 'sub_fase2', 'active', now(), now())`,
+      [segundo],
+    );
+    const { stdout } = await run(process.execPath, ["--experimental-strip-types", "--no-warnings", scriptPath, "--apply", "--fase2"], { env });
+    assert.match(stdout, /Fase 2/);
+    assert.doesNotMatch(stdout, /subscriptions/);
+    const { rows } = await destino.query("select count(*)::int as n from subscriptions where user_id = $1", [segundo]);
+    assert.equal(rows[0]!.n, 0);
+    const { rows: u } = await destino.query("select count(*)::int as n from users where id = $1", [segundo]);
+    assert.equal(u[0]!.n, 1);
+  });
+
+  await t.test("una fila huerfana se omite con aviso y no aborta la migracion", async () => {
+    await origen.query(
+      `insert into projects (id, user_id, name, is_default, vars, updated_at) values ('66666666-6666-6666-6666-666666666666', '77777777-7777-7777-7777-777777777777', 'Huerfano', false, '{}'::jsonb, now())`,
+    );
+    const { stdout, stderr } = await run(process.execPath, ["--experimental-strip-types", "--no-warnings", scriptPath, "--apply", "--fase2"], { env });
+    assert.match(stderr, /fila omitida/);
+    assert.match(stdout, /omitidas/);
+    const { rows } = await destino.query("select count(*)::int as n from projects where name = 'Huerfano'");
+    assert.equal(rows[0]!.n, 0);
+  });
 });
