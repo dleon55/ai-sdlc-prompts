@@ -11,7 +11,7 @@ WEB_PROMPTS/
 ├── verify_clean.py      # QA Gate: Script de validación de limpieza de prompts
 ├── extract_vars.py      # QA Gate: Contrato de placeholders y aliases
 ├── mcp-server/          # Servidor MCP para consulta y resolución de prompts
-├── supabase/            # Esquema, migraciones y Edge Function del webhook Paddle
+├── backend/             # API propia: auth GitHub, base PostgreSQL, prueba, webhook Paddle
 ├── index.html           # Artefacto Final: Aplicación SPA self-contained
 └── nginx_prompts.conf   # Infra: Configuración de servidor para producción
 ```
@@ -32,10 +32,10 @@ El proyecto utiliza GitHub Actions para automatizar el ciclo de vida:
 - **Jobs:**
     - **Build y gates obligatorios:** ejecuta `build.py`, `verify_clean.py`, `extract_vars.py`, pruebas JavaScript de variables y `pytest`.
     - **PR:** usa configuración Paddle sandbox y valida sin desplegar.
-    - **Main:** reconstruye con variables Live del Environment `production`, publica el artefacto en **GitHub Pages**, despliega GCP y la Edge Function de Supabase.
+    - **Main:** reconstruye con variables Live del Environment `production`, publica el artefacto en **GitHub Pages** y despliega el sitio en GCP. El backend (`backend/`) aún se despliega a mano en la VM.
     - **E2E y MCP:** se ejecutan como señal informativa; un resultado fallido debe investigarse antes de declarar una liberación aceptada.
 
 ## 4. Estándares de Ingeniería
 - **Conventional Commits:** Uso obligatorio de prefijos `feat:`, `fix:`, `docs:`, `ci:` para el historial de versiones.
 - **Atomic Commits:** Cada cambio funcional debe ir en su propio commit incluyendo la regeneración del `index.html`.
-- **Dependencias acotadas:** el catálogo y la experiencia anónima son autocontenidos; Supabase habilita autenticación/sincronización y Paddle.js sólo se usa para checkout configurado.
+- **Dependencias acotadas:** el catálogo y la experiencia anónima son autocontenidos; el backend propio (`/api/*`, mismo dominio) habilita autenticación/sincronización y Paddle.js sólo se usa para checkout configurado.

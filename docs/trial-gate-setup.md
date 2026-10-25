@@ -4,15 +4,15 @@ Este feature se apoya en el registro de usuarios ya configurado (ver
 [`docs/auth-setup.md`](auth-setup.md)) — si ese feature todavía muestra el
 aviso de "no configurado", completa esos pasos primero.
 
-El código está implementado en `build.py` (sección `MURO DE REGISTRO /
-PRUEBA / FEEDBACK`), pero **queda inerte hasta ejecutar el SQL de este
-archivo** en el proyecto de Supabase — igual que con `schema.sql`, ningún
-paso de este documento puede hacerse desde este repositorio.
+El cliente está implementado en `build.py` (sección `MURO DE REGISTRO /
+PRUEBA / FEEDBACK`) y la lógica de servidor en el backend propio
+([`backend/src/routes/trial.ts`](../backend/src/routes/trial.ts), API en
+`/api/*`, base PostgreSQL `ai_sdlc_pro`).
 
-Mientras no se ejecute `supabase/trial_gate.sql`, cada llamada a las
-funciones nuevas falla (no existen todavía) y el diseño está pensado para
-ese caso: **fail-open** — cualquier error de red o de función faltante
-permite la acción en vez de bloquearla.
+Si el backend no responde (servicio caído, `/api/` sin publicar en nginx,
+error de base de datos), el diseño está pensado para ese caso:
+**fail-open** — cualquier error de red o de ruta permite la acción en vez
+de bloquearla, y el sitio sigue funcionando desde `localStorage`.
 
 ## Rediseño (issue #7, Opción B) — qué cambió y por qué
 
@@ -35,37 +35,40 @@ El muro ahora gatea la **plataforma**, no el texto:
 - El proyecto #1 (variables, checklist de progreso, modo guiado) sigue
   siendo gratis para siempre, sin sesión.
 
-`check_trial_status()` (usuario con sesión) no cambió: sigue decidiendo si
+`GET /api/trial/status` (usuario con sesión; antes la RPC
+`check_trial_status()`) no cambió de criterio: sigue decidiendo si
 hay prueba activa o suscripción. Lo que cambió es **desde dónde se llama**
 (antes: antes de copiar; ahora: antes de crear el 2do proyecto o guardar
 personalización/IA).
 
-`check_anon_usage()`/la tabla `anon_usage` quedan **sin uso**: el límite de
-"1 proyecto gratis" en modo anónimo se calcula del lado del cliente
-(`loadProjects().length`), sin necesidad de rastrear IPs, porque el conteo
-de proyectos ya vive en `localStorage` de forma visible. No se borran de la
-base de datos por si ya hay datos históricos, pero ningún código del
-cliente los llama ya.
+El límite de "1 proyecto gratis" en modo anónimo se calcula del lado del
+cliente (`loadProjects().length`), sin rastrear IPs, porque el conteo de
+proyectos ya vive en `localStorage` de forma visible. Por eso el backend
+propio no tiene tabla `anon_usage` ni nada equivalente.
 
-## 1. Ejecutar el SQL
+## 1. Rutas y tablas del backend
 
-En el SQL Editor del mismo proyecto de Supabase ya configurado (`Database →
-SQL Editor`), pega y ejecuta el contenido completo de
-[`supabase/trial_gate.sql`](../supabase/trial_gate.sql), y después el de
-[`supabase/prompt_copy_stats.sql`](../supabase/prompt_copy_stats.sql) (indicador
-de "prompts más copiados" para el administrador — sigue funcionando igual,
-no cambió con este rediseño).
+El esquema vive en [`backend/src/schema.sql`](../backend/src/schema.sql) y
+se aplica con `npm run migrate` (idempotente) — no hay paso manual de SQL.
+
+| Ruta | Qué hace |
+|---|---|
+| `GET /api/trial/status` | Devuelve `{active, expires_at, no_trial_row, subscribed}`. Revisa primero `subscriptions`; si no hay suscripción activa, la fila de `user_trial`. |
+| `POST /api/trial/feedback` | `{rating 1..5, comments}`: guarda la fila en `feedback` y renueva `user_trial.trial_expires_at` una semana desde el envío. |
+| `POST /api/prompt-stats/track` | Público: incrementa el contador de `prompt_copy_stats` (indicador "prompts más copiados" para el administrador). Nunca bloquea la copia. |
+
+Tablas: `user_trial` (se crea al registrarse el usuario en `users`, vía el
+trigger `create_user_trial()`), `feedback` y `prompt_copy_stats`.
 
 ## 2. Verificar la regla de seguridad crítica
 
-Antes de dar esto por terminado, confirma en **Database → Tables** que:
-- `anon_usage`, `user_trial` y `feedback` aparecen con **RLS habilitado**.
-- `user_trial` tiene **una sola política**, de tipo `SELECT` — si ves
-  alguna de `UPDATE`/`INSERT`/`ALL`, algo salió mal: cualquiera podría
-  auto-extender su propia prueba desde la consola del navegador con el
-  `anon key` público. El test `tests/test_trial_gate_schema.py` ya bloquea
-  esto a nivel de repositorio, pero vale la pena confirmarlo también en el
-  proyecto real.
+`user_trial` **nunca es editable por el cliente**: no existe ninguna ruta
+que acepte una fecha de vencimiento. La única vía de extender
+`trial_expires_at` es `POST /api/trial/feedback`, que exige sesión y
+calcula la fecha en el servidor (`now() + interval '1 week'`). La
+autorización se aplica en cada ruta del backend (el `user_id` sale siempre
+de la cookie de sesión, nunca del cuerpo de la petición); las pruebas de
+integración del backend (`backend/test/integration.test.ts`) lo cubren.
 
 ## 3. Verificación funcional (manual, no automatizable desde aquí)
 
@@ -80,10 +83,11 @@ Antes de dar esto por terminado, confirma en **Database → Tables** que:
 5. Inicia sesión con GitHub. Crear un 2do proyecto y guardar
    personalización/IA deben funcionar sin límite mientras la prueba esté
    activa.
-6. Para simular el vencimiento sin esperar 1 semana real, en el SQL Editor:
+6. Para simular el vencimiento sin esperar 1 semana real, en la VM
+   (`sudo -u postgres psql ai_sdlc_pro`):
    ```sql
    update user_trial set trial_expires_at = now() - interval '1 day'
-   where user_id = (select id from auth.users where email = 'tu-email-de-prueba@ejemplo.com');
+   where user_id = (select id from users where github_login = 'tu-usuario-de-prueba');
    ```
 7. Recarga el sitio (con la misma sesión) e intenta crear un 2do proyecto —
    debe aparecer el muro de feedback en vez de crearlo (copiar prompts
@@ -91,9 +95,9 @@ Antes de dar esto por terminado, confirma en **Database → Tables** que:
 8. Envía el formulario (calificación + comentario) — debe cerrarse el
    modal y crear el 2do proyecto/guardar personalización debe volver a
    funcionar de inmediato.
-9. Confirma en **Table Editor → feedback** que la fila quedó registrada, y
-   en **user_trial** que `trial_expires_at` avanzó ~1 semana desde el envío.
-10. En **Table Editor → prompt_copy_stats**, confirma que aparece una fila
+9. Confirma con `psql` que la fila quedó registrada en `feedback`, y en
+   `user_trial` que `trial_expires_at` avanzó ~1 semana desde el envío.
+10. En `prompt_copy_stats`, confirma que aparece una fila
     por cada prompt copiado durante esta prueba, con `copy_count` correcto
     (esto sigue registrándose siempre, gratis o Pro, gate o no).
 
@@ -110,11 +114,11 @@ Antes de dar esto por terminado, confirma en **Database → Tables** que:
   compradores objetivo (equipos, agencias) valoran la conveniencia de
   sincronizar entre dispositivos más que evadir un límite de conveniencia.
 - **`user_trial` nunca es editable directo por el cliente** — la única vía
-  de extender `trial_expires_at` es `submit_feedback_and_renew()`, que
-  corre con privilegios de servidor (`security definer`).
-- **Fail-open ante errores de red** — una caída transitoria de Supabase
+  de extender `trial_expires_at` es `POST /api/trial/feedback`, que calcula
+  la fecha en el servidor.
+- **Fail-open ante errores de red** — una caída transitoria del backend
   nunca bloquea a un usuario real.
 - **El servidor MCP (`mcp-server/`) no está cubierto por este muro** — es
   un canal de distribución completamente separado, sin ninguna dependencia
-  de Supabase; dado que copiar prompts ya es gratis en el sitio también,
+  del backend; dado que copiar prompts ya es gratis en el sitio también,
   esto ya no representa una brecha del modelo de negocio.

@@ -21,7 +21,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     # Todos los secretos de este repositorio viven en el environment
-    # `production` (GCP_*, SUPABASE_ACCESS_TOKEN), no a nivel repositorio. Un
+    # `production` (GCP_*), no a nivel repositorio. Un
     # job que no declara environment SOLO ve los de repositorio, asi que el
     # primer intento de publicar fallo con ENEEDAUTH: NPM_TOKEN no llegaba
     # aunque estuviera configurado. Declararlo da acceso a ambos ambitos.

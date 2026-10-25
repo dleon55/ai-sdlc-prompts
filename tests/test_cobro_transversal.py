@@ -22,8 +22,10 @@ import build
 
 ROOT = Path(__file__).resolve().parent.parent
 BUILD_SRC = (ROOT / "build.py").read_text(encoding="utf-8")
-EDGE_SRC = (ROOT / "supabase" / "functions" / "paddle-webhook" / "index.ts").read_text(encoding="utf-8")
-ALERTAS_SRC = (ROOT / "supabase" / "functions" / "paddle-webhook" / "alertas.ts").read_text(encoding="utf-8")
+# El webhook de Paddle vive en el backend propio (antes, una Edge Function).
+WEBHOOK_SRC = (ROOT / "backend" / "src" / "routes" / "webhooks" / "paddle.ts").read_text(encoding="utf-8")
+ALERTAS_SRC = (ROOT / "backend" / "src" / "routes" / "webhooks" / "alertas.ts").read_text(encoding="utf-8")
+ESQUEMA_SQL = (ROOT / "backend" / "src" / "schema.sql").read_text(encoding="utf-8")
 WORKFLOW = (ROOT / ".github" / "workflows" / "deploy.yml").read_text(encoding="utf-8")
 SCRIPT = ROOT / "scripts" / "verificar-precio-publicado.sh"
 DOCS_PADDLE = (ROOT / "docs" / "paddle-integration.md").read_text(encoding="utf-8")
@@ -60,10 +62,13 @@ def test_legal_entity_is_the_single_source_of_identity():
     assert e["domicilio"] is None
     assert e["correo_privacidad"] == "privacidad@lionsystems.com.mx"
     assert e["correo_soporte"] == "soporte@lionsystems.com.mx"
-    assert e["actualizado"] == "18 de octubre de 2026"
+    assert e["actualizado"] == "25 de octubre de 2026"
     nombres = [x["nombre"] for x in e["encargados"]]
-    for encargado in ("Paddle", "Supabase", "GitHub", "Google Analytics"):
+    for encargado in ("Paddle", "GitHub", "Google Analytics", "Google Cloud"):
         assert encargado in nombres
+    # La cuenta y la suscripción viven en el servidor propio: ya no hay un
+    # proveedor de backend externo que declarar.
+    assert "Supabase" not in nombres
     # Los alias que usan páginas y pruebas derivan del dict, no son copia.
     assert build.LEGAL_CONTACT_EMAIL == e["correo_soporte"]
     assert build.LEGAL_PRIVACY_EMAIL == e["correo_privacidad"]
@@ -391,52 +396,46 @@ def test_pricing_page_reports_purchase_only_after_the_webhook_confirms():
     assert 'var PADDLE_PRICE_AMOUNT_USD="' + build.precio_mensual_usd() + '"' in precios
 
 
-# ── T3 / T5: Edge Function ───────────────────────────────────────────────
+# ── T3 / T5: webhook de Paddle (backend propio) ─────────────────────────
 
-def test_edge_function_records_adjustment_created_without_touching_access():
-    assert 'eventType === "adjustment.created"' in EDGE_SRC
-    assert 'clave: "reembolso"' in EDGE_SRC
+def test_webhook_records_adjustment_created_without_touching_access():
+    assert 'eventType === "adjustment.created"' in WEBHOOK_SRC
+    assert 'clave: "reembolso"' in WEBHOOK_SRC
     # La rama que registra eventos no-suscripción manda null en los campos
     # que la función SQL usaría para escribir subscriptions.
-    rama = EDGE_SRC[EDGE_SRC.index("} else {"):EDGE_SRC.index('if (eventType === "adjustment.created")')]
+    rama = WEBHOOK_SRC[WEBHOOK_SRC.index("} else {"):WEBHOOK_SRC.index('if (eventType === "adjustment.created")')]
     assert "p_subscription_id: null" in rama
     assert "p_user_id: null" in rama
     # Y la función SQL solo cambia estado para subscription.%
-    sql = (ROOT / "supabase" / "migrations" / "20260731_paddle_webhook_fail_loud_on_unlinked_event.sql").read_text(encoding="utf-8")
-    assert "if p_event_type like 'subscription.%' then" in sql
+    assert "if p_event_type like 'subscription.%' then" in ESQUEMA_SQL
 
 
-def test_edge_function_alerts_before_every_500_and_on_throw():
-    assert 'from "./alertas.ts"' in EDGE_SRC
-    assert "ALERTAS_WEBHOOK_URL" in EDGE_SRC
-    respuestas_500 = EDGE_SRC.count('new Response("DB error", { status: 500 })')
-    assert respuestas_500 == 2, "hay más 500 que alertas"
-    assert EDGE_SRC.count('clave: "webhook_error"') == 2
-    assert "} catch (error) {" in EDGE_SRC and "transaction threw" in EDGE_SRC
-    assert ": any" not in EDGE_SRC
+def test_webhook_alerts_before_every_500():
+    assert 'from "./alertas.ts"' in WEBHOOK_SRC
+    assert "ALERTAS_WEBHOOK_URL" in WEBHOOK_SRC
+    respuestas_500 = WEBHOOK_SRC.count('res.status(500).send("DB error")')
+    assert respuestas_500 >= 1
+    assert WEBHOOK_SRC.count('clave: "webhook_error"') == respuestas_500, "hay más 500 que alertas"
+    assert "} catch (error) {" in WEBHOOK_SRC
+    assert ": any" not in WEBHOOK_SRC
 
 
-def test_edge_function_never_leaks_secrets_into_logs_or_alerts():
-    for linea in EDGE_SRC.splitlines():
+def test_webhook_never_leaks_secrets_into_logs_or_alerts():
+    for linea in WEBHOOK_SRC.splitlines():
         if "alertar(" in linea or "console." in linea:
             assert "PADDLE_WEBHOOK_SECRET" not in linea
-            assert "SERVICE_ROLE" not in linea
             assert "rawBody" not in linea
             assert "signatureHeader" not in linea
     assert "CLAVES_PROHIBIDAS" in ALERTAS_SRC
     assert "secret|token|password|authorization|signature" in ALERTAS_SRC
     assert "VENTANA_DEDUP_MS = 60 * 60 * 1000" in ALERTAS_SRC
-    # Portabilidad: alertas.ts se ejecuta en Node para probarse, así que
-    # ningún código (los comentarios no cuentan) puede tocar Deno.*
-    codigo = [l for l in ALERTAS_SRC.splitlines() if not l.lstrip().startswith("//")]
-    assert not any("Deno." in l for l in codigo)
 
 
 def test_new_secret_is_documented():
     assert "ALERTAS_WEBHOOK_URL" in DOCS_PADDLE
     assert "adjustment.created" in DOCS_PADDLE
-    env_example = (ROOT / "supabase" / "functions" / ".env.example").read_text(encoding="utf-8")
+    env_example = (ROOT / "backend" / ".env.example").read_text(encoding="utf-8")
     assert "ALERTAS_WEBHOOK_URL=" in env_example
     assert "PADDLE_WEBHOOK_SECRET=" in env_example
     assert re.search(r"^ALERTAS_WEBHOOK_URL=\s*$", env_example, re.M), ".env.example lleva un valor real"
-    assert "supabase/functions/.env" in _read(".gitignore")
+    assert "backend/.env" in _read(".gitignore")

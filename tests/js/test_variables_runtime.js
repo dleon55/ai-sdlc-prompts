@@ -427,12 +427,11 @@ context.getCurrentLanguage = () => "es";
   // El repositorio es público, así que copiar prompts ya NO se gatea (ver
   // copyResolvedText()); lo que sí se gatea es crear un 2do proyecto o más,
   // y guardar personalización/resultados de IA -- ver checkProFeatureGate().
-  // isSupabaseConfigured()/getSupabaseClient() se sobreescriben aquí (mismo
-  // patrón ya usado para getCurrentLanguage) porque el build local no trae
-  // SUPABASE_URL/SUPABASE_ANON_KEY configurados -- sin esto,
-  // checkProFeatureGate() haría fail-open en su primera línea y ninguna
-  // rama de bloqueo sería alcanzable en esta prueba.
-  context.isSupabaseConfigured = () => true;
+  // backendApi() se sobreescribe aquí (mismo patrón ya usado para
+  // getCurrentLanguage): la VM no tiene backend, y conPrueba(activa) decide qué
+  // responde /api/trial/status en cada caso; el resto de rutas da null (sin respuesta).
+  const conPrueba = (activa) => (method, ruta) =>
+    Promise.resolve(ruta === "/api/trial/status" ? { active: activa, subscribed: false } : null);
   storage.clear();
   context.saveProjects([{ id: "p1", name: "Proyecto", isDefault: true, vars: Object.assign({}, context.EMPTY_VARS) }]);
   storage.set(context.LS_KEY_ACTV, "p1");
@@ -440,7 +439,7 @@ context.getCurrentLanguage = () => "es";
   // Anónimo: el gate rechaza sin necesidad de ningún RPC (el límite de "1
   // proyecto gratis" se decide con loadProjects().length, no con IPs).
   context._authStateResolved = true;
-  context._sbUser = null;
+  context._usuario = null;
   const anonGate = await context.checkProFeatureGate();
   // anonGate viene del realm interno de la vm -- deepStrictEqual fallaría
   // por prototipos de Object distintos aunque el contenido sea idéntico
@@ -456,20 +455,12 @@ context.getCurrentLanguage = () => "es";
 
   // Con sesión: check_trial_status() decide -- activo permite, vencido
   // bloquea con reason 'trial_expired'.
-  context._sbUser = { id: "fake-user" };
-  context.getSupabaseClient = () => ({
-    rpc: (name) => name === "check_trial_status"
-      ? Promise.resolve({ data: { active: true }, error: null })
-      : Promise.resolve({ data: null, error: null }),
-  });
+  context._usuario = { id: "fake-user" };
+  context.backendApi = conPrueba(true);
   const activeTrialGate = await context.checkProFeatureGate();
   assert.strictEqual(JSON.stringify(activeTrialGate), JSON.stringify({ allowed: true }));
 
-  context.getSupabaseClient = () => ({
-    rpc: (name) => name === "check_trial_status"
-      ? Promise.resolve({ data: { active: false }, error: null })
-      : Promise.resolve({ data: null, error: null }),
-  });
+  context.backendApi = conPrueba(false);
   const expiredTrialGate = await context.checkProFeatureGate();
   assert.strictEqual(JSON.stringify(expiredTrialGate), JSON.stringify({ allowed: false, reason: "trial_expired" }));
 
@@ -484,22 +475,18 @@ context.getCurrentLanguage = () => "es";
   // 2do proyecto, anónimo -- el gate bloquea y NO se crea.
   // requestNewProject() es fire-and-forget (igual que copyResolvedText()),
   // así que se cede el control con microtasks en vez de un await directo.
-  context._sbUser = null;
+  context._usuario = null;
   onSuccessCalled = false;
   context.requestNewProject(() => { onSuccessCalled = true; });
   // 3 flushes: requestNewProject().then(...) encadena sobre la promesa que
-  // ya devuelve checkProFeatureGate() (rpc -> .then() -> .then()).
+  // ya devuelve checkProFeatureGate() (backendApi -> .then() -> .then()).
   await Promise.resolve(); await Promise.resolve(); await Promise.resolve();
   assert.strictEqual(context.loadProjects().length, 1, "no debe crearse un 2do proyecto sin sesión");
   assert.strictEqual(onSuccessCalled, false);
 
   // 2do proyecto, con sesión y prueba activa -- el gate permite.
-  context._sbUser = { id: "fake-user" };
-  context.getSupabaseClient = () => ({
-    rpc: (name) => name === "check_trial_status"
-      ? Promise.resolve({ data: { active: true }, error: null })
-      : Promise.resolve({ data: null, error: null }),
-  });
+  context._usuario = { id: "fake-user" };
+  context.backendApi = conPrueba(true);
   context.requestNewProject(() => { onSuccessCalled = true; });
   await Promise.resolve(); await Promise.resolve(); await Promise.resolve();
   assert.strictEqual(context.loadProjects().length, 2, "el 2do proyecto sí debe crearse con prueba activa");
@@ -507,10 +494,8 @@ context.getCurrentLanguage = () => "es";
 
   // Copiar prompts NUNCA pasa por este gate, ni siquiera en el estado más
   // restrictivo (anónimo, gate rechazando) -- regresión clave del rediseño.
-  context._sbUser = null;
-  context.getSupabaseClient = () => ({
-    rpc: () => Promise.resolve({ data: { allowed: false }, error: null }),
-  });
+  context._usuario = null;
+  context.backendApi = conPrueba(false);
   let copiedDespiteBlockedGate = "";
   context.doCopy = text => { copiedDespiteBlockedGate = text; };
   context.showUnresolvedWarning = () => {};
@@ -522,7 +507,7 @@ context.getCurrentLanguage = () => "es";
   // saveGatedPromptField(): vaciar un campo siempre se permite sin gate;
   // guardar contenido no vacío pasa por el gate y revierte el textarea si
   // se bloquea.
-  context._sbUser = null;
+  context._usuario = null;
   const gatedTextarea = { value: "", dataset: {} };
   let clearedValue = "sin-llamar";
   context.saveGatedPromptField(gatedTextarea, (pid, value) => { clearedValue = value; }, anyPidForCopy);
@@ -536,17 +521,13 @@ context.getCurrentLanguage = () => "es";
   assert.strictEqual(savedValue, null, "no debe guardarse contenido no vacío sin sesión");
   assert.strictEqual(gatedTextarea.value, "", "el textarea debe vaciarse cuando el gate bloquea");
 
-  context._sbUser = { id: "fake-user" };
-  context.getSupabaseClient = () => ({
-    rpc: (name) => name === "check_trial_status"
-      ? Promise.resolve({ data: { active: true }, error: null })
-      : Promise.resolve({ data: null, error: null }),
-  });
+  context._usuario = { id: "fake-user" };
+  context.backendApi = conPrueba(true);
   gatedTextarea.value = "restricción de mi organización";
   context.saveGatedPromptField(gatedTextarea, saveFnStub, anyPidForCopy);
   await Promise.resolve(); await Promise.resolve(); await Promise.resolve();
   assert.strictEqual(savedValue, "restricción de mi organización", "sí debe guardarse con prueba activa");
-  assert.strictEqual(gatedTextarea.dataset.proOk, "1", "debe marcarse como ya verificado para no repetir el RPC en cada tecla");
+  assert.strictEqual(gatedTextarea.dataset.proOk, "1", "debe marcarse como ya verificado para no repetir la consulta en cada tecla");
 
   console.log("runtime variable tests: ok");
 })().catch(err => {

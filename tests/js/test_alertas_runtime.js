@@ -1,9 +1,8 @@
-// Ejecuta alertas.ts (Edge Function paddle-webhook) en Node, de verdad.
+// Ejecuta alertas.ts (webhook de Paddle del backend) en Node, de verdad.
 //
-// No hay Deno en CI ni en local, y una alerta que no se prueba es una
-// alerta que falla justo cuando hace falta. El modulo no toca Deno.* a
-// proposito: recibe fetch, reloj y log por inyeccion, asi que Node lo
-// ejecuta tal cual con type stripping (Node >= 22.6).
+// Una alerta que no se prueba es una alerta que falla justo cuando hace
+// falta. El modulo recibe fetch, reloj y log por inyeccion, asi que Node lo
+// ejecuta tal cual con type stripping (Node >= 22.6), sin red.
 //
 // Se relanza a si mismo con --experimental-strip-types si no viene ya con
 // el flag, para que `node tests/js/*.js` lo corra sin cambios en CI.
@@ -20,7 +19,7 @@ if (!process.execArgv.includes(FLAG)) {
 }
 
 const modulo = pathToFileURL(
-  path.resolve(__dirname, "..", "..", "supabase", "functions", "paddle-webhook", "alertas.ts"),
+  path.resolve(__dirname, "..", "..", "backend", "src", "routes", "webhooks", "alertas.ts"),
 ).href;
 
 (async () => {

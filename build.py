@@ -1645,7 +1645,7 @@ body.ms-mode .sec-check { display: block; }
 }
 .pq-mgr-btn:hover { border-color: var(--bdr2); color: var(--tx2); background: var(--bg4); }
 
-/* ════════════════════  AUTENTICACIÓN (Supabase + GitHub)  ═══════ */
+/* ════════════════════  AUTENTICACIÓN (GitHub)  ═══════ */
 .auth-btn {
   display: flex; align-items: center; gap: .3rem; flex-shrink: 0;
   padding: .26rem .65rem; background: rgba(99,102,241,.12);
@@ -2293,7 +2293,7 @@ var EMPTY_VARS  = {
 
 // UUID v4 real (no un prefijo "proj_" arbitrario): así un id generado
 // localmente ya es válido para la columna `uuid` de la tabla `projects`
-// en Supabase sin necesitar remapeo cuando el usuario inicia sesión
+// del backend sin necesitar remapeo cuando el usuario inicia sesión
 // (issue: registro de usuarios -- ver docs/auth-setup.md).
 function genId() {
   if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
@@ -2484,143 +2484,69 @@ function switchProject(id) {
   renderProjQuick();
 }
 
-/* ════════════════════  AUTENTICACIÓN (Supabase + GitHub)  ═══════
-   Registro de usuarios opcional vía Supabase Auth (GitHub OAuth), sin
-   backend propio -- diseño completo en docs/auth-setup.md. Un usuario
-   anónimo sigue funcionando exactamente igual que antes (localStorage
-   solamente); iniciar sesión es aditivo, nunca un requisito.
+/* ════════════════════  AUTENTICACIÓN (backend propio + GitHub)  ═══════
+   Registro de usuarios opcional con GitHub, contra el backend propio del
+   sitio (backend/, mismo dominio en /api/*). Un usuario anónimo sigue
+   funcionando exactamente igual (localStorage solamente); iniciar sesión
+   es aditivo, nunca un requisito.
 
-   SUPABASE_URL/SUPABASE_ANON_KEY quedan con un valor centinela
-   ('PENDIENTE_CONFIGURAR') hasta completar la configuración manual
-   descrita en docs/auth-setup.md (crear el proyecto de Supabase, la
-   GitHub OAuth App y la tabla `projects` con su política RLS -- pasos
-   que requieren una cuenta humana y no pueden hacerse desde este
-   código). Mientras no estén configurados, el botón de inicio de
-   sesión se muestra pero informa que falta configuración en vez de
-   intentar hablar con un backend que no existe, y el SDK de Supabase
-   tampoco se descarga hasta window.load y solo si ya está configurado,
-   siguiendo el mismo patrón ya usado para diferir gtag.js (issue:
-   performance de carga inicial) -- así un visitante anónimo no paga
-   ningún costo de red por esta función mientras no esté lista.
-   isSupabaseConfigured() es lo único que decide esa rama: cualquier
-   valor distinto al centinela ya cuenta como "configurado". */
+   La sesión vive en una cookie httpOnly que pone el backend: el script de
+   la página no la ve ni la guarda, así que un XSS no puede robarla. El
+   sitio solo pregunta /api/auth/session para saber si hay usuario. */
 
-var SUPABASE_URL = 'https://sqdzoreqfatpdainlhrm.supabase.co';
-var SUPABASE_ANON_KEY = 'sb_publishable_qLmbKA8tlIUdW4xzmB1Z-w_kN3ygt7j';
-var _sb = null;
-var _sbUser = null;
-// Bug real reportado tras el primer login post-redirect de GitHub: justo al
-// volver del OAuth, getSession() todavía está intercambiando el código por
-// una sesión (viaje de red real, no instantáneo) -- _sbUser sigue en null
-// durante esa ventana, así que checkProFeatureGate() lo trataba como
-// anónimo y mostraba el muro de registro otra vez aunque el login sí
-// hubiera funcionado. _authStateResolved distingue "aún no sabemos" de
-// "confirmado sin sesión", para que el gate falle abierto mientras la
-// primera resolución de getSession() está en curso, en vez de asumir
-// "anónimo" por defecto.
+var _usuario = null;
+// Justo al cargar, /api/auth/session todavía está en viaje: _usuario sigue
+// en null sin que eso signifique "anónimo". _authStateResolved distingue
+// "aún no sabemos" de "confirmado sin sesión", para que el gate falle
+// abierto durante esa ventana en vez de mostrar el muro de registro a
+// alguien que sí tiene sesión (bug real del primer login tras volver de
+// GitHub).
 var _authStateResolved = false;
 
-function isSupabaseConfigured() {
-  return SUPABASE_URL !== 'PENDIENTE_CONFIGURAR' && SUPABASE_ANON_KEY !== 'PENDIENTE_CONFIGURAR';
-}
-
-// Opciones de auth EXPLICITAS a proposito. Con createClient(url, key) a
-// secas se depende de los defaults del SDK, y en produccion se observo la
-// sesion viviendo solo en memoria: localStorage tenia las 5 claves
-// AI_SDLC_* pero ninguna sb-*-auth-token. Sin sesion persistida, cada
-// recarga vuelve anonimo, check_trial_status() no encuentra auth.uid() y
-// un usuario que YA PAGO nunca ve su acceso Pro.
-//
-// Declararlas aqui deja el contrato a la vista y hace que precios.html
-// pueda usar exactamente las mismas (misma storageKey por defecto = la
-// sesion se comparte entre / , /app y /precios.html).
-var SB_AUTH_OPTS = {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true,
-    storage: window.localStorage
-  }
-};
-
-function getSupabaseClient() {
-  if (!isSupabaseConfigured() || typeof supabase === 'undefined') return null;
-  if (!_sb) _sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, SB_AUTH_OPTS);
-  return _sb;
-}
-
-// Llamada por el <script onload> del SDK diferido (ver LANDING_JS/JS al
-// final del documento) una vez que el SDK terminó de descargarse.
-function initSupabaseAuth() {
-  var client = getSupabaseClient();
-  if (!client) return;
-  client.auth.getSession().then(function(res) {
-    _sbUser = (res && res.data && res.data.session) ? res.data.session.user : null;
-    _authStateResolved = true;
-    stripAuthTokensFromUrl();
-    renderAuthUI();
-    if (_sbUser) { pullCloudProjects(); pullCloudPromptState(); refreshProState(); }
-  }).catch(function() {
-    // Si getSession() llega a rechazar en vez de resolver, _authStateResolved
-    // debe quedar en true de todas formas -- de lo contrario
-    // checkProFeatureGate() se queda fallando abierto (permitiendo todo)
-    // para siempre en esta sesión en vez de solo durante la ventana breve
-    // de carga real.
-    _authStateResolved = true;
-    renderAuthUI();
-  });
-  client.auth.onAuthStateChange(function(event, session) {
-    _sbUser = session ? session.user : null;
-    _authStateResolved = true;
-    renderAuthUI();
-    if (_sbUser) { pullCloudProjects(); pullCloudPromptState(); }
+// Llamada al backend propio, mismo origen. Nunca lanza ni rechaza: ante
+// cualquier fallo (sin fetch, red caída, 4xx/5xx) resuelve null y el sitio
+// sigue con su caché local -- el mismo principio fail-open de siempre.
+function backendApi(method, path, body) {
+  return new Promise(function(resolve) {
+    try {
+      if (typeof fetch !== 'function') { resolve(null); return; }
+      var opciones = { method: method, credentials: 'same-origin', headers: {} };
+      if (body !== undefined) {
+        opciones.headers['Content-Type'] = 'application/json';
+        opciones.body = JSON.stringify(body);
+      }
+      fetch(path, opciones).then(function(res) {
+        if (!res || !res.ok) { resolve(null); return; }
+        if (res.status === 204) { resolve({}); return; }
+        return res.json().then(resolve, function() { resolve(null); });
+      }).catch(function() { resolve(null); });
+    } catch (e) { resolve(null); }
   });
 }
 
+// Se llama al cargar la página (ver el window.load al final del documento).
+function initAuth() {
+  return backendApi('GET', '/api/auth/session').then(function(res) {
+    _usuario = (res && res.user) ? res.user : null;
+    _authStateResolved = true;
+    renderAuthUI();
+    if (_usuario) { pullCloudProjects(); pullCloudPromptState(); refreshProState(); }
+  });
+}
+
+// El login es una navegación completa a GitHub vía el backend; al volver,
+// el backend regresa a ESTA misma página (?volver=), no a la portada.
 function signInWithGitHub() {
-  var lang = getCurrentLanguage();
-  if (!isSupabaseConfigured()) {
-    showToast(lang === 'en'
-      ? 'Sign-in isn’t configured yet — see docs/auth-setup.md'
-      : 'El inicio de sesión aún no está configurado — ver docs/auth-setup.md', 'warn');
-    return;
-  }
-  var client = getSupabaseClient();
-  if (!client) {
-    showToast(lang === 'en' ? 'Still loading — try again in a moment' : 'Aún cargando — intenta de nuevo en un momento', 'warn');
-    return;
-  }
-  // redirectTo explicito: sin el, Supabase devuelve siempre al Site URL
-  // del proyecto (la raiz). Un visitante que llega a /precios.html, pulsa
-  // Suscribirme, ve "primero inicia sesion" y se autentica, aterrizaba en
-  // la landing sin ninguna pista de que debia volver a precios -- el
-  // embudo de pago se rompia justo antes de cobrar.
-  // SIN el hash a proposito. Usar window.location.href arrastra el
-  // #access_token= que Supabase acaba de dejar, asi que cada login
-  // apilaba otro token sobre el anterior: se observaron URLs con TRES
-  // access_token, refresh_token y provider_token de GitHub encadenados.
-  // Eso los deja en el historial, en el titulo de la pestaña y en
-  // cualquier captura de pantalla, y hace crecer la URL sin limite.
-  client.auth.signInWithOAuth({
-    provider: 'github',
-    options: { redirectTo: window.location.origin + window.location.pathname + window.location.search }
-  });
-}
-
-// Borra el fragmento con los tokens en cuanto el SDK ya los consumio.
-// Supabase los deja en la URL por el flujo implicito y no los limpia
-// solo; sin esto quedan visibles y compartibles indefinidamente.
-function stripAuthTokensFromUrl() {
-  if (!window.location.hash || window.location.hash.indexOf('access_token=') < 0) return;
-  try {
-    history.replaceState(null, '', window.location.pathname + window.location.search);
-  } catch (e) {}
+  var volver = window.location.pathname + window.location.search;
+  window.location.href = '/api/auth/login?volver=' + encodeURIComponent(volver);
 }
 
 function signOutUser() {
-  var client = getSupabaseClient();
-  if (!client) return;
-  client.auth.signOut();
+  backendApi('POST', '/api/auth/logout').then(function() {
+    _usuario = null;
+    setProState(false);
+    renderAuthUI();
+  });
 }
 
 function renderAuthUI() {
@@ -2643,13 +2569,13 @@ function renderAuthUI() {
     proBadge.title = lang === 'en'
       ? 'Active paid subscription'
       : 'Suscripción de pago activa';
-    proBadge.style.display = (_sbUser && isProUser()) ? '' : 'none';
+    proBadge.style.display = (_usuario && isProUser()) ? '' : 'none';
   }
-  if (_sbUser) {
+  if (_usuario) {
     // El nombre por si solo no se lee como "boton para salir": se reporto
     // no encontrar donde cerrar sesion. El icono lo hace explicito sin
     // ocupar mas espacio en el header.
-    var who = (_sbUser.user_metadata && _sbUser.user_metadata.user_name) || _sbUser.email || '';
+    var who = _usuario.githubLogin || '';
     var salir = lang === 'en' ? 'Sign out' : 'Cerrar sesión';
     label.textContent = (who ? who : (lang === 'en' ? 'Signed in' : 'Con sesión')) + '  ⏻';
     btn.title = salir;
@@ -2667,10 +2593,9 @@ function renderAuthUI() {
 // vía las funciones ya existentes -- ningún otro código de proyectos
 // necesita saber que hay una nube detrás.
 function pullCloudProjects() {
-  var client = getSupabaseClient();
-  if (!client || !_sbUser) return;
-  client.from('projects').select('*').eq('user_id', _sbUser.id).then(function(res) {
-    if (!res || res.error || !res.data) return;
+  if (!_usuario) return;
+  backendApi('GET', '/api/projects').then(function(res) {
+    if (!res || !res.data) return;
     if (res.data.length) {
       var list = res.data.map(function(row) {
         return { id: row.id, name: row.name, isDefault: row.is_default, vars: Object.assign({}, EMPTY_VARS, row.vars || {}) };
@@ -2705,13 +2630,13 @@ function offerLocalImportIfNeeded() {
 // caché local, para que las siguientes ediciones sincronicen por
 // upsert/delete sin ambigüedad.
 function pushLocalProjectsToCloud(list) {
-  var client = getSupabaseClient();
-  if (!client || !_sbUser) return;
+  if (!_usuario) return;
+  // El backend toma el usuario de la sesión, nunca del cuerpo.
   var rows = list.map(function(p) {
-    return { user_id: _sbUser.id, name: p.name, is_default: !!p.isDefault, vars: p.vars };
+    return { name: p.name, isDefault: !!p.isDefault, vars: p.vars };
   });
-  client.from('projects').insert(rows).select().then(function(res) {
-    if (!res || res.error || !res.data) return;
+  backendApi('POST', '/api/projects', { rows: rows }).then(function(res) {
+    if (!res || !res.data || !res.data.length) return;
     var newList = res.data.map(function(row) {
       return { id: row.id, name: row.name, isDefault: row.is_default, vars: Object.assign({}, EMPTY_VARS, row.vars || {}) };
     });
@@ -2725,30 +2650,24 @@ function pushLocalProjectsToCloud(list) {
 // en la nube si hay sesión activa. No-op para usuarios anónimos --
 // mismo comportamiento que hoy, sin ningún cambio.
 function pushProjectsUpdateToCloud(list) {
-  var client = getSupabaseClient();
-  if (!client || !_sbUser) return;
+  if (!_usuario) return;
   var rows = list.map(function(p) {
-    return { id: p.id, user_id: _sbUser.id, name: p.name, is_default: !!p.isDefault, vars: p.vars, updated_at: new Date().toISOString() };
+    return { id: p.id, name: p.name, isDefault: !!p.isDefault, vars: p.vars };
   });
-  try {
-    client.from('projects').upsert(rows).then(function() {}).catch(function() {});
-  } catch (e) {}
+  backendApi('PUT', '/api/projects', { rows: rows });
 }
 
 function deleteProjectFromCloud(id) {
-  var client = getSupabaseClient();
-  if (!client || !_sbUser) return;
-  try {
-    client.from('projects').delete().eq('id', id).then(function() {}).catch(function() {});
-  } catch (e) {}
+  if (!_usuario || !id) return;
+  backendApi('DELETE', '/api/projects/' + encodeURIComponent(id));
 }
 
 /* ══════════  PROGRESO POR (PROYECTO, PROMPT)  ══════════
-   Ver supabase/project_prompt_state.sql (issues #137/#138/#139/#140, Fase 0).
+   Ver backend/src/routes/promptState.ts (issues #137/#138/#139/#140).
    Esta Fase 1 (#139) solo usa la columna used_at -- checklist de progreso:
    qué prompts ya se usaron en el proyecto activo. Mismo patrón que projects:
-   localStorage como caché/fuente de verdad para usuarios anónimos, sync a
-   Supabase (tabla project_prompt_state) solo si hay sesión, fire-and-forget
+   localStorage como caché/fuente de verdad para usuarios anónimos, sync al
+   backend (tabla project_prompt_state) solo si hay sesión, fire-and-forget
    para no afectar el flujo de copiado si la escritura a la nube falla o
    tarda (mismo principio que trackPromptCopy()). */
 
@@ -2841,28 +2760,20 @@ function setPromptStateEntry(state, projectId, pid, entry) {
 // toca, tanto al insertar como en el ON CONFLICT, las columnas presentes
 // en el objeto enviado.
 function pushPromptStateFieldsToCloud(projectId, promptId, fields) {
-  var client = getSupabaseClient();
-  if (!client || !_sbUser) return;
+  if (!_usuario) return;
   var row = Object.assign({ project_id: projectId, prompt_id: promptId }, fields);
-  try {
-    client.from('project_prompt_state').upsert([row], { onConflict: 'project_id,prompt_id' })
-      .then(function() {}).catch(function() {});
-  } catch (e) {}
+  backendApi('PUT', '/api/project-prompt-state', { rows: [row] });
 }
 
 // Variante en lote de pushPromptStateFieldsToCloud, usada por
 // markPromptsUsed cuando una sola copia involucra varios prompt_id (ej.
 // framework + prompt, o multi-select).
 function pushUsedAtBatchToCloud(projectId, promptIds, usedAtIso) {
-  var client = getSupabaseClient();
-  if (!client || !_sbUser || !promptIds || !promptIds.length) return;
+  if (!_usuario || !promptIds || !promptIds.length) return;
   var rows = promptIds.map(function(pid) {
     return { project_id: projectId, prompt_id: pid, used_at: usedAtIso };
   });
-  try {
-    client.from('project_prompt_state').upsert(rows, { onConflict: 'project_id,prompt_id' })
-      .then(function() {}).catch(function() {});
-  } catch (e) {}
+  backendApi('PUT', '/api/project-prompt-state', { rows: rows });
 }
 
 // Espejo de pullCloudProjects(): al iniciar sesión, la nube pasa a ser la
@@ -2872,11 +2783,10 @@ function pushUsedAtBatchToCloud(projectId, promptIds, usedAtIso) {
 // limita el resultado a lo que el usuario puede ver vía su relación con
 // projects).
 function pullCloudPromptState() {
-  var client = getSupabaseClient();
-  if (!client || !_sbUser) return;
-  client.from('project_prompt_state').select('project_id,prompt_id,used_at,custom_additions,ai_output')
+  if (!_usuario) return;
+  backendApi('GET', '/api/project-prompt-state')
     .then(function(res) {
-      if (!res || res.error || !res.data) return;
+      if (!res || !res.data) return;
       var state = {};
       res.data.forEach(function(row) {
         var entry = {};
@@ -3283,7 +3193,7 @@ function renderGuidedStep(index) {
 }
 
 /* ══════════  MURO DE REGISTRO / PRUEBA / FEEDBACK  ══════════
-   Ver docs/trial-gate-setup.md y supabase/trial_gate.sql.
+   Ver docs/trial-gate-setup.md y backend/src/routes/trial.ts.
 
    Rediseño (issue #7, Opción B -- ver docs/STRATEGY.md): el repositorio es
    público, así que el TEXTO de los prompts no se puede proteger realmente
@@ -3310,8 +3220,7 @@ function renderGuidedStep(index) {
    ver docs/trial-gate-setup.md). */
 
 function checkProFeatureGate() {
-  if (!isSupabaseConfigured()) return Promise.resolve({ allowed: true });
-  // Aún no sabemos si hay sesión o no (getSession() sigue resolviendo --
+  // Aún no sabemos si hay sesión o no (/api/auth/session sigue en viaje --
   // p. ej. justo tras volver del redirect de GitHub, intercambiando el
   // código por una sesión real). Tratarlo como "anónimo" por defecto aquí
   // mostraría el muro de registro otra vez a alguien que sí inició sesión
@@ -3322,23 +3231,20 @@ function checkProFeatureGate() {
   // cliente por el propio llamador (requestNewProject() ya revisa
   // loadProjects().length antes de invocar este gate) -- si llegamos aquí
   // sin sesión es porque el llamador ya determinó que se necesita Pro.
-  if (!_sbUser) return Promise.resolve({ allowed: false, reason: 'anon_project_limit' });
+  if (!_usuario) return Promise.resolve({ allowed: false, reason: 'anon_project_limit' });
 
-  var client = getSupabaseClient();
-  if (!client) return Promise.resolve({ allowed: true });
-  return client.rpc('check_trial_status').then(function(res) {
-    if (!res || res.error || !res.data) return { allowed: true };
-    // check_trial_status() devuelve 'subscribed' ademas de 'active', pero
-    // hasta ahora se descartaba: la app no distinguia "pago" de "esta en
-    // prueba gratis" y por eso no existia ningun indicador Pro. Guardarlo
-    // aqui es lo que alimenta el badge del header (renderAuthUI).
-    setProState(res.data.subscribed === true);
-    return res.data.active ? { allowed: true } : { allowed: false, reason: 'trial_expired' };
-  }).catch(function() { return { allowed: true }; });
+  return backendApi('GET', '/api/trial/status').then(function(estado) {
+    // Fail-open: sin respuesta (red, backend caído) nunca se bloquea.
+    if (!estado) return { allowed: true };
+    // 'subscribed' distingue "pagó" de "está en prueba gratis": alimenta el
+    // badge Pro del header (renderAuthUI).
+    setProState(estado.subscribed === true);
+    return estado.active ? { allowed: true } : { allowed: false, reason: 'trial_expired' };
+  });
 }
 
-// Estado Pro compartido: lo escribe cualquier consulta a
-// check_trial_status() y lo lee renderAuthUI() para pintar el badge.
+// Estado Pro compartido: lo escribe cualquier consulta a /api/trial/status
+// y lo lee renderAuthUI() para pintar el badge.
 var _isPro = false;
 
 function setProState(isPro) {
@@ -3352,27 +3258,21 @@ function isProUser() { return _isPro; }
 // Consulta directa del estado Pro, sin pasar por el gate de proyectos.
 // La usa el arranque de sesion y el retorno del checkout.
 function refreshProState() {
-  var client = getSupabaseClient();
-  if (!client || !_sbUser) { setProState(false); return Promise.resolve(false); }
-  return client.rpc('check_trial_status').then(function(res) {
-    var pro = !!(res && res.data && res.data.subscribed === true);
+  if (!_usuario) { setProState(false); return Promise.resolve(false); }
+  return backendApi('GET', '/api/trial/status').then(function(estado) {
+    var pro = !!(estado && estado.subscribed === true);
     setProState(pro);
     return pro;
-  }).catch(function() { return false; });
+  });
 }
 
 // Indicador de administrador (issue #7 Fase 2): registra qué prompts se
 // copian más, sin afectar el gate ni el copiado en sí. Fire-and-forget a
-// propósito -- si track_prompt_copy() falla o tarda, la copia ya sucedió y
-// no debe verse afectada (mismo principio fail-open del resto del muro).
+// propósito -- si el registro falla o tarda, la copia ya sucedió y no debe
+// verse afectada (mismo principio fail-open del resto del muro).
 function trackPromptCopy(promptIds) {
   if (!promptIds || !promptIds.length) return;
-  if (!isSupabaseConfigured()) return;
-  var client = getSupabaseClient();
-  if (!client) return;
-  try {
-    client.rpc('track_prompt_copy', { p_prompt_ids: promptIds }).then(function() {}).catch(function() {});
-  } catch (e) {}
+  backendApi('POST', '/api/prompt-stats/track', { promptIds: promptIds });
 }
 
 function openRegisterWall() {
@@ -3432,12 +3332,10 @@ function submitFeedbackWall() {
     showToast(lang === 'en' ? 'Please select a rating' : 'Selecciona una calificación', 'warn');
     return;
   }
-  var client = getSupabaseClient();
-  if (!client) return;
   var ta = document.getElementById('fb-comments');
   var comments = ta ? ta.value : '';
-  client.rpc('submit_feedback_and_renew', { p_rating: _fbRating, p_comments: comments }).then(function(res) {
-    if (!res || res.error) {
+  backendApi('POST', '/api/trial/feedback', { rating: _fbRating, comments: comments }).then(function(res) {
+    if (!res || !res.renewed) {
       showToast(lang === 'en' ? 'Could not submit — try again' : 'No se pudo enviar — intenta de nuevo', 'warn');
       return;
     }
@@ -5840,8 +5738,8 @@ def build_precios_page():
         '  <p class="px-sub fw-lang-en">Launch offer: this is how access works today.</p>\n'
         # Banner del Programa Fundador (decision 2026-08-09, ver
         # docs/marketing/early-adopters-program.md). Oculto por defecto:
-        # solo se muestra si founding_spots_left() devuelve lugares
-        # disponibles reales -- si Supabase falla o el checkout no esta
+        # solo se muestra si /api/founding/spots-left devuelve lugares
+        # disponibles reales -- si el backend falla o el checkout no esta
         # configurado, el banner simplemente no aparece (fail-closed: es
         # preferible no anunciar el programa a anunciarlo con datos
         # inventados o sin poder cobrar).
@@ -5922,7 +5820,6 @@ def build_precios_page():
         '  <p class="px-foot fw-lang-es">¿Dudas o feedback? Escríbenos a <a href="mailto:soporte@lionsystems.com.mx">soporte@lionsystems.com.mx</a>.</p>\n'
         '  <p class="px-foot fw-lang-en">Questions or feedback? Email us at <a href="mailto:soporte@lionsystems.com.mx">soporte@lionsystems.com.mx</a>.</p>\n'
         '</main>\n'
-        '<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>\n'
         '<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>\n'
         '<script async src="https://www.googletagmanager.com/gtag/js?id=G-C5JKYNZ62F"></script>\n'
         '<script>\n'
@@ -5941,14 +5838,11 @@ def build_precios_page():
         '  pxSetLang(current==="es"?"en":"es");\n'
         '}\n'
         '\n'
-        # Checkout de pago (Paddle Billing). Mismas credenciales públicas de
-        # Supabase que usa index.html (el anon key es público por diseño).
-        # PADDLE_CLIENT_TOKEN sigue el mismo patrón "PENDIENTE_CONFIGURAR"
-        # que ya usaba este proyecto para Supabase antes de tener las claves
-        # reales: mientras no se configure, el botón no intenta abrir un
-        # checkout roto -- solo avisa que el pago aún no está disponible.
-        'var SUPABASE_URL="https://sqdzoreqfatpdainlhrm.supabase.co";\n'
-        'var SUPABASE_ANON_KEY="sb_publishable_qLmbKA8tlIUdW4xzmB1Z-w_kN3ygt7j";\n'
+        # Checkout de pago (Paddle Billing). PADDLE_CLIENT_TOKEN sigue el
+        # patrón "PENDIENTE_CONFIGURAR": mientras no se configure, el botón
+        # no intenta abrir un checkout roto -- solo avisa que el pago aún no
+        # está disponible. La sesión y el estado Pro vienen del backend
+        # propio (/api/*, mismo dominio), igual que en index.html.
         f'var PADDLE_CLIENT_TOKEN={json.dumps(paddle_config["client_token"])};\n'
         f'var PADDLE_PRICE_ID={json.dumps(paddle_config["price_id"])};\n'
         f'var PADDLE_PRICE_ID_ANNUAL={json.dumps(paddle_config["annual_price_id"])};\n'
@@ -5970,17 +5864,19 @@ def build_precios_page():
         '  if(PADDLE_ENVIRONMENT==="sandbox")Paddle.Environment.set("sandbox");\n'
         '  Paddle.Initialize({token:PADDLE_CLIENT_TOKEN});\n'
         '}\n'
-        # Mismas opciones explicitas que index.html: sin persistSession la
-        # sesion vive solo en memoria y esta pagina ve anonimo a un usuario
-        # que si inicio sesion en la app. Misma storageKey por defecto, asi
-        # que la sesion se comparte entre / , /app y /precios.html.
-        'var PX_AUTH_OPTS={auth:{persistSession:true,autoRefreshToken:true,'
-        'detectSessionInUrl:true,storage:window.localStorage}};\n'
-        'var _pxClient=null;\n'
-        'function pxClient(){\n'
-        '  if(typeof supabase==="undefined")return null;\n'
-        '  if(!_pxClient)_pxClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,PX_AUTH_OPTS);\n'
-        '  return _pxClient;\n'
+        # Backend propio, mismo origen: la cookie de sesion es la misma que
+        # usa la app, asi que la sesion se comparte entre / , /app y
+        # /precios.html. Nunca rechaza: ante cualquier fallo resuelve null.
+        'function pxApi(path){\n'
+        '  return new Promise(function(ok){\n'
+        '    try{\n'
+        '      if(typeof fetch!=="function"){ok(null);return;}\n'
+        '      fetch(path,{credentials:"same-origin"}).then(function(r){\n'
+        '        if(!r||!r.ok){ok(null);return;}\n'
+        '        return r.json().then(ok,function(){ok(null);});\n'
+        '      }).catch(function(){ok(null);});\n'
+        '    }catch(e){ok(null);}\n'
+        '  });\n'
         '}\n'
         # _pxYaPro es la defensa de fondo: ocultar botones no basta, porque
         # pxStartCheckout puede invocarse desde la consola, desde un enlace
@@ -6028,9 +5924,9 @@ def build_precios_page():
         '  pxTrack("purchase",{value:valor,currency:"USD",items:[{item_id:"ai-sdlc-pro-"+plan,item_name:"AI-SDLC Pro",price:valor,quantity:1}]});\n'
         '}\n'
         'function pxPollPro(intentos){\n'
-        '  var c=pxClient();if(!c||!_pxUser)return;\n'
-        '  c.rpc("check_trial_status").then(function(r){\n'
-        '    if(r&&r.data&&r.data.subscribed){pxTrackPurchase();pxShowPro();return;}\n'
+        '  if(!_pxUser)return;\n'
+        '  pxApi("/api/trial/status").then(function(r){\n'
+        '    if(r&&r.subscribed){pxTrackPurchase();pxShowPro();return;}\n'
         '    if(intentos<6){\n'
         '      pxSetStatus("Pago recibido — activando tu acceso…","Payment received — activating your access…");\n'
         '      setTimeout(function(){pxPollPro(intentos+1);},Math.min(1000*Math.pow(2,intentos),8000));\n'
@@ -6038,33 +5934,23 @@ def build_precios_page():
         '      pxSetStatus("Tu pago se registró. La activación puede tardar unos minutos — recarga esta página.",'
         '"Your payment went through. Activation can take a few minutes — reload this page.");\n'
         '    }\n'
-        '  }).catch(function(){});\n'
+        '  });\n'
         '}\n'
-        # redirectTo a esta misma pagina, no al Site URL del proyecto: asi
-        # el visitante vuelve a precios listo para pulsar Suscribirme.
+        # Tras el login, el backend devuelve a ESTA pagina (?volver=), no a
+        # la portada: el visitante vuelve a precios listo para suscribirse.
         'function pxSignIn(){\n'
-        '  var c=pxClient();if(!c)return;\n'
-        '  c.auth.signInWithOAuth({provider:"github",options:{redirectTo:window.location.origin+"/precios.html"}});\n'
-        '}\n'
-        # Supabase deja los tokens en el hash y no los limpia solo: sin esto
-        # el access_token, el refresh_token y el provider_token de GitHub
-        # quedan visibles en la barra de direcciones y en el historial.
-        'function pxStripTokens(){\n'
-        '  if(!window.location.hash||window.location.hash.indexOf("access_token=")<0)return;\n'
-        '  try{history.replaceState(null,"",window.location.pathname+window.location.search);}catch(e){}\n'
+        '  window.location.href="/api/auth/login?volver="+encodeURIComponent("/precios.html");\n'
         '}\n'
         'function pxInitAuth(){\n'
-        '  pxStripTokens();\n'
-        '  var client=pxClient();if(!client)return;\n'
-        '  client.auth.getSession().then(function(res){\n'
-        '    _pxUser=(res&&res.data&&res.data.session)?res.data.session.user:null;\n'
+        '  pxApi("/api/auth/session").then(function(res){\n'
+        '    _pxUser=(res&&res.user)?res.user:null;\n'
         '    if(!_pxUser)return;\n'
         '    var vieneDePagar=window.location.search.indexOf("checkout=success")>=0;\n'
         '    if(vieneDePagar){pxPollPro(0);return;}\n'
-        '    client.rpc("check_trial_status").then(function(r){\n'
-        '      if(r&&r.data&&r.data.subscribed)pxShowPro();\n'
-        '    }).catch(function(){});\n'
-        '  }).catch(function(){});\n'
+        '    pxApi("/api/trial/status").then(function(r){\n'
+        '      if(r&&r.subscribed)pxShowPro();\n'
+        '    });\n'
+        '  });\n'
         '}\n'
         # El parametro `anual` es obligatorio en la firma: el cuerpo lo usa
         # para elegir el precio. Quedo fuera al agregar el plan anual (un
@@ -6124,23 +6010,20 @@ def build_precios_page():
         '  });\n'
         '}\n'
         # Banner Fundador: enciende el banner SOLO con el conteo real de
-        # founding_spots_left(). Fail-closed en cada rama: sin checkout
-        # configurado no se promete lo que no se puede cobrar; sin Supabase,
-        # con error de RPC, o con 0 lugares, el banner se queda oculto. El
-        # copy del programa exige "dato real de Supabase, no un numero
-        # inventado en el copy".
+        # /api/founding/spots-left. Fail-closed en cada rama: sin checkout
+        # configurado no se promete lo que no se puede cobrar; sin respuesta
+        # del backend o con 0 lugares, el banner se queda oculto. El copy del
+        # programa exige un dato real, nunca un numero inventado.
         'function pxFounderBanner(){\n'
         '  if(PADDLE_CLIENT_TOKEN==="PENDIENTE_CONFIGURAR")return;\n'
-        '  var c=pxClient();if(!c)return;\n'
-        '  c.rpc("founding_spots_left").then(function(r){\n'
-        '    var d=r&&r.data;\n'
-        '    if(!d||r.error||typeof d.left!=="number"||typeof d.total!=="number")return;\n'
+        '  pxApi("/api/founding/spots-left").then(function(d){\n'
+        '    if(!d||typeof d.left!=="number"||typeof d.total!=="number")return;\n'
         '    if(d.left<1||d.left>d.total)return;\n'
         '    document.querySelectorAll(".px-founder-left").forEach(function(el){el.textContent=d.left;});\n'
         '    document.querySelectorAll(".px-founder-total").forEach(function(el){el.textContent=d.total;});\n'
         '    var b=document.getElementById("px-founder-banner");if(b)b.style.display="block";\n'
         '    pxTrack("founder_banner_shown",{spots_left:d.left});\n'
-        '  }).catch(function(){});\n'
+        '  });\n'
         '}\n'
         'pxTrack("pricing_view",{product:"ai_sdlc_pro"});\n'
         'pxInitPaddle();\n'
@@ -6240,9 +6123,6 @@ LEGAL_ENTITY = {
                "aplica los impuestos; nunca vemos tu tarjeta.",
          "en": "merchant of record: processes the payment, issues the receipt and applies taxes; "
                "we never see your card."},
-        {"nombre": "Supabase",
-         "es": "autenticación y base de datos donde vive tu cuenta y el estado de tu suscripción.",
-         "en": "authentication and the database holding your account and subscription status."},
         {"nombre": "GitHub",
          "es": "únicamente como proveedor de identidad (OAuth) al iniciar sesión.",
          "en": "solely as identity provider (OAuth) when you sign in."},
@@ -6250,13 +6130,15 @@ LEGAL_ENTITY = {
          "es": "métricas de uso agregadas del sitio.",
          "en": "aggregated site usage metrics."},
         {"nombre": "Google Cloud",
-         "es": "hospedaje del sitio.",
-         "en": "site hosting."},
+         "es": "hospedaje del sitio, del servidor y de la base de datos donde viven tu cuenta y "
+               "el estado de tu suscripción, en un servidor ubicado en México.",
+         "en": "hosting of the site, the server and the database holding your account and "
+               "subscription status, on a server located in Mexico."},
     ),
     # Se actualiza a mano cuando cambie el contenido legal, no en cada
     # build: una fecha que se mueve sola no significa nada para nadie.
-    "actualizado": "18 de octubre de 2026",
-    "actualizado_en": "October 18, 2026",
+    "actualizado": "25 de octubre de 2026",
+    "actualizado_en": "October 25, 2026",
 }
 
 # Alias derivados del dict: siguen siendo el nombre que usan las paginas y
@@ -6628,8 +6510,9 @@ def build_terminos_page():
 def build_privacidad_page():
     """Aviso de privacidad. Redactado para la LFPDPPP mexicana de 2025 (derechos
     ARCO explícitos) porque LionSystems opera desde México, y listando a
-    los encargados reales que se pueden verificar en el código:
-    Supabase (auth + base de datos), Paddle (pagos), Google Analytics."""
+    los encargados reales que se pueden verificar en el código: Paddle
+    (pagos), GitHub (identidad), Google Analytics y Google Cloud (servidor y
+    base de datos propios)."""
     mail = LEGAL_CONTACT_EMAIL
     mail_priv = LEGAL_PRIVACY_EMAIL
     _dom_es, _dom_en = _domicilio_html()
@@ -7409,14 +7292,9 @@ def build():
         '<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config","G-C5JKYNZ62F");'
         'window.addEventListener("load",function(){var s=document.createElement("script");s.async=true;'
         's.src="https://www.googletagmanager.com/gtag/js?id=G-C5JKYNZ62F";document.head.appendChild(s);'
-        # El SDK de Supabase solo se descarga si ya está configurado
-        # (SUPABASE_URL dejó de ser el centinela "PENDIENTE_CONFIGURAR")
-        # -- mientras no lo esté, cero peticiones de red nuevas para un
-        # visitante anónimo (mismo criterio que gtag.js arriba).
-        'if (typeof isSupabaseConfigured === "function" && isSupabaseConfigured()) {'
-        'var sbs=document.createElement("script");sbs.src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";'
-        'sbs.onload=function(){if(typeof initSupabaseAuth==="function")initSupabaseAuth();};'
-        'document.head.appendChild(sbs);}'
+        # La sesion se consulta al backend propio tras window.load, fuera de
+        # la ruta critica de carga (mismo criterio que gtag.js arriba).
+        'if (typeof initAuth === "function") initAuth();'
         '});</script>\n'
         '<style>' + CSS + '</style>\n'
         '</head>\n<body>\n'

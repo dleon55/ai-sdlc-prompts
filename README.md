@@ -14,10 +14,10 @@ Biblioteca interactiva de prompts estructurados bajo el **AI-SDLC Enterprise Fra
 ## Funcionalidades del sitio
 
 - **Proyectos con variables por entorno** — 1 proyecto activo gratis para siempre (sin cuenta), o varios con sesión + prueba/suscripción Pro (ver muro de registro más abajo). Cada proyecto con **19 variables** configurables (`repositorio`, `referencia/entrada`, `rama actual/destino`, `ambiente`, `componentes`, `módulo`, `stack`, `tipo de proyecto`, `metodología`, `agentes IA`, `nivel de autonomía`, `objetivo`, `responsable`, `workspace`, `estándar/compliance`, `documentos`, `profundidad`), más asignaciones adicionales `TOKEN=valor`. Variables persisten en `localStorage`, con acceso rápido desde un panel flotante además del panel completo. Exportables/importables como JSON para llevarlas a otra máquina o compartirlas con el equipo.
-- **Checklist de progreso por proyecto** — cada copia marca automáticamente el prompt como usado en el proyecto activo (barra de progreso agregada en el panel de variables, estado visible y editable manualmente en el modal ⓘ de cada prompt). Persiste igual que las variables (`localStorage` + sync a Supabase con sesión). Ver `supabase/project_prompt_state.sql`.
+- **Checklist de progreso por proyecto** — cada copia marca automáticamente el prompt como usado en el proyecto activo (barra de progreso agregada en el panel de variables, estado visible y editable manualmente en el modal ⓘ de cada prompt). Persiste igual que las variables (`localStorage` + sync al backend propio con sesión). Ver la tabla `project_prompt_state` en `backend/src/schema.sql`.
 - **Personalización y resultados de IA por (proyecto, prompt)** — dos campos opcionales en el modal ⓘ (Pro, ver muro de registro más abajo): adiciones personalizadas que se anexan solo al copiar (sin modificar nunca el prompt oficial), y un espacio para pegar el resultado que devolvió tu agente de IA al ejecutar el prompt, útil como insumo para `10-02-memoria-tecnica`/`17-06-reporte-estado-stakeholders`. Se exportan/importan junto con el resto del proyecto.
 - **Modo guiado / ruta de proyecto** — botón 🧭 junto al selector de proyecto: recorre paso a paso el orden curado del framework (00-D → 01 → 02 → ... → 17) con Anterior/Siguiente, marca visualmente lo ya usado y permite saltar directamente al primer prompt pendiente.
-- **Registro de usuarios (opcional)** — inicio de sesión con GitHub vía Supabase Auth para sincronizar proyectos entre dispositivos; el uso anónimo con `localStorage` sigue funcionando igual sin necesidad de cuenta. Configuración documentada en [`docs/auth-setup.md`](docs/auth-setup.md).
+- **Registro de usuarios (opcional)** — inicio de sesión con GitHub contra el backend propio (`/api/auth/*`, sesión en cookie httpOnly) para sincronizar proyectos entre dispositivos; el uso anónimo con `localStorage` sigue funcionando igual sin necesidad de cuenta. Configuración documentada en [`docs/auth-setup.md`](docs/auth-setup.md).
 - **Muro de registro + prueba Pro de 1 semana** — copiar cualquiera de los 112 prompts es gratis e ilimitado para siempre, con o sin cuenta (el repositorio es público, así que gatear el texto no protege nada; ver `docs/STRATEGY.md`). Lo que sí requiere sesión es la capa de plataforma: gestionar más de 1 proyecto, y guardar personalización/resultados de IA por prompt. Al intentarlo sin sesión se pide iniciar sesión con GitHub, lo que activa 1 semana de acceso Pro completo; al vencer, se exige enviar una breve retroalimentación (calificación + comentario) para renovar otra semana. Página [`/precios.html`](precios.html) explica el modelo vigente y permite suscribirse al plan Pro (acceso ilimitado sin muro; el precio publicado ahí es la fuente de verdad y deriva de `PADDLE_PRICE_AMOUNT_USD`). Configuración documentada en [`docs/trial-gate-setup.md`](docs/trial-gate-setup.md) y [`docs/paddle-integration.md`](docs/paddle-integration.md).
 - **Framework auto-prepend** — el bloque de contexto del framework se antepone automáticamente a cada prompt copiado, con validación bloqueante de placeholders obligatorios sin resolver antes de copiar.
 - **Contrato editorial por prompt** — cada uno de los 112 prompts declara tipo, riesgo esperado, autonomía permitida y siguiente prompt recomendado, expuestos como badges filtrables y publicados en `prompts-index.json` para consumo por agentes de IA.
@@ -27,7 +27,7 @@ Biblioteca interactiva de prompts estructurados bajo el **AI-SDLC Enterprise Fra
 - **Búsqueda/filtrado** — filtro en tiempo real por texto, nombre o contenido del prompt.
 - **Modal de información ⓘ** — descripción y fórmulas de uso de cada prompt sin contaminar el contenido del prompt, con trampa de foco y atributos ARIA.
 - **Sidebar colapsable** — navegación por sección.
-- **Diseño oscuro responsive, bilingüe (ES/EN)** (self-contained, sin CDN — excepto el SDK de Supabase, que solo se carga si el registro de usuarios ya fue configurado).
+- **Diseño oscuro responsive, bilingüe (ES/EN)** (self-contained, sin CDN ni SDK de terceros — las únicas cargas externas son Google Analytics, diferido hasta `window.load`, y Paddle.js, solo en `/precios.html`).
 
 ---
 
@@ -48,6 +48,7 @@ nginx_prompts.conf      # Config Nginx para producción GCP
 deploy-to-gcp.sh        # Script de re-deploy manual a GCP
 index.html              # Artefacto generado (~1.32 MB, no editar manualmente)
 prompts-index.json      # Índice machine-readable (contrato editorial por prompt), no editar manualmente
+backend/                # API propia (Node + PostgreSQL) en /api/*: login GitHub, prueba, proyectos, webhook Paddle — ver backend/README.md
 mcp-server/             # Servidor MCP (Node) que expone el catálogo a agentes de IA vía stdio — ver mcp-server/README.md
 docs/                   # Memorias técnicas (MT-001, MT-002)
 .github/workflows/      # CI/CD — build + QA gate + deploy GitHub Pages + GCP

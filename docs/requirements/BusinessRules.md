@@ -97,15 +97,15 @@ FR-04 (Ciclo Forzado)
 |----|--------|----------------|-----------|
 | **TR-01** | Generador Estático | `build.py` debe producir único archivo `index.html` sin dependencias SSR | 🔴 Crítica |
 | **TR-02** | Single Artifact | Output: un solo HTML (~255KB-1MB) conteniendo todo CSS, JS, contenido | 🔴 Crítica |
-| **TR-03** | Dependencias externas acotadas | La interfaz base es autocontenida; Supabase y Paddle.js sólo se cargan para funciones configuradas de autenticación o cobro | 🟡 Alta |
+| **TR-03** | Dependencias externas acotadas | La interfaz base es autocontenida; el backend propio (API en `/api/*`, mismo dominio) sólo se consulta para autenticación, sincronización y prueba, y Paddle.js sólo se carga en el checkout | 🟡 Alta |
 | **TR-04** | GitHub Pages Compatible | No usar funcionalidades server-side (PHP, Node, etc.) | 🔴 Crítica |
 
 ### 3.2 Reglas de Datos y Estado
 
 | ID | Nombre | Especificación |
 |----|--------|----------------|
-| **TR-05** | Persistencia híbrida | localStorage sostiene uso anónimo; Supabase persiste proyectos, estado y suscripción para usuarios autenticados, bajo RLS | 🔴 Crítica |
-| **TR-06** | Schema Versionado | Claves `AI_SDLC_v1_*` y esquemas/migraciones de Supabase permiten evolución compatible | 🟡 Alta |
+| **TR-05** | Persistencia híbrida | localStorage sostiene uso anónimo; el backend propio (API en `/api/*`, PostgreSQL) persiste proyectos, estado y suscripción para usuarios autenticados, con autorización aplicada en cada ruta | 🔴 Crítica |
+| **TR-06** | Schema Versionado | Claves `AI_SDLC_v1_*` y el esquema idempotente del backend (`backend/src/schema.sql`) permiten evolución compatible | 🟡 Alta |
 | **TR-07** | Límite LocalStorage | El uso anónimo debe manejar límites del navegador sin pérdida silenciosa; la sesión autenticada sincroniza los datos permitidos | 🟢 Media |
 
 ### 3.3 Reglas de Calidad y CI/CD
@@ -177,9 +177,10 @@ FR-04 (Ciclo Forzado)
 | `AI_SDLC_onboarding_done` | String | '1' si usuario completó onboarding | Indefinido |
 | `AI_SDLC_email_collected` | String | Email capturado en onboarding | Indefinido |
 
-> Para usuarios autenticados, la copia en Supabase es la fuente sincronizada
-> entre dispositivos. Las claves locales siguen siendo el respaldo de la
-> experiencia anónima y no sustituyen las políticas RLS.
+> Para usuarios autenticados, la copia en el backend propio (PostgreSQL) es la
+> fuente sincronizada entre dispositivos. Las claves locales siguen siendo el
+> respaldo de la experiencia anónima y no sustituyen la autorización que
+> aplica cada ruta del backend.
 
 ### 6.2 Reglas de Variables de Proyecto
 

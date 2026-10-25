@@ -45,7 +45,7 @@ prompts que sirve siguen bajo CC BY 4.0 (§1).
 ================================================================================
 
 Alcance: todo lo demás. Entre otros, build.py, i18n_strings.py, las páginas
-HTML generadas, supabase/**, nginx_prompts.conf y el resto de utilerías.
+HTML generadas, backend/**, nginx_prompts.conf y el resto de utilerías.
 
 Este software es propiedad de LionSystems y se publica de forma visible
 únicamente por transparencia. Ninguna parte puede ser reproducida,

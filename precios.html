@@ -103,7 +103,6 @@ h1{font-size:1.75rem;font-weight:700;margin-bottom:.5rem;}
   <p class="px-foot fw-lang-es">¿Dudas o feedback? Escríbenos a <a href="mailto:soporte@lionsystems.com.mx">soporte@lionsystems.com.mx</a>.</p>
   <p class="px-foot fw-lang-en">Questions or feedback? Email us at <a href="mailto:soporte@lionsystems.com.mx">soporte@lionsystems.com.mx</a>.</p>
 </main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-C5JKYNZ62F"></script>
 <script>
@@ -118,8 +117,6 @@ function pxToggleLang(){
   pxSetLang(current==="es"?"en":"es");
 }
 
-var SUPABASE_URL="https://sqdzoreqfatpdainlhrm.supabase.co";
-var SUPABASE_ANON_KEY="sb_publishable_qLmbKA8tlIUdW4xzmB1Z-w_kN3ygt7j";
 var PADDLE_CLIENT_TOKEN="PENDIENTE_CONFIGURAR";
 var PADDLE_PRICE_ID="PENDIENTE_CONFIGURAR";
 var PADDLE_PRICE_ID_ANNUAL="";
@@ -138,12 +135,16 @@ function pxInitPaddle(){
   if(PADDLE_ENVIRONMENT==="sandbox")Paddle.Environment.set("sandbox");
   Paddle.Initialize({token:PADDLE_CLIENT_TOKEN});
 }
-var PX_AUTH_OPTS={auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:window.localStorage}};
-var _pxClient=null;
-function pxClient(){
-  if(typeof supabase==="undefined")return null;
-  if(!_pxClient)_pxClient=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,PX_AUTH_OPTS);
-  return _pxClient;
+function pxApi(path){
+  return new Promise(function(ok){
+    try{
+      if(typeof fetch!=="function"){ok(null);return;}
+      fetch(path,{credentials:"same-origin"}).then(function(r){
+        if(!r||!r.ok){ok(null);return;}
+        return r.json().then(ok,function(){ok(null);});
+      }).catch(function(){ok(null);});
+    }catch(e){ok(null);}
+  });
 }
 var _pxYaPro=false;
 function pxShowPro(){
@@ -163,37 +164,30 @@ function pxTrackPurchase(){
   pxTrack("purchase",{value:valor,currency:"USD",items:[{item_id:"ai-sdlc-pro-"+plan,item_name:"AI-SDLC Pro",price:valor,quantity:1}]});
 }
 function pxPollPro(intentos){
-  var c=pxClient();if(!c||!_pxUser)return;
-  c.rpc("check_trial_status").then(function(r){
-    if(r&&r.data&&r.data.subscribed){pxTrackPurchase();pxShowPro();return;}
+  if(!_pxUser)return;
+  pxApi("/api/trial/status").then(function(r){
+    if(r&&r.subscribed){pxTrackPurchase();pxShowPro();return;}
     if(intentos<6){
       pxSetStatus("Pago recibido — activando tu acceso…","Payment received — activating your access…");
       setTimeout(function(){pxPollPro(intentos+1);},Math.min(1000*Math.pow(2,intentos),8000));
     }else{
       pxSetStatus("Tu pago se registró. La activación puede tardar unos minutos — recarga esta página.","Your payment went through. Activation can take a few minutes — reload this page.");
     }
-  }).catch(function(){});
+  });
 }
 function pxSignIn(){
-  var c=pxClient();if(!c)return;
-  c.auth.signInWithOAuth({provider:"github",options:{redirectTo:window.location.origin+"/precios.html"}});
-}
-function pxStripTokens(){
-  if(!window.location.hash||window.location.hash.indexOf("access_token=")<0)return;
-  try{history.replaceState(null,"",window.location.pathname+window.location.search);}catch(e){}
+  window.location.href="/api/auth/login?volver="+encodeURIComponent("/precios.html");
 }
 function pxInitAuth(){
-  pxStripTokens();
-  var client=pxClient();if(!client)return;
-  client.auth.getSession().then(function(res){
-    _pxUser=(res&&res.data&&res.data.session)?res.data.session.user:null;
+  pxApi("/api/auth/session").then(function(res){
+    _pxUser=(res&&res.user)?res.user:null;
     if(!_pxUser)return;
     var vieneDePagar=window.location.search.indexOf("checkout=success")>=0;
     if(vieneDePagar){pxPollPro(0);return;}
-    client.rpc("check_trial_status").then(function(r){
-      if(r&&r.data&&r.data.subscribed)pxShowPro();
-    }).catch(function(){});
-  }).catch(function(){});
+    pxApi("/api/trial/status").then(function(r){
+      if(r&&r.subscribed)pxShowPro();
+    });
+  });
 }
 function pxStartCheckout(anual){
   if(_pxYaPro){
@@ -230,16 +224,14 @@ function pxStartCheckout(anual){
 }
 function pxFounderBanner(){
   if(PADDLE_CLIENT_TOKEN==="PENDIENTE_CONFIGURAR")return;
-  var c=pxClient();if(!c)return;
-  c.rpc("founding_spots_left").then(function(r){
-    var d=r&&r.data;
-    if(!d||r.error||typeof d.left!=="number"||typeof d.total!=="number")return;
+  pxApi("/api/founding/spots-left").then(function(d){
+    if(!d||typeof d.left!=="number"||typeof d.total!=="number")return;
     if(d.left<1||d.left>d.total)return;
     document.querySelectorAll(".px-founder-left").forEach(function(el){el.textContent=d.left;});
     document.querySelectorAll(".px-founder-total").forEach(function(el){el.textContent=d.total;});
     var b=document.getElementById("px-founder-banner");if(b)b.style.display="block";
     pxTrack("founder_banner_shown",{spots_left:d.left});
-  }).catch(function(){});
+  });
 }
 pxTrack("pricing_view",{product:"ai_sdlc_pro"});
 pxInitPaddle();

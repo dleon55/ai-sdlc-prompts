@@ -183,7 +183,7 @@ Cubre todas las funcionalidades accesibles por usuarios finales (visitantes, usu
 |----------|-----------|-------------|
 | **Google Analytics** | HTTPS/JS | Event tracking |
 | **Paddle Checkout / Webhook** | HTTPS | Suscripción y eventos de acceso Pro |
-| **Supabase Auth / Database** | HTTPS | Autenticación GitHub y persistencia sincronizada con RLS |
+| **Backend propio (API en `/api/*`, PostgreSQL)** | HTTPS | Autenticación GitHub y persistencia sincronizada, con autorización aplicada en cada ruta |
 | **MCP (stdio)** | Model Context Protocol | Consulta y resolución de prompts para agentes IA |
 | **Clipboard API** | Browser API | navigator.clipboard |
 | **localStorage** | Browser API | Persistencia anónima y preferencias locales |

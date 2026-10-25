@@ -126,7 +126,7 @@ AI-SDLC Pro es una biblioteca interactiva web de prompts estructurados para diri
 | **N-05** | Buscar prompts rápidamente | **Should** | Búsqueda en tiempo real |
 | **N-06** | Soporte multi-idioma | **Should** | i18n ES/EN (implementado parcial) |
 | **N-07** | Multi-selección de prompts | **Could** | Checkboxes + copia en bloque |
-| **N-08** | Sincronización autenticada | **Should** | Supabase sincroniza proyectos y estado de prompts para usuarios con sesión; el uso anónimo conserva localStorage |
+| **N-08** | Sincronización autenticada | **Should** | El backend propio (API en `/api/*`, PostgreSQL) sincroniza proyectos y estado de prompts para usuarios con sesión; el uso anónimo conserva localStorage |
 
 ### 5.2 Características del Producto
 
@@ -159,7 +159,7 @@ AI-SDLC Pro es una biblioteca interactiva web de prompts estructurados para diri
 ### v1.3 (Actual — 2026-08)
 - ✅ 112 prompts ES/EN con contrato editorial y rutas guiadas
 - ✅ Framework auto-prepend, proyectos con 19 variables y estado de progreso
-- ✅ Uso anónimo local y sincronización autenticada mediante Supabase
+- ✅ Uso anónimo local y sincronización autenticada mediante el backend propio (API en `/api/*`, PostgreSQL)
 - ✅ Servidor MCP para consultar, resolver y recomendar prompts a agentes IA
 - ✅ CI/CD dual (GitHub Pages + GCP) y checkout Paddle preparado para el piloto
 

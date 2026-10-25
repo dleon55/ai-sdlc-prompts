@@ -56,15 +56,15 @@ El mecanismo operativo completo es:
 Lo que sí se implementó (porque faltaba de verdad) es el **tracking de la
 cohorte y el contador real**:
 
-- `subscriptions.created_at` (migración
-  `supabase/migrations/20260809_founding_members.sql`): orden de llegada,
+- `subscriptions.created_at` (esquema del backend,
+  `backend/src/schema.sql`): orden de llegada,
   fijado al primer insert, nunca pisado por el upsert del webhook. Los
   primeros 50 por `created_at` son la cohorte fundadora.
-- RPC `founding_spots_left()`: expone solo el agregado `{left, total}` para
+- Ruta pública `GET /api/founding/spots-left`: expone solo el agregado `{left, total}` para
   el banner de `/precios` — dato real, jamás filas de usuarios. Un lugar se
   consume al crearse la suscripción y no se libera al cancelar.
 - Banner Fundador en `/precios` (`build.py`): oculto por defecto,
-  fail-closed — solo aparece si el RPC devuelve lugares disponibles reales
+  fail-closed — solo aparece si la ruta devuelve lugares disponibles reales
   y el checkout de Paddle está configurado.
 
 ## Copy de campaña
@@ -112,12 +112,12 @@ quieres ser de los primeros 50: https://prompts.lionsystems.com.mx
       2026-08-09** (ver sección "Mecanismo técnico" arriba): grandfathering
       por defecto de Paddle + price nuevo al subir + nunca migrar
       fundadores.
-- [x] Tracking de "fundador" en Supabase — `subscriptions.created_at` +
-      RPC `founding_spots_left()`
-      (`supabase/migrations/20260809_founding_members.sql`).
+- [x] Tracking de "fundador" en el backend propio — `subscriptions.created_at` +
+      ruta `GET /api/founding/spots-left`
+      (`backend/src/schema.sql`, aplicado con `npm run migrate`).
 - [x] Banner en `/precios` (`build.py`) — oculto hasta que el contador
       real devuelva lugares disponibles y el checkout esté configurado.
-- [ ] **Ejecutar la migración** `20260809_founding_members.sql` en el SQL
-      Editor de Supabase (instalación existente — un solo paso manual).
+- [x] Esquema aplicado — ya no hay paso manual de SQL: `npm run migrate`
+      aplica `backend/src/schema.sql` completo (idempotente).
 - [ ] Publicar el post de lanzamiento en LinkedIn (manual, cuenta del
       propietario).
