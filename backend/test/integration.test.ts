@@ -1,8 +1,6 @@
 // Pruebas de integracion contra un Postgres real (DATABASE_URL). Se
-// saltan automaticamente si la variable no esta configurada -- no hay
-// todavia un servicio de Postgres en CI (eso es un cambio de
-// .github/workflows/deploy.yml para una fase posterior, ver
-// docs/PLAN_MIGRACION_SUPABASE_A_LOCAL.md §5); localmente, con
+// saltan automaticamente si la variable no esta configurada -- el CI del
+// repositorio no tiene un servicio de Postgres; localmente, con
 // backend/docker-compose.yml levantado (o el Postgres nativo de
 // desarrollo), SI corren y ejercitan el esquema real.
 import test from "node:test";

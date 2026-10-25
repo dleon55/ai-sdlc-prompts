@@ -1,10 +1,6 @@
 // Alertas operativas de cobro para el endpoint del webhook de Paddle.
-// Portado SIN CAMBIOS DE LOGICA desde
-// supabase/functions/paddle-webhook/alertas.ts (issue #232, T5) como parte
-// de la Fase 1 de docs/PLAN_MIGRACION_SUPABASE_A_LOCAL.md -- el modulo ya
-// estaba escrito sin tocar `Deno.*` a proposito (recibe fetch/reloj/log
-// por inyeccion, justo para poder correr tal cual en Node), asi que la
-// migracion de runtime no requirio reescribir nada de esto. Una sola
+// (issue #232, T5). Recibe fetch/reloj/log por inyeccion para poder
+// probarse sin red. Una sola
 // funcion, `alertar({clave, detalle})`, con dos salidas, ambas opcionales
 // y nunca bloqueantes:
 //

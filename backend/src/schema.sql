@@ -1,20 +1,14 @@
--- AI-SDLC Pro -- esquema del backend propio (Fase 1 de
--- docs/PLAN_MIGRACION_SUPABASE_A_LOCAL.md).
+-- AI-SDLC Pro -- esquema de la base propia del backend.
 --
--- Portado de supabase/schema.sql, supabase/trial_gate.sql,
--- supabase/subscriptions.sql y supabase/prompt_copy_stats.sql.
---
--- Diferencia deliberada frente al original: SIN Row Level Security ni
--- funciones `security definer`. La autorizacion que alla vivia en
--- politicas RLS ahora vive en el codigo de cada ruta del backend
--- (backend/src/routes/*.ts) -- cada ruta replica exactamente la misma
--- regla que su politica equivalente (ver comentarios "RLS equivalente"
--- en cada ruta). gen_random_uuid() es nativo desde Postgres 13, no
+-- SIN Row Level Security ni funciones `security definer`, a proposito: la
+-- base solo la toca el backend, con su propia conexion. La autorizacion
+-- vive en el codigo de cada ruta (backend/src/routes/*.ts): cada consulta
+-- filtra o fuerza user_id = el de la sesion (ver los comentarios
+-- "RLS equivalente" en cada ruta). gen_random_uuid() es nativo desde Postgres 13, no
 -- requiere ninguna extension.
 
 -- ───────────────────────── users ─────────────────────────
--- Reemplaza auth.users (gestionada por GoTrue en Supabase, no por SQL
--- propio). Unico proveedor: GitHub OAuth -- ver backend/src/auth/github.ts.
+-- Unico proveedor de identidad: GitHub OAuth -- ver backend/src/auth/github.ts.
 create table if not exists users (
   id          uuid primary key default gen_random_uuid(),
   github_id   text not null unique,
@@ -113,17 +107,10 @@ create table if not exists prompt_copy_stats (
   updated_at timestamptz not null default now()
 );
 
--- Nota: anon_usage / check_anon_usage() NO se portan -- confirmado como
--- codigo muerto en la revision del plan (build.py no los llama desde el
--- rediseño del muro Free/Pro, issue #7). Ver
--- docs/PLAN_MIGRACION_SUPABASE_A_LOCAL.md §2.2.
-
 -- ───────────────────────── apply_paddle_subscription_event ─────────────────────────
--- Portada SIN CAMBIOS DE LOGICA desde supabase/subscriptions.sql. Alla
--- era `security definer` porque el cliente (anon key) nunca debia poder
--- llamarla directamente -- aqui no hace falta ese mecanismo: la unica via
--- de invocacion es el propio backend (backend/src/routes/webhooks/paddle.ts),
--- con su propia conexion de base de datos, nunca expuesta al cliente.
+-- La unica via de invocacion es el propio backend
+-- (backend/src/routes/webhooks/paddle.ts), con su propia conexion de base
+-- de datos, nunca expuesta al cliente.
 create or replace function apply_paddle_subscription_event(
   p_event_id text,
   p_event_type text,

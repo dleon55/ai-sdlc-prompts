@@ -1,10 +1,6 @@
-// Endpoint propio del webhook de Paddle Billing. Portado desde
-// supabase/functions/paddle-webhook/index.ts (Deno) como parte de la Fase
-// 1 de docs/PLAN_MIGRACION_SUPABASE_A_LOCAL.md -- misma logica de
-// verificacion de firma y los mismos criterios de aceptacion de eventos;
-// unico cambio real: `supabase.rpc(...)` se vuelve una llamada SQL directa
-// a la funcion `apply_paddle_subscription_event` (portada tal cual en
-// backend/src/schema.sql), sin pasar por PostgREST.
+// Endpoint del webhook de Paddle Billing. Verifica la firma y aplica el
+// evento con la funcion SQL `apply_paddle_subscription_event`
+// (backend/src/schema.sql), idempotente por event_id.
 //
 // Verificacion de firma: Paddle manda el header `Paddle-Signature` con el
 // formato `ts=<unix_timestamp>;h1=<hmac_hex>`. El HMAC-SHA256 se calcula

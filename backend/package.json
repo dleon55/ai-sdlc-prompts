@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Backend propio de AI-SDLC Pro (Fase 1 de docs/PLAN_MIGRACION_SUPABASE_A_LOCAL.md) -- reemplaza auth, base de datos y el webhook de Paddle que hoy vive en Supabase. Corre con el type-stripping nativo de Node, sin paso de build.",
+  "description": "Backend de AI-SDLC Pro: login con GitHub, base de datos propia (PostgreSQL), prueba gratuita y webhook de Paddle. Corre con el type-stripping nativo de Node, sin paso de build.",
   "engines": {
     "node": ">=22.6.0"
   },
