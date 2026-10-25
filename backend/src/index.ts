@@ -5,6 +5,7 @@ import { promptStateRouter } from "./routes/promptState.ts";
 import { trialRouter } from "./routes/trial.ts";
 import { publicRouter } from "./routes/public.ts";
 import { paddleWebhookRouter } from "./routes/webhooks/paddle.ts";
+import { direccionDeEscucha } from "./escucha.ts";
 
 const app = express();
 app.disable("x-powered-by");
@@ -34,6 +35,7 @@ app.use((err: unknown, _req: express.Request, res: express.Response, _next: expr
 });
 
 const port = Number(process.env.PORT ?? 8787);
-app.listen(port, () => {
-  console.log(`Backend AI-SDLC Pro escuchando en :${port}`);
+const host = direccionDeEscucha(process.env);
+app.listen(port, host, () => {
+  console.log(`Backend AI-SDLC Pro escuchando en ${host}:${port}`);
 });
