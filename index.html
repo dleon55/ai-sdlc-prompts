@@ -2205,11 +2205,51 @@ function renderAuthUI() {
 // ser la fuente de verdad y sobrescribe la caché local (localStorage)
 // vía las funciones ya existentes -- ningún otro código de proyectos
 // necesita saber que hay una nube detrás.
+// Fase 2 de la salida de Supabase (issue #241,
+// docs/PLAN_MIGRACION_SUPABASE_A_LOCAL.md): proyectos, progreso y
+// estadísticas de copia viven en el backend propio, en el mismo origen
+// (/api/*, nginx). El login SIGUE en Supabase hasta la Fase 3: se manda su
+// access_token como Bearer y el backend lo verifica con la clave pública.
+// Nunca lanza ni rechaza: ante cualquier fallo (sin fetch, sin sesión,
+// backend caído) resuelve null y el sitio sigue con su caché local, igual
+// que cuando la escritura a Supabase fallaba.
+function backendApi(method, path, body, conSesion) {
+  return new Promise(function(resolve) {
+    try {
+      if (typeof fetch !== 'function') { resolve(null); return; }
+      var token = Promise.resolve(null);
+      if (conSesion) {
+        var client = getSupabaseClient();
+        if (!client || !client.auth || !_sbUser) { resolve(null); return; }
+        token = client.auth.getSession().then(function(r) {
+          var sesion = r && r.data && r.data.session;
+          return sesion ? sesion.access_token : null;
+        });
+      }
+      token.then(function(t) {
+        if (conSesion && !t) return null;
+        var headers = {};
+        if (t) headers.Authorization = 'Bearer ' + t;
+        if (body !== undefined) headers['Content-Type'] = 'application/json';
+        return fetch(path, {
+          method: method,
+          headers: headers,
+          body: body === undefined ? undefined : JSON.stringify(body),
+          credentials: 'omit',
+        });
+      }).then(function(res) {
+        if (!res || !res.ok) { resolve(null); return; }
+        if (res.status === 204) { resolve({}); return; }
+        return res.json().then(resolve, function() { resolve(null); });
+      }).catch(function() { resolve(null); });
+    } catch (e) { resolve(null); }
+  });
+}
+
 function pullCloudProjects() {
-  var client = getSupabaseClient();
-  if (!client || !_sbUser) return;
-  client.from('projects').select('*').eq('user_id', _sbUser.id).then(function(res) {
-    if (!res || res.error || !res.data) return;
+  if (!_sbUser) return;
+  backendApi('GET', '/api/projects', undefined, true).then(function(res) {
+    if (!res || !res.data) return;
     if (res.data.length) {
       var list = res.data.map(function(row) {
         return { id: row.id, name: row.name, isDefault: row.is_default, vars: Object.assign({}, EMPTY_VARS, row.vars || {}) };
@@ -2244,13 +2284,13 @@ function offerLocalImportIfNeeded() {
 // caché local, para que las siguientes ediciones sincronicen por
 // upsert/delete sin ambigüedad.
 function pushLocalProjectsToCloud(list) {
-  var client = getSupabaseClient();
-  if (!client || !_sbUser) return;
+  if (!_sbUser) return;
+  // El backend toma el usuario de la sesión, nunca del cuerpo.
   var rows = list.map(function(p) {
-    return { user_id: _sbUser.id, name: p.name, is_default: !!p.isDefault, vars: p.vars };
+    return { name: p.name, isDefault: !!p.isDefault, vars: p.vars };
   });
-  client.from('projects').insert(rows).select().then(function(res) {
-    if (!res || res.error || !res.data) return;
+  backendApi('POST', '/api/projects', { rows: rows }, true).then(function(res) {
+    if (!res || !res.data || !res.data.length) return;
     var newList = res.data.map(function(row) {
       return { id: row.id, name: row.name, isDefault: row.is_default, vars: Object.assign({}, EMPTY_VARS, row.vars || {}) };
     });
@@ -2264,22 +2304,16 @@ function pushLocalProjectsToCloud(list) {
 // en la nube si hay sesión activa. No-op para usuarios anónimos --
 // mismo comportamiento que hoy, sin ningún cambio.
 function pushProjectsUpdateToCloud(list) {
-  var client = getSupabaseClient();
-  if (!client || !_sbUser) return;
+  if (!_sbUser) return;
   var rows = list.map(function(p) {
-    return { id: p.id, user_id: _sbUser.id, name: p.name, is_default: !!p.isDefault, vars: p.vars, updated_at: new Date().toISOString() };
+    return { id: p.id, name: p.name, isDefault: !!p.isDefault, vars: p.vars };
   });
-  try {
-    client.from('projects').upsert(rows).then(function() {}).catch(function() {});
-  } catch (e) {}
+  backendApi('PUT', '/api/projects', { rows: rows }, true);
 }
 
 function deleteProjectFromCloud(id) {
-  var client = getSupabaseClient();
-  if (!client || !_sbUser) return;
-  try {
-    client.from('projects').delete().eq('id', id).then(function() {}).catch(function() {});
-  } catch (e) {}
+  if (!_sbUser || !id) return;
+  backendApi('DELETE', '/api/projects/' + encodeURIComponent(id), undefined, true);
 }
 
 /* ══════════  PROGRESO POR (PROYECTO, PROMPT)  ══════════
@@ -2380,28 +2414,20 @@ function setPromptStateEntry(state, projectId, pid, entry) {
 // toca, tanto al insertar como en el ON CONFLICT, las columnas presentes
 // en el objeto enviado.
 function pushPromptStateFieldsToCloud(projectId, promptId, fields) {
-  var client = getSupabaseClient();
-  if (!client || !_sbUser) return;
+  if (!_sbUser) return;
   var row = Object.assign({ project_id: projectId, prompt_id: promptId }, fields);
-  try {
-    client.from('project_prompt_state').upsert([row], { onConflict: 'project_id,prompt_id' })
-      .then(function() {}).catch(function() {});
-  } catch (e) {}
+  backendApi('PUT', '/api/project-prompt-state', { rows: [row] }, true);
 }
 
 // Variante en lote de pushPromptStateFieldsToCloud, usada por
 // markPromptsUsed cuando una sola copia involucra varios prompt_id (ej.
 // framework + prompt, o multi-select).
 function pushUsedAtBatchToCloud(projectId, promptIds, usedAtIso) {
-  var client = getSupabaseClient();
-  if (!client || !_sbUser || !promptIds || !promptIds.length) return;
+  if (!_sbUser || !promptIds || !promptIds.length) return;
   var rows = promptIds.map(function(pid) {
     return { project_id: projectId, prompt_id: pid, used_at: usedAtIso };
   });
-  try {
-    client.from('project_prompt_state').upsert(rows, { onConflict: 'project_id,prompt_id' })
-      .then(function() {}).catch(function() {});
-  } catch (e) {}
+  backendApi('PUT', '/api/project-prompt-state', { rows: rows }, true);
 }
 
 // Espejo de pullCloudProjects(): al iniciar sesión, la nube pasa a ser la
@@ -2411,11 +2437,10 @@ function pushUsedAtBatchToCloud(projectId, promptIds, usedAtIso) {
 // limita el resultado a lo que el usuario puede ver vía su relación con
 // projects).
 function pullCloudPromptState() {
-  var client = getSupabaseClient();
-  if (!client || !_sbUser) return;
-  client.from('project_prompt_state').select('project_id,prompt_id,used_at,custom_additions,ai_output')
+  if (!_sbUser) return;
+  backendApi('GET', '/api/project-prompt-state', undefined, true)
     .then(function(res) {
-      if (!res || res.error || !res.data) return;
+      if (!res || !res.data) return;
       var state = {};
       res.data.forEach(function(row) {
         var entry = {};
@@ -2906,12 +2931,8 @@ function refreshProState() {
 // no debe verse afectada (mismo principio fail-open del resto del muro).
 function trackPromptCopy(promptIds) {
   if (!promptIds || !promptIds.length) return;
-  if (!isSupabaseConfigured()) return;
-  var client = getSupabaseClient();
-  if (!client) return;
-  try {
-    client.rpc('track_prompt_copy', { p_prompt_ids: promptIds }).then(function() {}).catch(function() {});
-  } catch (e) {}
+  // Público, sin sesión (antes: RPC otorgada a anon). Fire-and-forget.
+  backendApi('POST', '/api/prompt-stats/track', { promptIds: promptIds }, false);
 }
 
 function openRegisterWall() {
