@@ -6,6 +6,7 @@ import { trialRouter } from "./routes/trial.ts";
 import { publicRouter } from "./routes/public.ts";
 import { paddleWebhookRouter } from "./routes/webhooks/paddle.ts";
 import { direccionDeEscucha } from "./escucha.ts";
+import { manejadorDeErrores } from "./asincrono.ts";
 
 const app = express();
 app.disable("x-powered-by");
@@ -28,11 +29,7 @@ app.use("/api/project-prompt-state", promptStateRouter);
 app.use("/api/trial", trialRouter);
 app.use("/api", publicRouter);
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-  console.error("Error no manejado:", err);
-  res.status(500).json({ error: "Error interno" });
-});
+app.use(manejadorDeErrores);
 
 const port = Number(process.env.PORT ?? 8787);
 const host = direccionDeEscucha(process.env);

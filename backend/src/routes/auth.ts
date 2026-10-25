@@ -3,6 +3,7 @@ import { parse as parseCookieHeader, serialize as serializeCookie } from "cookie
 import { authorizeUrl, exchangeCodeForUser, generateState } from "../auth/github.ts";
 import { clearSessionCookie, issueSessionCookie, readSession } from "../auth/session.ts";
 import { pool } from "../db.ts";
+import { asincrono } from "../asincrono.ts";
 
 export const authRouter = Router();
 
@@ -28,7 +29,7 @@ authRouter.get("/login", (req, res) => {
   res.redirect(authorizeUrl(state));
 });
 
-authRouter.get("/callback", async (req, res) => {
+authRouter.get("/callback", asincrono(async (req, res) => {
   const frontendUrl = process.env.FRONTEND_URL ?? "/";
   const code = typeof req.query.code === "string" ? req.query.code : null;
   const state = typeof req.query.state === "string" ? req.query.state : null;
@@ -60,14 +61,14 @@ authRouter.get("/callback", async (req, res) => {
     console.error("GitHub OAuth callback fallo:", error);
     res.status(502).send("No se pudo completar el login con GitHub -- intenta de nuevo.");
   }
-});
+}));
 
 // GET /api/auth/session -- equivalente a client.auth.getSession() del
 // SDK de Supabase: siempre 200, con user:null si no hay sesion.
-authRouter.get("/session", async (req, res) => {
+authRouter.get("/session", asincrono(async (req, res) => {
   const session = await readSession(req);
   res.json({ user: session ? { id: session.userId, githubLogin: session.githubLogin } : null });
-});
+}));
 
 authRouter.post("/logout", (_req, res) => {
   clearSessionCookie(res);

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { requireAuth } from "../auth/middleware.ts";
 import { pool } from "../db.ts";
+import { asincrono } from "../asincrono.ts";
 
 export const projectsRouter = Router();
 projectsRouter.use(requireAuth);
@@ -17,19 +18,19 @@ interface ProjectRow {
 // Cada query de este archivo filtra o fuerza user_id = req.session.userId
 // explicitamente, nunca confia en un user_id que venga en el body.
 
-projectsRouter.get("/", async (req, res) => {
+projectsRouter.get("/", asincrono(async (req, res) => {
   const { rows } = await pool.query<ProjectRow>(
     "select id, name, is_default, vars from projects where user_id = $1",
     [req.session!.userId],
   );
   res.json({ data: rows });
-});
+}));
 
 // Equivalente a client.from('projects').insert(rows).select() -- usado
 // solo en la importacion inicial de proyectos que vivian en localStorage
 // antes de iniciar sesion (ver pushLocalProjectsToCloud en build.py).
 // Postgres genera el id; nunca se acepta uno del cliente aqui.
-projectsRouter.post("/", async (req, res) => {
+projectsRouter.post("/", asincrono(async (req, res) => {
   const rows = Array.isArray(req.body?.rows) ? req.body.rows : [];
   if (rows.length === 0) {
     res.json({ data: [] });
@@ -47,14 +48,14 @@ projectsRouter.post("/", async (req, res) => {
     inserted.push(result[0]!);
   }
   res.json({ data: inserted });
-});
+}));
 
 // Equivalente a client.from('projects').upsert(rows) -- usado en cada
 // alta/edicion normal (pushProjectsUpdateToCloud). El cliente SI manda un
 // id propio (generado con crypto.randomUUID() al crear el proyecto), asi
 // que esto es un insert-or-update real por id, no un insert con id
 // generado por la base.
-projectsRouter.put("/", async (req, res) => {
+projectsRouter.put("/", asincrono(async (req, res) => {
   const rows = Array.isArray(req.body?.rows) ? req.body.rows : [];
   for (const row of rows) {
     if (!row.id) continue;
@@ -75,12 +76,12 @@ projectsRouter.put("/", async (req, res) => {
     );
   }
   res.status(204).end();
-});
+}));
 
-projectsRouter.delete("/:id", async (req, res) => {
+projectsRouter.delete("/:id", asincrono(async (req, res) => {
   await pool.query("delete from projects where id = $1 and user_id = $2", [
     req.params.id,
     req.session!.userId,
   ]);
   res.status(204).end();
-});
+}));

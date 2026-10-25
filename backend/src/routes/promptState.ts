@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { requireAuth } from "../auth/middleware.ts";
 import { pool, withTransaction } from "../db.ts";
+import { asincrono } from "../asincrono.ts";
 
 export const promptStateRouter = Router();
 promptStateRouter.use(requireAuth);
@@ -22,7 +23,7 @@ interface PromptStateRow {
 
 // Espejo de pullCloudPromptState(): trae el estado de TODOS los
 // proyectos del usuario en una sola consulta.
-promptStateRouter.get("/", async (req, res) => {
+promptStateRouter.get("/", asincrono(async (req, res) => {
   const { rows } = await pool.query<PromptStateRow>(
     `select pps.project_id, pps.prompt_id, pps.used_at, pps.custom_additions, pps.ai_output
      from project_prompt_state pps
@@ -31,7 +32,7 @@ promptStateRouter.get("/", async (req, res) => {
     [req.session!.userId],
   );
   res.json({ data: rows });
-});
+}));
 
 // Equivalente a client.from('project_prompt_state').upsert(rows, {
 // onConflict: 'project_id,prompt_id' }) -- PostgREST solo toca, tanto al
@@ -39,7 +40,7 @@ promptStateRouter.get("/", async (req, res) => {
 // enviada (ver comentario en build.py junto a pushPromptStateFieldsToCloud).
 // Se replica exactamente ese comportamiento de "upsert parcial de
 // columnas" en vez de forzar las 3 columnas siempre.
-promptStateRouter.put("/", async (req, res) => {
+promptStateRouter.put("/", asincrono(async (req, res) => {
   const rows = Array.isArray(req.body?.rows) ? req.body.rows : [];
   if (rows.length === 0) {
     res.status(204).end();
@@ -74,4 +75,4 @@ promptStateRouter.put("/", async (req, res) => {
   });
 
   res.status(204).end();
-});
+}));

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { requireAuth } from "../auth/middleware.ts";
 import { pool, withTransaction } from "../db.ts";
+import { asincrono } from "../asincrono.ts";
 
 export const trialRouter = Router();
 trialRouter.use(requireAuth);
@@ -56,14 +57,14 @@ export async function checkTrialStatus(userId: string): Promise<TrialStatus> {
   };
 }
 
-trialRouter.get("/status", async (req, res) => {
+trialRouter.get("/status", asincrono(async (req, res) => {
   res.json(await checkTrialStatus(req.session!.userId));
-});
+}));
 
 // Puerto de submit_feedback_and_renew() (supabase/trial_gate.sql):
 // inserta el feedback y extiende la prueba 1 semana desde ahora, en una
 // sola transaccion.
-trialRouter.post("/feedback", async (req, res) => {
+trialRouter.post("/feedback", asincrono(async (req, res) => {
   const rating = Number(req.body?.rating);
   const comments = typeof req.body?.comments === "string" ? req.body.comments : null;
   if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
@@ -91,4 +92,4 @@ trialRouter.post("/feedback", async (req, res) => {
   });
 
   res.json({ renewed: true, new_expires_at: newExpiresAt });
-});
+}));
