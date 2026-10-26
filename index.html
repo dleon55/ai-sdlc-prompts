@@ -1231,6 +1231,7 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   transition: background .12s;
 }
 .landing-nav-cta:hover { background: #4f46e5; }
+.landing-nav-actions { display: flex; align-items: center; gap: .6rem; }
 .landing-hero {
   flex: 1; display: flex; flex-direction: column; align-items: center;
   justify-content: center; text-align: center;
@@ -1446,7 +1447,10 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
       <img src="apple-touch-icon.png" width="28" height="28" alt="Lionsystems" style="border-radius:4px;flex-shrink:0;">
       <h1>AI-SDLC Pro</h1>
     </div>
-    <a class="landing-nav-cta" href="/app">Explorar prompts →</a>
+    <div class="landing-nav-actions">
+      <button class="auth-btn" onclick="signInWithGitHub()" title="Iniciar sesión con GitHub / Sign in with GitHub"><svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" style="flex-shrink:0"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span class="auth-btn-label">Iniciar sesión</span></button>
+      <a class="landing-nav-cta" href="/app">Explorar prompts →</a>
+    </div>
   </nav>
   <section class="landing-hero">
     <span class="landing-badge">● Framework profesional · 112 prompts</span>
@@ -2088,42 +2092,54 @@ function signOutUser() {
   });
 }
 
+// Hay mas de un boton de cuenta en el DOM a la vez (el de la portada y el
+// de dentro de /app -- CSS oculta el que no corresponde a la vista
+// activa, nunca se quitan del DOM): por eso esto recorre TODOS los
+// `.auth-btn` en vez de buscar un id unico. Los botones del muro de
+// registro (wall-modal) tambien usan `.auth-btn` pero son estaticos (sin
+// `.auth-btn-label`), asi que se omiten solos sin que haga falta
+// distinguirlos aqui.
 function renderAuthUI() {
-  var btn = document.getElementById('auth-btn');
-  var label = document.getElementById('auth-btn-label');
-  if (!btn || !label) return;
+  var btns = document.querySelectorAll('.auth-btn');
+  if (!btns.length) return;
   var lang = getCurrentLanguage();
-  // Badge Pro: la unica señal visible de que una suscripcion de pago esta
-  // activa. Sin esto un cliente que ya pago no tiene forma de saber que su
-  // pago surtio efecto, que fue exactamente lo que se reporto en produccion.
-  var proBadge = document.getElementById('auth-pro-badge');
-  if (!proBadge && btn.parentNode) {
-    proBadge = document.createElement('span');
-    proBadge.id = 'auth-pro-badge';
-    proBadge.className = 'auth-pro-badge';
-    btn.parentNode.insertBefore(proBadge, btn);
-  }
-  if (proBadge) {
-    proBadge.textContent = 'PRO';
-    proBadge.title = lang === 'en'
-      ? 'Active paid subscription'
-      : 'Suscripción de pago activa';
-    proBadge.style.display = (_usuario && isProUser()) ? '' : 'none';
-  }
-  if (_usuario) {
-    // El nombre por si solo no se lee como "boton para salir": se reporto
-    // no encontrar donde cerrar sesion. El icono lo hace explicito sin
-    // ocupar mas espacio en el header.
-    var who = _usuario.githubLogin || '';
-    var salir = lang === 'en' ? 'Sign out' : 'Cerrar sesión';
-    label.textContent = (who ? who : (lang === 'en' ? 'Signed in' : 'Con sesión')) + '  ⏻';
-    btn.title = salir;
-    btn.setAttribute('aria-label', salir + (who ? (' (' + who + ')') : ''));
-    btn.onclick = signOutUser;
-  } else {
-    label.textContent = lang === 'en' ? 'Sign in' : 'Iniciar sesión';
-    btn.title = lang === 'en' ? 'Sign in with GitHub' : 'Iniciar sesión con GitHub';
-    btn.onclick = signInWithGitHub;
+  for (var i = 0; i < btns.length; i++) {
+    var btn = btns[i];
+    var label = btn.querySelector('.auth-btn-label');
+    if (!label) continue;
+
+    // Badge Pro: la unica señal visible de que una suscripcion de pago esta
+    // activa. Sin esto un cliente que ya pago no tiene forma de saber que su
+    // pago surtio efecto, que fue exactamente lo que se reporto en produccion.
+    var proBadge = btn.parentNode ? btn.parentNode.querySelector(':scope > .auth-pro-badge') : null;
+    if (!proBadge && btn.parentNode) {
+      proBadge = document.createElement('span');
+      proBadge.className = 'auth-pro-badge';
+      btn.parentNode.insertBefore(proBadge, btn);
+    }
+    if (proBadge) {
+      proBadge.textContent = 'PRO';
+      proBadge.title = lang === 'en'
+        ? 'Active paid subscription'
+        : 'Suscripción de pago activa';
+      proBadge.style.display = (_usuario && isProUser()) ? '' : 'none';
+    }
+
+    if (_usuario) {
+      // El nombre por si solo no se lee como "boton para salir": se reporto
+      // no encontrar donde cerrar sesion. El icono lo hace explicito sin
+      // ocupar mas espacio en el header.
+      var who = _usuario.githubLogin || '';
+      var salir = lang === 'en' ? 'Sign out' : 'Cerrar sesión';
+      label.textContent = (who ? who : (lang === 'en' ? 'Signed in' : 'Con sesión')) + '  ⏻';
+      btn.title = salir;
+      btn.setAttribute('aria-label', salir + (who ? (' (' + who + ')') : ''));
+      btn.onclick = signOutUser;
+    } else {
+      label.textContent = lang === 'en' ? 'Sign in' : 'Iniciar sesión';
+      btn.title = lang === 'en' ? 'Sign in with GitHub' : 'Iniciar sesión con GitHub';
+      btn.onclick = signInWithGitHub;
+    }
   }
 }
 
