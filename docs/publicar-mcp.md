@@ -25,7 +25,7 @@ la plataforma, no sobre el texto*.
 |---|---|---|
 | Los prompts (`ai_sdlc_pro_prompts/**`, `prompts-index.json`, `data/prompts-full.json`) | **CC BY 4.0** | El plan Free promete "copia ilimitada y para siempre". Permite uso comercial: sin eso, un freelancer no podría usarlos con un cliente, que es la persona con mayor disposición a pagar. |
 | El servidor MCP (`mcp-server/`, sin `data/`) | **MIT** | Instalar es reproducir y ejecutar es usar. Sin permiso explícito, el paquete es ininstalable en términos legales. |
-| La plataforma (`build.py`, sitio generado, `supabase/`, utilerías) | **Propietario** | Es lo que se vende. Que el código sea legible no otorga licencia de uso. |
+| La plataforma (`build.py`, sitio generado, `backend/`, utilerías) | **Propietario** | Es lo que se vende. Que el código sea legible no otorga licencia de uso. |
 
 `mcp-server/package.json` declara `"license": "MIT AND CC-BY-4.0"`, que es la
 expresión SPDX correcta para un paquete cuyo código y contenido embebido tienen

@@ -15,8 +15,10 @@ por defecto (requiere navegador); ejecutar explícitamente:
 Variable de entorno opcional CHROMIUM_PATH para apuntar a un binario
 distinto del detectado automáticamente por Playwright.
 """
+import json
 import os
 import pathlib
+from urllib.parse import urlparse
 
 import pytest
 
@@ -65,6 +67,35 @@ def _launch_browser(playwright):
     return playwright.chromium.launch(**kwargs)
 
 
+def _instalar_backend_simulado(page):
+    """Hace de backend propio (/api/*) dentro del navegador: ninguna prueba
+    llega a red real ni a producción. El estado es un dict de Python que cada
+    prueba puede cambiar (page.api): la prueba de la sesión, el estado de la
+    prueba gratuita y las llamadas de feedback recibidas."""
+    estado = {"usuario": None, "prueba": {"active": True, "subscribed": False}, "feedback": [], "logins": []}
+
+    def responder(route):
+        ruta = urlparse(route.request.url).path
+        if ruta == "/api/auth/session":
+            return route.fulfill(status=200, content_type="application/json", body=json.dumps({"user": estado["usuario"]}))
+        if ruta == "/api/trial/status":
+            return route.fulfill(status=200, content_type="application/json", body=json.dumps(estado["prueba"]))
+        if ruta == "/api/trial/feedback":
+            estado["feedback"].append(route.request.post_data_json)
+            return route.fulfill(status=200, content_type="application/json",
+                                 body=json.dumps({"renewed": True, "new_expires_at": "2099-01-01"}))
+        if ruta == "/api/auth/login":
+            estado["logins"].append(route.request.url)
+            return route.fulfill(status=200, content_type="text/html", body="<p>login simulado</p>")
+        if ruta in ("/api/prompt-stats/track", "/api/projects", "/api/project-prompt-state"):
+            return route.fulfill(status=204, body="")
+        return route.fulfill(status=404, content_type="application/json", body="{}")
+
+    page.route("**/api/**", responder)
+    page.api = estado
+    return estado
+
+
 @pytest.fixture
 def app_page(app_url):
     """Página de la app ya cargada, en español, sin onboarding/banner de
@@ -74,6 +105,7 @@ def app_page(app_url):
         context = browser.new_context(viewport={"width": 1400, "height": 1000})
         context.grant_permissions(["clipboard-read", "clipboard-write"])
         page = context.new_page()
+        _instalar_backend_simulado(page)
         page.goto(app_url)
         page.evaluate(
             """
@@ -84,45 +116,18 @@ def app_page(app_url):
         )
         page.reload()
         page.wait_for_load_state("networkidle")
-        # Reemplaza el SDK real de Supabase (ya cargado desde el CDN real en
-        # este punto -- ver docs/trial-gate-setup.md) por un stub que jamás
-        # llega a red: sin esto, cada copia en la suite incrementaría el
-        # contador real de anon_usage en producción y eventualmente el
-        # runner de CI quedaría "gateado", rompiendo todos los tests de
-        # copiado (riesgo #2 del diseño 04-01, ver también supabase/trial_gate.sql).
-        # Por defecto todo queda "permitido"; los tests que ejercitan el
-        # muro de registro/feedback sobreescriben este stub explícitamente.
+        # El backend es simulado (ver _instalar_backend_simulado): cada copia
+        # en la suite no toca ningún contador real. Por defecto todo queda
+        # "permitido"; las pruebas del muro cambian page.api explícitamente.
         page.evaluate(
             """
-            window.supabase = {
-                createClient: function() {
-                    return {
-                        auth: {
-                            getSession: function() { return Promise.resolve({ data: { session: null } }); },
-                            onAuthStateChange: function() {},
-                            signInWithOAuth: function() {},
-                            signOut: function() {}
-                        },
-                        rpc: function(name) {
-                            if (name === 'check_anon_usage') {
-                                return Promise.resolve({ data: { allowed: true, remaining: 99 }, error: null });
-                            }
-                            if (name === 'check_trial_status') {
-                                return Promise.resolve({ data: { active: true, expires_at: null }, error: null });
-                            }
-                            return Promise.resolve({ data: null, error: null });
-                        }
-                    };
-                }
-            };
-            window._sb = null;
+            window._usuario = null;
             // Por defecto, el estado de auth ya está "resuelto" (sin sesión) --
-            // checkCopyGate() falla abierto mientras _authStateResolved sea
-            // false (ver build.py, regresión del race condition post-login),
+            // checkProFeatureGate() falla abierto mientras _authStateResolved
+            // sea false (ver build.py, regresión del race condition post-login),
             // así que sin esto TODOS los tests de este archivo quedarían en
             // modo fail-open permanente y el muro de registro/feedback nunca
-            // se mostraría en ningún test, aunque el stub de arriba sí
-            // bloqueara. Los tests que ejercitan esa ventana de carrera lo
+            // se mostraría. Los tests que ejercitan esa ventana de carrera lo
             // sobreescriben explícitamente de vuelta a false.
             window._authStateResolved = true;
             """
@@ -455,89 +460,29 @@ def test_dismissing_onboarding_with_close_button_persists_across_reload(app_url)
         browser.close()
 
 
-# ─────────────────────  Registro de usuarios (Supabase, sin configurar)  ─────────────────────
+# ─────────────────────  Registro de usuarios (backend propio)  ─────────────────────
 
-def test_auth_button_is_inert_and_safe_when_supabase_not_configured(app_page):
-    """Guarda la rama defensiva de isSupabaseConfigured() == false, sin
-    depender de si build.py ya tiene credenciales reales (desde que se
-    completó docs/auth-setup.md, SUPABASE_URL/SUPABASE_ANON_KEY dejaron de
-    ser el centinela en el sitio publicado). Se fuerza el centinela en la
-    página ya cargada para seguir cubriendo el caso "aún sin configurar":
-    el botón debe seguir siendo visible y con nombre accesible, pero al
-    hacer clic debe avisar que falta configuración en vez de intentar
-    llamar a un backend inexistente (o lanzar un error de JS)."""
-    app_page.evaluate(
-        "window.SUPABASE_URL = 'PENDIENTE_CONFIGURAR'; "
-        "window.SUPABASE_ANON_KEY = 'PENDIENTE_CONFIGURAR'; "
-        "window._sb = null;"
-    )
-
+def test_auth_button_starts_github_login_through_the_backend(app_page):
+    """Sin sesión, el botón de cuenta tiene nombre accesible y lleva a
+    /api/auth/login con ?volver= la página actual, para regresar aquí tras
+    autenticarse con GitHub. No hay SDK externo ni aviso de 'no configurado'."""
     label = app_page.evaluate(
         "(document.getElementById('auth-btn') || {}).textContent || ''"
     ).strip()
     assert label, "El botón de autenticación no tiene nombre accesible"
 
     app_page.click("#auth-btn")
-    app_page.wait_for_timeout(250)
-    toast_text = app_page.evaluate(
-        "(document.querySelector('.toast') || {}).textContent || ''"
-    )
-    assert "configurad" in toast_text.lower(), (
-        f"Se esperaba un aviso de 'no configurado', se obtuvo: {toast_text!r}"
-    )
-    # La carga (o no) del <script> del SDK de Supabase se decide una sola vez,
-    # en window.load, antes de que este test pueda forzar el centinela --
-    # por eso no se verifica aquí; ver test_supabase_sdk_script_is_gated_by_isSupabaseConfigured
-    # en tests/test_build.py para la cobertura estática de esa condición.
+    app_page.wait_for_timeout(500)
 
-
-def test_auth_button_attempts_github_oauth_when_supabase_is_configured(app_page):
-    """Complemento del test anterior: confirma que build.py ya tiene
-    credenciales reales (no el centinela) tras completar docs/auth-setup.md,
-    y que en ese caso el botón intenta el flujo real de GitHub OAuth
-    (signInWithOAuth) en vez de mostrar el aviso de 'no configurado'. Se
-    reemplaza el SDK real por un stub para no depender de red externa ni
-    de una redirección real a GitHub dentro del test."""
-    assert app_page.evaluate("isSupabaseConfigured()"), (
-        "SUPABASE_URL/SUPABASE_ANON_KEY siguen siendo el centinela en build.py"
-    )
-
-    app_page.evaluate(
-        """
-        window.__oauthCalls = [];
-        window.supabase = {
-            createClient: function() {
-                return { auth: {
-                    getSession: function() { return Promise.resolve({ data: { session: null } }); },
-                    onAuthStateChange: function() {},
-                    signInWithOAuth: function(opts) { window.__oauthCalls.push(opts); },
-                    signOut: function() {}
-                }};
-            }
-        };
-        window._sb = null;
-        """
-    )
-
-    app_page.click("#auth-btn")
-    app_page.wait_for_timeout(250)
-
-    calls = app_page.evaluate("window.__oauthCalls")
-    assert calls and calls[0]["provider"] == "github", (
-        f"signInWithOAuth no fue invocado con GitHub: {calls!r}"
-    )
-
-    toast_text = app_page.evaluate(
-        "(document.querySelector('.toast') || {}).textContent || ''"
-    )
-    assert "configurad" not in toast_text.lower(), (
-        f"No debería mostrarse el aviso de 'no configurado': {toast_text!r}"
-    )
+    logins = app_page.api["logins"]
+    assert logins, "El botón no navegó a /api/auth/login"
+    assert "volver=%2F" in logins[0], f"El login no indica a dónde volver: {logins[0]!r}"
+    assert app_page.evaluate("typeof window.supabase") == "undefined", "No debe cargarse ningún SDK de Supabase"
 
 
 def test_new_project_id_is_a_valid_uuid_for_cloud_sync(app_page):
     """genId() debe producir un UUID real (no el prefijo 'proj_' anterior):
-    la tabla `projects` de Supabase usa una columna `uuid`, y un id local
+    la tabla `projects` del backend usa una columna `uuid`, y un id local
     inválido para ese tipo rompería la sincronización en cuanto el usuario
     inicia sesión (ver docs/auth-setup.md)."""
     app_page.evaluate("createProject('Proyecto UUID')")
@@ -561,33 +506,12 @@ def test_new_project_id_is_a_valid_uuid_for_cloud_sync(app_page):
 
 def test_copying_prompts_is_never_gated_regardless_of_trial_state(app_page):
     """Copiar cualquier prompt debe funcionar siempre, incluso simulando el
-    estado más restrictivo posible (anónimo, con check_anon_usage()
-    devolviendo 'allowed: false', que en el diseño anterior habría
-    bloqueado la copia). Confirma que copyResolvedText() ya no llama a
-    ningún gate."""
+    estado más restrictivo posible (anónimo y con la prueba vencida en el
+    backend). Confirma que copyResolvedText() ya no llama a ningún gate."""
+    app_page.api["prueba"] = {"active": False, "subscribed": False}
     app_page.evaluate(
         """
-        window.supabase.createClient = function() {
-            return {
-                auth: {
-                    getSession: function() { return Promise.resolve({ data: { session: null } }); },
-                    onAuthStateChange: function() {},
-                    signInWithOAuth: function() {},
-                    signOut: function() {}
-                },
-                rpc: function(name) {
-                    if (name === 'check_anon_usage') {
-                        return Promise.resolve({ data: { allowed: false, remaining: 0 }, error: null });
-                    }
-                    if (name === 'check_trial_status') {
-                        return Promise.resolve({ data: { active: false, expires_at: '2020-01-01' }, error: null });
-                    }
-                    return Promise.resolve({ data: null, error: null });
-                }
-            };
-        };
-        window._sb = null;
-        window._sbUser = null;
+        window._usuario = null;
         """
     )
     pid = "00-B-01-scaffolding-repositorio"
@@ -603,8 +527,8 @@ def test_copying_prompts_is_never_gated_regardless_of_trial_state(app_page):
 
 def test_pro_feature_gate_fails_open_while_auth_state_is_still_resolving(app_page):
     """Regresión de un bug real reportado en producción: justo tras volver
-    del redirect de GitHub, getSession() todavía está intercambiando el
-    código por una sesión (viaje de red real) -- _sbUser sigue en null
+    del redirect de GitHub, /api/auth/session todavía está en viaje (red
+    real) -- _usuario sigue en null
     durante esa ventana. Antes de este fix, el gate trataba eso como
     "anónimo" y volvía a mostrar el muro de registro aunque el login ya
     hubiera funcionado. Con _authStateResolved en false (simulando esa
@@ -612,19 +536,7 @@ def test_pro_feature_gate_fails_open_while_auth_state_is_still_resolving(app_pag
     app_page.evaluate(
         """
         window._authStateResolved = false;
-        window._sbUser = null;
-        window.supabase.createClient = function() {
-            return {
-                auth: {
-                    getSession: function() { return new Promise(function() {}); },
-                    onAuthStateChange: function() {},
-                    signInWithOAuth: function() {},
-                    signOut: function() {}
-                },
-                rpc: function() { return Promise.resolve({ data: null, error: null }); }
-            };
-        };
-        window._sb = null;
+        window._usuario = null;
         """
     )
     before = app_page.evaluate("(loadProjects() || []).length")
@@ -650,19 +562,7 @@ def test_register_wall_appears_when_creating_second_project_anonymously(app_page
     (loadProjects().length), sin necesitar ningún RPC."""
     app_page.evaluate(
         """
-        window.supabase.createClient = function() {
-            return {
-                auth: {
-                    getSession: function() { return Promise.resolve({ data: { session: null } }); },
-                    onAuthStateChange: function() {},
-                    signInWithOAuth: function() {},
-                    signOut: function() {}
-                },
-                rpc: function() { return Promise.resolve({ data: null, error: null }); }
-            };
-        };
-        window._sb = null;
-        window._sbUser = null;
+        window._usuario = null;
         """
     )
     before = app_page.evaluate("(loadProjects() || []).length")
@@ -682,35 +582,14 @@ def test_register_wall_appears_when_creating_second_project_anonymously(app_page
 
 
 def test_feedback_wall_blocks_second_project_until_submitted_then_renews(app_page):
-    """Con sesión simulada y check_trial_status() devolviendo 'active: false'
+    """Con sesión simulada y /api/trial/status devolviendo 'active: false'
     (prueba vencida), el intento de crear un 2do proyecto debe abrir el
-    muro de feedback en vez de crearlo. Al enviarlo
-    (submit_feedback_and_renew stubeado con éxito), el modal se cierra y
-    crear el 2do proyecto vuelve a funcionar de inmediato."""
+    muro de feedback en vez de crearlo. Al enviarlo (/api/trial/feedback
+    simulado con éxito), el modal se cierra y el usuario puede reintentar."""
+    app_page.api["prueba"] = {"active": False, "subscribed": False}
     app_page.evaluate(
         """
-        window._sbUser = { id: 'fake-user-id', email: 'test@example.com' };
-        window.supabase.createClient = function() {
-            return {
-                auth: {
-                    getSession: function() { return Promise.resolve({ data: { session: null } }); },
-                    onAuthStateChange: function() {},
-                    signInWithOAuth: function() {},
-                    signOut: function() {}
-                },
-                rpc: function(name, args) {
-                    if (name === 'check_trial_status') {
-                        return Promise.resolve({ data: { active: false, expires_at: '2020-01-01' }, error: null });
-                    }
-                    if (name === 'submit_feedback_and_renew') {
-                        window.__renewCall = args;
-                        return Promise.resolve({ data: { renewed: true, new_expires_at: '2099-01-01' }, error: null });
-                    }
-                    return Promise.resolve({ data: null, error: null });
-                }
-            };
-        };
-        window._sb = null;
+        window._usuario = { id: 'fake-user-id', githubLogin: 'usuario-prueba' };
         """
     )
     before = app_page.evaluate("(loadProjects() || []).length")
@@ -730,8 +609,9 @@ def test_feedback_wall_blocks_second_project_until_submitted_then_renews(app_pag
     app_page.click(".fb-submit-btn")
     app_page.wait_for_timeout(300)
 
-    call = app_page.evaluate("window.__renewCall")
-    assert call and call["p_rating"] == 4, f"submit_feedback_and_renew no recibió la calificación: {call!r}"
+    llamadas = app_page.api["feedback"]
+    assert llamadas and llamadas[0]["rating"] == 4, f"/api/trial/feedback no recibió la calificación: {llamadas!r}"
+    assert llamadas[0]["comments"] == "Muy útil, gracias."
 
     still_open = app_page.evaluate(
         "(document.getElementById('feedback-wall-modal') || {}).classList"
@@ -739,9 +619,8 @@ def test_feedback_wall_blocks_second_project_until_submitted_then_renews(app_pag
     )
     assert not still_open, "El muro de feedback debería cerrarse tras enviar exitosamente"
 
-    # Tras renovar, check_trial_status ya no se vuelve a llamar en este stub
-    # (queda fijo en active:false) -- lo relevante es que el modal se cerró
-    # y el usuario puede reintentar sin quedar atascado.
+    # El backend simulado sigue respondiendo active:false -- lo relevante es
+    # que el modal se cerró y el usuario puede reintentar sin quedar atascado.
 
 
 def test_saving_custom_additions_is_gated_for_anonymous_users(app_page):
@@ -751,19 +630,7 @@ def test_saving_custom_additions_is_gated_for_anonymous_users(app_page):
     gratis. Ver saveGatedPromptField()."""
     app_page.evaluate(
         """
-        window.supabase.createClient = function() {
-            return {
-                auth: {
-                    getSession: function() { return Promise.resolve({ data: { session: null } }); },
-                    onAuthStateChange: function() {},
-                    signInWithOAuth: function() {},
-                    signOut: function() {}
-                },
-                rpc: function() { return Promise.resolve({ data: null, error: null }); }
-            };
-        };
-        window._sb = null;
-        window._sbUser = null;
+        window._usuario = null;
         """
     )
     pid = "00-B-01-scaffolding-repositorio"

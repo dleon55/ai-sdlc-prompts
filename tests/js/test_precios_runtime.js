@@ -71,13 +71,14 @@ const context = {
   },
   history: { replaceState() {} },
   setTimeout(fn) { fn(); },
-  // Paddle.js y el SDK de Supabase, tal como los usa la pagina.
+  // Paddle.js, tal como lo usa la pagina.
   Paddle: {
     Environment: { set() {} },
     Initialize() {},
     Checkout: { open(cfg) { checkoutAbierto = cfg; } },
   },
-  supabase: { createClient: () => stubSupabase },
+  // El backend propio (/api/*, mismo origen), simulado por `servidor`.
+  fetch: (ruta) => Promise.resolve(responder(ruta)),
   // El script hace `window.dataLayer=window.dataLayer||[]` y luego llama
   // `dataLayer.push(...)` como global. En un navegador asignar a window
   // crea ese global; dentro de una VM, window es un objeto normal y no.
@@ -87,25 +88,27 @@ const context = {
 context.window.localStorage = context.localStorage;
 context.global = context;
 
-// Cliente de Supabase controlable por cada prueba.
-let loginPedido = null;
+// Backend simulado, controlable por cada prueba: `usuario` es la sesion
+// (null = anonimo) y `estado()` responde /api/trial/status.
+let servidor = { usuario: null, estado: () => ({ subscribed: false }) };
 
-let stubSupabase = {
-  auth: {
-    getSession: () => Promise.resolve({ data: { session: null } }),
-    // Sin sesion, pxStartCheckout llama a pxSignIn() para autenticar en
-    // sitio en vez de expulsar al visitante a la landing.
-    signInWithOAuth: (opts) => { loginPedido = opts; return Promise.resolve({}); },
-  },
-  rpc: () => Promise.resolve({ data: null }),
-};
+function responder(ruta) {
+  const ok = (datos) => ({ ok: true, status: 200, json: () => Promise.resolve(datos) });
+  if (ruta === "/api/auth/session") return ok({ user: servidor.usuario });
+  if (ruta === "/api/trial/status") return ok(servidor.estado());
+  if (ruta === "/api/founding/spots-left") return ok({ total: 50, left: 50 });
+  return { ok: false, status: 404, json: () => Promise.resolve({}) };
+}
 
 vm.createContext(context);
 vm.runInContext(source, context);
 
 // ── Utilidades ────────────────────────────────────────────────────────
 
-const flush = async () => { for (let i = 0; i < 8; i++) await Promise.resolve(); };
+// Cada consulta al backend encadena varias promesas (fetch -> json -> ok), y
+// pxPollPro reintenta varias veces: se cede los turnos suficientes para que
+// toda la cadena termine antes de comprobar.
+const flush = async () => { for (let i = 0; i < 64; i++) await Promise.resolve(); };
 
 function reset() {
   checkoutAbierto = null;
@@ -137,19 +140,14 @@ const checkoutHabilitado = context.PADDLE_CLIENT_TOKEN !== "PENDIENTE_CONFIGURAR
   // ── 0b. La venta se reporta a GA4 cuando el webhook la confirma ──
   //
   // Tambien corre con el checkout deshabilitado: pxPollPro no depende de
-  // Paddle, solo de Supabase. `purchase` debe salir UNA vez, con valor
+  // Paddle, solo del backend. `purchase` debe salir UNA vez, con valor
   // numerico y moneda, sin datos del usuario, y solo en el retorno con
   // ?checkout=success -- abrir el checkout no es vender, y volver a la
   // pagina ya siendo Pro tampoco (issue #232, T7).
-  const stubInicial = stubSupabase;
   reset();
   context.dataLayer.length = 0;
   let consultasCompra = 0;
-  stubSupabase = {
-    auth: { getSession: () => Promise.resolve({ data: { session: { user: { id: "u1" } } } }) },
-    rpc: () => { consultasCompra++; return Promise.resolve({ data: { subscribed: consultasCompra >= 2 } }); },
-  };
-  context._pxClient = null;
+  servidor = { usuario: { id: "u1" }, estado: () => ({ subscribed: ++consultasCompra >= 2 }) };
   let urlTrasCompra = null;
   context.history.replaceState = (a, b, url) => { urlTrasCompra = url; };
   context.window.location.search = "?checkout=success";
@@ -176,11 +174,7 @@ const checkoutHabilitado = context.PADDLE_CLIENT_TOKEN !== "PENDIENTE_CONFIGURAR
   reset();
   context.dataLayer.length = 0;
   context.window.location.search = "";
-  stubSupabase = {
-    auth: { getSession: () => Promise.resolve({ data: { session: { user: { id: "u1" } } } }) },
-    rpc: () => Promise.resolve({ data: { subscribed: true } }),
-  };
-  context._pxClient = null;
+  servidor = { usuario: { id: "u1" }, estado: () => ({ subscribed: true }) };
   context.pxInitAuth();
   await flush();
   assert.strictEqual(context.dataLayer.filter(a => a[1] === "purchase").length, 0,
@@ -194,11 +188,7 @@ const checkoutHabilitado = context.PADDLE_CLIENT_TOKEN !== "PENDIENTE_CONFIGURAR
   reset();
   context.dataLayer.length = 0;
   context.window.location.search = "?checkout=success";
-  stubSupabase = {
-    auth: { getSession: () => Promise.resolve({ data: { session: { user: { id: "u1" } } } }) },
-    rpc: () => Promise.resolve({ data: { subscribed: true } }),
-  };
-  context._pxClient = null;
+  servidor = { usuario: { id: "u1" }, estado: () => ({ subscribed: true }) };
   urlTrasCompra = null;
   context.pxInitAuth();
   await flush();
@@ -208,9 +198,7 @@ const checkoutHabilitado = context.PADDLE_CLIENT_TOKEN !== "PENDIENTE_CONFIGURAR
   assert.strictEqual(elements.get("px-subscribe-btn").style.display, "none", "y se muestra el estado Pro");
   context.window.location.search = "";
   context.history.replaceState = () => {};
-  // Las pruebas siguientes esperan el stub original (con signInWithOAuth).
-  stubSupabase = stubInicial;
-  context._pxClient = null;
+  servidor = { usuario: null, estado: () => ({ subscribed: false }) };
 
   if (!checkoutHabilitado) {
     console.log("runtime checkout tests: ok (checkout deshabilitado, solo firma y purchase)");
@@ -274,14 +262,13 @@ const checkoutHabilitado = context.PADDLE_CLIENT_TOKEN !== "PENDIENTE_CONFIGURAR
   // El webhook necesita custom_data.user_id para ligar el pago a alguien.
   reset();
   context._pxUser = null;
-  context._pxClient = null;
-  loginPedido = null;
+  context.window.location.href = undefined;
   context.pxStartCheckout();
   assert.strictEqual(checkoutAbierto, null,
     "sin sesion no debe abrirse el checkout: el pago quedaria sin dueño");
   // Y en vez de dejar al visitante varado, se le autentica en sitio.
-  assert(loginPedido, "debe iniciarse el login cuando falta sesion");
-  assert.match(loginPedido.options.redirectTo, /precios\.html$/,
+  assert(context.window.location.href, "debe iniciarse el login cuando falta sesion");
+  assert.strictEqual(context.window.location.href, "/api/auth/login?volver=%2Fprecios.html",
     "el login debe devolver a precios, no a la landing: antes el visitante " +
     "aterrizaba en otra pagina sin pista de que debia volver a pagar");
 
@@ -292,11 +279,7 @@ const checkoutHabilitado = context.PADDLE_CLIENT_TOKEN !== "PENDIENTE_CONFIGURAR
   reset();
   context._pxUser = { id: "u1" };
   let consultas = 0;
-  stubSupabase = {
-    auth: { getSession: () => Promise.resolve({ data: { session: { user: { id: "u1" } } } }) },
-    rpc: () => { consultas++; return Promise.resolve({ data: { subscribed: consultas >= 3 } }); },
-  };
-  context._pxClient = null;
+  servidor = { usuario: { id: "u1" }, estado: () => ({ subscribed: ++consultas >= 3 }) };
   context.window.location.search = "?checkout=success";
 
   context.pxInitAuth();
@@ -307,19 +290,6 @@ const checkoutHabilitado = context.PADDLE_CLIENT_TOKEN !== "PENDIENTE_CONFIGURAR
     "tras confirmarse la suscripcion, el boton debe ocultarse");
   assert.match(elements.get("px-sub-status").innerHTML, /Pro/,
     "debe confirmarse el acceso Pro al comprador");
-
-  // ── 6. Los tokens de OAuth no quedan en la URL ──
-  //
-  // Supabase los deja en el fragmento por el flujo implicito y no los
-  // limpia solo. Quedaban visibles en la barra de direcciones, el
-  // historial y cualquier captura compartida.
-  reset();
-  let urlLimpiada = null;
-  context.history.replaceState = (a, b, url) => { urlLimpiada = url; };
-  context.window.location.hash = "#access_token=FALSO&refresh_token=X";
-  context.pxStripTokens();
-  assert(urlLimpiada && !/access_token/.test(urlLimpiada),
-    "el fragmento con los tokens debe borrarse de la URL");
 
   console.log("runtime checkout tests: ok");
 })().catch(err => {

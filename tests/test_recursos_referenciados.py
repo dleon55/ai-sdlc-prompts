@@ -42,7 +42,7 @@ PAGINAS = ["index.html", "precios.html", "terminos.html", "privacidad.html", "re
 def _recursos_propios(html):
     """Recursos servidos por este sitio, sean relativos o absolutos.
 
-    Los externos (lionsystems.com.mx, Paddle, Supabase, Google) quedan fuera a
+    Los externos (lionsystems.com.mx, Paddle, Google) quedan fuera a
     propósito: no dependen de este despliegue y comprobarlos convertiría la
     suite en un monitor de terceros que falla por razones ajenas al cambio.
     """

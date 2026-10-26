@@ -1,12 +1,9 @@
 # Plan de migración: salir de Supabase hacia un backend propio
 
-> **Estado: plan, sin código todavía.** Este documento responde a la
-> decisión explícita del propietario del proyecto de no depender de
-> Supabase (ver issue #241, origen del análisis: token de CI caducado para
-> desplegar la Edge Function `paddle-webhook`). Alcance confirmado: migrar
-> **todo** — autenticación, base de datos y el webhook de Paddle —, no solo
-> la pieza que falló en CI. No se escribe ni se ejecuta ningún cambio de
-> código hasta que este plan se apruebe.
+> **Estado (2026-10-25):** completado con un cambio de alcance — el
+> titular decidió salir de Supabase por completo sin migrar datos (no había
+> usuarios reales). Se conserva como registro histórico; la arquitectura
+> vigente está en `backend/README.md`.
 
 ---
 

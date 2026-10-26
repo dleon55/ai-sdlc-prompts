@@ -139,7 +139,7 @@ Ver: [Milestones](https://github.com/dleon55/ai-sdlc-prompts/milestones) · [Iss
 | # | Acción | Labels |
 |---|--------|--------|
 | 12 | Outreach directo: 20 CTOs/Tech Leads en LinkedIn, propuesta licencia equipo. **Plantillas listas 2026-07-31**: `docs/marketing/outreach-ctos.md` — usa el precio Individual vigente (ver `/precios`); el tier de equipo se posiciona como "en definición con el piloto" en vez del $799 MXN/mes original del issue (desactualizado, contradice `/precios`). Pendiente: armar la lista real de 20 prospectos (requiere LinkedIn) y enviar. | `marketing`, `monetization` |
-| 13 | Programa early adopters: primeros 50 Pro a $99 MXN/mes de por vida. **Rediseñado 2026-07-31**: `docs/marketing/early-adopters-program.md` — reemplaza el precio original ($99 MXN, desactualizado) por congelar el precio vigente (ver `/precios`) de por vida para los primeros 50. **Mecanismo decidido 2026-08-09**: el congelado es el default de Paddle Billing (los cambios de precio solo afectan suscripciones nuevas); implementados el tracking de cohorte (`subscriptions.created_at`) y el contador real (`founding_spots_left()` + banner en `/precios`). Pendiente: ejecutar la migración en Supabase y publicar el post de lanzamiento. | `monetization` |
+| 13 | Programa early adopters: primeros 50 Pro a $99 MXN/mes de por vida. **Rediseñado 2026-07-31**: `docs/marketing/early-adopters-program.md` — reemplaza el precio original ($99 MXN, desactualizado) por congelar el precio vigente (ver `/precios`) de por vida para los primeros 50. **Mecanismo decidido 2026-08-09**: el congelado es el default de Paddle Billing (los cambios de precio solo afectan suscripciones nuevas); implementados el tracking de cohorte (`subscriptions.created_at`) y el contador real (`GET /api/founding/spots-left` + banner en `/precios`). Pendiente: publicar el post de lanzamiento. | `monetization` |
 | 14 | Recopilar 3 testimonios de devs para social proof en landing | `marketing`, `ux` |
 
 ---
@@ -148,7 +148,7 @@ Ver: [Milestones](https://github.com/dleon55/ai-sdlc-prompts/milestones) · [Iss
 
 #### Mes 3-6 — Escalar producto
 
-- Backend mínimo (Supabase free tier): auth, perfil, proyectos sincronizados entre dispositivos
+- Backend propio (Node + PostgreSQL en la VM): auth, perfil, proyectos sincronizados entre dispositivos
 - Packs temáticos por industria (FinTech, eCommerce, SaaS B2B)
 - Integración con GitHub API: prompts pre-rellenos con contexto real del repositorio
 - Newsletter semanal "Prompt of the Week" (retención de lista)

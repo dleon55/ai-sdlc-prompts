@@ -41,8 +41,8 @@
 
 | ID | Requerimiento | Prioridad | Estado |
 |----|---------------|-----------|--------|
-| **NFR-SEC-01** | Los proyectos anónimos se almacenan localmente; los de usuarios autenticados se sincronizan en Supabase bajo RLS | Must | ✅ |
-| **NFR-SEC-02** | No transmitir contenido de proyectos a servicios externos no configurados; Supabase sólo recibe los datos necesarios de usuarios autenticados | Must | ✅ |
+| **NFR-SEC-01** | Los proyectos anónimos se almacenan localmente; los de usuarios autenticados se sincronizan en el backend propio (API en `/api/*`, PostgreSQL), con autorización aplicada en cada ruta | Must | ✅ |
+| **NFR-SEC-02** | No transmitir contenido de proyectos a servicios externos no configurados; el backend propio sólo recibe los datos necesarios de usuarios autenticados | Must | ✅ |
 | **NFR-SEC-03** | Analytics solo eventos agregados (no contenido de prompts) | Must | ✅ |
 | **NFR-SEC-04** | No almacenar credenciales, tokens, o secrets en variables | Must | ✅ |
 
@@ -86,7 +86,7 @@
 | ID | Requerimiento | Prioridad | Estado |
 |----|---------------|-----------|--------|
 | **NFR-REL-07** | Export/Import de proyectos para backup manual | Could | ✅ |
-| **NFR-REL-08** | No se requiere auto-backup para uso anónimo; la sincronización de usuarios autenticados depende de Supabase | Won't | ❌ |
+| **NFR-REL-08** | No se requiere auto-backup para uso anónimo; la sincronización de usuarios autenticados depende del backend propio (PostgreSQL con respaldo diario) | Won't | ❌ |
 
 ---
 

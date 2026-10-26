@@ -61,21 +61,13 @@ def test_csp_restricts_object_src_and_frame_ancestors():
     assert "frame-ancestors 'none'" in CONF
 
 
-def test_csp_allows_supabase_sdk_script_and_api():
-    """Regresión: al integrar el SDK de Supabase (registro de usuarios, ver
-    docs/auth-setup.md) se agregó el <script src="https://cdn.jsdelivr.net/...">
-    en build.py, pero se nos olvidó actualizar el CSP de producción -- el
-    navegador bloqueaba silenciosamente la carga del script (violación de
-    script-src) y el botón de inicio de sesión se quedaba atascado para
-    siempre en "Aún cargando". connect-src también debe permitir el dominio
-    del proyecto de Supabase: aunque el script cargue, cada llamada real a
-    su API (auth, REST) usa fetch/XHR y quedaría bloqueada igual sin esto."""
-    assert "https://cdn.jsdelivr.net" in CONF, (
-        "CSP script-src no permite cdn.jsdelivr.net -- el SDK de Supabase no podría cargar"
-    )
-    assert "supabase.co" in CONF, (
-        "CSP connect-src no permite el dominio de Supabase -- las llamadas a su API quedarían bloqueadas"
-    )
+def test_csp_has_no_external_backend_provider():
+    """El login, la sesión y los datos van al backend propio en /api/ del
+    mismo origen: connect-src 'self' basta. Ni el SDK de Supabase ni su
+    dominio deben quedar en la CSP (salida de Supabase, issue #241)."""
+    assert "supabase" not in CONF.lower()
+    assert "cdn.jsdelivr.net" not in CONF
+    assert "connect-src 'self'" in CONF
 
 
 def test_http_redirects_to_https():

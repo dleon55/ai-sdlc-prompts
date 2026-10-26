@@ -356,7 +356,7 @@ Ver documento `i18n-UseCases.md` para especificación detallada de:
 | UC-14 | FR-MON-01, FR-MON-02, FR-MON-04 | Sesión, proyectos y gate de capacidades | - |
 | UC-15 | FR-MON-03 | CTA de autenticación o Pro | - |
 | UC-16 | MR-10 | Renovación de prueba por feedback | - |
-| UC-17 | FR-MON-05, FR-MON-06 | Paddle Checkout, webhook y Supabase | - |
+| UC-17 | FR-MON-05, FR-MON-06 | Paddle Checkout, webhook y backend propio | - |
 | **Total** | | | **62 horas** |
 
 ---
