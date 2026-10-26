@@ -73,3 +73,13 @@ def test_no_queda_rastro_de_supabase_en_el_repositorio_salvo_la_historia():
             continue
         restos.append(linea)
     assert restos == [], "todavía se menciona Supabase:\n" + "\n".join(restos)
+
+
+def test_la_portada_tiene_boton_de_inicio_de_sesion_visible():
+    """El botón de cuenta de la app vive en /app; la portada tenía solo
+    "Explorar prompts" y un visitante nuevo no encontraba cómo entrar."""
+    index = (RAIZ / "index.html").read_text(encoding="utf-8")
+    assert re.search(r'<nav class="landing-nav">.*id="landing-auth-btn".*</nav>', index, re.S)
+    assert "signInWithGitHub('/app')" in BUILD, "desde la portada se entra directo a la app"
+    assert "function renderLandingAuth()" in BUILD
+    assert re.search(r"function renderAuthUI\(\) \{\n  renderLandingAuth\(\);", BUILD)

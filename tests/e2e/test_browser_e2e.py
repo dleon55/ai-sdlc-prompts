@@ -480,6 +480,36 @@ def test_auth_button_starts_github_login_through_the_backend(app_page):
     assert app_page.evaluate("typeof window.supabase") == "undefined", "No debe cargarse ningún SDK de Supabase"
 
 
+def test_landing_shows_sign_in_button_that_goes_to_app(app_url):
+    """La portada (sin #app) muestra su propio botón de inicio de sesión: al
+    pulsarlo va a /api/auth/login con volver=/app. Con sesión, el mismo botón
+    muestra el usuario de GitHub en vez de "Iniciar sesión"."""
+    portada = app_url.split("#")[0]
+    with sync_playwright() as p:
+        browser = _launch_browser(p)
+        page = browser.new_context(viewport={"width": 1400, "height": 900}).new_page()
+        api = _instalar_backend_simulado(page)
+        page.goto(portada)
+        page.wait_for_load_state("networkidle")
+
+        boton = page.locator("#landing-auth-btn")
+        assert boton.is_visible(), "El botón de inicio de sesión no se ve en la portada"
+        assert "Iniciar sesión" in boton.inner_text()
+
+        boton.click()
+        page.wait_for_timeout(500)
+        assert api["logins"], "El botón de la portada no navegó a /api/auth/login"
+        assert "volver=%2Fapp" in api["logins"][0], f"Debe volver a la app: {api['logins'][0]!r}"
+
+        # Con sesión: el botón muestra el usuario.
+        api["usuario"] = {"id": "u-portada", "githubLogin": "usuario-portada"}
+        page.goto(portada)
+        page.wait_for_load_state("networkidle")
+        page.wait_for_timeout(300)
+        assert page.locator("#landing-auth-btn").inner_text().strip() == "usuario-portada"
+        browser.close()
+
+
 def test_new_project_id_is_a_valid_uuid_for_cloud_sync(app_page):
     """genId() debe producir un UUID real (no el prefijo 'proj_' anterior):
     la tabla `projects` del backend usa una columna `uuid`, y un id local
