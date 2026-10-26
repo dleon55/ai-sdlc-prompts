@@ -1231,6 +1231,18 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   transition: background .12s;
 }
 .landing-nav-cta:hover { background: #4f46e5; }
+.landing-nav-actions { display: flex; align-items: center; gap: .6rem; }
+.landing-nav-login {
+  display: inline-flex; align-items: center; gap: .4rem;
+  padding: .36rem .9rem; background: transparent; border: 1px solid var(--bdr2);
+  border-radius: 7px; color: var(--tx); font-size: .8rem; font-weight: 600;
+  cursor: pointer; font-family: inherit; transition: border-color .12s, background .12s;
+}
+.landing-nav-login:hover { border-color: #6366f1; background: rgba(99,102,241,.12); }
+@media (max-width: 480px) {
+  .landing-nav { padding: .8rem 1rem; }
+  .landing-nav-login { padding: .36rem .6rem; }
+}
 .landing-hero {
   flex: 1; display: flex; flex-direction: column; align-items: center;
   justify-content: center; text-align: center;
@@ -1446,7 +1458,10 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
       <img src="apple-touch-icon.png" width="28" height="28" alt="Lionsystems" style="border-radius:4px;flex-shrink:0;">
       <h1>AI-SDLC Pro</h1>
     </div>
-    <a class="landing-nav-cta" href="/app">Explorar prompts →</a>
+    <div class="landing-nav-actions">
+      <button type="button" class="landing-nav-login" id="landing-auth-btn" onclick="signInWithGitHub('/app')"><svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg><span id="landing-auth-label"><span class="fw-lang-es">Iniciar sesión</span><span class="fw-lang-en">Sign in</span></span></button>
+      <a class="landing-nav-cta" href="/app">Explorar prompts →</a>
+    </div>
   </nav>
   <section class="landing-hero">
     <span class="landing-badge">● Framework profesional · 112 prompts</span>
@@ -2075,8 +2090,12 @@ function initAuth() {
 
 // El login es una navegación completa a GitHub vía el backend; al volver,
 // el backend regresa a ESTA misma página (?volver=), no a la portada.
-function signInWithGitHub() {
-  var volver = window.location.pathname + window.location.search;
+function signInWithGitHub(destino) {
+  // Desde la portada se entra directo a la app ('/app'); desde cualquier
+  // otra página se vuelve a la misma.
+  var volver = (typeof destino === 'string' && destino.charAt(0) === '/')
+    ? destino
+    : window.location.pathname + window.location.search;
   window.location.href = '/api/auth/login?volver=' + encodeURIComponent(volver);
 }
 
@@ -2088,7 +2107,26 @@ function signOutUser() {
   });
 }
 
+function renderLandingAuth() {
+  var btn = document.getElementById('landing-auth-btn');
+  var label = document.getElementById('landing-auth-label');
+  if (!btn || !label) return;
+  var lang = getCurrentLanguage();
+  if (_usuario) {
+    // Con sesión, el botón de la portada lleva a la app: cerrar sesión se
+    // hace desde la cabecera de la app, donde ya está.
+    label.textContent = _usuario.githubLogin || (lang === 'en' ? 'My workspace' : 'Mi espacio');
+    btn.title = lang === 'en' ? 'Go to your workspace' : 'Ir a tu espacio';
+    btn.onclick = function() { window.location.href = '/app'; };
+  } else {
+    label.innerHTML = '<span class="fw-lang-es">Iniciar sesión</span><span class="fw-lang-en">Sign in</span>';
+    btn.title = lang === 'en' ? 'Sign in with GitHub' : 'Iniciar sesión con GitHub';
+    btn.onclick = function() { signInWithGitHub('/app'); };
+  }
+}
+
 function renderAuthUI() {
+  renderLandingAuth();
   var btn = document.getElementById('auth-btn');
   var label = document.getElementById('auth-btn-label');
   if (!btn || !label) return;
