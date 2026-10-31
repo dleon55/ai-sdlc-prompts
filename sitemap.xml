@@ -4,7 +4,15 @@
   <url>
     <loc>https://prompts.lionsystems.com.mx/</loc>
     <xhtml:link rel="alternate" hreflang="es" href="https://prompts.lionsystems.com.mx/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://prompts.lionsystems.com.mx/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://prompts.lionsystems.com.mx/en/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://prompts.lionsystems.com.mx/"/>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://prompts.lionsystems.com.mx/en/</loc>
+    <xhtml:link rel="alternate" hreflang="es" href="https://prompts.lionsystems.com.mx/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://prompts.lionsystems.com.mx/en/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://prompts.lionsystems.com.mx/"/>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>

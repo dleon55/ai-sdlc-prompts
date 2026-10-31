@@ -12,7 +12,7 @@
 <meta name="robots" content="index,follow">
 <meta name="theme-color" content="#0f172a">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://prompts.lionsystems.com.mx">
+<meta property="og:url" content="https://prompts.lionsystems.com.mx/">
 <meta property="og:site_name" content="AI-SDLC Pro">
 <meta property="og:locale" content="es_MX">
 <meta property="og:locale:alternate" content="en_US">
@@ -23,10 +23,10 @@
 <meta name="twitter:title" content="AI-SDLC Pro — Biblioteca de Prompts de Ingeniería de Software">
 <meta name="twitter:description" content="112 prompts estructurados para dirigir agentes IA (Copilot, Claude, Cursor, Windsurf) en cada fase del ciclo de ingeniería de software. Framework SDLC profesional en español.">
 <meta name="twitter:image" content="https://prompts.lionsystems.com.mx/og-image.png">
-<link rel="canonical" href="https://prompts.lionsystems.com.mx">
-<link rel="alternate" hreflang="es" href="https://prompts.lionsystems.com.mx">
-<link rel="alternate" hreflang="en" href="https://prompts.lionsystems.com.mx">
-<link rel="alternate" hreflang="x-default" href="https://prompts.lionsystems.com.mx">
+<link rel="canonical" href="https://prompts.lionsystems.com.mx/">
+<link rel="alternate" hreflang="es" href="https://prompts.lionsystems.com.mx/">
+<link rel="alternate" hreflang="en" href="https://prompts.lionsystems.com.mx/en/">
+<link rel="alternate" hreflang="x-default" href="https://prompts.lionsystems.com.mx/">
 <link rel="icon" type="image/png" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">
@@ -3691,6 +3691,10 @@ function detectBrowserLanguage() {
 }
 
 function getCurrentLanguage() {
+  // Las páginas con URL propia por idioma (/en/) fijan el idioma inicial.
+  var root = document.documentElement;
+  var pageLang = (root && typeof root.getAttribute === 'function') ? root.getAttribute('data-page-lang') : null;
+  if (pageLang && I18N_SUPPORTED.indexOf(pageLang) !== -1) return pageLang;
   try {
     var saved = localStorage.getItem(I18N_KEY);
     if (saved && I18N_SUPPORTED.indexOf(saved) !== -1) return saved;
@@ -4909,13 +4913,16 @@ function isAppRoute() {
 // se esta leyendo. index.html paso de 513 a 221 KB comprimidos.
 var _textosCargados = {};
 var _textosPendientes = {};
+// '' en / y '../' en /en/ (build_index_en lo sustituye): la ruta es relativa
+// para que funcione igual en producción y en GitHub Pages bajo subruta.
+var PROMPTS_TEXT_BASE = '';
 
 function ensurePromptTexts(lang) {
   var l = lang || getCurrentLanguage();
   if (_textosCargados[l]) return Promise.resolve();
   if (_textosPendientes[l]) return _textosPendientes[l];
 
-  _textosPendientes[l] = fetch('prompts-text.' + l + '.json')
+  _textosPendientes[l] = fetch(PROMPTS_TEXT_BASE + 'prompts-text.' + l + '.json')
     .then(function(r) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
