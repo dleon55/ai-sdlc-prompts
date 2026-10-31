@@ -32,7 +32,7 @@ function promptSummary(p, lang) {
 export function createServer() {
   const server = new McpServer({
     name: "ai-sdlc-prompts",
-    version: "1.0.0",
+    version: "1.0.1",
     websiteUrl: "https://github.com/dleon55/ai-sdlc-prompts",
   });
 

@@ -4,10 +4,11 @@
 # versión de npm no se puede reemplazar, solo deprecar). El tag es el acto
 # deliberado; main sigue siendo el flujo normal de desarrollo.
 #
-# Antes de que esto funcione falta una sola cosa que no vive en el repo: el
-# secreto NPM_TOKEN (token de publicación de npm, tipo "Automation") en el
-# environment `production`. La licencia ya está resuelta (#194): código MIT,
-# prompts CC BY 4.0. Ver docs/publicar-mcp.md.
+# Autenticación: trusted publishing (OIDC). No hay token de npm en el repo:
+# npm confía en este workflow (`publish-mcp.yml`, environment `production`)
+# según lo configurado en npmjs.com → paquete → Settings → Trusted Publisher.
+# El publicador tiene permiso de `npm publish`: el tag publica directamente,
+# con procedencia firmada, sin aprobación manual. Ver docs/publicar-mcp.md.
 name: Publicar servidor MCP
 
 on:
@@ -18,38 +19,29 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    # Todos los secretos de este repositorio viven en el environment
-    # `production` (GCP_*), no a nivel repositorio. Un
-    # job que no declara environment SOLO ve los de repositorio, asi que el
-    # primer intento de publicar fallo con ENEEDAUTH: NPM_TOKEN no llegaba
-    # aunque estuviera configurado. Declararlo da acceso a ambos ambitos.
+    # El trusted publisher de npm está atado a este environment: si el job no
+    # lo declara, npm rechaza la identidad OIDC.
     environment:
       name: production
     permissions:
       contents: read
-      id-token: write # procedencia (provenance) de npm
+      id-token: write # trusted publishing (OIDC) y procedencia de npm
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
           registry-url: "https://registry.npmjs.org"
 
-      # Se comprueba ANTES de instalar y empaquetar. Sin esto, el fallo
-      # aparecia al final como `npm error code ENEEDAUTH`, que no dice donde
-      # falta el secreto ni en que ambito buscarlo.
-      - name: Verificar que el token de npm esta disponible
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      # Trusted publishing exige npm >= 11.5.1 (se pide >= 11.15.0, que también
+      # permite `npm stage publish` si algún día se vuelve a la aprobación manual).
+      # Se fija la versión en vez de confiar en la que trae Node.
+      - name: Actualizar npm para trusted publishing
         run: |
-          if [ -z "${NPM_TOKEN}" ]; then
-            echo "::error::falta el secreto NPM_TOKEN en el environment 'production'."
-            echo "Crearlo en GitHub: Settings -> Environments -> production -> Add secret."
-            echo "El token debe ser de tipo Automation (npmjs.com -> Access Tokens)."
-            exit 1
-          fi
-          echo "NPM_TOKEN presente (${#NPM_TOKEN} caracteres)"
+          npm install -g npm@11
+          npm -v
+          node -e "const [a,b]=process.argv[1].split('.').map(Number); if (a<11||(a===11&&b<15)) { console.error('::error::npm '+process.argv[1]+' es menor que 11.15.0'); process.exit(1) }" "$(npm -v)"
 
       - name: Instalar dependencias
         working-directory: mcp-server
@@ -99,8 +91,8 @@ jobs:
         working-directory: mcp-server
         run: npm pack --dry-run
 
+      # Con trusted publishing npm firma la procedencia solo; --provenance lo
+      # deja explícito.
       - name: Publicar
         working-directory: mcp-server
         run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

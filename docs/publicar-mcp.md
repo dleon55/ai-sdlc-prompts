@@ -2,16 +2,9 @@
 
 El servidor MCP (`mcp-server/`) expone los 112 prompts, su contrato editorial y
 el grafo de siguientes pasos a cualquier agente que hable Model Context
-Protocol — Claude Code, Claude Desktop, Cursor. Está construido, probado en CI
-y **nadie puede instalarlo**: hasta ahora `package.json` tenía `private: true`.
-
-Esto importa más que una función nueva. `docs/STRATEGY.md` justifica toda la
-decisión de monetización con esta frase:
-
-> el texto ya es legible por cualquiera en GitHub o **vía el servidor MCP sin
-> autenticación**
-
-Mientras el paquete no exista, esa frase es falsa.
+Protocol — Claude Code, Claude Desktop, Cursor. **Publicado en npm** como
+[`ai-sdlc-prompts-mcp`](https://www.npmjs.com/package/ai-sdlc-prompts-mcp)
+desde el 31-oct-2026 (1.0.0, con procedencia firmada).
 
 ---
 
@@ -42,46 +35,45 @@ equivalente. La atribución convierte cada reuso en un enlace de vuelta.
 
 ---
 
-## Estado verificado (2026-10-31)
+## Cómo se publica (desde 1.0.1)
 
-Todo lo que no requiere la cuenta de npm del propietario está hecho y comprobado:
+**Sin token.** La versión 1.0.0 se publicó con un token granular de npm; desde
+la 1.0.1 se usa *trusted publishing*: npm confía en el workflow
+`publish-mcp.yml` del repositorio `dleon55/ai-sdlc-prompts`, environment
+`production`, según lo configurado en npmjs.com → paquete → *Settings* →
+*Trusted Publisher*. No hay secreto de npm en GitHub; si queda un `NPM_TOKEN`
+en el environment `production`, se puede borrar, y el token en npmjs.com
+también.
 
-- El nombre `ai-sdlc-prompts-mcp` sigue libre en npm (`npm view` responde 404).
-- `npm test`: 29/29 pruebas en verde. `npm audit`: 0 vulnerabilidades.
-- `npm pack --dry-run`: 9 archivos, unos 425 kB comprimidos (`LICENSE`, `README.md`,
-  `index.js`, `src/`, `data/prompts-full.json`).
-- `data/prompts-full.json` está al día: `python build.py` no genera diff.
-- El tarball se instaló en un directorio vacío; el binario `ai-sdlc-prompts-mcp`
-  responde `initialize` y `tools/list` por stdio.
-- La CI (`deploy.yml`, job `mcp-server-test`) corre ahora `npm audit --audit-level=high`
-  y `npm pack --dry-run` en cada PR, igual que `publish-mcp.yml` antes de publicar.
+**Publicación directa.** El publicador de confianza tiene permiso de
+`npm publish`: el tag publica sin pasos manuales. La seguridad la dan tres
+cosas: solo ese workflow, en ese repositorio y en ese environment, puede
+publicar; el paquete tiene activado *Require two-factor authentication and
+disallow tokens*, así que ningún token (robado o viejo) sirve para publicar; y
+cada versión lleva procedencia firmada que liga el tarball al commit.
 
-**Solo falta el paso 1 (token) y el paso 2 (tag).**
+Si algún día se prefiere aprobar cada versión a mano, basta con quitar el
+permiso `npm publish` al publicador en npmjs.com y cambiar el último paso del
+workflow a `npm stage publish`; la versión queda en *Staged Packages* hasta que
+se aprueba con 2FA.
 
-## Procedimiento
-
-### 1. Secreto de npm (una vez)
-
-1. En npmjs.com → *Access Tokens* → **Generate New Token** → tipo **Automation**.
-2. En GitHub → *Settings* → *Environments* → **production** → *Add environment secret*:
-   - Nombre: `NPM_TOKEN`
-   - Valor: el token generado
-
-   Debe ir en el environment `production`, no como secreto de repositorio:
-   `publish-mcp.yml` declara ese environment. Ahí viven también los secretos
-   `GCP_*`, y un primer intento de publicar falló con `ENEEDAUTH` por esto.
-
-### 2. Publicar
+### 1. Subir la versión y taggear
 
 La publicación la dispara un tag, no un push a `main`: publicar es
 irreversible — una versión de npm no se reemplaza, solo se deprecia.
 
+1. Subir la versión en `mcp-server/package.json`, `mcp-server/package-lock.json`
+   (los dos campos `version` de la raíz) y `mcp-server/src/server.js`.
+2. Fusionar a `main`.
+3. Taggear sobre ese commit:
+
 ```bash
-git tag mcp-v1.0.0
-git push origin mcp-v1.0.0
+git tag -a mcp-v1.0.1 -m "ai-sdlc-prompts-mcp 1.0.1"
+git push origin mcp-v1.0.1
 ```
 
-`.github/workflows/publish-mcp.yml` se encarga del resto y **aborta** si:
+`.github/workflows/publish-mcp.yml` usa Node 24 y npm 11 (trusted publishing
+exige npm ≥ 11.5.1) y **aborta** si:
 
 - `mcp-server/data/prompts-full.json` está desactualizado respecto a
   `python build.py` (evita publicar un catálogo viejo sin que nada avise);
@@ -90,19 +82,13 @@ git push origin mcp-v1.0.0
 - fallan las pruebas;
 - `npm audit` encuentra vulnerabilidades altas o críticas.
 
-### 3. Verificar
+### 2. Verificar
 
 ```bash
-npx ai-sdlc-prompts-mcp
+npx -y ai-sdlc-prompts-mcp
 ```
 
 Debe quedarse esperando en stdin (es el transporte stdio de MCP), sin abrir red.
-
-### 4. Anunciarlo en el sitio
-
-Deliberadamente **no** se agregó todavía el bloque de instalación a
-`index.html`: enlazar a un paquete de npm que no existe es peor que no
-enlazarlo. Una vez publicado y verificado con el paso 3, agregarlo.
 
 ---
 
@@ -148,7 +134,7 @@ con vulnerabilidades altas conocidas.
 cambio en los prompts cambia el paquete**. Al agregar o editar prompts:
 
 1. `python build.py` y commitear `mcp-server/data/prompts-full.json`
-2. Subir la versión en `mcp-server/package.json`
+2. Subir la versión (ver «Cómo se publica», paso 1)
 3. Taggear `mcp-v<version>`
 
 Si se olvida el paso 1, la CI lo detiene.

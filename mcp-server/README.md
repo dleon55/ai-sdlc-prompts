@@ -11,14 +11,12 @@ anexa por defecto — ver [Contrato de operación](#contrato-de-operación).
 
 ## Instalación
 
-> **Aún no publicado en npm.** Falta cargar el secreto `NPM_TOKEN` y crear el
-> tag — ver [`docs/publicar-mcp.md`](../docs/publicar-mcp.md). Mientras tanto,
-> usa el clon local.
+> Publicado en npm: [`ai-sdlc-prompts-mcp`](https://www.npmjs.com/package/ai-sdlc-prompts-mcp).
 >
 > Licencia: el código de este servidor es **MIT**; los prompts que sirve son
 > **CC BY 4.0** (uso comercial permitido, con atribución). Ver [`LICENSE`](LICENSE).
 
-Una vez publicado, sin clonar el repositorio:
+Sin clonar el repositorio:
 
 ```bash
 npx ai-sdlc-prompts-mcp
@@ -55,7 +53,7 @@ Agrega esto a la configuración de servidores MCP del cliente (`claude_desktop_c
 }
 ```
 
-Una vez publicado en npm, sin ruta absoluta ni clon:
+Con el paquete de npm, sin ruta absoluta ni clon:
 
 ```json
 {
@@ -129,12 +127,12 @@ Ejemplo:
 ## Desarrollo
 
 ```bash
-npm test    # node --test test/ -- 24 tests: dataStore, resolvePrompt, integración MCP real (InMemoryTransport)
+npm test    # node --test test/ -- 29 tests: dataStore, resolvePrompt, integración MCP real (InMemoryTransport)
 ```
 
 Los datos (`data/prompts-full.json`) se regeneran desde la raíz del repo con `python build.py` — no editar ese archivo a mano. Cualquier cambio de contenido de prompts se hace en `ai_sdlc_pro_prompts/*.md`.
 
 ## Alcance de esta primera versión
 
-- Solo ejecución local desde este checkout (`node index.js` / `npm start`). No se publica a npm.
+- Se ejecuta en la máquina de quien lo usa (`npx -y ai-sdlc-prompts-mcp`, o `node index.js` desde el clon).
 - Transporte stdio únicamente — sin servidor HTTP.
