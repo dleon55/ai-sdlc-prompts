@@ -1,7 +1,7 @@
 # Kit de lanzamiento del servidor MCP (`ai-sdlc-prompts-mcp`)
 
-> Preparado el 31-oct-2026. **No publicar nada de esto hasta que el paquete exista en npm** (#199) y
-> `npx -y ai-sdlc-prompts-mcp` arranque. Enlazar a un paquete inexistente es peor que no enlazarlo.
+> Preparado el 31-oct-2026. **El paquete ya está publicado** (`ai-sdlc-prompts-mcp` 1.0.0 en npm, con
+> procedencia firmada, 31-oct-2026) y `npx -y ai-sdlc-prompts-mcp` arranca y responde.
 >
 > Complementa, no sustituye, el material general de `docs/marketing/` (`dev-to-article.md`,
 > `linkedin-posts.md`, `producthunt-launch.md`). Este kit trata solo el lanzamiento del MCP.
@@ -12,7 +12,7 @@
 |---|---|---|
 | Paquete | `ai-sdlc-prompts-mcp` 1.0.0, se instala con `npx -y ai-sdlc-prompts-mcp` | `mcp-server/package.json` |
 | Contenido | 112 prompts, español e inglés, 18 secciones (`00`–`17`) | `mcp-server/README.md` |
-| Herramientas | `list_prompts`, `get_prompt`, `resolve_prompt`, `get_framework` | `mcp-server/README.md` |
+| Herramientas | `list_prompts`, `get_prompt`, `resolve_prompt`, `get_framework`, `recommend_next` | paquete publicado 1.0.0 (`tools/list`, 31-oct-2026) |
 | Seguridad | Solo lectura, transporte stdio, no abre red, no escribe en ningún sistema | `mcp-server/README.md` |
 | Diferenciador | Cada prompt viaja con su **contrato de operación**: autonomía máxima (A0–A3), herramientas permitidas, cuándo detenerse y preguntar, evidencia mínima | `mcp-server/README.md` |
 | Licencia | Código MIT; prompts CC BY 4.0 (uso comercial con atribución) | #194 |
@@ -57,12 +57,13 @@ testing, security, release and operations. It's free, read-only and installs wit
 
 ## What the agent gets
 
-Four tools:
+Five tools:
 
 - `list_prompts`: filter by lifecycle section, risk level, autonomy level or free text.
 - `get_prompt`: the full prompt, its usage notes and the recommended next prompt.
 - `resolve_prompt`: fills in your project's variables, the same way the website does.
 - `get_framework`: the shared context block that goes in front of every prompt.
+- `recommend_next`: the prompt(s) to run after a given one.
 
 ## The part that matters: an operating contract
 
@@ -175,7 +176,7 @@ executed. So every prompt in this server carries a short operating contract that
 and the minimum evidence the output must include.
 
 - `npx -y ai-sdlc-prompts-mcp`
-- 4 tools: `list_prompts`, `get_prompt`, `resolve_prompt`, `get_framework`
+- 5 tools: `list_prompts`, `get_prompt`, `resolve_prompt`, `get_framework`, `recommend_next`
 - stdio only, no network, read-only
 - MIT code, CC BY 4.0 prompts, Spanish and English
 
