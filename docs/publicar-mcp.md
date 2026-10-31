@@ -42,14 +42,34 @@ equivalente. La atribución convierte cada reuso en un enlace de vuelta.
 
 ---
 
-## Procedimiento, una vez resuelta la licencia
+## Estado verificado (2026-10-31)
+
+Todo lo que no requiere la cuenta de npm del propietario está hecho y comprobado:
+
+- El nombre `ai-sdlc-prompts-mcp` sigue libre en npm (`npm view` responde 404).
+- `npm test`: 29/29 pruebas en verde. `npm audit`: 0 vulnerabilidades.
+- `npm pack --dry-run`: 9 archivos, unos 425 kB comprimidos (`LICENSE`, `README.md`,
+  `index.js`, `src/`, `data/prompts-full.json`).
+- `data/prompts-full.json` está al día: `python build.py` no genera diff.
+- El tarball se instaló en un directorio vacío; el binario `ai-sdlc-prompts-mcp`
+  responde `initialize` y `tools/list` por stdio.
+- La CI (`deploy.yml`, job `mcp-server-test`) corre ahora `npm audit --audit-level=high`
+  y `npm pack --dry-run` en cada PR, igual que `publish-mcp.yml` antes de publicar.
+
+**Solo falta el paso 1 (token) y el paso 2 (tag).**
+
+## Procedimiento
 
 ### 1. Secreto de npm (una vez)
 
 1. En npmjs.com → *Access Tokens* → **Generate New Token** → tipo **Automation**.
-2. En GitHub → *Settings* → *Secrets and variables* → *Actions* → **New repository secret**:
+2. En GitHub → *Settings* → *Environments* → **production** → *Add environment secret*:
    - Nombre: `NPM_TOKEN`
    - Valor: el token generado
+
+   Debe ir en el environment `production`, no como secreto de repositorio:
+   `publish-mcp.yml` declara ese environment. Ahí viven también los secretos
+   `GCP_*`, y un primer intento de publicar falló con `ENEEDAUTH` por esto.
 
 ### 2. Publicar
 
@@ -67,7 +87,8 @@ git push origin mcp-v1.0.0
   `python build.py` (evita publicar un catálogo viejo sin que nada avise);
 - el tag no coincide con la versión de `package.json` (evita que quede en npm
   una versión distinta de la taggeada, imposible de rastrear después);
-- fallan las pruebas.
+- fallan las pruebas;
+- `npm audit` encuentra vulnerabilidades altas o críticas.
 
 ### 3. Verificar
 
