@@ -5,6 +5,7 @@ Uso:  cd WEB_PROMPTS && python build.py
 """
 import re
 import json
+import html as html_module
 import os
 import sys
 from pathlib import Path
@@ -2164,6 +2165,16 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
 }
 .proof-stat-label { font-size: .74rem; color: var(--tx3); margin-top: .2rem; }
+.landing-mcp {
+  padding: 0 1.5rem 4rem; max-width: 760px; margin: 0 auto; text-align: center;
+}
+.landing-mcp h3 { font-size: 1.3rem; font-weight: 700; color: var(--tx); margin-bottom: .75rem; }
+.landing-mcp p { font-size: .85rem; color: var(--tx3); line-height: 1.6; margin-bottom: 1rem; }
+.landing-mcp-code {
+  text-align: left; background: var(--bg2); border: 1px solid var(--bdr);
+  border-radius: 10px; padding: 1rem 1.2rem; margin: 0 auto 1rem;
+  font-size: .78rem; color: var(--tx); overflow-x: auto;
+}
 .landing-final {
   background: linear-gradient(135deg,#1e1b4b,#0f1220);
   border-top: 1px solid #4338ca; padding: 4rem 1.5rem; text-align: center;
@@ -5546,6 +5557,15 @@ LANDING_JS = """
 })();
 """
 
+# Bloque de instalación del servidor MCP en la portada (issue #200). Solo
+# tiene sentido con el paquete publicado en npm (issue #199).
+MCP_NPM_URL = "https://www.npmjs.com/package/ai-sdlc-prompts-mcp"
+MCP_CONFIG_SNIPPET_HTML = html_module.escape(json.dumps(
+    {"mcpServers": {"ai-sdlc-prompts": {"command": "npx", "args": ["-y", "ai-sdlc-prompts-mcp"]}}},
+    indent=2,
+))
+
+
 def get_landing_html(n, lang='es'):
     ls = i18n_strings.LANDING_STRINGS[lang]
     return (
@@ -5607,6 +5627,13 @@ def get_landing_html(n, lang='es'):
         f'      <div class="proof-stat"><div class="proof-stat-num">6</div><div class="proof-stat-label">{ls["proof_stat_3_label"]}</div></div>\n'
         f'      <div class="proof-stat"><div class="proof-stat-num">0</div><div class="proof-stat-label">{ls["proof_stat_4_label"]}</div></div>\n'
         f'    </div>\n'
+        f'  </section>\n'
+        f'  <section class="landing-mcp" id="mcp">\n'
+        f'    <h3>{ls["mcp_title"]}</h3>\n'
+        f'    <p>{ls["mcp_subtitle"].format(n=n)}</p>\n'
+        f'    <pre class="landing-mcp-code"><code>{MCP_CONFIG_SNIPPET_HTML}</code></pre>\n'
+        f'    <p>{ls["mcp_contract"]}</p>\n'
+        f'    <a class="landing-cta-secondary" href="{MCP_NPM_URL}" target="_blank" rel="noopener">{ls["mcp_link"]} \u2197</a>\n'
         f'  </section>\n'
         f'  <section class="landing-final">\n'
         f'    <h3>{ls["final_title"]}</h3>\n'
