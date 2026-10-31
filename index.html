@@ -1325,6 +1325,16 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
 }
 .proof-stat-label { font-size: .74rem; color: var(--tx3); margin-top: .2rem; }
+.landing-mcp {
+  padding: 0 1.5rem 4rem; max-width: 760px; margin: 0 auto; text-align: center;
+}
+.landing-mcp h3 { font-size: 1.3rem; font-weight: 700; color: var(--tx); margin-bottom: .75rem; }
+.landing-mcp p { font-size: .85rem; color: var(--tx3); line-height: 1.6; margin-bottom: 1rem; }
+.landing-mcp-code {
+  text-align: left; background: var(--bg2); border: 1px solid var(--bdr);
+  border-radius: 10px; padding: 1rem 1.2rem; margin: 0 auto 1rem;
+  font-size: .78rem; color: var(--tx); overflow-x: auto;
+}
 .landing-final {
   background: linear-gradient(135deg,#1e1b4b,#0f1220);
   border-top: 1px solid #4338ca; padding: 4rem 1.5rem; text-align: center;
@@ -1504,6 +1514,23 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
       <div class="proof-stat"><div class="proof-stat-num">6</div><div class="proof-stat-label">Agentes IA cubiertos</div></div>
       <div class="proof-stat"><div class="proof-stat-num">0</div><div class="proof-stat-label">Costo para empezar</div></div>
     </div>
+  </section>
+  <section class="landing-mcp" id="mcp">
+    <h3>Úsalo desde tu agente: servidor MCP</h3>
+    <p>Los 112 prompts dentro de Claude Code, Claude Desktop o Cursor, sin copiar y pegar. Agrega esto a la configuración de servidores MCP de tu cliente:</p>
+    <pre class="landing-mcp-code"><code>{
+  &quot;mcpServers&quot;: {
+    &quot;ai-sdlc-prompts&quot;: {
+      &quot;command&quot;: &quot;npx&quot;,
+      &quot;args&quot;: [
+        &quot;-y&quot;,
+        &quot;ai-sdlc-prompts-mcp&quot;
+      ]
+    }
+  }
+}</code></pre>
+    <p>Cada prompt llega con su contrato de operación: techo de autonomía, herramientas permitidas, criterios de detención y evidencia mínima. Por MCP importa más que en el navegador, porque ahí el agente ejecuta en vez de solo redactar.</p>
+    <a class="landing-cta-secondary" href="https://www.npmjs.com/package/ai-sdlc-prompts-mcp" target="_blank" rel="noopener">Ver el paquete en npm ↗</a>
   </section>
   <section class="landing-final">
     <h3>Empieza a dirigir tus agentes IA hoy</h3>
