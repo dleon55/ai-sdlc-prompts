@@ -25,14 +25,15 @@ Reglas para cualquier variante que se escriba después:
 
 ## Enlaces con origen medible
 
-La portada ya usa `utm_source`/`utm_medium` en sus enlaces salientes; estos son los entrantes del lanzamiento.
+Son **enlaces rastreables de Odoo**: cuentan los clics en el CRM (campaña «AI-SDLC Pro · Lanzamiento servidor MCP · nov-2026», nombre técnico `mcp-launch`, medio `organic_social`) y redirigen al sitio con `utm_campaign=mcp-launch`, `utm_source=<canal>` y `utm_medium=organic_social`, que Google Analytics registra. Usa siempre el enlace de su canal.
 
 | Canal | Enlace |
 |---|---|
-| Dev.to | `https://prompts.lionsystems.com.mx/en/?utm_source=devto&utm_medium=article&utm_campaign=mcp-launch` |
-| LinkedIn | `https://prompts.lionsystems.com.mx/?utm_source=linkedin&utm_medium=social&utm_campaign=mcp-launch` |
-| X / Bluesky | `https://prompts.lionsystems.com.mx/en/?utm_source=x&utm_medium=social&utm_campaign=mcp-launch` |
-| Reddit | `https://prompts.lionsystems.com.mx/en/?utm_source=reddit&utm_medium=social&utm_campaign=mcp-launch` |
+| Dev.to | `https://www.lionsystems.com.mx/r/DMZ` |
+| LinkedIn | `https://www.lionsystems.com.mx/r/ZWc` |
+| X | `https://www.lionsystems.com.mx/r/OnV` |
+| Bluesky | `https://www.lionsystems.com.mx/r/8yk` |
+| Reddit | `https://www.lionsystems.com.mx/r/4LZ` |
 | Show HN | `https://github.com/dleon55/ai-sdlc-prompts` (HN prefiere el repositorio) |
 
 ---
@@ -99,7 +100,7 @@ Ask your agent: *"List the AI-SDLC prompts for threat modeling and resolve the f
 project."*
 
 The library is in Spanish and English. You can also browse and copy every prompt on the website,
-no account needed: https://prompts.lionsystems.com.mx/en/?utm_source=devto&utm_medium=article&utm_campaign=mcp-launch
+no account needed: https://www.lionsystems.com.mx/r/DMZ
 
 There is an optional Pro plan ($9/month) for saved projects and per-prompt customization; the
 prompts and the MCP server stay free.
@@ -123,7 +124,7 @@ Funciona en Claude Code, Claude Desktop y Cursor con una línea:
 npx -y ai-sdlc-prompts-mcp
 
 Gratis, de solo lectura, sin red. Código MIT y prompts CC BY 4.0.
-Biblioteca completa, en español e inglés: https://prompts.lionsystems.com.mx/?utm_source=linkedin&utm_medium=social&utm_campaign=mcp-launch
+Biblioteca completa, en español e inglés: https://www.lionsystems.com.mx/r/ZWc
 
 #IA #IngenieriaDeSoftware #ClaudeCode #MCP
 ```
@@ -144,12 +145,14 @@ Works in Claude Code, Claude Desktop and Cursor with one line:
 npx -y ai-sdlc-prompts-mcp
 
 Free, read-only, no network. MIT code, CC BY 4.0 prompts.
-https://prompts.lionsystems.com.mx/en/?utm_source=linkedin&utm_medium=social&utm_campaign=mcp-launch
+https://www.lionsystems.com.mx/r/9RW
 
 #AI #SoftwareEngineering #MCP
 ```
 
 ## 4. X / Bluesky (inglés, una publicación)
+
+En Bluesky, cambia el enlace por `https://www.lionsystems.com.mx/r/8yk`.
 
 ```text
 New: an MCP server with 112 software-lifecycle prompts for Claude Code, Claude Desktop and Cursor.
@@ -159,7 +162,7 @@ Each prompt comes with its operating contract: autonomy ceiling, allowed tools, 
 Free, read-only, no network:
 npx -y ai-sdlc-prompts-mcp
 
-https://prompts.lionsystems.com.mx/en/?utm_source=x&utm_medium=social&utm_campaign=mcp-launch
+https://www.lionsystems.com.mx/r/OnV
 ```
 
 ## 5. Reddit (r/ClaudeAI, r/mcp, r/cursor)

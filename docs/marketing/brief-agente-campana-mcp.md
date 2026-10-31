@@ -2,7 +2,8 @@
 
 > Escrito el 31-oct-2026 para el agente (o la persona) que ejecutará el lanzamiento de
 > `ai-sdlc-prompts-mcp`. Léelo completo antes de tocar nada. Los textos de cada publicación están en
-> [`lanzamiento-mcp.md`](lanzamiento-mcp.md); este documento dice **qué hacer con ellos, cuándo, con
+> [`lanzamiento-mcp.md`](lanzamiento-mcp.md). Copia de ambos en Drive: 01 - LIONSYSTEMS → AI-SDLC Pro - Expediente
+> del Proyecto → 07_Marketing_y_CRM → 2026-11_Lanzamiento_MCP; este documento dice **qué hacer con ellos, cuándo, con
 > qué reglas y cómo medir**.
 
 ## 1. Objetivo y cómo se mide
@@ -17,6 +18,7 @@ promesas; sirven para decidir si seguir invirtiendo tiempo en el canal.
 |---|---|---|
 | Descargas en npm | 150 | `https://api.npmjs.org/downloads/point/last-week/ai-sdlc-prompts-mcp` |
 | Visitas al sitio desde la campaña | 500 | Google Analytics 4 (`G-C5JKYNZ62F`), campaña `mcp-launch`, por `utm_source` |
+| Clics por canal | — | Odoo: enlaces rastreables de la campaña «AI-SDLC Pro · Lanzamiento servidor MCP · nov-2026» |
 | Estrellas nuevas en GitHub | 25 | `gh api repos/dleon55/ai-sdlc-prompts --jq .stargazers_count` |
 | Altas Pro | 2 | Tablero «Ventas Lion Systems» (fila AI-SDLC Pro) o panel de Paddle |
 | Alta en directorios MCP | 5 de 5 | Lista de §6 |
@@ -166,8 +168,8 @@ Lleva este registro, por ejemplo en una hoja o al final de este archivo, en un P
 | Fecha | Canal | URL de la publicación | Reacciones / comentarios | Visitas `utm_source` (GA4) | Notas |
 |---|---|---|---|---|---|
 
-**Cifras diarias:** descargas de npm de la última semana, estrellas de GitHub y visitas por
-`utm_source` con `utm_campaign=mcp-launch`.
+**Cifras diarias:** descargas de npm de la última semana, estrellas de GitHub, clics de cada enlace
+rastreable en Odoo y visitas por `utm_source` con `utm_campaign=mcp-launch` en Google Analytics.
 
 **Informe a David** (13 y 16 de noviembre), en una pantalla:
 
