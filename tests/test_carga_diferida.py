@@ -84,7 +84,8 @@ def test_cada_bloque_del_html_tiene_su_texto(html, textos):
 
 def test_la_pagina_sabe_pedir_el_texto(html):
     assert "function ensurePromptTexts" in html
-    assert "fetch('prompts-text.' + l + '.json')" in html
+    # PROMPTS_TEXT_BASE es '' en / y '../' en /en/ (issue #201).
+    assert "fetch(PROMPTS_TEXT_BASE + 'prompts-text.' + l + '.json')" in html
 
 
 def test_se_pide_una_sola_vez_por_idioma(html):

@@ -4149,6 +4149,10 @@ function detectBrowserLanguage() {
 }
 
 function getCurrentLanguage() {
+  // Las páginas con URL propia por idioma (/en/) fijan el idioma inicial.
+  var root = document.documentElement;
+  var pageLang = (root && typeof root.getAttribute === 'function') ? root.getAttribute('data-page-lang') : null;
+  if (pageLang && I18N_SUPPORTED.indexOf(pageLang) !== -1) return pageLang;
   try {
     var saved = localStorage.getItem(I18N_KEY);
     if (saved && I18N_SUPPORTED.indexOf(saved) !== -1) return saved;
@@ -5367,13 +5371,16 @@ function isAppRoute() {
 // se esta leyendo. index.html paso de 513 a 221 KB comprimidos.
 var _textosCargados = {};
 var _textosPendientes = {};
+// '' en / y '../' en /en/ (build_index_en lo sustituye): la ruta es relativa
+// para que funcione igual en producción y en GitHub Pages bajo subruta.
+var PROMPTS_TEXT_BASE = '';
 
 function ensurePromptTexts(lang) {
   var l = lang || getCurrentLanguage();
   if (_textosCargados[l]) return Promise.resolve();
   if (_textosPendientes[l]) return _textosPendientes[l];
 
-  _textosPendientes[l] = fetch('prompts-text.' + l + '.json')
+  _textosPendientes[l] = fetch(PROMPTS_TEXT_BASE + 'prompts-text.' + l + '.json')
     .then(function(r) {
       if (!r.ok) throw new Error('HTTP ' + r.status);
       return r.json();
@@ -5539,8 +5546,8 @@ LANDING_JS = """
 })();
 """
 
-def get_landing_html(n):
-    ls = i18n_strings.LANDING_STRINGS['es']
+def get_landing_html(n, lang='es'):
+    ls = i18n_strings.LANDING_STRINGS[lang]
     return (
         f'<div id="landing-root" class="landing">\n'
         f'  <nav class="landing-nav">\n'
@@ -5627,6 +5634,89 @@ def get_landing_html(n):
     )
 
 LANDING_HTML = get_landing_html(TOTAL_PROMPTS)
+# Portada estática en inglés para /en/ (issue #201). La de / sigue en español.
+LANDING_HTML_EN = get_landing_html(TOTAL_PROMPTS, 'en')
+
+# ── URL por idioma (issue #201) ───────────────────────────────────────
+#
+# Antes los tres hreflang (es, en, x-default) apuntaban a la misma URL y el
+# idioma solo se cambiaba en el navegador (localStorage + JS): Google veía
+# una sola página en español y los 112 prompts en inglés no tenían ninguna
+# URL que pudiera posicionarse. Ahora build.py escribe también en/index.html:
+# la misma app, con la portada, el <head> y el idioma inicial en inglés, y
+# hreflang recíprocos entre / y /en/.
+SITE_URL = "https://prompts.lionsystems.com.mx"
+INDEX_URLS = {"es": SITE_URL + "/", "en": SITE_URL + "/en/"}
+INDEX_EN_OUTPUT_FILE = Path(__file__).parent / "en" / "index.html"
+
+_INDEX_KEYWORDS = {
+    "es": "prompts ingenieria software IA, prompts GitHub Copilot SDLC, prompts Claude desarrollo software, AI-SDLC framework espanol, prompts multi-agente desarrollo software, biblioteca prompts cursor windsurf",
+    "en": "AI software engineering prompts, GitHub Copilot SDLC prompts, Claude software development prompts, AI-SDLC framework, multi-agent software development prompts, Cursor Windsurf prompt library",
+}
+_INDEX_OG_LOCALE = {"es": ("es_MX", "en_US"), "en": ("en_US", "es_MX")}
+
+
+def index_seo_head(lang):
+    """<title>, metadatos sociales, canonical y hreflang de la portada en `lang`."""
+    ls = i18n_strings.LANDING_STRINGS[lang]
+    title = ls["page_title"]
+    desc = ls["meta_description"].format(n=TOTAL_PROMPTS)
+    url = INDEX_URLS[lang]
+    locale, locale_alt = _INDEX_OG_LOCALE[lang]
+    return (
+        f'<title>{title}</title>\n'
+        f'<meta name="description" content="{desc}">\n'
+        f'<meta name="keywords" content="{_INDEX_KEYWORDS[lang]}">\n'
+        '<meta name="author" content="LionSystems">\n'
+        '<meta name="robots" content="index,follow">\n'
+        '<meta name="theme-color" content="#0f172a">\n'
+        '<meta property="og:type" content="website">\n'
+        f'<meta property="og:url" content="{url}">\n'
+        '<meta property="og:site_name" content="AI-SDLC Pro">\n'
+        f'<meta property="og:locale" content="{locale}">\n'
+        f'<meta property="og:locale:alternate" content="{locale_alt}">\n'
+        f'<meta property="og:title" content="{title}">\n'
+        f'<meta property="og:description" content="{desc}">\n'
+        f'<meta property="og:image" content="{SITE_URL}/og-image.png">\n'
+        '<meta name="twitter:card" content="summary_large_image">\n'
+        f'<meta name="twitter:title" content="{title}">\n'
+        f'<meta name="twitter:description" content="{desc}">\n'
+        f'<meta name="twitter:image" content="{SITE_URL}/og-image.png">\n'
+        f'<link rel="canonical" href="{url}">\n'
+        f'<link rel="alternate" hreflang="es" href="{INDEX_URLS["es"]}">\n'
+        f'<link rel="alternate" hreflang="en" href="{INDEX_URLS["en"]}">\n'
+        f'<link rel="alternate" hreflang="x-default" href="{INDEX_URLS["es"]}">\n'
+    )
+
+
+def _replace_once(text, old, new):
+    """Reemplazo que exige exactamente una coincidencia: si la plantilla cambia
+    y una sustitución deja de aplicar, el build falla en vez de publicar una
+    página /en/ a medias (por ejemplo, con canonical a la URL en español)."""
+    if text.count(old) != 1:
+        raise ValueError(f"en/index.html: se esperaba 1 coincidencia y hay {text.count(old)}: {old[:60]!r}")
+    return text.replace(old, new)
+
+
+def build_index_en(html_es):
+    """Deriva en/index.html de index.html."""
+    html = html_es
+    # data-page-lang: getCurrentLanguage() lo prefiere sobre localStorage y el
+    # idioma del navegador, así que /en/ siempre abre en inglés.
+    html = _replace_once(html, '<html lang="es">', '<html lang="en" data-lang="en" data-page-lang="en">')
+    html = _replace_once(html, index_seo_head("es"), index_seo_head("en"))
+    html = _replace_once(html, LANDING_HTML, LANDING_HTML_EN)
+    # /en/ está un nivel abajo: las rutas relativas deben subir. Las absolutas
+    # (/app, /precios.html...) no se tocan.
+    html = _replace_once(html, '<link rel="icon" type="image/png" href="favicon-32.png">',
+                         '<link rel="icon" type="image/png" href="../favicon-32.png">')
+    html = _replace_once(html, '<link rel="apple-touch-icon" href="apple-touch-icon.png">',
+                         '<link rel="apple-touch-icon" href="../apple-touch-icon.png">')
+    html = html.replace('src="apple-touch-icon.png"', 'src="../apple-touch-icon.png"')
+    html = _replace_once(html, "var PROMPTS_TEXT_BASE = '';", "var PROMPTS_TEXT_BASE = '../';")
+    if 'src="apple-touch-icon.png"' in html or 'href="favicon-32.png"' in html:
+        raise ValueError("en/index.html conserva rutas relativas a la raíz")
+    return html
 
 
 def build_precios_page():
@@ -7249,28 +7339,7 @@ def build():
         '<meta name="viewport" content="width=device-width,initial-scale=1.0">\n'
         '<link rel="preconnect" href="https://www.googletagmanager.com">\n'
         '<link rel="preconnect" href="https://lionsystems.com.mx" crossorigin>\n'
-        f'<title>{i18n_strings.LANDING_STRINGS["es"]["page_title"]}</title>\n'
-        f'<meta name="description" content="{i18n_strings.LANDING_STRINGS["es"]["meta_description"].format(n=TOTAL_PROMPTS)}">\n'
-        '<meta name="keywords" content="prompts ingenieria software IA, prompts GitHub Copilot SDLC, prompts Claude desarrollo software, AI-SDLC framework espanol, prompts multi-agente desarrollo software, biblioteca prompts cursor windsurf">\n'
-        '<meta name="author" content="LionSystems">\n'
-        '<meta name="robots" content="index,follow">\n'
-        '<meta name="theme-color" content="#0f172a">\n'
-        '<meta property="og:type" content="website">\n'
-        '<meta property="og:url" content="https://prompts.lionsystems.com.mx">\n'
-        '<meta property="og:site_name" content="AI-SDLC Pro">\n'
-        '<meta property="og:locale" content="es_MX">\n'
-        '<meta property="og:locale:alternate" content="en_US">\n'
-        f'<meta property="og:title" content="{i18n_strings.LANDING_STRINGS["es"]["page_title"]}">\n'
-        f'<meta property="og:description" content="{i18n_strings.LANDING_STRINGS["es"]["meta_description"].format(n=TOTAL_PROMPTS)}">\n'
-        '<meta property="og:image" content="https://prompts.lionsystems.com.mx/og-image.png">\n'
-        '<meta name="twitter:card" content="summary_large_image">\n'
-        f'<meta name="twitter:title" content="{i18n_strings.LANDING_STRINGS["es"]["page_title"]}">\n'
-        f'<meta name="twitter:description" content="{i18n_strings.LANDING_STRINGS["es"]["meta_description"].format(n=TOTAL_PROMPTS)}">\n'
-        '<meta name="twitter:image" content="https://prompts.lionsystems.com.mx/og-image.png">\n'
-        '<link rel="canonical" href="https://prompts.lionsystems.com.mx">\n'
-        '<link rel="alternate" hreflang="es" href="https://prompts.lionsystems.com.mx">\n'
-        '<link rel="alternate" hreflang="en" href="https://prompts.lionsystems.com.mx">\n'
-        '<link rel="alternate" hreflang="x-default" href="https://prompts.lionsystems.com.mx">\n'
+        + index_seo_head("es") +
         '<link rel="icon" type="image/png" href="favicon-32.png">\n'
         '<link rel="apple-touch-icon" href="apple-touch-icon.png">\n'
         '<link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml">\n'
@@ -8121,6 +8190,8 @@ def build():
     )
 
     OUTPUT_FILE.write_text(html, encoding="utf-8")
+    INDEX_EN_OUTPUT_FILE.parent.mkdir(exist_ok=True)
+    INDEX_EN_OUTPUT_FILE.write_text(build_index_en(html), encoding="utf-8")
 
     # El texto ejecutable, uno por idioma. Se escribe con separadores
     # compactos: son ~113 entradas de texto largo y los espacios de json.dumps
@@ -8133,6 +8204,7 @@ def build():
 
     size_kb = OUTPUT_FILE.stat().st_size / 1024
     print(f"OK  -> {OUTPUT_FILE.name}")
+    print(f"OK  -> en/{INDEX_EN_OUTPUT_FILE.name}")
     for _lang, _ruta in PROMPTS_TEXT_OUTPUT.items():
         print(f"OK  -> {_ruta.name} ({len(_prompt_texts[_lang])} textos, "
               f"{_ruta.stat().st_size / 1024:.0f} KB)")

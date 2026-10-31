@@ -157,6 +157,9 @@ jobs:
           # ruteo client-side toma el control y muestra la app con
           # normalidad -- truco estándar de SPA en GitHub Pages.
           cp index.html dist/404.html
+          # Portada en inglés con URL propia (issue #201): /en/ -> en/index.html.
+          mkdir -p dist/en
+          cp en/index.html dist/en/index.html
           cp precios.html dist/precios.html
           cp terminos.html dist/terminos.html
           cp privacidad.html dist/privacidad.html
@@ -348,6 +351,8 @@ jobs:
           scp -P "$P" -i ~/.ssh/gcp_key -o BatchMode=yes               dist/prompts-text.en.json "${U}@${H}:/home/${U}/prompts-text.en.json.new"
           scp -P "$P" -i ~/.ssh/gcp_key -o BatchMode=yes               dist/favicon-32.png "${U}@${H}:/home/${U}/favicon-32.png.new"
           scp -P "$P" -i ~/.ssh/gcp_key -o BatchMode=yes               dist/apple-touch-icon.png "${U}@${H}:/home/${U}/apple-touch-icon.png.new"
+          scp -P "$P" -i ~/.ssh/gcp_key -o BatchMode=yes \
+              dist/en/index.html "${U}@${H}:/home/${U}/index.en.html.new"
 
       - name: Atomic replace in production dir
         env:
@@ -369,6 +374,11 @@ jobs:
           CMD="${CMD}; sudo cp /home/${U}/prompts-text.en.json.new ${D}/prompts-text.en.json"
           CMD="${CMD}; sudo cp /home/${U}/favicon-32.png.new ${D}/favicon-32.png"
           CMD="${CMD}; sudo cp /home/${U}/apple-touch-icon.png.new ${D}/apple-touch-icon.png"
+          CMD="${CMD}; sudo install -d -o www-data -g www-data -m 755 ${D}/en"
+          CMD="${CMD}; sudo cp /home/${U}/index.en.html.new ${D}/en/index.html"
+          CMD="${CMD}; sudo chown www-data:www-data ${D}/en/index.html"
+          CMD="${CMD}; sudo chmod 644 ${D}/en/index.html"
+          CMD="${CMD}; rm -f /home/${U}/index.en.html.new"
           CMD="${CMD}; sudo chown www-data:www-data ${D}/index.html ${D}/precios.html ${D}/terminos.html ${D}/privacidad.html ${D}/reembolsos.html ${D}/robots.txt ${D}/sitemap.xml ${D}/og-image.png ${D}/prompts-text.es.json ${D}/prompts-text.en.json ${D}/favicon-32.png ${D}/apple-touch-icon.png"
           CMD="${CMD}; sudo chmod 644 ${D}/index.html ${D}/precios.html ${D}/terminos.html ${D}/privacidad.html ${D}/reembolsos.html ${D}/robots.txt ${D}/sitemap.xml ${D}/og-image.png ${D}/prompts-text.es.json ${D}/prompts-text.en.json ${D}/favicon-32.png ${D}/apple-touch-icon.png"
           CMD="${CMD}; rm -f /home/${U}/index.html.new /home/${U}/precios.html.new /home/${U}/terminos.html.new /home/${U}/privacidad.html.new /home/${U}/reembolsos.html.new /home/${U}/robots.txt.new /home/${U}/sitemap.xml.new"
@@ -418,6 +428,14 @@ jobs:
               https://prompts.lionsystems.com.mx/sitemap.xml)
           [ "$SITEMAP_STATUS" = "200" ] || { echo "ERROR: sitemap.xml HTTP $SITEMAP_STATUS"; exit 1; }
           echo "SMOKE_OK: robots.txt y sitemap.xml verificados"
+          # /en/ (issue #201): debe servir la página en inglés, no el
+          # index.html en español que nginx devuelve con 200 por try_files.
+          EN_HTML=$(curl -s --max-time 20 https://prompts.lionsystems.com.mx/en/)
+          echo "$EN_HTML" | grep -q 'data-page-lang="en"' \
+            || { echo "ERROR: /en/ no sirve la página en inglés"; exit 1; }
+          echo "$EN_HTML" | grep -q '<link rel="canonical" href="https://prompts.lionsystems.com.mx/en/">' \
+            || { echo "ERROR: /en/ sin canonical propio"; exit 1; }
+          echo "SMOKE_OK: /en/ verificado"
 
       # Smoke test del precio publicado (issue #232, T4): el precio que ven
       # precios/terminos/reembolsos en PRODUCCION debe ser el que cobra
