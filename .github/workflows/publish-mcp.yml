@@ -4,12 +4,10 @@
 # versión de npm no se puede reemplazar, solo deprecar). El tag es el acto
 # deliberado; main sigue siendo el flujo normal de desarrollo.
 #
-# Antes de que esto funcione hacen falta dos cosas que no viven en el repo:
-#   1. El secreto NPM_TOKEN (token de publicación de npm, tipo "Automation").
-#   2. Resolver la licencia: LICENSE es "All Rights Reserved" y prohíbe la
-#      reproducción y el uso sin permiso escrito. Instalar es copiar y
-#      ejecutar es usar, así que tal como está, cada usuario del paquete
-#      estaría en violación. Ver docs/publicar-mcp.md.
+# Antes de que esto funcione falta una sola cosa que no vive en el repo: el
+# secreto NPM_TOKEN (token de publicación de npm, tipo "Automation") en el
+# environment `production`. La licencia ya está resuelta (#194): código MIT,
+# prompts CC BY 4.0. Ver docs/publicar-mcp.md.
 name: Publicar servidor MCP
 
 on:

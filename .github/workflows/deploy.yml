@@ -256,6 +256,15 @@ jobs:
       - name: Run tests
         run: npm test
 
+      # Mismas comprobaciones que publish-mcp.yml antes de publicar, para que
+      # un cambio que rompa el empaquetado o meta una vulnerabilidad alta se
+      # vea en el PR y no el día que alguien crea el tag mcp-v*.
+      - name: Audit dependencies (high)
+        run: npm audit --audit-level=high
+
+      - name: Package contents (dry run)
+        run: npm pack --dry-run
+
 # ============================================================
 #  JOB 2 - GITHUB PAGES  (staging / ambiente de pruebas)
 #  Solo en push a main; los PR no despliegan.
