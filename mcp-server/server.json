@@ -1,0 +1,23 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.dleon55/ai-sdlc-prompts",
+  "title": "AI-SDLC Prompts",
+  "description": "112 SDLC prompts (ES/EN) for AI coding agents, each with its operating contract.",
+  "websiteUrl": "https://prompts.lionsystems.com.mx",
+  "repository": {
+    "url": "https://github.com/dleon55/ai-sdlc-prompts",
+    "source": "github",
+    "subfolder": "mcp-server"
+  },
+  "version": "1.0.2",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "ai-sdlc-prompts-mcp",
+      "version": "1.0.2",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

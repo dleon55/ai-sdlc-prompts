@@ -63,7 +63,9 @@ La publicación la dispara un tag, no un push a `main`: publicar es
 irreversible — una versión de npm no se reemplaza, solo se deprecia.
 
 1. Subir la versión en `mcp-server/package.json`, `mcp-server/package-lock.json`
-   (los dos campos `version` de la raíz) y `mcp-server/src/server.js`.
+   (los dos campos `version` de la raíz), `mcp-server/src/server.js` y
+   `mcp-server/server.json` (los dos campos `version`: el del servidor y el del
+   paquete). El workflow falla si alguno no coincide con el tag.
 2. Fusionar a `main`.
 3. Taggear sobre ese commit:
 
@@ -138,3 +140,21 @@ cambio en los prompts cambia el paquete**. Al agregar o editar prompts:
 3. Taggear `mcp-v<version>`
 
 Si se olvida el paso 1, la CI lo detiene.
+
+## Registro oficial de MCP (desde 1.0.2)
+
+El mismo tag registra el servidor en el registro oficial,
+[registry.modelcontextprotocol.io](https://registry.modelcontextprotocol.io), como
+`io.github.dleon55/ai-sdlc-prompts`. De ese registro leen los clientes y los
+directorios de servidores MCP, así que es donde nos encuentra quien busca uno.
+
+- **Metadatos:** `mcp-server/server.json` (esquema `2025-12-11`). La descripción
+  admite 100 caracteres como máximo.
+- **Propiedad del nombre:** `mcpName` en `package.json` tiene que ser igual al
+  `name` de `server.json`; el registro lo comprueba contra el paquete publicado en npm.
+- **Autenticación:** OIDC del propio workflow (`mcp-publisher login github-oidc`),
+  sin token. El espacio `io.github.dleon55/*` corresponde al dueño del repositorio.
+- **Publicador:** versión fijada (`MCP_PUBLISHER_VERSION`) y firma Sigstore
+  verificada antes de ejecutarlo. Para actualizarlo, cambiar la versión a propósito;
+  nunca usar `releases/latest`.
+- **Comprobar:** `curl -s "https://registry.modelcontextprotocol.io/v0/servers?search=ai-sdlc"`.

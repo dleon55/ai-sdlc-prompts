@@ -8,6 +8,9 @@ Este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+### Added
+- **Servidor MCP en el registro oficial (1.0.2, 2026-11-01)**: `mcp-server/server.json` y `mcpName` en el paquete; el tag `mcp-v*` publica en npm y registra `io.github.dleon55/ai-sdlc-prompts` en registry.modelcontextprotocol.io con OIDC (sin token), con el publicador fijado y su firma Sigstore verificada. Ver `docs/publicar-mcp.md`.
+
 ### Changed
 - **El sitio sale de Supabase por completo hacia el backend propio (2026-10-25, issue #241)**: decisión del titular sin migración de datos (no había usuarios reales). Login con GitHub implementado por `backend/` (`/api/auth/login`, `/callback`, `/session`, `/logout`) con sesión en cookie httpOnly `ai_sdlc_session` (SameSite=Lax, Secure en producción); prueba Pro y feedback (`/api/trial/*`), proyectos (`/api/projects`), progreso por prompt (`/api/project-prompt-state`), estadísticas de copia (`/api/prompt-stats/track`), plazas fundadoras (`/api/founding/spots-left`) y el webhook de Paddle (`POST /api/webhooks/paddle`, misma lógica: firma HMAC, ventana de 300 s, idempotencia por `event_id`, `adjustment.created` solo registra y alerta) pasan al backend propio sobre PostgreSQL 16 nativo en la VM (base `ai_sdlc_pro`, en el respaldo diario `pg_backup.sh`). El sitio conserva el fail-open: si el backend no responde, sigue funcionando desde `localStorage`.
   - Se elimina el directorio `supabase/` (SQL, migraciones, Edge Function `paddle-webhook`, `functions/.env.example`) y el job de CI `deploy-supabase-function`, con lo que deja de hacer falta el secreto `SUPABASE_ACCESS_TOKEN`. El despliegue del backend sigue siendo manual.

@@ -1,4 +1,5 @@
-# Publica el servidor MCP en npm al crear un tag `mcp-v*`.
+# Publica el servidor MCP en npm y lo registra en el registro oficial de MCP
+# (registry.modelcontextprotocol.io) al crear un tag `mcp-v*`.
 #
 # Por qué por tag y no en cada push a main: publicar es irreversible (una
 # versión de npm no se puede reemplazar, solo deprecar). El tag es el acto
@@ -86,6 +87,14 @@ jobs:
             echo "::error::el tag ($TAG) no coincide con package.json ($PKG)"
             exit 1
           fi
+          # server.json describe la misma versión en el registro oficial, dos veces
+          # (la del servidor y la del paquete npm): las tres tienen que coincidir.
+          for V in $(node -p "const s=require('./server.json'); [s.version, s.packages[0].version].join(' ')"); do
+            if [ "$V" != "$PKG" ]; then
+              echo "::error::server.json declara $V y package.json $PKG"
+              exit 1
+            fi
+          done
 
       - name: Previsualizar el contenido del paquete
         working-directory: mcp-server
@@ -96,3 +105,48 @@ jobs:
       - name: Publicar
         working-directory: mcp-server
         run: npm publish --provenance --access public
+
+      # --- Registro oficial de MCP -------------------------------------------
+      # El registro solo guarda metadatos y comprueba que el paquete de npm
+      # declare el mismo `mcpName` que server.json. La identidad es la OIDC de
+      # este workflow: el espacio io.github.dleon55/* pertenece a este dueño de
+      # GitHub, sin tokens ni secretos. Se fija la versión del publicador y se
+      # verifica su firma Sigstore antes de ejecutarlo.
+      - name: Instalar cosign
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
+
+      - name: Descargar y verificar mcp-publisher
+        env:
+          MCP_PUBLISHER_VERSION: v1.8.7
+        run: |
+          set -euo pipefail
+          archive="mcp-publisher_linux_amd64.tar.gz"
+          base_url="https://github.com/modelcontextprotocol/registry/releases/download/${MCP_PUBLISHER_VERSION}"
+          curl --fail --location --silent --show-error --output "$archive" "$base_url/$archive"
+          curl --fail --location --silent --show-error --output "$archive.sigstore.json" "$base_url/$archive.sigstore.json"
+          cosign verify-blob \
+            --bundle "$archive.sigstore.json" \
+            --certificate-identity "https://github.com/modelcontextprotocol/registry/.github/workflows/release.yml@refs/tags/${MCP_PUBLISHER_VERSION}" \
+            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+            "$archive"
+          tar xzf "$archive" mcp-publisher
+          rm -f "$archive" "$archive.sigstore.json"
+
+      # npm tarda en exponer una versión recién publicada; el registro la
+      # consulta para validar `mcpName`, así que se espera a que aparezca.
+      - name: Esperar a que npm sirva la versión publicada
+        working-directory: mcp-server
+        run: |
+          PKG=$(node -p "require('./package.json').version")
+          for i in $(seq 1 30); do
+            [ "$(npm view "ai-sdlc-prompts-mcp@$PKG" mcpName 2>/dev/null)" = "io.github.dleon55/ai-sdlc-prompts" ] && exit 0
+            sleep 10
+          done
+          echo "::error::npm no muestra ai-sdlc-prompts-mcp@$PKG con su mcpName"
+          exit 1
+
+      - name: Registrar en el registro oficial de MCP
+        working-directory: mcp-server
+        run: |
+          ../mcp-publisher login github-oidc
+          ../mcp-publisher publish
