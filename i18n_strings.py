@@ -228,8 +228,8 @@ DEFAULT_LANGUAGE = 'es'
 # Strings de Landing Page
 LANDING_STRINGS = {
     'es': {
-        'page_title': 'AI-SDLC Prompts: 112 prompts para agentes de IA, con seguridad incluida',
-        'meta_description': '{n} prompts en español e inglés para Claude, Copilot y Cursor: modelado de amenazas, auditoría de dependencias, respuesta a incidentes y cada fase del SDLC. Gratis.',
+        'page_title': '{n} prompts para agentes de IA, con seguridad | AI-SDLC',
+        'meta_description': '{n} prompts en español e inglés para Claude, Copilot y Cursor: modelado de amenazas, auditoría de dependencias, respuesta a incidentes y más. Gratis.',
         'hero_title': 'Deja de improvisar con IA.<br><em>Dirige cada fase del SDLC.</em>',
         'hero_subtitle': '{n} prompts estructurados para guiar a Copilot, Claude, Cursor y Windsurf en análisis, diseño, implementación, pruebas, CI/CD y documentación — en español, listos para producción.',
         'hero_badge': 'Framework profesional · {n} prompts',
@@ -264,7 +264,7 @@ LANDING_STRINGS = {
         'footer_pricing': 'Precios',
     },
     'en': {
-        'page_title': 'AI-SDLC Prompts: 112 prompts for AI coding agents, security included',
+        'page_title': '{n} prompts for AI coding agents, with security | AI-SDLC',
         'meta_description': '{n} prompts in Spanish and English for Claude, Copilot and Cursor: threat modeling, dependency audits, incident response and every SDLC phase. Free to try.',
         'hero_title': 'Stop improvising with AI.<br><em>Direct every phase of the SDLC.</em>',
         'hero_subtitle': '{n} structured prompts to guide Copilot, Claude, Cursor, and Windsurf in analysis, design, implementation, testing, CI/CD, and documentation — ready for production.',
