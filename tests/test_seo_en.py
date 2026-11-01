@@ -16,11 +16,15 @@ def _alternates(html):
 
 
 def test_en_page_exists_with_english_head():
+    import i18n_strings
+
     html = _read("en/index.html")
     assert '<html lang="en" data-lang="en" data-page-lang="en">' in html
     assert f'<link rel="canonical" href="{SITE}/en/">' in html
     assert '<meta property="og:locale" content="en_US">' in html
-    assert "<title>AI-SDLC Pro — Software Engineering Prompt Library</title>" in html
+    titles = {lang: s["page_title"] for lang, s in i18n_strings.LANDING_STRINGS.items()}
+    assert titles["en"] != titles["es"]
+    assert f"<title>{titles['en']}</title>" in html
 
 
 def test_hreflang_reciprocal_between_es_and_en():
