@@ -1,5 +1,6 @@
 """Issue #201: la mitad inglesa del catálogo necesita una URL indexable."""
 from pathlib import Path
+import html as html_lib
 import re
 import xml.etree.ElementTree as ET
 
@@ -16,11 +17,48 @@ def _alternates(html):
 
 
 def test_en_page_exists_with_english_head():
+    import i18n_strings
+
     html = _read("en/index.html")
     assert '<html lang="en" data-lang="en" data-page-lang="en">' in html
     assert f'<link rel="canonical" href="{SITE}/en/">' in html
     assert '<meta property="og:locale" content="en_US">' in html
-    assert "<title>AI-SDLC Pro — Software Engineering Prompt Library</title>" in html
+    assert _head(html) == _expected_head("en", html)
+
+
+def _expected_head(lang, html):
+    """Título y descripción que el generador debe poner en la página de `lang`,
+    con `{n}` resuelto al número de prompts que la propia página declara."""
+    import i18n_strings
+
+    n = re.search(r'<meta name="description" content="(\d+) ', html).group(1)
+    s = i18n_strings.LANDING_STRINGS[lang]
+    return {"title": s["page_title"].format(n=n), "description": s["meta_description"].format(n=n)}
+
+
+def _head(html):
+    def meta(attr, name):
+        return re.search(rf'<meta {attr}="{name}" content="([^"]*)">', html).group(1)
+
+    title = re.search(r"<title>([^<]*)</title>", html).group(1)
+    desc = meta("name", "description")
+    # og:* y twitter:* deben repetir exactamente el título y la descripción.
+    for attr, name, value in [("property", "og:title", title), ("property", "og:description", desc),
+                              ("name", "twitter:title", title), ("name", "twitter:description", desc)]:
+        assert html_lib.unescape(meta(attr, name)) == html_lib.unescape(value), name
+    return {"title": html_lib.unescape(title), "description": html_lib.unescape(desc)}
+
+
+def test_es_and_en_heads_are_not_mixed_and_fit_in_google():
+    es_html, en_html = _read("index.html"), _read("en/index.html")
+    es, en = _head(es_html), _head(en_html)
+    assert es == _expected_head("es", es_html)
+    assert en == _expected_head("en", en_html)
+    assert es["title"] != en["title"] and es["description"] != en["description"]
+    # Google corta el título hacia los 60 caracteres y la descripción hacia los 155.
+    for head in (es, en):
+        assert len(head["title"]) <= 60, head["title"]
+        assert len(head["description"]) <= 155, head["description"]
 
 
 def test_hreflang_reciprocal_between_es_and_en():

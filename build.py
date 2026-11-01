@@ -5686,7 +5686,7 @@ _INDEX_OG_LOCALE = {"es": ("es_MX", "en_US"), "en": ("en_US", "es_MX")}
 def index_seo_head(lang):
     """<title>, metadatos sociales, canonical y hreflang de la portada en `lang`."""
     ls = i18n_strings.LANDING_STRINGS[lang]
-    title = ls["page_title"]
+    title = ls["page_title"].format(n=TOTAL_PROMPTS)
     desc = ls["meta_description"].format(n=TOTAL_PROMPTS)
     url = INDEX_URLS[lang]
     locale, locale_alt = _INDEX_OG_LOCALE[lang]
@@ -7051,8 +7051,8 @@ def build():
     # (el que ven crawlers/scrapers sociales); esto lo mantiene sincronizado
     # con document.title cuando el usuario cambia de idioma en la app.
     page_titles_js = "var PAGE_TITLES = " + json.dumps({
-        "es": i18n_strings.LANDING_STRINGS["es"]["page_title"],
-        "en": i18n_strings.LANDING_STRINGS["en"]["page_title"],
+        "es": i18n_strings.LANDING_STRINGS["es"]["page_title"].format(n=TOTAL_PROMPTS),
+        "en": i18n_strings.LANDING_STRINGS["en"]["page_title"].format(n=TOTAL_PROMPTS),
     }, ensure_ascii=False) + ";"
 
     # ── PROMPT_INFO para el modal de ⓘ ──
@@ -7374,7 +7374,7 @@ def build():
             "@context": "https://schema.org",
             "@type": "WebSite",
             "name": "AI-SDLC Pro",
-            "alternateName": i18n_strings.LANDING_STRINGS["es"]["page_title"],
+            "alternateName": i18n_strings.LANDING_STRINGS["es"]["page_title"].format(n=TOTAL_PROMPTS),
             "url": "https://prompts.lionsystems.com.mx",
             "description": i18n_strings.LANDING_STRINGS["es"]["meta_description"].format(n=TOTAL_PROMPTS),
             "inLanguage": ["es", "en"],
