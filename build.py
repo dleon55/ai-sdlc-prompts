@@ -83,7 +83,12 @@ def paddle_public_config():
     # Atandolo a la misma variable de entorno que el price id, el precio
     # cobrado y el comunicado no pueden divergir: se mueven en el mismo
     # cambio de configuracion o no se mueven.
-    amount = os.getenv("PADDLE_PRICE_AMOUNT_USD", "1").strip() or "1"
+    #
+    # Valor por defecto = precio vigente del plan Pro (USD 9/mes, verificado
+    # contra el price id live de Paddle el 2026-11-02). Antes era "1", el
+    # precio de lanzamiento, y los HTML versionados en el repo seguian
+    # publicando "$1 USD/mes" aunque produccion cobraba 9.
+    amount = os.getenv("PADDLE_PRICE_AMOUNT_USD", "9").strip() or "9"
     if not re.fullmatch(r"\d+(?:\.\d{1,2})?", amount):
         raise ValueError("PADDLE_PRICE_AMOUNT_USD must be a plain USD amount, e.g. 9 or 9.99")
 
@@ -5765,25 +5770,11 @@ def build_precios_page():
     _precio = paddle_config["amount"]
     _anual = paddle_config["annual_amount"]
 
-    # El ancla solo se pinta si el precio vigente esta POR DEBAJO del de
-    # lista. Cuando alcancen el mismo valor, mostrar "antes $X" con el mismo
-    # numero se leeria como un error, no como una oferta.
-    _hay_descuento = float(_precio) < float(PRECIO_LISTA_USD)
-    if _hay_descuento:
-        _ancla_html = (
-            '<span class="px-anchor fw-lang-es">&nbsp;antes $' + PRECIO_LISTA_USD + ' USD</span>'
-            '<span class="px-anchor fw-lang-en">&nbsp;was $' + PRECIO_LISTA_USD + ' USD</span>'
-        )
-        _lista_es = ('Precio de lista: <strong>$' + PRECIO_LISTA_USD + ' USD al mes</strong>. '
-                     'Hoy pagas <strong>$' + _precio + ' USD al mes</strong> — y ese precio se te '
-                     'respeta mientras no canceles. ')
-        _lista_en = ('List price: <strong>$' + PRECIO_LISTA_USD + ' USD per month</strong>. '
-                     'Today you pay <strong>$' + _precio + ' USD per month</strong> — and that price '
-                     'stays yours for as long as you keep the subscription. ')
-    else:
-        _ancla_html = ''
-        _lista_es = '<strong>$' + _precio + ' USD al mes.</strong> '
-        _lista_en = '<strong>$' + _precio + ' USD per month.</strong> '
+    # Sin precio tachado: el "antes $19" era un ancla de marketing que nunca
+    # se cobro (era la constante PRECIO_LISTA_USD). Un solo precio publicado,
+    # el que cobra Paddle.
+    _lista_es = '<strong>$' + _precio + ' USD al mes.</strong> '
+    _lista_en = '<strong>$' + _precio + ' USD per month.</strong> '
 
     # Plan anual: solo aparece si esta configurado. Se muestra el ahorro
     # calculado, no uno escrito a mano que pueda quedar desfasado.
@@ -5880,7 +5871,6 @@ def build_precios_page():
         '.px-cta-alt{background:transparent;border:1px solid var(--bdr) !important;'
         'color:var(--tx2);margin-left:.5rem;}\n'
         '.px-annual{color:var(--tx2);font-size:.85rem;margin:-.5rem 0 .75rem;}\n'
-        '.px-anchor{color:var(--tx3);font-size:.85rem;font-weight:400;text-decoration:line-through;}\n'
         '.px-foot{margin-top:3rem;color:var(--tx3);font-size:.8rem;}\n'
         # Banner Fundador: oculto por defecto y solo lo enciende JS con el
         # conteo REAL de founding_spots_left() -- nunca un numero inventado.
@@ -5947,10 +5937,6 @@ def build_precios_page():
         '    <h2><span class="px-badge fw-lang-es">Plan Pro</span><span class="px-badge fw-lang-en">Pro plan</span>'
         '<span class="fw-lang-es">&nbsp;$' + _precio + ' USD/mes</span>'
         '<span class="fw-lang-en">&nbsp;$' + _precio + ' USD/month</span>'
-        # El ancla solo tiene sentido si hay algo que anclar: cuando el
-        # precio vigente ya ES el de lista, mostrar "antes $X" con el mismo
-        # numero se lee como error, no como oferta.
-        + _ancla_html +
         '</h2>\n'
         + _anual_html +
         '    <p class="fw-lang-es">' + _lista_es + 'Acceso Pro '
@@ -6216,32 +6202,6 @@ def build_precios_page():
 # legales y es la vía operativa para solicitudes de privacidad, cancelación
 # y reembolso. El routing del dominio debe permanecer verificado antes de
 # cualquier cambio posterior a esta dirección.
-"""Precio de lista (ancla), distinto del precio que se cobra hoy.
-
-`precios.html` decia "Precio introductorio de lanzamiento: $1 USD al mes"
-sin decir introductorio *respecto a que*. Un precio sin ancla no se lee
-como oferta: se lee como el valor real del producto. Y $1 sin referencia
-comunica "juguete", justo lo contrario de lo que se quiere ante el
-comprador objetivo (dev senior / tech lead).
-
-De donde sale el numero, revisado 2026-08-07:
-
-El valor anterior ($16) derivaba de docs/requirements/Vision.md, que
-documenta una disposicion a pagar de $299-799 MXN/mes -- investigacion
-interna, sin contraste externo. Se reemplaza por un ancla con respaldo de
-mercado verificable: en 2026 GitHub Copilot Pro cuesta $10 USD/mes y
-Cursor Pro $20 USD/mes. $19 queda a la par de la referencia mas cara del
-segmento, que es lo que un ancla debe hacer, sin salirse de lo que un
-comprador reconoce como plausible para una herramienta de dev.
-
-Se expresa en USD -- la moneda en que Paddle realmente cobra -- para no
-mezclar monedas en la misma tarjeta.
-
-NO cambia lo que se cobra. El precio real vive en PADDLE_PRICE_AMOUNT_USD
-y esto es exclusivamente como se comunica. El ancla ademas se apaga sola
-si el precio vigente la alcanza (ver build_precios_page).
-"""
-PRECIO_LISTA_USD = "19"
 
 # Identidad legal que se publica en terminos.html y privacidad.html.
 #
@@ -6298,8 +6258,8 @@ LEGAL_ENTITY = {
     ),
     # Se actualiza a mano cuando cambie el contenido legal, no en cada
     # build: una fecha que se mueve sola no significa nada para nadie.
-    "actualizado": "25 de octubre de 2026",
-    "actualizado_en": "October 25, 2026",
+    "actualizado": "2 de noviembre de 2026",
+    "actualizado_en": "November 2, 2026",
 }
 
 # Alias derivados del dict: siguen siendo el nombre que usan las paginas y
@@ -6329,13 +6289,40 @@ NOTA_IMPUESTOS_EN = (
 )
 
 
+# Politica de reembolsos (decision del titular, 2026-11-02): no hay
+# reembolsos una vez activada la suscripcion, salvo cargo duplicado o error
+# tecnico comprobable. Un solo texto para terminos y reembolsos, para que
+# no puedan contradecirse (antes: "14 dias sin preguntas").
+#
+# "Conservas el acceso hasta el fin del periodo pagado" es lo que hace el
+# codigo: el acceso Pro sigue el estado que Paddle envia por webhook
+# (backend/src/routes/webhooks/paddle.ts) y Paddle, al cancelar desde el
+# enlace de gestion, mantiene la suscripcion `active` hasta el fin del
+# periodo y solo entonces envia `canceled`.
+POLITICA_REEMBOLSO_ES = (
+    '<strong>No hay reembolsos una vez activada la suscripción</strong>, salvo un '
+    '<strong>cargo duplicado</strong> o un <strong>error técnico comprobable</strong>, que se reembolsan '
+    'íntegros. Puedes cancelar en cualquier momento: la cancelación detiene las renovaciones futuras y '
+    'conservas el acceso hasta el fin del periodo ya pagado. Paddle es el revendedor (Merchant of Record) '
+    'de la suscripción; esta política es sin perjuicio de los derechos que la ley aplicable o los términos '
+    'de compra de Paddle otorguen al comprador.'
+)
+POLITICA_REEMBOLSO_EN = (
+    '<strong>There are no refunds once the subscription is active</strong>, except for a '
+    '<strong>duplicate charge</strong> or a <strong>verifiable technical error</strong>, which are refunded '
+    'in full. You may cancel at any time: cancelling stops future renewals and you keep access until the end '
+    'of the period already paid for. Paddle is the reseller (Merchant of Record) of the subscription; this '
+    'policy is without prejudice to the rights that applicable law or Paddle’s purchase terms grant the buyer.'
+)
+
+
 def _precio_meta_tag(precio):
     """Etiqueta legible por maquina con el precio mensual publicado.
 
     La lee scripts/verificar-precio-publicado.sh (smoke test de deploy.yml,
     issue #232 T4) para comprobar que precios, terminos y reembolsos en
     produccion dicen el mismo numero que PADDLE_PRICE_AMOUNT_USD. Buscar el
-    numero en la prosa seria fragil (el ancla "antes $19" tambien contiene
+    numero en la prosa seria fragil (cualquier otra cifra puede contener
     "9 USD"); una meta con nombre propio no."""
     return '<meta name="precio-mensual-usd" content="' + precio + '">\n'
 
@@ -6501,12 +6488,12 @@ def build_terminos_page():
     if anual:
         precio_es = ('El plan Individual cuesta <strong>' + mensual + ' USD al mes</strong> o <strong>'
                      + anual + ' USD al año</strong> si eliges la facturación anual, que se cobra por '
-                     'adelantado en un solo pago. Son precios introductorios de lanzamiento y pueden cambiar; '
+                     'adelantado en un solo pago. Los precios pueden cambiar; '
                      'si cambian, te avisaremos antes de que apliquen a tu siguiente cobro y podrás cancelar '
                      'sin penalización.')
         precio_en = ('The Individual plan costs <strong>' + mensual + ' USD per month</strong> or <strong>'
                      + anual + ' USD per year</strong> if you choose annual billing, charged upfront in a '
-                     'single payment. These are introductory launch prices and may change; if they do, we will '
+                     'single payment. Prices may change; if they do, we will '
                      'notify you before they apply to your next charge and you may cancel without penalty.')
         renov_es = ('La suscripción se <strong>renueva automáticamente al final de cada periodo</strong>: '
                     'cada mes en el plan mensual y cada año en el plan anual, hasta que la canceles. Puedes '
@@ -6518,11 +6505,11 @@ def build_terminos_page():
                     'for; on the annual plan, until the paid year ends.')
         desc_precio = mensual + ' USD al mes o ' + anual + ' USD al año'
     else:
-        precio_es = ('El plan Individual cuesta <strong>' + mensual + ' USD al mes</strong>. Es un precio '
-                     'introductorio de lanzamiento y puede cambiar; si cambia, te avisaremos antes de que '
+        precio_es = ('El plan Individual cuesta <strong>' + mensual + ' USD al mes</strong>. El precio puede '
+                     'cambiar; si cambia, te avisaremos antes de que '
                      'aplique a tu siguiente cobro y podrás cancelar sin penalización.')
-        precio_en = ('The Individual plan costs <strong>' + mensual + ' USD per month</strong>. This is an '
-                     'introductory launch price and may change; if it does, we will notify you before it '
+        precio_en = ('The Individual plan costs <strong>' + mensual + ' USD per month</strong>. The price may '
+                     'change; if it does, we will notify you before it '
                      'applies to your next charge and you may cancel without penalty.')
         renov_es = ('La suscripción se <strong>renueva automáticamente cada mes</strong> hasta que la '
                     'canceles. Puedes cancelarla en cualquier momento y conservas el acceso hasta el final '
@@ -6596,12 +6583,11 @@ def build_terminos_page():
         )
         + _lg_section(
             'Cancelación y reembolsos', 'Cancellation and refunds',
-            [('p',
-              'Ofrecemos <strong>14 días de reembolso sin preguntas</strong> desde el primer cobro. Los '
-              'detalles, cómo solicitarlo y qué pasa después de esos 14 días están en la '
+            [('p', POLITICA_REEMBOLSO_ES, POLITICA_REEMBOLSO_EN),
+             ('p',
+              'Los detalles y cómo solicitar un reembolso en esos casos están en la '
               '<a href="/reembolsos.html">política de reembolsos</a>, que forma parte de estos términos.',
-              'We offer a <strong>14-day, no-questions-asked refund</strong> from the first charge. The '
-              'details, how to request it and what happens after those 14 days are in the '
+              'The details and how to request a refund in those cases are in the '
               '<a href="/reembolsos.html">refund policy</a>, which forms part of these terms.')]
         )
         + _lg_section(
@@ -6838,101 +6824,72 @@ def build_privacidad_page():
 
 
 def build_reembolsos_page():
-    """Política de reembolsos: 14 días sin preguntas, decidido por el
-    dueño del producto. Es el documento que Paddle revisa con más
-    atención en la verificación, y el que faltaba por completo."""
+    """Política de reembolsos: sin reembolsos una vez activada la
+    suscripción, salvo cargo duplicado o error técnico comprobable
+    (decisión del titular, 2026-11-02). Es el documento que Paddle revisa
+    con más atención en la verificación."""
     mail = LEGAL_CONTACT_EMAIL
     mensual, anual = precio_mensual_usd(), precio_anual_usd()
-    # El plan anual (#236) usa la misma ventana de 14 dias desde su primer
-    # cobro: no es una politica nueva, es la vigente dicha para ese plan.
     if anual:
-        ambos_es = (' Aplica igual al plan mensual y al anual: en el anual te devolvemos el pago anual '
-                    'completo.')
-        ambos_en = (' It applies equally to the monthly and the annual plan: on the annual plan we refund '
-                    'the full annual payment.')
-        consumido_es = ('no hacemos reembolsos por periodos ya consumidos ni prorrateos del periodo en curso, '
-                        'sea un mes o un año')
-        consumido_en = ('we do not refund periods already used, nor prorate the period in progress, whether '
-                        'a month or a year')
         a_tiempo_es = ('En el plan mensual (' + mensual + ' USD) y en el anual (' + anual + ' USD), cancelar '
-                       'antes de la siguiente renovación evita cualquier cobro que no quieras.')
+                       'antes de la siguiente renovación evita el siguiente cobro. No hacemos prorrateos del '
+                       'periodo en curso, sea un mes o un año.')
         a_tiempo_en = ('On the monthly plan (' + mensual + ' USD) and on the annual plan (' + anual + ' USD), '
-                       'cancelling before the next renewal avoids any charge you do not want.')
+                       'cancelling before the next renewal avoids the next charge. We do not prorate the period '
+                       'in progress, whether a month or a year.')
     else:
-        ambos_es = ambos_en = ''
-        consumido_es = 'no hacemos reembolsos por meses ya consumidos ni prorrateos de un mes en curso'
-        consumido_en = 'we do not refund months already used, nor prorate a month in progress'
-        a_tiempo_es = ('Como el plan es mensual y cuesta ' + mensual + ' USD, cancelar a tiempo evita '
-                       'cualquier cobro que no quieras.')
-        a_tiempo_en = ('Since the plan is monthly and costs ' + mensual + ' USD, cancelling in time avoids '
-                       'any charge you do not want.')
+        a_tiempo_es = ('El plan es mensual y cuesta ' + mensual + ' USD: cancelar antes de la siguiente '
+                       'renovación evita el siguiente cobro. No hacemos prorrateos del mes en curso.')
+        a_tiempo_en = ('The plan is monthly and costs ' + mensual + ' USD: cancelling before the next renewal '
+                       'avoids the next charge. We do not prorate the month in progress.')
     body = (
         '  <div class="lg-box lg-key">\n'
-        '    <p class="fw-lang-es" style="margin:0;"><strong>14 días, sin preguntas.</strong> Si te '
-        'suscribes y no te convence, escríbenos dentro de los 14 días naturales siguientes a tu primer '
-        'cobro y te devolvemos el importe completo. No tienes que explicar por qué.' + ambos_es + '</p>\n'
-        '    <p class="fw-lang-en" style="margin:0;"><strong>14 days, no questions asked.</strong> If you '
-        'subscribe and it is not for you, email us within 14 calendar days of your first charge and we '
-        'refund the full amount. You do not have to explain why.' + ambos_en + '</p>\n'
+        '    <p class="fw-lang-es" style="margin:0;">' + POLITICA_REEMBOLSO_ES + '</p>\n'
+        '    <p class="fw-lang-en" style="margin:0;">' + POLITICA_REEMBOLSO_EN + '</p>\n'
         '  </div>\n'
+        + _lg_section(
+            'Cuándo sí hay reembolso', 'When a refund applies',
+            [('p',
+              'Solo en dos casos, y entonces el reembolso es <strong>íntegro</strong>:',
+              'Only in two cases, and then the refund is <strong>in full</strong>:'),
+             ('ul',
+              ['<strong>Cargo duplicado</strong>: se te cobró más de una vez el mismo periodo.',
+               '<strong>Error técnico comprobable</strong>: por ejemplo, un cobro posterior a una cancelación '
+               'confirmada, o un periodo pagado en el que no pudiste usar el servicio por una falla nuestra.'],
+              ['<strong>Duplicate charge</strong>: you were charged more than once for the same period.',
+               '<strong>Verifiable technical error</strong>: for example, a charge after a confirmed '
+               'cancellation, or a paid period in which you could not use the service because of a failure '
+               'on our side.'])]
+        )
         + _lg_section(
             'Cómo solicitarlo', 'How to request it',
             [('p',
               'Escribe a <a href="mailto:' + mail + '">' + mail + '</a> desde el correo con el que te '
-              'suscribiste, con el asunto "Reembolso". No necesitas motivo ni formulario. Si tienes a mano '
-              'el número de recibo que te envió Paddle, adjuntarlo lo agiliza, pero no es obligatorio.',
+              'suscribiste, con el asunto "Reembolso", y describe el cargo duplicado o el error. Si tienes a '
+              'mano el número de recibo que te envió Paddle, adjuntarlo lo agiliza.',
               'Email <a href="mailto:' + mail + '">' + mail + '</a> from the address you subscribed with, '
-              'with the subject "Refund". No reason or form required. If you have the receipt number Paddle '
-              'sent you, including it speeds things up, but it is not mandatory.')]
-        )
-        + _lg_section(
-            'Cuánto tarda', 'How long it takes',
-            [('ul',
-              ['Confirmamos tu solicitud en un máximo de 2 días hábiles.',
-               'El reembolso lo ejecuta <strong>Paddle</strong>, que procesó el cobro original, hacia el '
-               'mismo método de pago que usaste.',
-               'Según tu banco, el dinero suele reflejarse entre 5 y 10 días hábiles después. Ese tiempo '
-               'depende del banco, no de nosotros ni de Paddle.'],
-              ['We confirm your request within 2 business days at most.',
-               'The refund is issued by <strong>Paddle</strong>, which processed the original charge, back '
-               'to the same payment method you used.',
-               'Depending on your bank, the money typically appears 5 to 10 business days later. That '
-               'timing is up to your bank, not to us or Paddle.'])]
-        )
-        + _lg_section(
-            'Después de los 14 días', 'After the 14 days',
-            [('p',
-              'Pasada la ventana de 14 días ' + consumido_es + '. Lo que sí puedes hacer en cualquier momento es <strong>cancelar</strong>: '
-              'dejas de ser cobrado a partir del siguiente ciclo y conservas el acceso completo hasta que '
-              'termine el periodo que ya pagaste.',
-              'After the 14-day window ' + consumido_en + '. What you can do at any time is <strong>cancel</strong>: you stop being charged '
-              'from the next cycle and keep full access until the period you already paid for ends.'),
+              'with the subject "Refund", describing the duplicate charge or the error. If you have the '
+              'receipt number Paddle sent you, including it speeds things up.'),
              ('p',
-              a_tiempo_es + ' Fuera de los casos de error operativo comprobado descritos en esta política, no '
-              'hacemos reembolsos ni prorrateos después de los 14 días.',
-              a_tiempo_en + ' Other than the confirmed operational errors described in this policy, we do not issue '
-              'refunds or prorations after the 14-day window.')]
+              'El reembolso lo ejecuta <strong>Paddle</strong>, que procesó el cobro original, hacia el mismo '
+              'método de pago que usaste. Cuándo se refleja el dinero depende de tu banco.',
+              'The refund is issued by <strong>Paddle</strong>, which processed the original charge, back to '
+              'the same payment method you used. When the money appears depends on your bank.')]
         )
         + _lg_section(
-            'Cómo cancelar', 'How to cancel',
+            'Cancelar la suscripción', 'Cancelling the subscription',
             [('p',
-              'Desde el enlace de gestión de suscripción que incluye el correo de recibo de Paddle, o '
-              'escribiéndonos a <a href="mailto:' + mail + '">' + mail + '</a> y lo cancelamos por ti. '
-              'Cancelar no borra tu cuenta: vuelves al acceso de prueba.',
-              'Through the subscription management link included in Paddle’s receipt email, or by '
-              'emailing us at <a href="mailto:' + mail + '">' + mail + '</a> and we will cancel it for you. '
-              'Cancelling does not delete your account: you return to trial access.')]
-        )
-        + _lg_section(
-            'Cobros duplicados o fallas del servicio', 'Duplicate charges or service failures',
-            [('p',
-              'Estos casos quedan <strong>fuera</strong> del límite de 14 días y se devuelven íntegros '
-              'siempre: cobros duplicados por error, cobros posteriores a una cancelación confirmada, y '
-              'periodos en los que el servicio estuvo inaccesible por una falla nuestra. Escríbenos y lo '
-              'resolvemos.',
-              'These cases fall <strong>outside</strong> the 14-day limit and are always refunded in full: '
-              'duplicate charges made in error, charges after a confirmed cancellation, and periods when '
-              'the service was unavailable due to a failure on our side. Email us and we will sort it out.')]
+              'Puedes cancelar en cualquier momento desde el enlace de gestión de suscripción que incluye el '
+              'correo de recibo de Paddle, o escribiéndonos a <a href="mailto:' + mail + '">' + mail + '</a> y '
+              'lo cancelamos por ti. La cancelación detiene las renovaciones futuras y conservas el acceso Pro '
+              'completo hasta que termine el periodo que ya pagaste; después vuelves al acceso de prueba. '
+              'Cancelar no borra tu cuenta.',
+              'You may cancel at any time through the subscription management link included in Paddle’s '
+              'receipt email, or by emailing us at <a href="mailto:' + mail + '">' + mail + '</a> and we will '
+              'cancel it for you. Cancelling stops future renewals and you keep full Pro access until the '
+              'period you already paid for ends; after that you return to trial access. Cancelling does not '
+              'delete your account.'),
+             ('p', a_tiempo_es, a_tiempo_en)]
         )
         + _lg_section(
             'Impuestos y comprobantes', 'Taxes and receipts',
@@ -6957,8 +6914,8 @@ def build_reembolsos_page():
     return _legal_shell(
         'reembolsos',
         'Política de reembolsos — AI-SDLC Pro', 'Refund Policy — AI-SDLC Pro',
-        'Política de reembolsos de AI-SDLC Pro: 14 días sin preguntas desde el primer cobro, cómo '
-        'solicitarlo y cómo cancelar la suscripción.',
+        'Política de reembolsos de AI-SDLC Pro: sin reembolsos una vez activada la suscripción, salvo '
+        'cargo duplicado o error técnico comprobable; cómo cancelar la suscripción.',
         'Política de reembolsos', 'Refund Policy',
         body,
     )

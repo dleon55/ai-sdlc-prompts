@@ -20,7 +20,8 @@ def test_paddle_defaults_disable_checkout(monkeypatch):
         "price_id": build.PADDLE_DISABLED_VALUE,
         # El monto viaja con el price id para que el precio cobrado y el
         # comunicado (sitio + terminos + reembolsos) no puedan divergir.
-        "amount": "1",
+        # Por defecto, el precio vigente del plan Pro (USD 9/mes).
+        "amount": "9",
         # Plan anual opcional: vacio = no se ofrece.
         "annual_price_id": "",
         "annual_amount": "",
