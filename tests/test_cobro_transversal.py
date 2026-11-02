@@ -62,7 +62,7 @@ def test_legal_entity_is_the_single_source_of_identity():
     assert e["domicilio"] is None
     assert e["correo_privacidad"] == "privacidad@lionsystems.com.mx"
     assert e["correo_soporte"] == "soporte@lionsystems.com.mx"
-    assert e["actualizado"] == "25 de octubre de 2026"
+    assert e["actualizado"] == "2 de noviembre de 2026"
     nombres = [x["nombre"] for x in e["encargados"]]
     for encargado in ("Paddle", "GitHub", "Google Analytics", "Google Cloud"):
         assert encargado in nombres
@@ -299,14 +299,12 @@ def test_terms_describe_annual_price_renewal_and_cancellation(monkeypatch):
 def test_refunds_cover_the_annual_plan(monkeypatch):
     reembolsos = _con_anual(monkeypatch)["reembolsos"]
     es, en = _texto(reembolsos, "es"), _texto(reembolsos, "en")
-    for frase in ("Aplica igual al plan mensual y al anual", "pago anual completo",
-                  "sea un mes o un año", "en el anual (90 USD)"):
+    for frase in ("en el anual (90 USD)", "sea un mes o un año"):
         assert frase in es, frase
-    for frase in ("applies equally to the monthly and the annual plan", "full annual payment",
-                  "whether a month or a year", "on the annual plan (90 USD)"):
+    for frase in ("on the annual plan (90 USD)", "whether a month or a year"):
         assert frase in en, frase
-    assert "Como el plan es mensual" not in reembolsos
-    assert "Since the plan is monthly" not in reembolsos
+    assert "El plan es mensual y cuesta" not in reembolsos
+    assert "The plan is monthly and costs" not in reembolsos
 
 
 def test_pricing_footer_does_not_say_monthly_only_when_annual_is_sold(monkeypatch):
@@ -329,7 +327,7 @@ def test_without_annual_plan_legal_pages_stay_monthly_only(monkeypatch):
         assert "al año" not in paginas[slug], slug
         assert "per year" not in paginas[slug], slug
     assert "renueva automáticamente cada mes" in paginas["terminos"]
-    assert "Como el plan es mensual y cuesta 9 USD" in paginas["reembolsos"]
+    assert "El plan es mensual y cuesta 9 USD" in paginas["reembolsos"]
     assert "se renueva mensualmente" in paginas["precios"]
 
 

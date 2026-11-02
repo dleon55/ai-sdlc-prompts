@@ -56,5 +56,27 @@ def test_commercial_ctas_and_events_do_not_include_personal_data():
 
 def test_refund_policy_has_a_single_non_discretionary_post_window_rule():
     content = _read("reembolsos.html")
-    assert "no hacemos reembolsos ni prorrateos después de los 14 días" in content
+    assert "No hay reembolsos una vez activada la suscripción" in content
     assert "lo revisamos caso por caso" not in content
+
+
+def test_refund_policy_is_one_and_the_same_in_terms_and_refunds():
+    """Decisión del titular (2026-11-02): sin reembolsos salvo cargo
+    duplicado o error técnico comprobable. Términos y reembolsos citan el
+    mismo texto; no queda rastro de la ventana de 14 días ni del plazo de
+    respuesta de 2 días hábiles."""
+    terminos, reembolsos = build.build_terminos_page(), build.build_reembolsos_page()
+    for html in (terminos, reembolsos):
+        assert build.POLITICA_REEMBOLSO_ES in html
+        assert build.POLITICA_REEMBOLSO_EN in html
+        assert "sin perjuicio de los derechos que la ley aplicable o los términos de compra de Paddle" in html
+        for viejo in ("14 días", "14-day", "14 days", "2 días hábiles", "2 business days", "sin preguntas"):
+            assert viejo not in html, viejo
+    assert "soporte@lionsystems.com.mx" in reembolsos
+
+
+def test_pricing_page_has_no_struck_through_list_price():
+    """El "antes $19" era un ancla de marketing que nunca se cobró."""
+    precios = build.build_precios_page()
+    for viejo in ("antes $19", "was $19", "Precio de lista", "List price", "px-anchor"):
+        assert viejo not in precios, viejo

@@ -65,7 +65,7 @@ Un dev o equipo que usa AI-SDLC Pro obtiene outputs consistentes, trazables y de
 |------|--------|-----------|--------|
 | **Free** | $0 | Los 112 prompts, copia ilimitada y para siempre, sin cuenta. 1 proyecto activo (variables, checklist de progreso, modo guiado). | Adquisición — todo el catálogo |
 | **Pro (prueba 1 semana)** | $0, con GitHub | Todo Free + proyectos ilimitados + personalización por prompt + guardado de resultados de IA. Renovable semanalmente con feedback mientras dure el piloto. | Conversión a cuenta |
-| **Pro (suscripción)** | Precio introductorio vigente publicado en `/precios` ($9 USD/mes al 2026-08-09, ancla de lista $19; configurado vía `PADDLE_PRICE_AMOUNT_USD`, nunca hardcodeado en el sitio) | Todo Pro sin muro de prueba ni renovación por feedback. | Individual, sin límite de tiempo |
+| **Pro (suscripción)** | Precio vigente publicado en `/precios` ($9 USD/mes o $90 USD/año al 2026-11-02, sin precio tachado; configurado vía `PADDLE_PRICE_AMOUNT_USD`, nunca hardcodeado en el sitio) | Todo Pro sin muro de prueba ni renovación por feedback. | Individual, sin límite de tiempo |
 | **Pro Equipo / Enterprise** | Por definir con datos del piloto | Todo Pro + funciones de equipo (a definir: miembros, proyectos compartidos, SSO) | Equipos y agencias — pendiente de validar demanda antes de construir |
 
 ### Canal alternativo — Producto digital

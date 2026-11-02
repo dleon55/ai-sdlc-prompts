@@ -8,6 +8,9 @@ Este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+### Changed
+- **Un solo precio y política de reembolsos única (2026-11-02)**: el plan Pro es USD 9/mes o USD 90/año (price ids live verificados con `Paddle.PricePreview`). `build.py` usa 9 como precio por defecto (antes 1, por lo que los HTML versionados decían "$1 USD/mes") y se retira el precio tachado "antes $19" (`PRECIO_LISTA_USD`), que nunca se cobró. Reembolsos, por decisión del titular: no hay reembolsos una vez activada la suscripción, salvo cargo duplicado o error técnico comprobable (íntegro); cancelar detiene renovaciones y conserva el acceso hasta el fin del periodo pagado; sin perjuicio de los derechos del comprador ante la ley o los términos de Paddle (Merchant of Record). Sustituye la ventana de 14 días y el plazo de 2 días hábiles. Un solo texto (`POLITICA_REEMBOLSO_ES/EN`) en términos y reembolsos.
+
 ### Added
 - **Servidor MCP en el registro oficial (1.0.2, 2026-11-01)**: `mcp-server/server.json` y `mcpName` en el paquete; el tag `mcp-v*` publica en npm y registra `io.github.dleon55/ai-sdlc-prompts` en registry.modelcontextprotocol.io con OIDC (sin token), con el publicador fijado y su firma Sigstore verificada. Ver `docs/publicar-mcp.md`.
 

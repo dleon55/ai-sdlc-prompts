@@ -22,7 +22,8 @@ Las dos anuales se exigen **juntas o ninguna**: un id sin monto pintaría un
 botón sin precio, y un monto sin id abriría un checkout vacío. El build
 falla si solo pones una.
 
-Si no defines nada, el build usa `1` — el precio vigente. Este mecanismo no
+Si no defines nada, el build usa `9` — el precio vigente (USD 9/mes; el
+anual, USD 90/año, solo aparece con sus dos variables). Este mecanismo no
 cambia lo que se cobra por accidente.
 
 ## Procedimiento para subir el precio
@@ -69,13 +70,12 @@ Las tres páginas dicen también que el precio es **antes de impuestos**:
 Paddle aplica el IVA del país del comprador y emite el recibo; no se emite
 CFDI. Ese texto vive una sola vez en `build.py` (`NOTA_IMPUESTOS_ES/EN`).
 
-## El ancla de precio
+## Sin precio tachado
 
-`PRECIO_LISTA_USD` en `build.py` es el precio tachado ("antes $16 USD").
-
-Se pinta **solo si el precio vigente está por debajo**. Cuando alcancen el
-mismo valor, el ancla desaparece sola — mostrar "antes $16" junto a "$16"
-se leería como un error, no como una oferta.
+Hasta noviembre de 2026 `precios.html` mostraba un ancla tachada ("antes
+$19 USD", constante `PRECIO_LISTA_USD`). Era solo comunicación: $19 nunca
+se cobró. Se retiró el 2026-11-02 para publicar un solo precio. No la
+reintroduzcas sin un precio que de verdad se haya cobrado.
 
 ## Por qué el plan anual importa
 

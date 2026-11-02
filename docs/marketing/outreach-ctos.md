@@ -3,8 +3,8 @@
 > Sprint 4, `docs/STRATEGY.md`. El issue original (abril 2026) pedía cotizar
 > "licencia equipo $799 MXN/mes (hasta 5 devs)" — desactualizado: el sitio
 > vigente (`/precios`, `terminos.html`) solo tiene el plan Individual al
-> precio introductorio publicado en `/precios` (**$9 USD/mes al 2026-08-09**,
-> ancla de lista $19 — verificar contra la página antes de cada envío, es la
+> precio publicado en `/precios` (**$9 USD/mes o $90 USD/año al 2026-11-02**,
+> sin precio tachado — verificar contra la página antes de cada envío, es la
 > fuente de verdad); el tier de Equipo/Enterprise
 > está explícitamente "por definir con datos del piloto" en
 > `docs/STRATEGY.md`. Los mensajes de abajo usan el precio real vigente y

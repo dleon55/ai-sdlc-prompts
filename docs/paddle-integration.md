@@ -103,7 +103,8 @@ disponible".
 AI-SDLC Pro no ejecuta reembolsos desde código: Paddle es el comerciante
 registrado (Merchant of Record) y el reembolso se emite desde su dashboard.
 La política pública es la de [`/reembolsos.html`](../reembolsos.html)
-(14 días sin preguntas desde el primer cobro); el precio publicado es antes
+(sin reembolsos una vez activada la suscripción, salvo cargo duplicado o
+error técnico comprobable, que se reembolsan íntegros); el precio publicado es antes
 de impuestos, Paddle aplica el IVA del país del comprador y emite el recibo,
 y no se emite CFDI.
 

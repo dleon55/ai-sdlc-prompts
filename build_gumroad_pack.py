@@ -67,7 +67,7 @@ automáticamente y siempre tiene la versión más reciente.
 Los {prompt_count} prompts son gratis para siempre, aquí y en la web: no hay
 muro que desbloquear para leerlos ni para copiarlos.
 
-Lo que sí cuesta es la **plataforma**, por el precio introductorio vigente
+Lo que sí cuesta es la **plataforma**, por el precio vigente
 publicado en {"https://prompts.lionsystems.com.mx/precios.html"}:
 
 - Resuelve las 19 variables de tu proyecto automáticamente en cada prompt,
@@ -76,7 +76,7 @@ publicado en {"https://prompts.lionsystems.com.mx/precios.html"}:
 - Guarda los resultados que te devuelve la IA, ligados al prompt que los generó.
 - Modo guiado: te dice cuál es el siguiente prompt según dónde vas.
 
-Se cancela cuando quieras y hay 14 días de reembolso sin preguntas:
+Se cancela cuando quieras (conservas el acceso hasta el fin del periodo pagado):
 {"https://prompts.lionsystems.com.mx/precios.html"}
 
 ## Estructura
@@ -127,7 +127,7 @@ always has the latest version.
 The {prompt_count} prompts are free forever, here and on the web: there is no
 wall to unlock in order to read or copy them.
 
-What does cost money is the **platform**, at the current introductory price
+What does cost money is the **platform**, at the current price
 published at {"https://prompts.lionsystems.com.mx/precios.html"}:
 
 - Resolves your project's 19 variables automatically in every prompt, instead
@@ -136,7 +136,7 @@ published at {"https://prompts.lionsystems.com.mx/precios.html"}:
 - Saves the output your AI returns, linked to the prompt that produced it.
 - Guided mode: tells you which prompt comes next based on where you are.
 
-Cancel anytime, with a 14-day no-questions refund:
+Cancel anytime (you keep access until the end of the paid period):
 {"https://prompts.lionsystems.com.mx/precios.html"}
 
 ## Structure

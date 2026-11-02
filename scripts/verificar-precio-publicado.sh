@@ -19,8 +19,8 @@
 # Esa discrepancia es la que ya ocurrio con el $499 de Gumroad.
 #
 # Lee la meta <meta name="precio-mensual-usd"> que emite build.py en las
-# tres paginas (buscar el numero en la prosa es fragil: el ancla "antes
-# $19 USD" tambien contiene "9 USD"), y ademas exige que el numero aparezca
+# tres paginas (buscar el numero en la prosa es fragil: otra cifra, como
+# "90 USD", tambien contiene "9 USD"... o "0 USD"), y ademas exige que el numero aparezca
 # en el texto visible, porque la meta podria quedar bien y el copy mal.
 set -euo pipefail
 

@@ -3,7 +3,7 @@
 > Sprint 4, `docs/STRATEGY.md`. El issue original (abril 2026) pedía
 > "$99 MXN/mes de por vida" para los primeros 50 Pro — desactualizado: el
 > sitio vigente tiene su propio precio introductorio, publicado en
-> `/precios` (**$9 USD/mes al 2026-08-09**, ancla de lista $19 — la página
+> `/precios` (**$9 USD/mes o $90 USD/año al 2026-11-02**, sin precio tachado — la página
 > deriva el monto de `PADDLE_PRICE_AMOUNT_USD`, así que `/precios` es
 > siempre la fuente de verdad; verificar ahí antes de publicar cualquier
 > copy). En vez de inventar otro número, este programa reutiliza el precio
@@ -25,8 +25,8 @@
   por vida**, mientras la suscripción siga activa sin interrupción.
 - No hay una promesa de descuento adicional sobre el precio actual — la
   promesa es **congelar** el precio de hoy, no bajarlo más. Esto es honesto
-  con el hecho de que el introductorio ya es agresivo frente al ancla de
-  lista.
+  con el hecho de que el precio vigente ya es agresivo frente a herramientas
+  comparables (Copilot Pro $10, Cursor Pro $20 USD/mes).
 
 ## ✅ Mecanismo técnico — decidido 2026-08-09
 
