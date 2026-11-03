@@ -6232,7 +6232,11 @@ LEGAL_ENTITY = {
     # paginas lo omiten en vez de publicar un marcador.
     "domicilio": None,
     "rfc": "LEGD870627K11",
-    "correo_privacidad": "privacidad@lionsystems.com.mx",
+    # 2026-11-03: las solicitudes de privacidad (derechos ARCO, revocacion,
+    # dudas del aviso) se atienden en soporte@, el buzon que se vigila a
+    # diario (decision del titular). Ya no hay un buzon privacidad@ aparte.
+    # Solo cambia el medio de contacto: no hay cambio sustancial que avisar.
+    "correo_privacidad": "soporte@lionsystems.com.mx",
     "correo_soporte": "soporte@lionsystems.com.mx",
     "sitio": "https://prompts.lionsystems.com.mx",
     "producto": "AI-SDLC Pro",
@@ -6258,8 +6262,8 @@ LEGAL_ENTITY = {
     ),
     # Se actualiza a mano cuando cambie el contenido legal, no en cada
     # build: una fecha que se mueve sola no significa nada para nadie.
-    "actualizado": "2 de noviembre de 2026",
-    "actualizado_en": "November 2, 2026",
+    "actualizado": "3 de noviembre de 2026",
+    "actualizado_en": "November 3, 2026",
 }
 
 # Alias derivados del dict: siguen siendo el nombre que usan las paginas y
@@ -6684,13 +6688,21 @@ def build_privacidad_page():
               'Protection of Personal Data Held by Private Parties published in the Official Gazette (DOF) '
               'on March 20, 2025. This notice explains what '
               'we collect, why, who we share it with and how to exercise your rights.'),
-             ('p',
-              'Para cualquier asunto relacionado con este aviso escribe a '
-              '<a href="mailto:' + mail_priv + '">' + mail_priv + '</a>. Para soporte del producto: '
-              '<a href="mailto:' + mail + '">' + mail + '</a>.',
-              'For anything related to this notice, email '
-              '<a href="mailto:' + mail_priv + '">' + mail_priv + '</a>. For product support: '
-              '<a href="mailto:' + mail + '">' + mail + '</a>.')]
+             (('p',
+               'Para ejercer tus derechos, revocar tu consentimiento o resolver cualquier duda sobre '
+               'este aviso, y también para soporte del producto, escribe a '
+               '<a href="mailto:' + mail_priv + '">' + mail_priv + '</a>.',
+               'To exercise your rights, withdraw your consent or ask anything about this notice, '
+               'and also for product support, email '
+               '<a href="mailto:' + mail_priv + '">' + mail_priv + '</a>.')
+              if mail_priv == mail else
+              ('p',
+               'Para cualquier asunto relacionado con este aviso escribe a '
+               '<a href="mailto:' + mail_priv + '">' + mail_priv + '</a>. Para soporte del producto: '
+               '<a href="mailto:' + mail + '">' + mail + '</a>.',
+               'For anything related to this notice, email '
+               '<a href="mailto:' + mail_priv + '">' + mail_priv + '</a>. For product support: '
+               '<a href="mailto:' + mail + '">' + mail + '</a>.'))]
         )
         + _lg_section(
             'Qué datos recabamos', 'What data we collect',

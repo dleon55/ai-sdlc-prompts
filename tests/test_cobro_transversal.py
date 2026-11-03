@@ -60,9 +60,11 @@ def test_legal_entity_is_the_single_source_of_identity():
     # Sin domicilio hasta que el titular elija uno de notificaciones. No se
     # inventa: las páginas lo omiten.
     assert e["domicilio"] is None
-    assert e["correo_privacidad"] == "privacidad@lionsystems.com.mx"
+    # 2026-11-03: privacidad se atiende en soporte@ (decision del titular).
+    assert e["correo_privacidad"] == "soporte@lionsystems.com.mx"
+    assert e["correo_privacidad"] == e["correo_soporte"]
     assert e["correo_soporte"] == "soporte@lionsystems.com.mx"
-    assert e["actualizado"] == "2 de noviembre de 2026"
+    assert e["actualizado"] == "3 de noviembre de 2026"
     nombres = [x["nombre"] for x in e["encargados"]]
     for encargado in ("Paddle", "GitHub", "Google Analytics", "Google Cloud"):
         assert encargado in nombres
@@ -81,7 +83,7 @@ def test_identity_literals_only_live_inside_legal_entity():
     copia que puede divergir: exactamente lo que #225/#228 corrigieron."""
     bloque = re.search(r"^LEGAL_ENTITY = \{\n.*?^\}\n", BUILD_SRC, re.S | re.M)
     assert bloque, "no se encontró el bloque LEGAL_ENTITY en build.py"
-    for literal in ("LEGD870627K11", "DAVID LEON GOMEZ", "privacidad@lionsystems.com.mx"):
+    for literal in ("LEGD870627K11", "DAVID LEON GOMEZ"):
         assert BUILD_SRC.count(literal) == bloque.group(0).count(literal), (
             f"{literal!r} aparece fuera de LEGAL_ENTITY"
         )
@@ -108,6 +110,9 @@ def test_legal_pages_render_responsable_processors_and_date():
     assert e["correo_privacidad"] in privacidad
     assert e["correo_soporte"] in privacidad
     assert "Ley Federal de Protección de Datos Personales" in privacidad
+    # Ningun texto publico remite ya a privacidad@ (2026-11-03).
+    for slug, html in paginas.items():
+        assert "privacidad@" not in html, f"{slug}: aun publica privacidad@"
 
 
 def test_privacy_notice_cites_the_2025_law_not_the_extinct_inai():
