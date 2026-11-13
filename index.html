@@ -846,6 +846,8 @@ body.ms-mode .sec-check { display: block; }
   transition: background .12s;
 }
 .fb-submit-btn:hover { background: #4f46e5; }
+a.fb-submit-btn { display: block; text-align: center; text-decoration: none; box-sizing: border-box; }
+.fb-note { font-size: .78rem; }
 
 /* ════════════════════  SIDEBAR COLLAPSE  ════════════════════════ */
 .sidebar-header {
@@ -1710,8 +1712,11 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
       <button class="modal-close-btn" onclick="closeFeedbackWall()" aria-label="Cerrar / Close">&#x2715;</button>
     </div>
     <div class="modal-body wall-modal-body">
+     <div id="fb-renew">
       <p class="fw-lang-es">Copiar prompts sigue funcionando igual. Cuéntanos qué tal te fue con la gestión de proyectos — al enviar, renuevas otra semana de Pro al instante.</p>
       <p class="fw-lang-en">Copying prompts still works the same. Tell us how project management went for you — submitting renews another Pro week instantly.</p>
+      <p class="fw-lang-es fb-note">La prueba incluye 1 semana y 1 renovación con tu opinión.</p>
+      <p class="fw-lang-en fb-note">The trial includes 1 week plus 1 renewal with your feedback.</p>
       <div class="fb-stars" id="fb-stars" role="radiogroup" aria-label="Calificación de 1 a 5 / Rating from 1 to 5">
         <button type="button" class="fb-star" role="radio" aria-checked="false" data-value="1" onclick="setFbRating(1)" aria-label="1 / 5">★</button>
         <button type="button" class="fb-star" role="radio" aria-checked="false" data-value="2" onclick="setFbRating(2)" aria-label="2 / 5">★</button>
@@ -1721,6 +1726,12 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
       </div>
       <textarea id="fb-comments" class="fb-textarea" aria-label="Comentario / Comment"></textarea>
       <button class="fb-submit-btn" onclick="submitFeedbackWall()"><span class="fw-lang-es">Enviar y renovar 1 semana</span><span class="fw-lang-en">Submit and renew 1 week</span></button>
+     </div>
+     <div id="fb-paywall" hidden>
+      <p class="fw-lang-es">Ya usaste tu semana de prueba y su renovación. Copiar prompts y 1 proyecto siguen gratis para siempre. Para proyectos ilimitados, personalización y resultados de IA, pasa a Pro: US$9/mes.</p>
+      <p class="fw-lang-en">You have used your trial week and its renewal. Copying prompts and 1 project stay free forever. For unlimited projects, personalization and AI outputs, upgrade to Pro: US$9/month.</p>
+      <a class="fb-submit-btn" id="fb-paywall-btn" href="/precios.html" onclick="if(typeof gtag==='function')gtag('event','pricing_cta_click',{source:'trial_limit'});"><span class="fw-lang-es">Pasar a Pro</span><span class="fw-lang-en">Upgrade to Pro</span></a>
+     </div>
     </div>
   </div>
 </div>
@@ -2100,6 +2111,28 @@ function backendApi(method, path, body) {
         if (!res || !res.ok) { resolve(null); return; }
         if (res.status === 204) { resolve({}); return; }
         return res.json().then(resolve, function() { resolve(null); });
+      }).catch(function() { resolve(null); });
+    } catch (e) { resolve(null); }
+  });
+}
+
+// Como backendApi(), pero conserva el código HTTP y el cuerpo de una
+// respuesta de error (p. ej. 409 de /api/trial/feedback, que explica por
+// qué no renovó). null solo si no hubo respuesta (red, backend caído).
+function backendApiConEstado(method, path, body) {
+  return new Promise(function(resolve) {
+    try {
+      if (typeof fetch !== 'function') { resolve(null); return; }
+      var opciones = { method: method, credentials: 'same-origin', headers: {} };
+      if (body !== undefined) {
+        opciones.headers['Content-Type'] = 'application/json';
+        opciones.body = JSON.stringify(body);
+      }
+      fetch(path, opciones).then(function(res) {
+        if (!res) { resolve(null); return; }
+        return res.json().then(function(datos) {
+          resolve({ status: res.status, body: datos || {} });
+        }, function() { resolve({ status: res.status, body: {} }); });
       }).catch(function() { resolve(null); });
     } catch (e) { resolve(null); }
   });
@@ -2817,8 +2850,11 @@ function renderGuidedStep(index) {
    proyectos ya vive en localStorage, así que no hace falta rastrear IPs
    como antes (check_anon_usage()/tabla anon_usage quedan sin uso, ver nota
    en docs/trial-gate-setup.md; no se borran de la base por si ya hay datos).
-   Con sesión: 1 semana de prueba (check_trial_status); al vencer, se exige
-   enviar feedback para renovar otra semana (submit_feedback_and_renew).
+   Con sesión: 1 semana de prueba (/api/trial/status); al vencer, enviar
+   feedback renueva otra semana, con tope (TRIAL_MAX_RENEWALS, 1 por
+   omisión; spec E1, 13-nov-2026). Agotadas las renovaciones, el mismo muro
+   ofrece pasar a Pro (/precios.html) en vez de renovar; el backend responde
+   409 con `reason` y la UI lo explica.
    Fail-open ante cualquier error de red o SDK aún no cargado -- nunca se
    bloquea a un usuario real por una falla transitoria (decisión de diseño,
    ver docs/trial-gate-setup.md). */
@@ -2843,6 +2879,7 @@ function checkProFeatureGate() {
     // 'subscribed' distingue "pagó" de "está en prueba gratis": alimenta el
     // badge Pro del header (renderAuthUI).
     setProState(estado.subscribed === true);
+    _trialRenewalsLeft = (typeof estado.renewals_left === 'number') ? estado.renewals_left : null;
     return estado.active ? { allowed: true } : { allowed: false, reason: 'trial_expired' };
   });
 }
@@ -2898,6 +2935,23 @@ function closeRegisterWall() {
 }
 
 var _fbRating = 0;
+// Renovaciones gratuitas que le quedan (de /api/trial/status). null = no se
+// sabe (backend viejo o sin respuesta): se ofrece renovar, como antes.
+var _trialRenewalsLeft = null;
+
+// Alterna el muro entre "renovar con feedback" y "pasar a Pro" (prueba y
+// renovaciones agotadas). Copiar prompts y el proyecto 1 no cambian.
+function setFeedbackWallMode(agotada) {
+  var renovar = document.getElementById('fb-renew');
+  var pago = document.getElementById('fb-paywall');
+  if (renovar) renovar.hidden = !!agotada;
+  if (pago) pago.hidden = !agotada;
+  var tituloEs = document.querySelector('#feedback-wall-title .fw-lang-es');
+  var tituloEn = document.querySelector('#feedback-wall-title .fw-lang-en');
+  if (tituloEs) tituloEs.textContent = agotada ? 'Tu prueba Pro terminó' : 'Tu semana de Pro expiró';
+  if (tituloEn) tituloEn.textContent = agotada ? 'Your Pro trial has ended' : 'Your Pro week expired';
+  if (agotada && typeof gtag === 'function') gtag('event', 'trial_renewal_limit');
+}
 
 function openFeedbackWall() {
   var modal = document.getElementById('feedback-wall-modal');
@@ -2905,6 +2959,7 @@ function openFeedbackWall() {
   var lang = getCurrentLanguage();
   var ta = document.getElementById('fb-comments');
   if (ta) ta.placeholder = lang === 'en' ? 'What would you improve?' : '¿Qué mejorarías?';
+  setFeedbackWallMode(_trialRenewalsLeft === 0);
   _lastFocusedBeforeModal = document.activeElement;
   modal.classList.add('open');
   var closeBtn = modal.querySelector('.modal-close-btn');
@@ -2938,16 +2993,38 @@ function submitFeedbackWall() {
   }
   var ta = document.getElementById('fb-comments');
   var comments = ta ? ta.value : '';
-  backendApi('POST', '/api/trial/feedback', { rating: _fbRating, comments: comments }).then(function(res) {
-    if (!res || !res.renewed) {
+  backendApiConEstado('POST', '/api/trial/feedback', { rating: _fbRating, comments: comments }).then(function(r) {
+    var res = r ? r.body : null;
+    var motivo = res && res.reason;
+    if (!r || (!res.renewed && !motivo)) {
       showToast(lang === 'en' ? 'Could not submit — try again' : 'No se pudo enviar — intenta de nuevo', 'warn');
       return;
     }
-    closeFeedbackWall();
+    // El feedback se guardó en todos estos casos (el backend lo guarda
+    // aunque no renueve): se limpia el formulario.
     _fbRating = 0;
     setFbRating(0);
     if (ta) ta.value = '';
-    showToast(lang === 'en' ? 'Thanks! Renewed for 1 week' : '¡Gracias! Renovado por 1 semana', 'success');
+    if (res.renewed) {
+      _trialRenewalsLeft = (typeof res.renewals_left === 'number') ? res.renewals_left : null;
+      closeFeedbackWall();
+      showToast(lang === 'en' ? 'Thanks! Renewed for 1 week' : '¡Gracias! Renovado por 1 semana', 'success');
+      return;
+    }
+    if (motivo === 'renewal_limit') {
+      _trialRenewalsLeft = 0;
+      setFeedbackWallMode(true);
+      showToast(lang === 'en' ? 'Thanks for your feedback. Your free renewals are used up.'
+                              : 'Gracias por tu opinión. Ya usaste tus renovaciones gratuitas.', 'warn');
+      return;
+    }
+    closeFeedbackWall();
+    if (motivo === 'subscribed') {
+      setProState(true);
+      showToast(lang === 'en' ? 'Thanks! You already have Pro' : '¡Gracias! Ya tienes Pro', 'success');
+    } else {
+      showToast(lang === 'en' ? 'Thanks! Your trial is still active' : '¡Gracias! Tu prueba sigue activa', 'success');
+    }
   }).catch(function() {
     showToast(lang === 'en' ? 'Could not submit — try again' : 'No se pudo enviar — intenta de nuevo', 'warn');
   });

@@ -67,6 +67,15 @@ create trigger on_user_created_trial
   after insert on users
   for each row execute function create_user_trial();
 
+-- Renovacion de cortesia (13-nov-2026): quien ya agoto TRIAL_MAX_RENEWALS
+-- puede renovar UNA vez mas mientras no pase TRIAL_GRACE_UNTIL. Aqui queda
+-- cuando la uso, para no darla dos veces. Null = no la ha usado.
+-- Va DESPUES del trigger sobre `users` a proposito: asi el esquema bloquea
+-- users y luego user_trial, el mismo orden que un alta de usuario (insert
+-- en users -> trigger -> insert en user_trial). En el orden inverso, aplicar
+-- el esquema con altas en curso podia terminar en deadlock.
+alter table user_trial add column if not exists courtesy_renewal_at timestamptz;
+
 -- ───────────────────────── feedback ─────────────────────────
 create table if not exists feedback (
   id          uuid primary key default gen_random_uuid(),
