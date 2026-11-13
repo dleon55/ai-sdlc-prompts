@@ -31,6 +31,10 @@ Biblioteca interactiva de prompts estructurados bajo el **AI-SDLC Enterprise Fra
 
 ---
 
+## Skills para Claude Code y Codex
+
+Los mismos prompts, empaquetados como *skills* (`SKILL.md`, una por fase, ES/EN) en el repo público [dleon55/ai-sdlc-skills](https://github.com/dleon55/ai-sdlc-skills): `/plugin marketplace add dleon55/ai-sdlc-skills` en Claude Code, o `scripts/install.sh es codex` para Codex (`~/.agents/skills`). Se generan con `tools/build_skills.py` y se publican con `scripts/publicar-skills.sh`; ver [docs/publicar-skills.md](docs/publicar-skills.md).
+
 ## Servidor MCP
 
 El catálogo también se expone a agentes de IA (Claude Code, Claude Desktop, Cursor) vía [Model Context Protocol](https://modelcontextprotocol.io), sin necesidad de copiar/pegar desde el navegador: `list_prompts`, `get_prompt`, `resolve_prompt` (sustituye variables), `get_framework` y `recommend_next`. Ver [mcp-server/README.md](mcp-server/README.md) para instalación y configuración.

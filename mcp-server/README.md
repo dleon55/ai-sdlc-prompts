@@ -124,6 +124,10 @@ Ejemplo:
 }
 ```
 
+## ¿Prefieres skills?
+
+Si tu agente admite *skills* (`SKILL.md`), los mismos prompts están empaquetados por fase en [dleon55/ai-sdlc-skills](https://github.com/dleon55/ai-sdlc-skills) para Claude Code (marketplace de plugins) y Codex (`~/.agents/skills`). No requieren servidor; el MCP sigue siendo útil para `resolve_prompt` y `recommend_next`.
+
 ## Desarrollo
 
 ```bash
