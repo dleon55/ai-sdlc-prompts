@@ -80,3 +80,24 @@ def test_pricing_page_has_no_struck_through_list_price():
     precios = build.build_precios_page()
     for viejo in ("antes $19", "was $19", "Precio de lista", "List price", "px-anchor"):
         assert viejo not in precios, viejo
+
+
+def test_ninguna_pagina_promete_renovar_la_prueba_cada_semana():
+    """Spec E1 (13-nov-2026): la prueba Pro es 1 semana + 1 renovación. Ninguna
+    página publicada puede seguir prometiendo la renovación semanal sin fin
+    del piloto."""
+    import pathlib
+    raiz = pathlib.Path(__file__).resolve().parent.parent
+    prohibidas = (
+        "renovar cada semana", "renewing weekly for as long",
+        "mientras dure el piloto", "mientras dure el periodo de piloto",
+        "for as long as the pilot", "1 semana, renovable", "1 week, renewable",
+    )
+    for nombre in ("index.html", "en/index.html", "precios.html", "terminos.html", "privacidad.html"):
+        html = (raiz / nombre).read_text(encoding="utf-8")
+        for frase in prohibidas:
+            assert frase not in html, f"{nombre} aún promete: {frase!r}"
+    precios = (raiz / "precios.html").read_text(encoding="utf-8")
+    assert "1 semana + 1 renovación" in precios and "1 week + 1 renewal" in precios
+    terminos = (raiz / "terminos.html").read_text(encoding="utf-8")
+    assert "renovable una sola vez" in terminos and "renewable once" in terminos

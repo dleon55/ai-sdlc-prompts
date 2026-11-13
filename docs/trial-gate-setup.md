@@ -54,11 +54,39 @@ se aplica con `npm run migrate` (idempotente) — no hay paso manual de SQL.
 | Ruta | Qué hace |
 |---|---|
 | `GET /api/trial/status` | Devuelve `{active, expires_at, no_trial_row, subscribed}`. Revisa primero `subscriptions`; si no hay suscripción activa, la fila de `user_trial`. |
-| `POST /api/trial/feedback` | `{rating 1..5, comments}`: guarda la fila en `feedback` y renueva `user_trial.trial_expires_at` una semana desde el envío. |
+| `GET /api/trial/status` (cont.) | Desde el 13-nov-2026 añade `renewals_left` (renovaciones gratuitas que quedan, `null` con suscripción) y `max_renewals`. |
+| `POST /api/trial/feedback` | `{rating 1..5, comments}`: guarda **siempre** la fila en `feedback` y renueva `user_trial.trial_expires_at` una semana desde el envío **solo si** quedan renovaciones, la prueba ya venció o vence en ≤ 48 h y no hay suscripción activa. Si no: `409 {renewed:false, reason, renewals_used, max}` con `reason` = `renewal_limit`, `trial_active` o `subscribed`. |
 | `POST /api/prompt-stats/track` | Público: incrementa el contador de `prompt_copy_stats` (indicador "prompts más copiados" para el administrador). Nunca bloquea la copia. |
 
 Tablas: `user_trial` (se crea al registrarse el usuario en `users`, vía el
 trigger `create_user_trial()`), `feedback` y `prompt_copy_stats`.
+
+## 1.1 Tope de renovaciones (spec E1, 13-nov-2026)
+
+Antes no había tope: cualquier usuario renovaba cada semana para siempre con
+una estrella, y la prueba sustituía al plan de pago. La regla vigente:
+
+- **1 semana + `TRIAL_MAX_RENEWALS` renovaciones** (entero ≥ 0 en el `.env`
+  del backend; por omisión **1**, dos semanas en total).
+- Solo se renueva si la prueba **ya venció o vence en ≤ 48 h** (no se
+  acumulan semanas por adelantado) y el usuario **no** tiene suscripción
+  activa.
+- **Cortesía de transición**: hasta `TRIAL_GRACE_UNTIL` (por omisión
+  `2026-11-30`, fin de ese día en hora del centro de México; vacío u `off`
+  la desactiva), quien ya agotó el tope puede renovar **una** vez más. Se
+  marca en `user_trial.courtesy_renewal_at` para no darla dos veces. Así
+  los usuarios que ya tenían la prueba cuando entró el tope no la pierden
+  de golpe. Aplica a cualquiera que agote el tope antes de esa fecha.
+- Atomicidad: la condición va en el `WHERE` del `UPDATE` dentro de la
+  transacción; con dos envíos simultáneos, el segundo reevalúa la fila ya
+  renovada y no renueva.
+- UI: si `renewals_left = 0` y la prueba venció, el muro muestra «Pasar a
+  Pro» (enlace a `/precios.html`, evento GA4 `trial_renewal_limit` y
+  `pricing_cta_click` con `source: trial_limit`). Lo mismo si el envío del
+  feedback devuelve `409 renewal_limit`.
+- El *fail-open* se mantiene: si el backend no responde, no se bloquea.
+- Abuso con varias cuentas de GitHub: riesgo aceptado (el valor gateado es
+  la plataforma, no el texto).
 
 ## 2. Verificar la regla de seguridad crítica
 
@@ -94,7 +122,8 @@ integración del backend (`backend/test/integration.test.ts`) lo cubren.
    sigue funcionando normal, sin verse afectado).
 8. Envía el formulario (calificación + comentario) — debe cerrarse el
    modal y crear el 2do proyecto/guardar personalización debe volver a
-   funcionar de inmediato.
+   funcionar de inmediato. Repite los pasos 6–8: la segunda vez (tope
+   agotado, fuera de la cortesía) el muro debe cambiar a «Pasar a Pro».
 9. Confirma con `psql` que la fila quedó registrada en `feedback`, y en
    `user_trial` que `trial_expires_at` avanzó ~1 semana desde el envío.
 10. En `prompt_copy_stats`, confirma que aparece una fila

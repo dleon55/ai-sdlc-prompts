@@ -175,6 +175,18 @@ def precio_anual_usd():
     return paddle_public_config()["annual_amount"]
 
 
+def _texto_precio_pro(lang):
+    """Precio de Pro en una frase corta para el muro de la prueba agotada:
+    "US$9/mes o US$90/año". Sale de la misma configuracion que precios.html."""
+    mensual = precio_mensual_usd()
+    anual = precio_anual_usd()
+    if lang == 'en':
+        texto = 'US$' + mensual + '/month'
+        return texto + (' or US$' + anual + '/year' if anual else '')
+    texto = 'US$' + mensual + '/mes'
+    return texto + (' o US$' + anual + '/año' if anual else '')
+
+
 def _is_deprecated_or_empty(content):
     """Contenido vacío/insuficiente o marcado DEPRECATED: no debe contarse
     ni renderizarse como prompt real (ni en TOTAL_PROMPTS ni en build())."""
@@ -1691,6 +1703,8 @@ body.ms-mode .sec-check { display: block; }
   transition: background .12s;
 }
 .fb-submit-btn:hover { background: #4f46e5; }
+a.fb-submit-btn { display: block; text-align: center; text-decoration: none; box-sizing: border-box; }
+.fb-note { font-size: .78rem; }
 
 /* ════════════════════  SIDEBAR COLLAPSE  ════════════════════════ */
 .sidebar-header {
@@ -2552,6 +2566,28 @@ function backendApi(method, path, body) {
   });
 }
 
+// Como backendApi(), pero conserva el código HTTP y el cuerpo de una
+// respuesta de error (p. ej. 409 de /api/trial/feedback, que explica por
+// qué no renovó). null solo si no hubo respuesta (red, backend caído).
+function backendApiConEstado(method, path, body) {
+  return new Promise(function(resolve) {
+    try {
+      if (typeof fetch !== 'function') { resolve(null); return; }
+      var opciones = { method: method, credentials: 'same-origin', headers: {} };
+      if (body !== undefined) {
+        opciones.headers['Content-Type'] = 'application/json';
+        opciones.body = JSON.stringify(body);
+      }
+      fetch(path, opciones).then(function(res) {
+        if (!res) { resolve(null); return; }
+        return res.json().then(function(datos) {
+          resolve({ status: res.status, body: datos || {} });
+        }, function() { resolve({ status: res.status, body: {} }); });
+      }).catch(function() { resolve(null); });
+    } catch (e) { resolve(null); }
+  });
+}
+
 // Se llama al cargar la página (ver el window.load al final del documento).
 function initAuth() {
   return backendApi('GET', '/api/auth/session').then(function(res) {
@@ -3264,8 +3300,11 @@ function renderGuidedStep(index) {
    proyectos ya vive en localStorage, así que no hace falta rastrear IPs
    como antes (check_anon_usage()/tabla anon_usage quedan sin uso, ver nota
    en docs/trial-gate-setup.md; no se borran de la base por si ya hay datos).
-   Con sesión: 1 semana de prueba (check_trial_status); al vencer, se exige
-   enviar feedback para renovar otra semana (submit_feedback_and_renew).
+   Con sesión: 1 semana de prueba (/api/trial/status); al vencer, enviar
+   feedback renueva otra semana, con tope (TRIAL_MAX_RENEWALS, 1 por
+   omisión; spec E1, 13-nov-2026). Agotadas las renovaciones, el mismo muro
+   ofrece pasar a Pro (/precios.html) en vez de renovar; el backend responde
+   409 con `reason` y la UI lo explica.
    Fail-open ante cualquier error de red o SDK aún no cargado -- nunca se
    bloquea a un usuario real por una falla transitoria (decisión de diseño,
    ver docs/trial-gate-setup.md). */
@@ -3290,6 +3329,7 @@ function checkProFeatureGate() {
     // 'subscribed' distingue "pagó" de "está en prueba gratis": alimenta el
     // badge Pro del header (renderAuthUI).
     setProState(estado.subscribed === true);
+    _trialRenewalsLeft = (typeof estado.renewals_left === 'number') ? estado.renewals_left : null;
     return estado.active ? { allowed: true } : { allowed: false, reason: 'trial_expired' };
   });
 }
@@ -3345,6 +3385,23 @@ function closeRegisterWall() {
 }
 
 var _fbRating = 0;
+// Renovaciones gratuitas que le quedan (de /api/trial/status). null = no se
+// sabe (backend viejo o sin respuesta): se ofrece renovar, como antes.
+var _trialRenewalsLeft = null;
+
+// Alterna el muro entre "renovar con feedback" y "pasar a Pro" (prueba y
+// renovaciones agotadas). Copiar prompts y el proyecto 1 no cambian.
+function setFeedbackWallMode(agotada) {
+  var renovar = document.getElementById('fb-renew');
+  var pago = document.getElementById('fb-paywall');
+  if (renovar) renovar.hidden = !!agotada;
+  if (pago) pago.hidden = !agotada;
+  var tituloEs = document.querySelector('#feedback-wall-title .fw-lang-es');
+  var tituloEn = document.querySelector('#feedback-wall-title .fw-lang-en');
+  if (tituloEs) tituloEs.textContent = agotada ? 'Tu prueba Pro terminó' : 'Tu semana de Pro expiró';
+  if (tituloEn) tituloEn.textContent = agotada ? 'Your Pro trial has ended' : 'Your Pro week expired';
+  if (agotada && typeof gtag === 'function') gtag('event', 'trial_renewal_limit');
+}
 
 function openFeedbackWall() {
   var modal = document.getElementById('feedback-wall-modal');
@@ -3352,6 +3409,7 @@ function openFeedbackWall() {
   var lang = getCurrentLanguage();
   var ta = document.getElementById('fb-comments');
   if (ta) ta.placeholder = lang === 'en' ? 'What would you improve?' : '¿Qué mejorarías?';
+  setFeedbackWallMode(_trialRenewalsLeft === 0);
   _lastFocusedBeforeModal = document.activeElement;
   modal.classList.add('open');
   var closeBtn = modal.querySelector('.modal-close-btn');
@@ -3385,16 +3443,38 @@ function submitFeedbackWall() {
   }
   var ta = document.getElementById('fb-comments');
   var comments = ta ? ta.value : '';
-  backendApi('POST', '/api/trial/feedback', { rating: _fbRating, comments: comments }).then(function(res) {
-    if (!res || !res.renewed) {
+  backendApiConEstado('POST', '/api/trial/feedback', { rating: _fbRating, comments: comments }).then(function(r) {
+    var res = r ? r.body : null;
+    var motivo = res && res.reason;
+    if (!r || (!res.renewed && !motivo)) {
       showToast(lang === 'en' ? 'Could not submit — try again' : 'No se pudo enviar — intenta de nuevo', 'warn');
       return;
     }
-    closeFeedbackWall();
+    // El feedback se guardó en todos estos casos (el backend lo guarda
+    // aunque no renueve): se limpia el formulario.
     _fbRating = 0;
     setFbRating(0);
     if (ta) ta.value = '';
-    showToast(lang === 'en' ? 'Thanks! Renewed for 1 week' : '¡Gracias! Renovado por 1 semana', 'success');
+    if (res.renewed) {
+      _trialRenewalsLeft = (typeof res.renewals_left === 'number') ? res.renewals_left : null;
+      closeFeedbackWall();
+      showToast(lang === 'en' ? 'Thanks! Renewed for 1 week' : '¡Gracias! Renovado por 1 semana', 'success');
+      return;
+    }
+    if (motivo === 'renewal_limit') {
+      _trialRenewalsLeft = 0;
+      setFeedbackWallMode(true);
+      showToast(lang === 'en' ? 'Thanks for your feedback. Your free renewals are used up.'
+                              : 'Gracias por tu opinión. Ya usaste tus renovaciones gratuitas.', 'warn');
+      return;
+    }
+    closeFeedbackWall();
+    if (motivo === 'subscribed') {
+      setProState(true);
+      showToast(lang === 'en' ? 'Thanks! You already have Pro' : '¡Gracias! Ya tienes Pro', 'success');
+    } else {
+      showToast(lang === 'en' ? 'Thanks! Your trial is still active' : '¡Gracias! Tu prueba sigue activa', 'success');
+    }
   }).catch(function() {
     showToast(lang === 'en' ? 'Could not submit — try again' : 'No se pudo enviar — intenta de nuevo', 'warn');
   });
@@ -5920,17 +6000,17 @@ def build_precios_page():
         '  </div>\n'
         '  <div class="px-card">\n'
         '    <h2><span class="px-badge fw-lang-es">Prueba Pro</span><span class="px-badge fw-lang-en">Pro trial</span>'
-        '<span class="fw-lang-es">&nbsp;1 semana, renovable</span>'
-        '<span class="fw-lang-en">&nbsp;1 week, renewable</span></h2>\n'
+        '<span class="fw-lang-es">&nbsp;1 semana + 1 renovación</span>'
+        '<span class="fw-lang-en">&nbsp;1 week + 1 renewal</span></h2>\n'
         '    <ul class="fw-lang-es">\n'
         '      <li>Al iniciar sesión con GitHub obtienes 1 semana de acceso Pro: proyectos ilimitados, personalización por prompt y guardado de resultados de IA.</li>\n'
-        '      <li>Al vencer, una breve retroalimentación (calificación + comentario) renueva otra semana al instante.</li>\n'
-        '      <li>Puedes renovar cada semana mientras dure el piloto.</li>\n'
+        '      <li>Al vencer, una breve retroalimentación (calificación + comentario) renueva otra semana al instante, una sola vez: 2 semanas en total.</li>\n'
+        '      <li>La renovación semanal sin límite del piloto terminó el 13 de noviembre de 2026. Si ya tenías la prueba, conservas tu semana actual y una renovación de cortesía hasta el 30 de noviembre de 2026.</li>\n'
         '    </ul>\n'
         '    <ul class="fw-lang-en">\n'
         '      <li>Signing in with GitHub grants 1 week of Pro access: unlimited projects, per-prompt personalization, and AI output storage.</li>\n'
-        '      <li>When it expires, brief feedback (rating + comment) renews another week instantly.</li>\n'
-        '      <li>You can keep renewing weekly for as long as the pilot runs.</li>\n'
+        '      <li>When it expires, brief feedback (rating + comment) renews another week instantly, once: 2 weeks in total.</li>\n'
+        '      <li>Unlimited weekly renewal during the pilot ended on November 13, 2026. If you already had the trial, you keep your current week and one courtesy renewal until November 30, 2026.</li>\n'
         '    </ul>\n'
         '  </div>\n'
         '  <div class="px-card px-future">\n'
@@ -6262,8 +6342,8 @@ LEGAL_ENTITY = {
     ),
     # Se actualiza a mano cuando cambie el contenido legal, no en cada
     # build: una fecha que se mueve sola no significa nada para nadie.
-    "actualizado": "3 de noviembre de 2026",
-    "actualizado_en": "November 3, 2026",
+    "actualizado": "13 de noviembre de 2026",
+    "actualizado_en": "November 13, 2026",
 }
 
 # Alias derivados del dict: siguen siendo el nombre que usan las paginas y
@@ -6553,16 +6633,20 @@ def build_terminos_page():
                'Sin cuenta puedes gestionar 1 proyecto activo con variables, progreso y modo guiado completos.',
                'Gestionar más de un proyecto, o guardar personalización y resultados de IA por prompt, '
                'requiere iniciar sesión con GitHub.',
-               'Iniciar sesión otorga una semana de acceso Pro completo, renovable con una breve '
-               'retroalimentación mientras dure el periodo de piloto.',
+               'Iniciar sesión otorga una semana de acceso Pro completo, renovable una sola vez por otra '
+               'semana con una breve retroalimentación (2 semanas en total). El periodo de piloto con '
+               'renovación semanal sin límite terminó el 13 de noviembre de 2026; quien ya tenía la prueba '
+               'conserva su semana vigente y una renovación de cortesía hasta el 30 de noviembre de 2026.',
                'La suscripción de pago elimina el muro de prueba para las funciones Pro.',
                'Eres responsable de la actividad de tu cuenta.'],
               ['Copying prompts is free, unlimited, and forever, with or without an account.',
                'Without an account you can manage 1 active project with full variables, progress, and guided mode.',
                'Managing more than one project, or saving per-prompt personalization and AI outputs, '
                'requires signing in with GitHub.',
-               'Signing in grants one week of full Pro access, renewable with brief feedback for as long as '
-               'the pilot period runs.',
+               'Signing in grants one week of full Pro access, renewable once for another week with brief '
+               'feedback (2 weeks in total). The pilot period with unlimited weekly renewal ended on '
+               'November 13, 2026; anyone who already had the trial keeps their current week and one '
+               'courtesy renewal until November 30, 2026.',
                'A paid subscription removes the trial wall for Pro features.',
                'You are responsible for activity on your account.'])]
         )
@@ -6716,7 +6800,7 @@ def build_privacidad_page():
                '<strong>Uso del producto:</strong> qué prompts copias y cuándo, para saber qué contenido '
                'es útil y priorizar el que sigue.',
                '<strong>Retroalimentación:</strong> la calificación y el comentario que envíes al renovar '
-               'tu periodo de prueba.',
+               'tu periodo de prueba o al terminar este (se guardan aunque ya no proceda la renovación).',
                '<strong>Si te suscribes:</strong> el estado de tu suscripción (activa, cancelada, vencida) '
                'y el identificador que nos da Paddle.'],
               ['<strong>If you do not create an account:</strong> your projects, variables and progress are '
@@ -6728,7 +6812,7 @@ def build_privacidad_page():
                '<strong>Product usage:</strong> which prompts you copy and when, so we know which content '
                'is useful and what to prioritise next.',
                '<strong>Feedback:</strong> the rating and comment you submit when renewing your trial '
-               'period.',
+               'period or when it ends (kept even if the renewal no longer applies).',
                '<strong>If you subscribe:</strong> your subscription status (active, cancelled, expired) '
                'and the identifier Paddle gives us.'])]
         )
@@ -7987,8 +8071,11 @@ def build():
         '      <button class="modal-close-btn" onclick="closeFeedbackWall()" aria-label="Cerrar / Close">&#x2715;</button>\n'
         '    </div>\n'
         '    <div class="modal-body wall-modal-body">\n'
+        '     <div id="fb-renew">\n'
         '      <p class="fw-lang-es">Copiar prompts sigue funcionando igual. Cuéntanos qué tal te fue con la gestión de proyectos — al enviar, renuevas otra semana de Pro al instante.</p>\n'
         '      <p class="fw-lang-en">Copying prompts still works the same. Tell us how project management went for you — submitting renews another Pro week instantly.</p>\n'
+        '      <p class="fw-lang-es fb-note">La prueba incluye 1 semana y 1 renovación con tu opinión.</p>\n'
+        '      <p class="fw-lang-en fb-note">The trial includes 1 week plus 1 renewal with your feedback.</p>\n'
         '      <div class="fb-stars" id="fb-stars" role="radiogroup" aria-label="Calificación de 1 a 5 / Rating from 1 to 5">\n'
         + ''.join(
             '        <button type="button" class="fb-star" role="radio" aria-checked="false" '
@@ -8002,6 +8089,18 @@ def build():
         '      <button class="fb-submit-btn" onclick="submitFeedbackWall()">'
         '<span class="fw-lang-es">Enviar y renovar 1 semana</span><span class="fw-lang-en">Submit and renew 1 week</span>'
         '</button>\n'
+        '     </div>\n'
+        # Prueba y renovaciones agotadas (spec E1): el mismo muro ofrece Pro.
+        # El checkout de Paddle vive en /precios.html; aqui solo se enlaza.
+        '     <div id="fb-paywall" hidden>\n'
+        '      <p class="fw-lang-es">Ya usaste tu semana de prueba y su renovación. Copiar prompts y 1 proyecto siguen gratis para siempre. '
+        'Para proyectos ilimitados, personalización y resultados de IA, pasa a Pro: ' + _texto_precio_pro('es') + '.</p>\n'
+        '      <p class="fw-lang-en">You have used your trial week and its renewal. Copying prompts and 1 project stay free forever. '
+        'For unlimited projects, personalization and AI outputs, upgrade to Pro: ' + _texto_precio_pro('en') + '.</p>\n'
+        '      <a class="fb-submit-btn" id="fb-paywall-btn" href="/precios.html" '
+        'onclick="if(typeof gtag===\'function\')gtag(\'event\',\'pricing_cta_click\',{source:\'trial_limit\'});">'
+        '<span class="fw-lang-es">Pasar a Pro</span><span class="fw-lang-en">Upgrade to Pro</span></a>\n'
+        '     </div>\n'
         '    </div>\n'
         '  </div>\n'
         '</div>\n'

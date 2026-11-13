@@ -82,8 +82,9 @@ def _instalar_backend_simulado(page):
             return route.fulfill(status=200, content_type="application/json", body=json.dumps(estado["prueba"]))
         if ruta == "/api/trial/feedback":
             estado["feedback"].append(route.request.post_data_json)
-            return route.fulfill(status=200, content_type="application/json",
-                                 body=json.dumps({"renewed": True, "new_expires_at": "2099-01-01"}))
+            codigo, cuerpo = estado.get("feedback_respuesta") or (
+                200, {"renewed": True, "new_expires_at": "2099-01-01", "renewals_left": 0})
+            return route.fulfill(status=codigo, content_type="application/json", body=json.dumps(cuerpo))
         if ruta == "/api/auth/login":
             estado["logins"].append(route.request.url)
             return route.fulfill(status=200, content_type="text/html", body="<p>login simulado</p>")
@@ -651,6 +652,56 @@ def test_feedback_wall_blocks_second_project_until_submitted_then_renews(app_pag
 
     # El backend simulado sigue respondiendo active:false -- lo relevante es
     # que el modal se cerró y el usuario puede reintentar sin quedar atascado.
+
+
+def _muro_abierto(page):
+    return page.evaluate(
+        "(document.getElementById('feedback-wall-modal') || {}).classList.contains('open')")
+
+
+def _pago_visible(page):
+    return page.evaluate(
+        "(function(){var p=document.getElementById('fb-paywall'),r=document.getElementById('fb-renew');"
+        "return !!p && !p.hidden && !!r && r.hidden;})()")
+
+
+def test_feedback_wall_offers_pro_when_renewal_limit_reached(app_page):
+    """Spec E1: con la renovación ya usada, /api/trial/feedback responde 409
+    renewal_limit. El muro no se cierra con un «intenta de nuevo»: cambia a
+    «Pasar a Pro» con enlace a /precios.html."""
+    app_page.api["prueba"] = {"active": False, "subscribed": False, "renewals_left": 1, "max_renewals": 1}
+    app_page.api["feedback_respuesta"] = (409, {"renewed": False, "reason": "renewal_limit",
+                                                "renewals_used": 1, "max": 1})
+    app_page.evaluate("window._usuario = { id: 'fake-user-id', githubLogin: 'usuario-prueba' };")
+    app_page.evaluate("requestNewProjectFromModal()")
+    app_page.wait_for_timeout(300)
+    assert _muro_abierto(app_page)
+    assert not _pago_visible(app_page), "Con 1 renovación restante el muro debe ofrecer renovar"
+
+    app_page.click('#fb-stars .fb-star[data-value="2"]')
+    app_page.click("#fb-renew .fb-submit-btn")
+    app_page.wait_for_timeout(300)
+
+    assert app_page.api["feedback"], "El feedback debe enviarse aunque no renueve"
+    assert _muro_abierto(app_page), "Con renewal_limit el muro sigue abierto, ahora con la oferta de Pro"
+    assert _pago_visible(app_page), "Con renewal_limit debe aparecer el botón de pago"
+    href = app_page.get_attribute("#fb-paywall-btn", "href")
+    assert href == "/precios.html"
+
+
+def test_feedback_wall_shows_pro_directly_when_no_renewals_left(app_page):
+    """Si /api/trial/status ya dice renewals_left = 0, el muro abre directo en
+    «Pasar a Pro», sin pedir una renovación que el backend negaría."""
+    app_page.api["prueba"] = {"active": False, "subscribed": False, "renewals_left": 0, "max_renewals": 1}
+    app_page.evaluate("window._usuario = { id: 'fake-user-id', githubLogin: 'usuario-prueba' };")
+    before = app_page.evaluate("(loadProjects() || []).length")
+    app_page.evaluate("requestNewProjectFromModal()")
+    app_page.wait_for_timeout(300)
+    assert _muro_abierto(app_page)
+    assert _pago_visible(app_page)
+    assert app_page.evaluate("(loadProjects() || []).length") == before
+    titulo = app_page.text_content("#feedback-wall-title .fw-lang-es")
+    assert "terminó" in titulo
 
 
 def test_saving_custom_additions_is_gated_for_anonymous_users(app_page):
