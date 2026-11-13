@@ -190,3 +190,26 @@ def test_los_iconos_se_sirven_desde_el_propio_origen():
     )
     assert 'rel="icon" type="image/png" href="favicon-32.png"' in html
     assert 'rel="apple-touch-icon" href="apple-touch-icon.png"' in html
+
+
+def test_las_fuentes_del_css_existen_y_llegan_a_las_dos_rutas_de_despliegue():
+    """Las fuentes se piden con url() dentro del CSS, no con href/src.
+
+    Por eso `_recursos_propios` no las ve. Si una falta en el deploy, nginx
+    responde index.html con 200 y el navegador cae en silencio a la fuente del
+    sistema: el sitio se ve "bien" pero sin la tipografia de la marca.
+    """
+    workflow = WORKFLOW.read_text(encoding="utf-8")
+    fuentes = set()
+    for pagina in PAGINAS + ["en/index.html"]:
+        html = (RAIZ / pagina).read_text(encoding="utf-8", errors="replace")
+        fuentes |= set(re.findall(r"url\\?\(['\"]?/(fonts/[^'\")]+)['\"]?\)", html))
+    assert fuentes, "ninguna pagina declara fuentes propias; se esperaba la tipografia de la marca"
+    for ruta in sorted(fuentes):
+        archivo = RAIZ / ruta
+        assert archivo.exists(), f"{ruta} no existe en el repositorio"
+        assert archivo.read_bytes()[:4] == b"wOF2", f"{ruta} no es un woff2 valido"
+        nombre = ruta.split("/")[-1]
+        assert f"cp {ruta} dist/{ruta}" in workflow, f"{ruta}: falta en el paso que arma dist/"
+        assert f'dist/{ruta} "${{U}}@${{H}}' in workflow, f"{ruta}: falta el scp al servidor de GCP"
+        assert f"{nombre}.new ${{D}}/{ruta}" in workflow, f"{ruta}: falta la copia atomica en produccion"
