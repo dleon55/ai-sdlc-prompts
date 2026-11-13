@@ -122,3 +122,18 @@ def test_la_plataforma_sigue_siendo_propietaria():
     assert "build.py" in texto, "la licencia debe delimitar qué es plataforma"
     assert re.search(r"todos los derechos reservados", texto, re.I)
     assert "no otorga licencia de uso" in texto
+
+
+def test_las_skills_publicas_estan_en_el_alcance_cc_by():
+    """El repo público de skills (spec E2) redistribuye los prompts: debe
+    estar declarado en §1 y su propia LICENSE debe ser CC BY con atribución,
+    no una licencia más restrictiva ni una que olvide la atribución."""
+    texto = _texto(LICENSE)
+    seccion_prompts = texto.split("2. EL SERVIDOR MCP")[0]
+    assert "dleon55/ai-sdlc-skills" in seccion_prompts, "LICENSE §1 debe cubrir el repo de skills"
+    plantilla = _texto(RAIZ / "tools" / "skills_templates" / "LICENSE")
+    assert "CC BY 4.0" in plantilla and "prompts.lionsystems.com.mx" in plantilla.replace("{{SITE}}", "https://prompts.lionsystems.com.mx")
+    assert not re.search(r"BY-NC|NonCommercial|no comercial", plantilla, re.I)
+    assert "fines comerciales" in plantilla
+    assert "Cambios / Changes" in plantilla, "CC BY exige indicar los cambios"
+    assert CORREO_VIGENTE in plantilla

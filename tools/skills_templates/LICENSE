@@ -1,0 +1,83 @@
+Copyright (c) 2026 LionSystems.
+
+Este repositorio contiene dos cuerpos de trabajo con licencias distintas.
+This repository contains two bodies of work under different licenses.
+
+================================================================================
+1. LAS SKILLS / THE SKILLS  —  Creative Commons Atribución 4.0 Internacional
+   (CC BY 4.0)
+================================================================================
+
+Alcance / Scope:
+  - plugins/**  (SKILL.md, references/*.md, plugin.json)
+  - .claude-plugin/marketplace.json
+  - README.md
+
+Texto legal / Legal code:
+  https://creativecommons.org/licenses/by/4.0/legalcode.es
+  https://creativecommons.org/licenses/by/4.0/legalcode
+
+Obra original / Original work: AI-SDLC Pro — {{SITE}}
+(prompts publicados bajo CC BY 4.0 en https://github.com/dleon55/ai-sdlc-prompts).
+
+Cambios / Changes: los prompts se adaptaron al formato SKILL.md: se agruparon
+por fase, se añadió un SKILL.md por fase con instrucciones de uso derivadas del
+contrato editorial de cada prompt, y una nota de atribución al final de cada
+archivo. El texto de los prompts no se modificó.
+The prompts were adapted to the SKILL.md format: grouped by phase, with one
+SKILL.md per phase containing usage instructions derived from each prompt's
+editorial contract, and an attribution note at the end of each file. The prompt
+text itself was not modified.
+
+Puedes usarlas, copiarlas, adaptarlas y redistribuirlas, incluso con fines
+comerciales y en trabajo para clientes, siempre que des crédito adecuado
+(«AI-SDLC Pro» y un enlace a {{SITE}}), indiques si hiciste cambios y no
+sugieras que LionSystems te respalda.
+You may use, copy, adapt and redistribute them, including for commercial
+purposes and client work, provided you give appropriate credit ("AI-SDLC Pro"
+and a link to {{SITE}}), indicate if changes were made, and do not suggest
+that LionSystems endorses you.
+
+Lo que un modelo de IA genere a partir de estas skills es tuyo, sin obligación
+de atribución. / Whatever an AI model produces from these skills is yours,
+with no attribution required.
+
+================================================================================
+2. LOS SCRIPTS / THE SCRIPTS  —  MIT
+================================================================================
+
+Alcance / Scope: scripts/**
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+================================================================================
+LO QUE NO ESTÁ AQUÍ / WHAT IS NOT HERE
+================================================================================
+
+La plataforma de AI-SDLC Pro (proyectos múltiples, variables persistentes,
+personalización y resultados por prompt) es software propietario y no forma
+parte de este repositorio. / The AI-SDLC Pro platform (multiple projects,
+persistent variables, per-prompt customization and results) is proprietary
+software and is not part of this repository.
+
+SIN GARANTÍA / NO WARRANTY: todo se entrega «tal cual». Los prompts producen
+texto para que una persona lo revise; no sustituyen el criterio de ingeniería,
+legal ni de seguridad de quien los usa.
+
+Contacto / Contact: dleon555@live.com.mx

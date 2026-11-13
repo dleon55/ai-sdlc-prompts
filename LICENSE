@@ -16,6 +16,10 @@ Alcance:
   - ai_sdlc_pro_prompts/**            (los 226 archivos .md, ES y EN)
   - prompts-index.json
   - mcp-server/data/prompts-full.json
+  - tools/skills_templates/README.md y lo que tools/build_skills.py
+    genera a partir de los prompts: las skills publicadas en
+    https://github.com/dleon55/ai-sdlc-skills (adaptación al formato SKILL.md;
+    los scripts de ese repo van con MIT, ver su LICENSE)
 
 Estos archivos se publican bajo CC BY 4.0:
   https://creativecommons.org/licenses/by/4.0/deed.es
