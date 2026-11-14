@@ -47,6 +47,18 @@ LIONSYSTEMS_AUDIT_CTA_URL = (
     "https://www.lionsystems.com.mx/contactus?subject=ai-sdlc-pro-product-auditoria&amp;"
     + LIONSYSTEMS_CTA_UTM
 )
+
+
+def lionsystems_audit_cta_url(source):
+    """CTA Enterprise con el plan y el lugar donde se vio (issue #220).
+
+    `utm_plan=enterprise` separa en el CRM los leads de implementacion
+    empresarial de los de Free/Pro, y `utm_content` dice si llegaron desde la
+    portada o desde precios.
+    """
+    if source not in ("landing", "pricing"):
+        raise ValueError(f"origen de CTA desconocido: {source}")
+    return LIONSYSTEMS_AUDIT_CTA_URL + "&amp;utm_plan=enterprise&amp;utm_content=" + source
 LIONSYSTEMS_HOME_CTA_URL = "https://lionsystems.com.mx/?" + LIONSYSTEMS_CTA_UTM
 
 
@@ -5725,7 +5737,7 @@ def get_landing_html(n, lang='es'):
         f'    <p>{ls["final_subtitle"]}</p>\n'
         f'    <div class="landing-cta-group">\n'
         f'      <a class="landing-cta-primary" href="/app">{ls["cta_nav"]}</a>\n'
-        '      <a class="landing-cta-secondary" href="' + LIONSYSTEMS_AUDIT_CTA_URL + '" target="_blank" rel="noopener" onclick="if(typeof gtag===\'function\')gtag(\'event\',\'b2b_audit_cta_click\',{source:\'landing\'});"><span class="fw-lang-es">Solicitar auditoría empresarial</span><span class="fw-lang-en">Request an enterprise audit</span></a>\n'
+        '      <a class="landing-cta-secondary" href="' + lionsystems_audit_cta_url("landing") + '" target="_blank" rel="noopener" onclick="if(typeof gtag===\'function\')gtag(\'event\',\'b2b_audit_cta_click\',{source:\'landing\'});"><span class="fw-lang-es">Solicitar auditoría empresarial</span><span class="fw-lang-en">Request an enterprise audit</span></a>\n'
         f'    </div>\n'
         f'  </section>\n'
         f'  <footer class="landing-footer">\n'
@@ -6040,7 +6052,7 @@ def build_precios_page():
         '    <h2><span class="fw-lang-es">¿Necesitas implementación empresarial?</span><span class="fw-lang-en">Need enterprise implementation?</span></h2>\n'
         '    <p class="fw-lang-es">Lion Systems ofrece auditoría de arquitectura, implementación y soporte especializado bajo cotización.</p>\n'
         '    <p class="fw-lang-en">Lion Systems provides architecture audits, implementation, and specialized support by quotation.</p>\n'
-        '    <a class="px-cta" href="' + LIONSYSTEMS_AUDIT_CTA_URL + '" target="_blank" rel="noopener" onclick="pxTrack(\'b2b_audit_cta_click\',{source:\'pricing\'});"><span class="fw-lang-es">Solicitar auditoría</span><span class="fw-lang-en">Request an audit</span></a>\n'
+        '    <a class="px-cta" href="' + lionsystems_audit_cta_url("pricing") + '" target="_blank" rel="noopener" onclick="pxTrack(\'b2b_audit_cta_click\',{source:\'pricing\'});"><span class="fw-lang-es">Solicitar auditoría</span><span class="fw-lang-en">Request an audit</span></a>\n'
         '  </div>\n'
         '  <a class="px-cta fw-lang-es" href="/">Volver a la biblioteca de prompts</a>\n'
         '  <a class="px-cta fw-lang-en" href="/">Back to the prompt library</a>\n'

@@ -442,3 +442,14 @@ def test_new_secret_is_documented():
     assert "PADDLE_WEBHOOK_SECRET=" in env_example
     assert re.search(r"^ALERTAS_WEBHOOK_URL=\s*$", env_example, re.M), ".env.example lleva un valor real"
     assert "backend/.env" in _read(".gitignore")
+
+
+def test_enterprise_cta_carries_plan_and_origin():
+    """Issue #220: el lead Enterprise se distingue por plan y por origen."""
+    for source in ("landing", "pricing"):
+        url = build.lionsystems_audit_cta_url(source)
+        assert "utm_product=ai-sdlc-pro" in url
+        assert "utm_plan=enterprise" in url
+        assert url.endswith("utm_content=" + source)
+    with pytest.raises(ValueError):
+        build.lionsystems_audit_cta_url("otro")
