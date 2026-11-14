@@ -98,7 +98,7 @@ h1{font-size:1.75rem;font-weight:700;margin-bottom:.5rem;}
     <h2><span class="fw-lang-es">¿Necesitas implementación empresarial?</span><span class="fw-lang-en">Need enterprise implementation?</span></h2>
     <p class="fw-lang-es">Lion Systems ofrece auditoría de arquitectura, implementación y soporte especializado bajo cotización.</p>
     <p class="fw-lang-en">Lion Systems provides architecture audits, implementation, and specialized support by quotation.</p>
-    <a class="px-cta" href="https://www.lionsystems.com.mx/contactus?subject=ai-sdlc-pro-product-auditoria&amp;utm_source=ai-sdlc-pro&amp;utm_medium=cta&amp;utm_product=ai-sdlc-pro&amp;utm_plan=enterprise&amp;utm_content=pricing" target="_blank" rel="noopener" onclick="pxTrack('b2b_audit_cta_click',{source:'pricing'});"><span class="fw-lang-es">Solicitar auditoría</span><span class="fw-lang-en">Request an audit</span></a>
+    <a class="px-cta" href="https://www.lionsystems.com.mx/contactus?subject=ai-sdlc-pro-product-auditoria&amp;utm_source=ai-sdlc-pro&amp;utm_medium=cta&amp;utm_product=ai-sdlc-pro&amp;utm_plan=enterprise&amp;utm_content=pricing" target="_blank" rel="noopener" onclick="pxTrack('b2b_audit_cta_click',{utm_product:'ai-sdlc-pro',utm_plan:'enterprise',source:'pricing'});"><span class="fw-lang-es">Solicitar auditoría</span><span class="fw-lang-en">Request an audit</span></a>
   </div>
   <a class="px-cta fw-lang-es" href="/">Volver a la biblioteca de prompts</a>
   <a class="px-cta fw-lang-en" href="/">Back to the prompt library</a>
@@ -213,7 +213,7 @@ function pxStartCheckout(anual){
     pxSignIn();
     return;
   }
-  pxTrack("checkout_open_requested",{source:"pricing"});
+  pxTrack("checkout_open_requested",{utm_product:'ai-sdlc-pro',utm_plan:'pro',source:'pricing'});
   var precio=(anual&&PADDLE_PRICE_ID_ANNUAL)?PADDLE_PRICE_ID_ANNUAL:PADDLE_PRICE_ID;
   var plan=(precio===PADDLE_PRICE_ID_ANNUAL)?"annual":"monthly";
   pxTrack("checkout_opened",{plan:plan});
