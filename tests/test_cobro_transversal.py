@@ -64,7 +64,7 @@ def test_legal_entity_is_the_single_source_of_identity():
     assert e["correo_privacidad"] == "soporte@lionsystems.com.mx"
     assert e["correo_privacidad"] == e["correo_soporte"]
     assert e["correo_soporte"] == "soporte@lionsystems.com.mx"
-    assert e["actualizado"] == "13 de noviembre de 2026"
+    assert e["actualizado"] == "14 de noviembre de 2026"
     nombres = [x["nombre"] for x in e["encargados"]]
     for encargado in ("Paddle", "GitHub", "Google Analytics", "Google Cloud"):
         assert encargado in nombres

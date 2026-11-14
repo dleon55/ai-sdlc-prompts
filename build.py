@@ -61,6 +61,34 @@ def lionsystems_audit_cta_url(source):
     return LIONSYSTEMS_AUDIT_CTA_URL + "&amp;utm_plan=enterprise&amp;utm_content=" + source
 LIONSYSTEMS_HOME_CTA_URL = "https://lionsystems.com.mx/?" + LIONSYSTEMS_CTA_UTM
 
+# Medicion por plan (issue #220). Los CTAs Free y Pro llevan a paginas de
+# este mismo dominio (/app, /precios.html): ponerles utm_* en el href haria
+# que GA4 abriera una sesion nueva y borrara la fuente real del visitante
+# (Google lo desaconseja para enlaces internos). Por eso el plan viaja en el
+# evento de GA con el MISMO vocabulario que las UTM del CTA Enterprise, que
+# si sale del dominio hacia el CRM de Odoo: un solo par utm_product/utm_plan
+# para filtrar clics por plan en GA y leads por plan en el CRM.
+CTA_PLANES = ("free", "pro", "enterprise")
+
+
+def plan_event_params(plan, source):
+    """Parametros JS del evento de GA de un CTA de plan.
+
+    Devuelve un literal de objeto con comillas simples para incrustarlo en
+    un atributo onclick entre comillas dobles.
+    """
+    if plan not in CTA_PLANES:
+        raise ValueError(f"plan de CTA desconocido: {plan}")
+    if not re.fullmatch(r"[a-z_]+", source):
+        raise ValueError(f"origen de CTA invalido: {source}")
+    return "{utm_product:'ai-sdlc-pro',utm_plan:'" + plan + "',source:'" + source + "'}"
+
+
+def plan_cta_onclick(event, plan, source):
+    """onclick de un CTA de plan en paginas que no definen pxTrack."""
+    return ("if(typeof gtag==='function')gtag('event','" + event + "',"
+            + plan_event_params(plan, source) + ");")
+
 
 def paddle_public_config():
     """Return validated public Paddle.js settings for the generated price page."""
@@ -5698,7 +5726,7 @@ def get_landing_html(n, lang='es'):
         f'      <button type="button" class="landing-nav-login" id="landing-auth-btn" onclick="signInWithGitHub(\'/app\')">'
         f'<svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>'
         f'<span id="landing-auth-label"><span class="fw-lang-es">Iniciar sesión</span><span class="fw-lang-en">Sign in</span></span></button>\n'
-        f'      <a class="landing-nav-cta" href="/app">{ls["cta_nav"]}</a>\n'
+        f'      <a class="landing-nav-cta" href="/app" onclick="{plan_cta_onclick("plan_cta_click", "free", "landing_nav")}">{ls["cta_nav"]}</a>\n'
         f'    </div>\n'
         f'  </nav>\n'
         f'  <section class="landing-hero">\n'
@@ -5706,8 +5734,8 @@ def get_landing_html(n, lang='es'):
         f'    <h1>{ls["hero_title"]}</h1>\n'
         f'    <p>{ls["hero_subtitle"].format(n=n)}</p>\n'
         f'    <div class="landing-cta-group">\n'
-        f'      <a class="landing-cta-primary" href="/app">{ls["cta_primary"]}</a>\n'
-        f'      <a class="landing-cta-secondary" href="/precios.html" onclick="if(typeof gtag===\'function\')gtag(\'event\',\'pricing_cta_click\',{{source:\'landing\'}});">{ls["cta_secondary"]}</a>\n'
+        f'      <a class="landing-cta-primary" href="/app" onclick="{plan_cta_onclick("plan_cta_click", "free", "landing_hero")}">{ls["cta_primary"]}</a>\n'
+        f'      <a class="landing-cta-secondary" href="/precios.html" onclick="{plan_cta_onclick("pricing_cta_click", "pro", "landing")}">{ls["cta_secondary"]}</a>\n'
         f'    </div>\n'
         f'  </section>\n'
         f'  <section class="landing-pain">\n'
@@ -5754,8 +5782,8 @@ def get_landing_html(n, lang='es'):
         f'    <h3>{ls["final_title"]}</h3>\n'
         f'    <p>{ls["final_subtitle"]}</p>\n'
         f'    <div class="landing-cta-group">\n'
-        f'      <a class="landing-cta-primary" href="/app">{ls["cta_nav"]}</a>\n'
-        '      <a class="landing-cta-secondary" href="' + lionsystems_audit_cta_url("landing") + '" target="_blank" rel="noopener" onclick="if(typeof gtag===\'function\')gtag(\'event\',\'b2b_audit_cta_click\',{source:\'landing\'});"><span class="fw-lang-es">Solicitar auditoría empresarial</span><span class="fw-lang-en">Request an enterprise audit</span></a>\n'
+        f'      <a class="landing-cta-primary" href="/app" onclick="{plan_cta_onclick("plan_cta_click", "free", "landing_final")}">{ls["cta_nav"]}</a>\n'
+        '      <a class="landing-cta-secondary" href="' + lionsystems_audit_cta_url("landing") + '" target="_blank" rel="noopener" onclick="' + plan_cta_onclick("b2b_audit_cta_click", "enterprise", "landing") + '"><span class="fw-lang-es">Solicitar auditoría empresarial</span><span class="fw-lang-en">Request an enterprise audit</span></a>\n'
         f'    </div>\n'
         f'  </section>\n'
         f'  <footer class="landing-footer">\n'
@@ -6071,7 +6099,7 @@ def build_precios_page():
         '    <h2><span class="fw-lang-es">¿Necesitas implementación empresarial?</span><span class="fw-lang-en">Need enterprise implementation?</span></h2>\n'
         '    <p class="fw-lang-es">Lion Systems ofrece auditoría de arquitectura, implementación y soporte especializado bajo cotización.</p>\n'
         '    <p class="fw-lang-en">Lion Systems provides architecture audits, implementation, and specialized support by quotation.</p>\n'
-        '    <a class="px-cta" href="' + lionsystems_audit_cta_url("pricing") + '" target="_blank" rel="noopener" onclick="pxTrack(\'b2b_audit_cta_click\',{source:\'pricing\'});"><span class="fw-lang-es">Solicitar auditoría</span><span class="fw-lang-en">Request an audit</span></a>\n'
+        '    <a class="px-cta" href="' + lionsystems_audit_cta_url("pricing") + '" target="_blank" rel="noopener" onclick="pxTrack(\'b2b_audit_cta_click\',' + plan_event_params("enterprise", "pricing") + ');"><span class="fw-lang-es">Solicitar auditoría</span><span class="fw-lang-en">Request an audit</span></a>\n'
         '  </div>\n'
         '  <a class="px-cta fw-lang-es" href="/">Volver a la biblioteca de prompts</a>\n'
         '  <a class="px-cta fw-lang-en" href="/">Back to the prompt library</a>\n'
@@ -6253,7 +6281,7 @@ def build_precios_page():
         '    pxSignIn();\n'
         '    return;\n'
         '  }\n'
-        '  pxTrack("checkout_open_requested",{source:"pricing"});\n'
+        '  pxTrack("checkout_open_requested",' + plan_event_params("pro", "pricing") + ');\n'
         # El plan anual solo se abre si de verdad hay un precio anual
         # configurado; si no, cae al mensual en vez de abrir un checkout
         # vacio.
@@ -6373,8 +6401,8 @@ LEGAL_ENTITY = {
     ),
     # Se actualiza a mano cuando cambie el contenido legal, no en cada
     # build: una fecha que se mueve sola no significa nada para nadie.
-    "actualizado": "13 de noviembre de 2026",
-    "actualizado_en": "November 13, 2026",
+    "actualizado": "14 de noviembre de 2026",
+    "actualizado_en": "November 14, 2026",
 }
 
 # Alias derivados del dict: siguen siendo el nombre que usan las paginas y
@@ -6385,6 +6413,16 @@ LEGAL_ENTITY_NAME_ES = LEGAL_ENTITY["responsable"]
 LEGAL_ENTITY_NAME_EN = LEGAL_ENTITY["responsable_en"]
 LEGAL_LAST_UPDATED_ES = LEGAL_ENTITY["actualizado"]
 LEGAL_LAST_UPDATED_EN = LEGAL_ENTITY["actualizado_en"]
+
+# Excepcion de precio del Programa Fundador, con el mismo alcance que el
+# banner de /precios.html: precio congelado mientras la suscripcion siga
+# activa. Un solo texto para que terminos y precios no diverjan.
+FUNDADOR_TERMINOS_ES = ('Si te suscribiste dentro del <strong>Programa Fundador</strong>, conservas el '
+                        'precio con el que te suscribiste mientras tu suscripción siga activa, aunque el '
+                        'precio suba para nuevos usuarios.')
+FUNDADOR_TERMINOS_EN = ('If you subscribed within the <strong>Founding Member Program</strong>, you keep the '
+                        'price you subscribed at while your subscription stays active, even if the price '
+                        'goes up for new users.')
 
 # Impuestos y comprobantes (issue #232, T1). Un solo texto para precios,
 # terminos y reembolsos: Paddle es comerciante registrado, asi que el IVA
@@ -6602,12 +6640,12 @@ def build_terminos_page():
     mail = LEGAL_CONTACT_EMAIL
     mensual, anual = precio_mensual_usd(), precio_anual_usd()
     if anual:
-        precio_es = ('El plan Individual cuesta <strong>' + mensual + ' USD al mes</strong> o <strong>'
+        precio_es = ('El plan Pro cuesta <strong>' + mensual + ' USD al mes</strong> o <strong>'
                      + anual + ' USD al año</strong> si eliges la facturación anual, que se cobra por '
                      'adelantado en un solo pago. Los precios pueden cambiar; '
                      'si cambian, te avisaremos antes de que apliquen a tu siguiente cobro y podrás cancelar '
                      'sin penalización.')
-        precio_en = ('The Individual plan costs <strong>' + mensual + ' USD per month</strong> or <strong>'
+        precio_en = ('The Pro plan costs <strong>' + mensual + ' USD per month</strong> or <strong>'
                      + anual + ' USD per year</strong> if you choose annual billing, charged upfront in a '
                      'single payment. Prices may change; if they do, we will '
                      'notify you before they apply to your next charge and you may cancel without penalty.')
@@ -6621,10 +6659,10 @@ def build_terminos_page():
                     'for; on the annual plan, until the paid year ends.')
         desc_precio = mensual + ' USD al mes o ' + anual + ' USD al año'
     else:
-        precio_es = ('El plan Individual cuesta <strong>' + mensual + ' USD al mes</strong>. El precio puede '
+        precio_es = ('El plan Pro cuesta <strong>' + mensual + ' USD al mes</strong>. El precio puede '
                      'cambiar; si cambia, te avisaremos antes de que '
                      'aplique a tu siguiente cobro y podrás cancelar sin penalización.')
-        precio_en = ('The Individual plan costs <strong>' + mensual + ' USD per month</strong>. The price may '
+        precio_en = ('The Pro plan costs <strong>' + mensual + ' USD per month</strong>. The price may '
                      'change; if it does, we will notify you before it '
                      'applies to your next charge and you may cancel without penalty.')
         renov_es = ('La suscripción se <strong>renueva automáticamente cada mes</strong> hasta que la '
@@ -6633,15 +6671,20 @@ def build_terminos_page():
         renov_en = ('The subscription <strong>renews automatically each month</strong> until you cancel. '
                     'You may cancel at any time and keep access until the end of the period already paid for.')
         desc_precio = mensual + ' USD al mes'
+    # Precios promete a los miembros del Programa Fundador que su precio no
+    # sube mientras la suscripcion siga activa; sin esta excepcion los
+    # terminos ("el precio puede cambiar") la contradecian (issue #220).
+    precio_es += ' ' + FUNDADOR_TERMINOS_ES
+    precio_en += ' ' + FUNDADOR_TERMINOS_EN
     body = (
         _lg_section(
             'Quién opera este servicio', 'Who operates this service',
             [('p',
               f'AI-SDLC Pro es un producto de <strong>{LEGAL_ENTITY_NAME_ES}</strong> '
-              '(<a href="https://lionsystems.com.mx" target="_blank" rel="noopener">lionsystems.com.mx</a>). '
+              '(<a href="' + LIONSYSTEMS_HOME_CTA_URL + '" target="_blank" rel="noopener">lionsystems.com.mx</a>). '
               f'Contacto: <a href="mailto:{mail}">{mail}</a>. Al usar el sitio o suscribirte aceptas estos términos.',
               f'AI-SDLC Pro is a product of <strong>{LEGAL_ENTITY_NAME_EN}</strong> '
-              '(<a href="https://lionsystems.com.mx" target="_blank" rel="noopener">lionsystems.com.mx</a>). '
+              '(<a href="' + LIONSYSTEMS_HOME_CTA_URL + '" target="_blank" rel="noopener">lionsystems.com.mx</a>). '
               f'Contact: <a href="mailto:{mail}">{mail}</a>. By using the site or subscribing you accept these terms.')]
         )
         + _lg_section(
@@ -8130,7 +8173,7 @@ def build():
         '      <p class="fw-lang-en">You have used your trial week and its renewal. Copying prompts and 1 project stay free forever. '
         'For unlimited projects, personalization and AI outputs, upgrade to Pro: ' + _texto_precio_pro('en') + '.</p>\n'
         '      <a class="fb-submit-btn" id="fb-paywall-btn" href="/precios.html" '
-        'onclick="if(typeof gtag===\'function\')gtag(\'event\',\'pricing_cta_click\',{source:\'trial_limit\'});">'
+        'onclick="' + plan_cta_onclick("pricing_cta_click", "pro", "trial_limit") + '">'
         '<span class="fw-lang-es">Pasar a Pro</span><span class="fw-lang-en">Upgrade to Pro</span></a>\n'
         '     </div>\n'
         '    </div>\n'
