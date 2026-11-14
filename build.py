@@ -942,10 +942,9 @@ header {
 }
 .hdr-logo { display: flex; align-items: center; gap: .65rem; }
 .hdr-logo svg { flex-shrink: 0; }
-.hdr-logo h1 {
-  font-size: .95rem; font-weight: 700; letter-spacing: .015em;
-  background: linear-gradient(90deg, #818cf8, #c084fc);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+.hdr-logo .hdr-title {
+  display: block; font-size: .95rem; font-weight: 700; letter-spacing: .015em;
+  color: var(--tx);
 }
 .hdr-logo p { font-size: .68rem; color: var(--tx3); margin-top: .05rem; }
 .hdr-tags { display: flex; align-items: center; gap: .5rem; }
@@ -2081,15 +2080,15 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   background: var(--bg); position: sticky; top: 0; z-index: 100;
 }
 .landing-nav-logo { display: flex; align-items: center; gap: .55rem; }
-.landing-nav-logo h1 { font-size: .95rem; font-weight: 700; color: var(--tx); }
+.landing-nav-brand { font-size: .95rem; font-weight: 700; color: var(--tx); white-space: nowrap; }
 .landing-nav-logo p { font-size: .65rem; color: var(--tx3); display: none; }
 .landing-nav-cta {
-  padding: .38rem 1.1rem; background: #6366f1; border: none;
+  padding: .38rem 1.1rem; background: #4f46e5; border: none;
   border-radius: 7px; color: #fff; font-size: .8rem; font-weight: 700;
   cursor: pointer; text-decoration: none; font-family: inherit;
-  transition: background .12s;
+  transition: background .12s; white-space: nowrap;
 }
-.landing-nav-cta:hover { background: #4f46e5; }
+.landing-nav-cta:hover { background: #4338ca; }
 .landing-nav-actions { display: flex; align-items: center; gap: .6rem; }
 .landing-nav-login {
   display: inline-flex; align-items: center; gap: .4rem;
@@ -2099,8 +2098,14 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
 }
 .landing-nav-login:hover { border-color: #6366f1; background: rgba(99,102,241,.12); }
 @media (max-width: 480px) {
-  .landing-nav { padding: .8rem 1rem; }
-  .landing-nav-login { padding: .36rem .6rem; }
+  .landing-nav { padding: .7rem 1rem; gap: .5rem; }
+  .landing-nav-actions { gap: .45rem; }
+  .landing-nav-login { padding: .45rem; }
+  .landing-nav-login #landing-auth-label {
+    position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap;
+  }
+  .landing-nav-cta { padding: .45rem .8rem; }
 }
 .landing-hero {
   flex: 1; display: flex; flex-direction: column; align-items: center;
@@ -2114,27 +2119,24 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   border-radius: 20px; padding: .22rem .75rem; margin-bottom: 1.5rem;
   text-transform: uppercase; letter-spacing: .08em;
 }
-.landing-hero h2 {
+.landing-hero h1 {
   font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 800; line-height: 1.2;
+  letter-spacing: -.02em; text-wrap: balance;
   color: var(--tx); margin-bottom: 1.1rem;
 }
-.landing-hero h2 em {
-  font-style: normal;
-  background: linear-gradient(90deg,#818cf8,#c084fc);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-}
+.landing-hero h1 em { font-style: normal; color: #a5b4fc; }
 .landing-hero p {
   font-size: 1rem; color: var(--tx2); line-height: 1.7;
   margin-bottom: 2rem; max-width: 600px;
 }
 .landing-cta-group { display: flex; gap: .75rem; flex-wrap: wrap; justify-content: center; }
 .landing-cta-primary {
-  padding: .75rem 2rem; background: linear-gradient(90deg,#6366f1,#8b5cf6);
+  padding: .75rem 2rem; background: #4f46e5;
   border: none; border-radius: 9px; color: #fff; font-size: .9rem; font-weight: 700;
   cursor: pointer; text-decoration: none; font-family: inherit;
-  box-shadow: 0 4px 15px rgba(99,102,241,.35); transition: box-shadow .15s, transform .1s;
+  box-shadow: 0 1px 2px rgba(0,0,0,.3); transition: background .12s;
 }
-.landing-cta-primary:hover { box-shadow: 0 6px 22px rgba(99,102,241,.45); transform: translateY(-1px); }
+.landing-cta-primary:hover { background: #4338ca; }
 .landing-cta-secondary {
   padding: .75rem 1.5rem; background: none; border: 1px solid var(--bdr2);
   border-radius: 9px; color: var(--tx2); font-size: .9rem;
@@ -5658,7 +5660,7 @@ def get_landing_html(n, lang='es'):
         f'  <nav class="landing-nav">\n'
         f'    <div class="landing-nav-logo">\n'
         f'      <img src="apple-touch-icon.png" width="28" height="28" alt="Lionsystems" style="border-radius:4px;flex-shrink:0;">\n'
-        f'      <h1>AI-SDLC Pro</h1>\n'
+        f'      <span class="landing-nav-brand">AI-SDLC Pro</span>\n'
         f'    </div>\n'
         # Botón de cuenta de la portada (antes solo existía dentro de /app y un
         # visitante nuevo no encontraba cómo entrar). renderAuthUI() lo pone al
@@ -5673,7 +5675,7 @@ def get_landing_html(n, lang='es'):
         f'  </nav>\n'
         f'  <section class="landing-hero">\n'
         f'    <span class="landing-badge">\u25cf {ls["hero_badge"].format(n=n)}</span>\n'
-        f'    <h2>{ls["hero_title"]}</h2>\n'
+        f'    <h1>{ls["hero_title"]}</h1>\n'
         f'    <p>{ls["hero_subtitle"].format(n=n)}</p>\n'
         f'    <div class="landing-cta-group">\n'
         f'      <a class="landing-cta-primary" href="/app">{ls["cta_primary"]}</a>\n'
@@ -7510,7 +7512,7 @@ def build():
         '      <img src="apple-touch-icon.png" width="28" height="28" alt="Lionsystems" style="border-radius:4px;flex-shrink:0;">'
         '    </div>'
         '    <div>'
-        '      <h1>AI-SDLC Pro</h1>'
+        '      <span class="hdr-title">AI-SDLC Pro</span>'
         '      <p>Biblioteca de Prompts / Lionsystems</p>'
         '    </div>'
         '  </div>\n'
