@@ -182,6 +182,13 @@ jobs:
           # www -- el navegador los bloqueaba y no habia favicon en produccion.
           cp favicon-32.png dist/favicon-32.png
           cp apple-touch-icon.png dist/apple-touch-icon.png
+          # Fuentes de la marca (Inter y Plus Jakarta Sans), alojadas en el
+          # sitio porque la CSP solo permite font-src 'self'. Sin estas lineas
+          # nginx responderia index.html con 200 y el sitio caeria en silencio
+          # a la fuente del sistema.
+          mkdir -p dist/fonts
+          cp fonts/inter-latin.woff2 dist/fonts/inter-latin.woff2
+          cp fonts/plus-jakarta-sans-latin.woff2 dist/fonts/plus-jakarta-sans-latin.woff2
 
       - name: Upload artifact (shared by Pages and GCP)
         if: github.event_name != 'pull_request'
@@ -362,6 +369,10 @@ jobs:
           scp -P "$P" -i ~/.ssh/gcp_key -o BatchMode=yes               dist/apple-touch-icon.png "${U}@${H}:/home/${U}/apple-touch-icon.png.new"
           scp -P "$P" -i ~/.ssh/gcp_key -o BatchMode=yes \
               dist/en/index.html "${U}@${H}:/home/${U}/index.en.html.new"
+          scp -P "$P" -i ~/.ssh/gcp_key -o BatchMode=yes \
+              dist/fonts/inter-latin.woff2 "${U}@${H}:/home/${U}/inter-latin.woff2.new"
+          scp -P "$P" -i ~/.ssh/gcp_key -o BatchMode=yes \
+              dist/fonts/plus-jakarta-sans-latin.woff2 "${U}@${H}:/home/${U}/plus-jakarta-sans-latin.woff2.new"
 
       - name: Atomic replace in production dir
         env:
@@ -388,6 +399,12 @@ jobs:
           CMD="${CMD}; sudo chown www-data:www-data ${D}/en/index.html"
           CMD="${CMD}; sudo chmod 644 ${D}/en/index.html"
           CMD="${CMD}; rm -f /home/${U}/index.en.html.new"
+          CMD="${CMD}; sudo install -d -o www-data -g www-data -m 755 ${D}/fonts"
+          CMD="${CMD}; sudo cp /home/${U}/inter-latin.woff2.new ${D}/fonts/inter-latin.woff2"
+          CMD="${CMD}; sudo cp /home/${U}/plus-jakarta-sans-latin.woff2.new ${D}/fonts/plus-jakarta-sans-latin.woff2"
+          CMD="${CMD}; sudo chown www-data:www-data ${D}/fonts/inter-latin.woff2 ${D}/fonts/plus-jakarta-sans-latin.woff2"
+          CMD="${CMD}; sudo chmod 644 ${D}/fonts/inter-latin.woff2 ${D}/fonts/plus-jakarta-sans-latin.woff2"
+          CMD="${CMD}; rm -f /home/${U}/inter-latin.woff2.new /home/${U}/plus-jakarta-sans-latin.woff2.new"
           CMD="${CMD}; sudo chown www-data:www-data ${D}/index.html ${D}/precios.html ${D}/terminos.html ${D}/privacidad.html ${D}/reembolsos.html ${D}/robots.txt ${D}/sitemap.xml ${D}/og-image.png ${D}/prompts-text.es.json ${D}/prompts-text.en.json ${D}/favicon-32.png ${D}/apple-touch-icon.png"
           CMD="${CMD}; sudo chmod 644 ${D}/index.html ${D}/precios.html ${D}/terminos.html ${D}/privacidad.html ${D}/reembolsos.html ${D}/robots.txt ${D}/sitemap.xml ${D}/og-image.png ${D}/prompts-text.es.json ${D}/prompts-text.en.json ${D}/favicon-32.png ${D}/apple-touch-icon.png"
           CMD="${CMD}; rm -f /home/${U}/index.html.new /home/${U}/precios.html.new /home/${U}/terminos.html.new /home/${U}/privacidad.html.new /home/${U}/reembolsos.html.new /home/${U}/robots.txt.new /home/${U}/sitemap.xml.new"
