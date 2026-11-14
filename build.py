@@ -903,19 +903,24 @@ def _next_steps_html(next_ids, titles_by_id, lang):
 
 
 CSS = """
+/* Sistema de marca Lion Systems (2026-11): Inter para el texto y Plus Jakarta
+   Sans para los titulos, alojadas en /fonts (CSP font-src 'self'), y la paleta
+   oscura azul noche de la marca. El acento indigo del producto no cambia. */
+@font-face { font-family: 'Inter'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('/fonts/inter-latin.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: 'Plus Jakarta Sans'; font-style: normal; font-weight: 600 800; font-display: swap; src: url('/fonts/plus-jakarta-sans-latin.woff2') format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
 :root {
   --hdr:  58px;
   --bar:  46px;
   --side: 220px;
-  --bg:   #080b14;
-  --bg2:  #0f1220;
-  --bg3:  #161929;
-  --bg4:  #1c2035;
-  --bdr:  #1f2340;
-  --bdr2: #262b45;
-  --tx:   #dde1f5;
-  --tx2:  #8892c0;
-  --tx3:  #7b86b8;
+  --bg:   #0b1020;
+  --bg2:  #131a2c;
+  --bg3:  #1a2338;
+  --bg4:  #212b42;
+  --bdr:  #222c47;
+  --bdr2: #283352;
+  --tx:   #eef1f8;
+  --tx2:  #a9b4cc;
+  --tx3:  #8f9ab3;
   --grn:  #22c55e;
   --warn: #f59e0b;
   --mono: 'JetBrains Mono','Fira Code','Cascadia Code','Courier New',monospace;
@@ -935,8 +940,12 @@ html[lang="en"] .sid-lang-es { display: none !important; }
 html[data-lang="es"] .card[data-lang="es"] {}
 html[data-lang="en"] .card[data-lang="en"] {}
 html { scroll-behavior: smooth; }
+h1, h2, h3, .landing-nav-brand, .hdr-logo .hdr-title {
+  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  letter-spacing: -.015em;
+}
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   background: var(--bg); color: var(--tx); font-size: 14px; line-height: 1.5;
   min-height: 100vh;
 }
@@ -954,10 +963,9 @@ header {
 }
 .hdr-logo { display: flex; align-items: center; gap: .65rem; }
 .hdr-logo svg { flex-shrink: 0; }
-.hdr-logo h1 {
-  font-size: .95rem; font-weight: 700; letter-spacing: .015em;
-  background: linear-gradient(90deg, #818cf8, #c084fc);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+.hdr-logo .hdr-title {
+  display: block; font-size: .95rem; font-weight: 700; letter-spacing: .015em;
+  color: var(--tx);
 }
 .hdr-logo p { font-size: .68rem; color: var(--tx3); margin-top: .05rem; }
 .hdr-tags { display: flex; align-items: center; gap: .5rem; }
@@ -1101,7 +1109,7 @@ body.sidebar-collapsed .sidebar-collapse-btn svg { transform: rotate(180deg); }
 
 /* ────── Framework banner ────── */
 .framework-banner {
-  background: linear-gradient(135deg, #1a1306 0%, #0f1220 60%);
+  background: linear-gradient(135deg, #1a1306 0%, #131a2c 60%);
   border: 1px solid #78350f;
   border-radius: 10px; margin-bottom: 2rem; overflow: hidden;
   scroll-margin-top: .5rem;
@@ -1352,7 +1360,7 @@ body.ms-mode .sec-check { display: block; }
 /* barra flotante de selección */
 .ms-bar {
   position: fixed; bottom: -70px; left: 50%; transform: translateX(-50%);
-  background: #1c2035; border: 1px solid #6366f1;
+  background: #212b42; border: 1px solid #6366f1;
   border-radius: 10px; padding: .65rem 1.25rem;
   display: flex; align-items: center; gap: .85rem;
   box-shadow: 0 8px 32px rgba(0,0,0,.5); z-index: 600;
@@ -1451,7 +1459,7 @@ body.ms-mode .sec-check { display: block; }
 .modal-formula::-webkit-scrollbar { width: 3px; }
 .modal-formula::-webkit-scrollbar-thumb { background: var(--bdr2); border-radius: 2px; }
 .modal-formula code {
-  font-family: var(--mono); font-size: .7rem; color: #8892c0;
+  font-family: var(--mono); font-size: .7rem; color: #a9b4cc;
   white-space: pre-wrap; word-break: break-word; line-height: 1.6;
 }
 .modal-copy-formula {
@@ -1781,7 +1789,7 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
 
 /* ═════════════════ WELCOME BANNER ══════════════════════════════ */
 .welcome-banner {
-  background: linear-gradient(135deg,#12103a 0%,#0f1220 100%);
+  background: linear-gradient(135deg,#12103a 0%,#131a2c 100%);
   border-bottom: 1px solid #3730a3;
   padding: .6rem 1.25rem .6rem calc(var(--side) + 1.5rem);
   display: flex; align-items: center; gap: .85rem; flex-shrink: 0;
@@ -1808,7 +1816,14 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
 }
 .wb-dismiss:hover { border-color: #6366f1; color: #a5b4fc; }
 @media (max-width: 720px) { .welcome-banner { padding: .5rem .85rem; } }
-@media (max-width: 560px) { .wb-lead { display: none; } }
+@media (max-width: 560px) {
+  .wb-lead { display: none; }
+  /* En una sola fila, las pills (nowrap) desbordaban su caja y los dos
+     botones quedaban encima de la segunda: los botones pasan abajo. */
+  .welcome-banner { flex-wrap: wrap; gap: .5rem; }
+  .wb-pills { flex-basis: 100%; }
+  .wb-pill { white-space: normal; }
+}
 
 /* ═════════════════ ONBOARDING OVERLAY ══════════════════════════ */
 .ob-overlay {
@@ -1824,7 +1839,7 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
 .ob-header {
   display: flex; align-items: flex-start; justify-content: space-between;
   padding: .9rem 1.2rem .8rem; border-bottom: 1px solid var(--bdr);
-  background: linear-gradient(135deg,#1e1b4b,#0f1220);
+  background: linear-gradient(135deg,#1e1b4b,#131a2c);
 }
 .ob-header h2 {
   font-size: .9rem; font-weight: 700;
@@ -2093,15 +2108,15 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   background: var(--bg); position: sticky; top: 0; z-index: 100;
 }
 .landing-nav-logo { display: flex; align-items: center; gap: .55rem; }
-.landing-nav-logo h1 { font-size: .95rem; font-weight: 700; color: var(--tx); }
+.landing-nav-brand { font-size: .95rem; font-weight: 700; color: var(--tx); white-space: nowrap; }
 .landing-nav-logo p { font-size: .65rem; color: var(--tx3); display: none; }
 .landing-nav-cta {
-  padding: .38rem 1.1rem; background: #6366f1; border: none;
+  padding: .38rem 1.1rem; background: #4f46e5; border: none;
   border-radius: 7px; color: #fff; font-size: .8rem; font-weight: 700;
   cursor: pointer; text-decoration: none; font-family: inherit;
-  transition: background .12s;
+  transition: background .12s; white-space: nowrap;
 }
-.landing-nav-cta:hover { background: #4f46e5; }
+.landing-nav-cta:hover { background: #4338ca; }
 .landing-nav-actions { display: flex; align-items: center; gap: .6rem; }
 .landing-nav-login {
   display: inline-flex; align-items: center; gap: .4rem;
@@ -2111,8 +2126,14 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
 }
 .landing-nav-login:hover { border-color: #6366f1; background: rgba(99,102,241,.12); }
 @media (max-width: 480px) {
-  .landing-nav { padding: .8rem 1rem; }
-  .landing-nav-login { padding: .36rem .6rem; }
+  .landing-nav { padding: .7rem 1rem; gap: .5rem; }
+  .landing-nav-actions { gap: .45rem; }
+  .landing-nav-login { padding: .45rem; }
+  .landing-nav-login #landing-auth-label {
+    position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip: rect(0 0 0 0); white-space: nowrap;
+  }
+  .landing-nav-cta { padding: .45rem .8rem; }
 }
 .landing-hero {
   flex: 1; display: flex; flex-direction: column; align-items: center;
@@ -2126,27 +2147,24 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   border-radius: 20px; padding: .22rem .75rem; margin-bottom: 1.5rem;
   text-transform: uppercase; letter-spacing: .08em;
 }
-.landing-hero h2 {
+.landing-hero h1 {
   font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 800; line-height: 1.2;
+  letter-spacing: -.02em; text-wrap: balance;
   color: var(--tx); margin-bottom: 1.1rem;
 }
-.landing-hero h2 em {
-  font-style: normal;
-  background: linear-gradient(90deg,#818cf8,#c084fc);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-}
+.landing-hero h1 em { font-style: normal; color: #a5b4fc; }
 .landing-hero p {
   font-size: 1rem; color: var(--tx2); line-height: 1.7;
   margin-bottom: 2rem; max-width: 600px;
 }
 .landing-cta-group { display: flex; gap: .75rem; flex-wrap: wrap; justify-content: center; }
 .landing-cta-primary {
-  padding: .75rem 2rem; background: linear-gradient(90deg,#6366f1,#8b5cf6);
+  padding: .75rem 2rem; background: #4f46e5;
   border: none; border-radius: 9px; color: #fff; font-size: .9rem; font-weight: 700;
   cursor: pointer; text-decoration: none; font-family: inherit;
-  box-shadow: 0 4px 15px rgba(99,102,241,.35); transition: box-shadow .15s, transform .1s;
+  box-shadow: 0 1px 2px rgba(0,0,0,.3); transition: background .12s;
 }
-.landing-cta-primary:hover { box-shadow: 0 6px 22px rgba(99,102,241,.45); transform: translateY(-1px); }
+.landing-cta-primary:hover { background: #4338ca; }
 .landing-cta-secondary {
   padding: .75rem 1.5rem; background: none; border: 1px solid var(--bdr2);
   border-radius: 9px; color: var(--tx2); font-size: .9rem;
@@ -2207,7 +2225,7 @@ body.sidebar-collapsed .sidebar-header { justify-content: center; padding: .4rem
   font-size: .78rem; color: var(--tx); overflow-x: auto;
 }
 .landing-final {
-  background: linear-gradient(135deg,#1e1b4b,#0f1220);
+  background: linear-gradient(135deg,#1e1b4b,#131a2c);
   border-top: 1px solid #4338ca; padding: 4rem 1.5rem; text-align: center;
 }
 .landing-final h3 { font-size: 1.4rem; font-weight: 800; color: #e0e7ff; margin-bottom: .75rem; }
@@ -5670,7 +5688,7 @@ def get_landing_html(n, lang='es'):
         f'  <nav class="landing-nav">\n'
         f'    <div class="landing-nav-logo">\n'
         f'      <img src="apple-touch-icon.png" width="28" height="28" alt="Lionsystems" style="border-radius:4px;flex-shrink:0;">\n'
-        f'      <h1>AI-SDLC Pro</h1>\n'
+        f'      <span class="landing-nav-brand">AI-SDLC Pro</span>\n'
         f'    </div>\n'
         # Botón de cuenta de la portada (antes solo existía dentro de /app y un
         # visitante nuevo no encontraba cómo entrar). renderAuthUI() lo pone al
@@ -5685,7 +5703,7 @@ def get_landing_html(n, lang='es'):
         f'  </nav>\n'
         f'  <section class="landing-hero">\n'
         f'    <span class="landing-badge">\u25cf {ls["hero_badge"].format(n=n)}</span>\n'
-        f'    <h2>{ls["hero_title"]}</h2>\n'
+        f'    <h1>{ls["hero_title"]}</h1>\n'
         f'    <p>{ls["hero_subtitle"].format(n=n)}</p>\n'
         f'    <div class="landing-cta-group">\n'
         f'      <a class="landing-cta-primary" href="/app">{ls["cta_primary"]}</a>\n'
@@ -5925,20 +5943,21 @@ def build_precios_page():
         '<link rel="alternate" hreflang="x-default" href="https://prompts.lionsystems.com.mx/precios.html">\n'
         '<link rel="icon" type="image/png" href="favicon-32.png">\n'
         '<style>\n'
-        ':root{--bg:#080b14;--bg2:#0f1220;--bg3:#161929;--bdr:#1f2340;--tx:#dde1f5;--tx2:#8892c0;'
-        '--tx3:#7b86b8;--grn:#22c55e;--warn:#f59e0b;'
+        ':root{--bg:#0b1020;--bg2:#131a2c;--bg3:#1a2338;--bdr:#222c47;--tx:#eef1f8;--tx2:#a9b4cc;'
+        '--tx3:#8f9ab3;--grn:#22c55e;--warn:#f59e0b;'
         '--mono:"JetBrains Mono","Fira Code","Cascadia Code","Courier New",monospace;}\n'
         '*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}\n'
         'html[lang="es"] .fw-lang-en{display:none !important;}\n'
         'html[lang="en"] .fw-lang-es{display:none !important;}\n'
         'html{scroll-behavior:smooth;}\n'
-        'body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;'
+        '@font-face { font-family: \'Inter\'; font-style: normal; font-weight: 100 900; font-display: swap; src: url(\'/fonts/inter-latin.woff2\') format(\'woff2\'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }\n@font-face { font-family: \'Plus Jakarta Sans\'; font-style: normal; font-weight: 600 800; font-display: swap; src: url(\'/fonts/plus-jakarta-sans-latin.woff2\') format(\'woff2\'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }\n'
+        'h1,h2,h3,.px-logo{font-family:"Plus Jakarta Sans","Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:-.015em;}\n'
+        'body{font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;'
         'background:var(--bg);color:var(--tx);font-size:15px;line-height:1.6;min-height:100vh;}\n'
         'header{display:flex;align-items:center;justify-content:space-between;'
         'padding:1rem 1.5rem;border-bottom:1px solid var(--bdr);background:var(--bg2);}\n'
         '.px-logo{font-weight:700;letter-spacing:.015em;text-decoration:none;'
-        'background:linear-gradient(90deg,#818cf8,#c084fc);-webkit-background-clip:text;'
-        '-webkit-text-fill-color:transparent;font-size:1rem;}\n'
+        'color:var(--tx);font-size:1rem;}\n'
         '.px-lang-btn{background:var(--bg3);border:1px solid var(--bdr);color:var(--tx2);'
         'border-radius:6px;padding:.4rem .8rem;font-size:.8rem;cursor:pointer;}\n'
         'main{max-width:640px;margin:0 auto;padding:3rem 1.5rem 4rem;}\n'
@@ -6482,19 +6501,20 @@ def _legal_shell(slug, title_es, title_en, desc, h1_es, h1_en, body_html):
         '<link rel="alternate" hreflang="x-default" href="' + url + '">\n'
         '<link rel="icon" type="image/png" href="favicon-32.png">\n'
         '<style>\n'
-        ':root{--bg:#080b14;--bg2:#0f1220;--bg3:#161929;--bdr:#1f2340;--tx:#dde1f5;--tx2:#8892c0;'
-        '--tx3:#7b86b8;--grn:#22c55e;--warn:#f59e0b;}\n'
+        ':root{--bg:#0b1020;--bg2:#131a2c;--bg3:#1a2338;--bdr:#222c47;--tx:#eef1f8;--tx2:#a9b4cc;'
+        '--tx3:#8f9ab3;--grn:#22c55e;--warn:#f59e0b;}\n'
         '*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}\n'
         'html[lang="es"] .fw-lang-en{display:none !important;}\n'
         'html[lang="en"] .fw-lang-es{display:none !important;}\n'
         'html{scroll-behavior:smooth;}\n'
-        'body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;'
+        '@font-face { font-family: \'Inter\'; font-style: normal; font-weight: 100 900; font-display: swap; src: url(\'/fonts/inter-latin.woff2\') format(\'woff2\'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }\n@font-face { font-family: \'Plus Jakarta Sans\'; font-style: normal; font-weight: 600 800; font-display: swap; src: url(\'/fonts/plus-jakarta-sans-latin.woff2\') format(\'woff2\'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }\n'
+        'h1,h2,h3,.px-logo{font-family:"Plus Jakarta Sans","Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:-.015em;}\n'
+        'body{font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;'
         'background:var(--bg);color:var(--tx);font-size:15px;line-height:1.7;min-height:100vh;}\n'
         'header{display:flex;align-items:center;justify-content:space-between;'
         'padding:1rem 1.5rem;border-bottom:1px solid var(--bdr);background:var(--bg2);}\n'
         '.px-logo{font-weight:700;letter-spacing:.015em;text-decoration:none;'
-        'background:linear-gradient(90deg,#818cf8,#c084fc);-webkit-background-clip:text;'
-        '-webkit-text-fill-color:transparent;font-size:1rem;}\n'
+        'color:var(--tx);font-size:1rem;}\n'
         '.px-lang-btn{background:var(--bg3);border:1px solid var(--bdr);color:var(--tx2);'
         'border-radius:6px;padding:.4rem .8rem;font-size:.8rem;cursor:pointer;}\n'
         'main{max-width:720px;margin:0 auto;padding:3rem 1.5rem 4rem;}\n'
@@ -7522,7 +7542,7 @@ def build():
         '      <img src="apple-touch-icon.png" width="28" height="28" alt="Lionsystems" style="border-radius:4px;flex-shrink:0;">'
         '    </div>'
         '    <div>'
-        '      <h1>AI-SDLC Pro</h1>'
+        '      <span class="hdr-title">AI-SDLC Pro</span>'
         '      <p>Biblioteca de Prompts / Lionsystems</p>'
         '    </div>'
         '  </div>\n'
