@@ -1,5 +1,14 @@
 # AI-SDLC Pro — Biblioteca de Prompts de Ingeniería de Software
 
+> **Dirige a tu agente de IA por todo el ciclo de desarrollo, con resultados consistentes.**
+> 112 prompts en español, de requisitos a despliegue, para Claude Code, Codex, Copilot, Cursor y otros agentes.
+>
+> - **Gratis para siempre:** copia cualquier prompt, sin cuenta → **[prompts.lionsystems.com.mx](https://prompts.lionsystems.com.mx/?utm_source=github&utm_medium=readme&utm_campaign=ai-sdlc)**
+> - **Pro:** varios proyectos, sincronización entre dispositivos y espacio para tu personalización y los resultados de la IA. Prueba de 1 semana al entrar con GitHub; después, **9 USD al mes o 90 USD al año** → **[ver precios](https://prompts.lionsystems.com.mx/precios.html?utm_source=github&utm_medium=readme&utm_campaign=ai-sdlc)**
+> - **En tu agente:** [skills para Claude Code y Codex](https://github.com/dleon55/ai-sdlc-skills) y un [servidor MCP](mcp-server/README.md).
+>
+> Un producto de [Lion Systems](https://www.lionsystems.com.mx/?utm_source=github&utm_medium=readme&utm_campaign=ai-sdlc). ¿Necesitas que tu equipo adopte IA en su proceso de desarrollo? [Hablemos](https://www.lionsystems.com.mx/contactus?utm_source=github&utm_medium=readme&utm_campaign=ai-sdlc).
+
 Biblioteca interactiva de prompts estructurados bajo el **AI-SDLC Enterprise Framework**: **112 prompts** organizados en **18 secciones** que cubren el ciclo completo de ingeniería de software asistida por IA.
 
 ## Entornos activos
