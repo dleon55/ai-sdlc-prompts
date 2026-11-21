@@ -1,3 +1,12 @@
+> **El desarrollo de este servidor se movió a
+> [`dleon55/ai-sdlc-mcp`](https://github.com/dleon55/ai-sdlc-mcp)** (repositorio
+> público MIT, con historial conservado). Abre issues y PR allí.
+>
+> Esta carpeta se conserva temporalmente: `python build.py` sigue generando
+> `data/prompts-full.json`, que se lleva al repo nuevo por PR, y
+> `publish-mcp.yml` sigue activo hasta que npm confíe en el flujo de
+> publicación del repo nuevo. Después se retirará.
+
 # AI-SDLC Prompts — servidor MCP
 
 Expone la biblioteca de prompts [AI-SDLC Pro](../README.md) (112 prompts, ES/EN) a agentes de IA (Claude Code, Claude Desktop, Cursor, etc.) vía [Model Context Protocol](https://modelcontextprotocol.io), transporte stdio.
