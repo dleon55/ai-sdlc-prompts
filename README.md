@@ -5,7 +5,7 @@
 >
 > - **Gratis para siempre:** copia cualquier prompt, sin cuenta → **[prompts.lionsystems.com.mx](https://prompts.lionsystems.com.mx/?utm_source=github&utm_medium=readme&utm_campaign=ai-sdlc)**
 > - **Pro:** varios proyectos, sincronización entre dispositivos y espacio para tu personalización y los resultados de la IA. Prueba de 1 semana al entrar con GitHub; después, **9 USD al mes o 90 USD al año** → **[ver precios](https://prompts.lionsystems.com.mx/precios.html?utm_source=github&utm_medium=readme&utm_campaign=ai-sdlc)**
-> - **En tu agente:** [skills para Claude Code y Codex](https://github.com/dleon55/ai-sdlc-skills) y un [servidor MCP](mcp-server/README.md).
+> - **En tu agente:** [skills para Claude Code y Codex](https://github.com/dleon55/ai-sdlc-skills) y un [servidor MCP](https://github.com/dleon55/ai-sdlc-mcp) (npm: [`ai-sdlc-prompts-mcp`](https://www.npmjs.com/package/ai-sdlc-prompts-mcp)).
 >
 > Un producto de [Lion Systems](https://www.lionsystems.com.mx/?utm_source=github&utm_medium=readme&utm_campaign=ai-sdlc). ¿Necesitas que tu equipo adopte IA en su proceso de desarrollo? [Hablemos](https://www.lionsystems.com.mx/contactus?utm_source=github&utm_medium=readme&utm_campaign=ai-sdlc).
 
@@ -46,7 +46,7 @@ Los mismos prompts, empaquetados como *skills* (`SKILL.md`, una por fase, ES/EN)
 
 ## Servidor MCP
 
-El catálogo también se expone a agentes de IA (Claude Code, Claude Desktop, Cursor) vía [Model Context Protocol](https://modelcontextprotocol.io), sin necesidad de copiar/pegar desde el navegador: `list_prompts`, `get_prompt`, `resolve_prompt` (sustituye variables), `get_framework` y `recommend_next`. Ver [mcp-server/README.md](mcp-server/README.md) para instalación y configuración.
+El catálogo también se expone a agentes de IA (Claude Code, Claude Desktop, Cursor) vía [Model Context Protocol](https://modelcontextprotocol.io), sin necesidad de copiar/pegar desde el navegador: `list_prompts`, `get_prompt`, `resolve_prompt` (sustituye variables), `get_framework` y `recommend_next`. El servidor vive en su propio repositorio, [dleon55/ai-sdlc-mcp](https://github.com/dleon55/ai-sdlc-mcp), con instalación y configuración; se instala con `npx -y ai-sdlc-prompts-mcp`. Sus datos se generan aquí con `scripts/exportar-datos-mcp.sh` (ver [docs/publicar-mcp.md](docs/publicar-mcp.md)).
 
 ---
 
@@ -62,7 +62,6 @@ deploy-to-gcp.sh        # Script de re-deploy manual a GCP
 index.html              # Artefacto generado (~1.32 MB, no editar manualmente)
 prompts-index.json      # Índice machine-readable (contrato editorial por prompt), no editar manualmente
 backend/                # API propia (Node + PostgreSQL) en /api/*: login GitHub, prueba, proyectos, webhook Paddle — ver backend/README.md
-mcp-server/             # Servidor MCP (Node) que expone el catálogo a agentes de IA vía stdio — ver mcp-server/README.md
 docs/                   # Memorias técnicas (MT-001, MT-002)
 .github/workflows/      # CI/CD — build + QA gate + deploy GitHub Pages + GCP
 CONTRIBUTING.md         # Guía de contribución y convenciones

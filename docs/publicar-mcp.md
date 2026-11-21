@@ -1,160 +1,70 @@
-# Publicar el servidor MCP en npm
+# Servidor MCP: dónde vive y cómo actualizar sus datos
 
-El servidor MCP (`mcp-server/`) expone los 112 prompts, su contrato editorial y
-el grafo de siguientes pasos a cualquier agente que hable Model Context
-Protocol — Claude Code, Claude Desktop, Cursor. **Publicado en npm** como
-[`ai-sdlc-prompts-mcp`](https://www.npmjs.com/package/ai-sdlc-prompts-mcp)
-desde el 31-oct-2026 (1.0.0, con procedencia firmada).
+El servidor MCP expone los 112 prompts, su contrato editorial y el grafo de
+siguientes pasos a cualquier agente que hable Model Context Protocol — Claude
+Code, Claude Desktop, Cursor. Está publicado en npm como
+[`ai-sdlc-prompts-mcp`](https://www.npmjs.com/package/ai-sdlc-prompts-mcp) y en
+el registro oficial de MCP como `io.github.dleon55/ai-sdlc-prompts`.
+
+**Desde noviembre de 2026 el servidor vive en su propio repositorio público:
+[dleon55/ai-sdlc-mcp](https://github.com/dleon55/ai-sdlc-mcp).** Se movió con
+su historial; la 1.0.3 (21-nov-2026) ya se publicó desde el workflow
+`publish.yml` de ese repo (tag `v*`), y el *trusted publisher* de npm solo
+confía en él. La carpeta `mcp-server/` y el workflow `publish-mcp.yml` de este
+repositorio se retiraron: versionar, probar, publicar en npm y registrar en
+registry.modelcontextprotocol.io se documenta y se hace allá.
 
 ---
 
-## La licencia (resuelta)
+## Lo que sigue saliendo de aquí: `data/prompts-full.json`
 
-El repositorio usa **licencia por alcance**, porque el producto ya estaba
-dividido así — `docs/STRATEGY.md`, decisión del 2026-07-30: *el gate va sobre
-la plataforma, no sobre el texto*.
+El paquete embebe `data/prompts-full.json` (texto crudo de cada prompt con sus
+placeholders, preámbulo del framework, contrato editorial y `TOKEN_REGISTRY`).
+Lo genera `build.py`, que sigue siendo la **única** fuente de verdad del
+parseo de los Markdown; el repo del MCP no reimplementa el parser.
+
+`python build.py` ya no escribe ese archivo en ninguna carpeta del repo. Para
+generarlo:
+
+```bash
+scripts/exportar-datos-mcp.sh ../ai-sdlc-mcp/data/prompts-full.json
+```
+
+(equivale a `AI_SDLC_MCP_DATA_OUT=<ruta> python build.py`).
+
+### Al agregar o editar prompts
+
+1. Fusionar el cambio de prompts aquí, en `main`.
+2. En un clon de `dleon55/ai-sdlc-mcp`, en una rama nueva, correr el script
+   de arriba apuntando a su `data/prompts-full.json`.
+3. Abrir PR en `ai-sdlc-mcp` con el JSON regenerado (y la subida de versión
+   que pida su propio proceso), fusionarlo y taggear `v<versión>` allá.
+
+### Qué lo vigila aquí
+
+- `tests/test_build_skills.py::test_paridad_con_el_mcp` genera el export en un
+  temporal y comprueba que trae los mismos prompts que las skills.
+- `tests/test_mcp_contract_parity.py` compara el contrato de operación del
+  sitio contra `src/operatingContract.js` **del paquete publicado en npm**.
+- `tests/test_licencia_coherente.py` verifica la licencia del paquete publicado
+  (MIT AND CC-BY-4.0, con `LICENSE` incluido).
+
+Las tres últimas usan la fixture `paquete_mcp` (`tests/conftest.py`), que hace
+`npm pack ai-sdlc-prompts-mcp@latest`. Sin npm o sin red se omiten en local y
+fallan en CI. Para probar contra un checkout local del MCP antes de publicar:
+`AI_SDLC_MCP_PKG_DIR=../ai-sdlc-mcp python -m pytest tests/`.
+
+---
+
+## La licencia
+
+El repositorio usa **licencia por alcance** (`docs/STRATEGY.md`, decisión del
+2026-07-30: *el gate va sobre la plataforma, no sobre el texto*).
 
 | Alcance | Licencia | Por qué |
 |---|---|---|
-| Los prompts (`ai_sdlc_pro_prompts/**`, `prompts-index.json`, `data/prompts-full.json`) | **CC BY 4.0** | El plan Free promete "copia ilimitada y para siempre". Permite uso comercial: sin eso, un freelancer no podría usarlos con un cliente, que es la persona con mayor disposición a pagar. |
-| El servidor MCP (`mcp-server/`, sin `data/`) | **MIT** | Instalar es reproducir y ejecutar es usar. Sin permiso explícito, el paquete es ininstalable en términos legales. |
+| Los prompts (`ai_sdlc_pro_prompts/**`, `prompts-index.json`, el export `data/prompts-full.json`) | **CC BY 4.0** | El plan Free promete "copia ilimitada y para siempre". Permite uso comercial: sin eso, un freelancer no podría usarlos con un cliente. |
+| El servidor MCP ([dleon55/ai-sdlc-mcp](https://github.com/dleon55/ai-sdlc-mcp)) | **MIT** | Instalar es reproducir y ejecutar es usar. Su `package.json` declara `"license": "MIT AND CC-BY-4.0"` porque embebe los prompts. |
 | La plataforma (`build.py`, sitio generado, `backend/`, utilerías) | **Propietario** | Es lo que se vende. Que el código sea legible no otorga licencia de uso. |
 
-`mcp-server/package.json` declara `"license": "MIT AND CC-BY-4.0"`, que es la
-expresión SPDX correcta para un paquete cuyo código y contenido embebido tienen
-licencias distintas.
-
-**Lo que esto concede y lo que no.** Cualquiera puede usar, adaptar y
-redistribuir los prompts, incluso comercialmente, dando crédito con enlace al
-sitio. Nadie puede tomar `build.py` y el sitio generado para operar un servicio
-equivalente. La atribución convierte cada reuso en un enlace de vuelta.
-
-> Redactado por criterio de ingeniería, no legal. Antes de depender de la
-> sección propietaria en una disputa real, conviene que la revise alguien con
-> criterio legal.
-
----
-
-## Cómo se publica (desde 1.0.1)
-
-**Sin token.** La versión 1.0.0 se publicó con un token granular de npm; desde
-la 1.0.1 se usa *trusted publishing*: npm confía en el workflow
-`publish-mcp.yml` del repositorio `dleon55/ai-sdlc-prompts`, environment
-`production`, según lo configurado en npmjs.com → paquete → *Settings* →
-*Trusted Publisher*. No hay secreto de npm en GitHub; si queda un `NPM_TOKEN`
-en el environment `production`, se puede borrar, y el token en npmjs.com
-también.
-
-**Publicación directa.** El publicador de confianza tiene permiso de
-`npm publish`: el tag publica sin pasos manuales. La seguridad la dan tres
-cosas: solo ese workflow, en ese repositorio y en ese environment, puede
-publicar; el paquete tiene activado *Require two-factor authentication and
-disallow tokens*, así que ningún token (robado o viejo) sirve para publicar; y
-cada versión lleva procedencia firmada que liga el tarball al commit.
-
-Si algún día se prefiere aprobar cada versión a mano, basta con quitar el
-permiso `npm publish` al publicador en npmjs.com y cambiar el último paso del
-workflow a `npm stage publish`; la versión queda en *Staged Packages* hasta que
-se aprueba con 2FA.
-
-### 1. Subir la versión y taggear
-
-La publicación la dispara un tag, no un push a `main`: publicar es
-irreversible — una versión de npm no se reemplaza, solo se deprecia.
-
-1. Subir la versión en `mcp-server/package.json`, `mcp-server/package-lock.json`
-   (los dos campos `version` de la raíz), `mcp-server/src/server.js` y
-   `mcp-server/server.json` (los dos campos `version`: el del servidor y el del
-   paquete). El workflow falla si alguno no coincide con el tag.
-2. Fusionar a `main`.
-3. Taggear sobre ese commit:
-
-```bash
-git tag -a mcp-v1.0.1 -m "ai-sdlc-prompts-mcp 1.0.1"
-git push origin mcp-v1.0.1
-```
-
-`.github/workflows/publish-mcp.yml` usa Node 24 y npm 11 (trusted publishing
-exige npm ≥ 11.5.1) y **aborta** si:
-
-- `mcp-server/data/prompts-full.json` está desactualizado respecto a
-  `python build.py` (evita publicar un catálogo viejo sin que nada avise);
-- el tag no coincide con la versión de `package.json` (evita que quede en npm
-  una versión distinta de la taggeada, imposible de rastrear después);
-- fallan las pruebas;
-- `npm audit` encuentra vulnerabilidades altas o críticas.
-
-### 2. Verificar
-
-```bash
-npx -y ai-sdlc-prompts-mcp
-```
-
-Debe quedarse esperando en stdin (es el transporte stdio de MCP), sin abrir red.
-
----
-
-## Dependencias y alcance real
-
-`mcp-server` no declara más que `@modelcontextprotocol/sdk` y `zod`. Todo lo
-que aparece en las alertas de seguridad es **transitivo del SDK**, y conviene
-saber qué es alcanzable antes de reaccionar a un aviso.
-
-Este servidor usa **únicamente el transporte stdio**. Siguiendo los imports
-desde sus dos puntos de entrada reales (`server/stdio.js`, `server/mcp.js`) se
-alcanzan 16 archivos del SDK y estos paquetes externos:
-
-    ajv, ajv-formats, zod, zod-to-json-schema
-
-Es decir, la pila HTTP del SDK (`hono`, `@hono/node-server`,
-`express-rate-limit` y su `ip-address`) **no se carga nunca**. Un aviso sobre
-CORS, rate limiting o path traversal en `serve-static` no aplica aquí, porque
-no hay servidor HTTP: el proceso habla por stdin/stdout y no abre red.
-
-Lo que sí es alcanzable es `ajv` (valida los esquemas de entrada de cada tool)
-y, por debajo, `fast-uri`.
-
-**Importante sobre lo que recibe quien instala.** El paquete publicado no lleva
-`package-lock.json` (ver `files` en `package.json`), así que cada instalación
-resuelve su propio árbol desde los rangos declarados. `ajv` pide
-`fast-uri: ^3.0.1` y `express-rate-limit` pide `ip-address: ^10.2.0`: una
-instalación nueva toma la versión parchada por sí sola. Las alertas de
-Dependabot se referían al lockfile **de este repositorio** — que afecta a la CI
-y a quien clona, no a quien hace `npx`.
-
-Para reproducir el análisis de alcance, seguir los imports desde
-`node_modules/@modelcontextprotocol/sdk/dist/esm/server/{stdio,mcp}.js`.
-
-El workflow de publicación corre `npm audit --audit-level=high` y **no publica**
-con vulnerabilidades altas conocidas.
-
----
-
-## Subir de versión
-
-`data/prompts-full.json` se regenera con `python build.py`, así que **cualquier
-cambio en los prompts cambia el paquete**. Al agregar o editar prompts:
-
-1. `python build.py` y commitear `mcp-server/data/prompts-full.json`
-2. Subir la versión (ver «Cómo se publica», paso 1)
-3. Taggear `mcp-v<version>`
-
-Si se olvida el paso 1, la CI lo detiene.
-
-## Registro oficial de MCP (desde 1.0.2)
-
-El mismo tag registra el servidor en el registro oficial,
-[registry.modelcontextprotocol.io](https://registry.modelcontextprotocol.io), como
-`io.github.dleon55/ai-sdlc-prompts`. De ese registro leen los clientes y los
-directorios de servidores MCP, así que es donde nos encuentra quien busca uno.
-
-- **Metadatos:** `mcp-server/server.json` (esquema `2025-12-11`). La descripción
-  admite 100 caracteres como máximo.
-- **Propiedad del nombre:** `mcpName` en `package.json` tiene que ser igual al
-  `name` de `server.json`; el registro lo comprueba contra el paquete publicado en npm.
-- **Autenticación:** OIDC del propio workflow (`mcp-publisher login github-oidc`),
-  sin token. El espacio `io.github.dleon55/*` corresponde al dueño del repositorio.
-- **Publicador:** versión fijada (`MCP_PUBLISHER_VERSION`) y firma Sigstore
-  verificada antes de ejecutarlo. Para actualizarlo, cambiar la versión a propósito;
-  nunca usar `releases/latest`.
-- **Comprobar:** `curl -s "https://registry.modelcontextprotocol.io/v0/servers?search=ai-sdlc"`.
+> Redactado por criterio de ingeniería, no legal.

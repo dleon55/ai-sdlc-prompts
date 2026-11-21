@@ -10,11 +10,11 @@
 
 | Dato | Valor | Dónde se comprobó |
 |---|---|---|
-| Paquete | `ai-sdlc-prompts-mcp` 1.0.0, se instala con `npx -y ai-sdlc-prompts-mcp` | `mcp-server/package.json` |
-| Contenido | 112 prompts, español e inglés, 18 secciones (`00`–`17`) | `mcp-server/README.md` |
+| Paquete | `ai-sdlc-prompts-mcp` 1.0.0, se instala con `npx -y ai-sdlc-prompts-mcp` | [`package.json`](https://github.com/dleon55/ai-sdlc-mcp/blob/main/package.json) |
+| Contenido | 112 prompts, español e inglés, 18 secciones (`00`–`17`) | [README](https://github.com/dleon55/ai-sdlc-mcp#readme) |
 | Herramientas | `list_prompts`, `get_prompt`, `resolve_prompt`, `get_framework`, `recommend_next` | paquete publicado 1.0.0 (`tools/list`, 31-oct-2026) |
-| Seguridad | Solo lectura, transporte stdio, no abre red, no escribe en ningún sistema | `mcp-server/README.md` |
-| Diferenciador | Cada prompt viaja con su **contrato de operación**: autonomía máxima (A0–A3), herramientas permitidas, cuándo detenerse y preguntar, evidencia mínima | `mcp-server/README.md` |
+| Seguridad | Solo lectura, transporte stdio, no abre red, no escribe en ningún sistema | [README](https://github.com/dleon55/ai-sdlc-mcp#readme) |
+| Diferenciador | Cada prompt viaja con su **contrato de operación**: autonomía máxima (A0–A3), herramientas permitidas, cuándo detenerse y preguntar, evidencia mínima | [README](https://github.com/dleon55/ai-sdlc-mcp#readme) |
 | Licencia | Código MIT; prompts CC BY 4.0 (uso comercial con atribución) | #194 |
 | Precio | Los 112 prompts y el MCP: **gratis**. Pro: **$9 USD/mes** o **$90 USD/año** (proyectos ilimitados, personalización por prompt, guardado de resultados) | `prompts.lionsystems.com.mx`, JSON-LD de la portada |
 
