@@ -150,6 +150,24 @@ Referencia de coordinación:
 
 > **Nunca editar `index.html` directamente.** Siempre usar `build.py` como fuente de verdad.
 
+### Pruebas automatizadas
+
+La suite está en `tests/` y se ejecuta con pytest (la misma que corre la CI):
+
+```bash
+python build.py && python verify_clean.py && python extract_vars.py
+pip install pytest
+python -m pytest tests/ -q
+```
+
+**Política:** toda funcionalidad nueva o cambio de comportamiento importante
+debe incluir pruebas automatizadas en `tests/` que lo cubran, y el PR debe
+pasar la suite completa antes de integrarse.
+
+### Seguridad
+
+Las vulnerabilidades se reportan en privado según [`SECURITY.md`](SECURITY.md).
+
 ---
 
 ## Convención de ramas multi-agente (OP-003)
