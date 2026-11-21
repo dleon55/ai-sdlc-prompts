@@ -147,7 +147,7 @@ integración del backend (`backend/test/integration.test.ts`) lo cubren.
   la fecha en el servidor.
 - **Fail-open ante errores de red** — una caída transitoria del backend
   nunca bloquea a un usuario real.
-- **El servidor MCP (`mcp-server/`) no está cubierto por este muro** — es
+- **El servidor MCP ([dleon55/ai-sdlc-mcp](https://github.com/dleon55/ai-sdlc-mcp)) no está cubierto por este muro** — es
   un canal de distribución completamente separado, sin ninguna dependencia
   del backend; dado que copiar prompts ya es gratis en el sitio también,
   esto ya no representa una brecha del modelo de negocio.

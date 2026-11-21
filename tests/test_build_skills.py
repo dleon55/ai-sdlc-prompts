@@ -80,8 +80,19 @@ def test_cada_prompt_una_vez_por_idioma(salida):
         assert sorted(refs) == sorted(ids)
 
 
-def test_paridad_con_el_mcp(salida):
-    datos = json.loads((RAIZ / "mcp-server" / "data" / "prompts-full.json").read_text(encoding="utf-8"))
+@pytest.fixture(scope="module")
+def datos_mcp(tmp_path_factory):
+    """El export que se copia al repo dleon55/ai-sdlc-mcp (ya no vive aquí):
+    se genera con el mismo mecanismo que scripts/exportar-datos-mcp.sh."""
+    import os
+    ruta = tmp_path_factory.mktemp("mcp") / "prompts-full.json"
+    env = dict(os.environ, AI_SDLC_MCP_DATA_OUT=str(ruta))
+    subprocess.run([sys.executable, "build.py"], cwd=RAIZ, env=env, check=True, capture_output=True)
+    return json.loads(ruta.read_text(encoding="utf-8"))
+
+
+def test_paridad_con_el_mcp(salida, datos_mcp):
+    datos = datos_mcp
     prompts = datos["prompts"] if isinstance(datos, dict) else datos
     n = len(list(salida.glob("plugins/ai-sdlc-es/skills/*/references/*.md"))) - len(build_skills.SECCIONES)
     assert n == len(prompts)

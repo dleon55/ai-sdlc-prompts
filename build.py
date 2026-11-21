@@ -17,7 +17,12 @@ PROMPTS_DIR = Path(__file__).parent / "ai_sdlc_pro_prompts"
 OUTPUT_FILE = Path(__file__).parent / "index.html"
 PRECIOS_OUTPUT_FILE = Path(__file__).parent / "precios.html"
 INDEX_OUTPUT_FILE = Path(__file__).parent / "prompts-index.json"
-MCP_DATA_OUTPUT_FILE = Path(__file__).parent / "mcp-server" / "data" / "prompts-full.json"
+# Export para el servidor MCP, que vive en https://github.com/dleon55/ai-sdlc-mcp
+# desde nov-2026. build.py ya no escribe en una carpeta del repo: solo genera
+# el JSON si se pide una ruta con AI_SDLC_MCP_DATA_OUT (ver
+# scripts/exportar-datos-mcp.sh y docs/publicar-mcp.md).
+MCP_DATA_ENV = "AI_SDLC_MCP_DATA_OUT"
+MCP_REPO_URL = "https://github.com/dleon55/ai-sdlc-mcp"
 
 # El texto ejecutable de los prompts, uno por idioma, servido aparte en vez de
 # embebido en index.html.
@@ -588,7 +593,7 @@ def _extract_next_prompt_ids(value, known_ids):
 
 def _parse_token_registry_for_export(js_source):
     """Extrae TOKEN_REGISTRY (campo -> aliases/required/scope) del bloque JS
-    embebido para publicarlo en mcp-server/data/prompts-full.json (issue
+    embebido para publicarlo en data/prompts-full.json del repo ai-sdlc-mcp (issue
     #106) -- mismo mecanismo que extract_vars.parse_registry(), pero
     operando sobre el string JS ya en memoria durante generate() en vez de
     releer build.py desde disco (evita el import circular: extract_vars.py
@@ -5777,6 +5782,7 @@ def get_landing_html(n, lang='es'):
         f'    <pre class="landing-mcp-code"><code>{MCP_CONFIG_SNIPPET_HTML}</code></pre>\n'
         f'    <p>{ls["mcp_contract"]}</p>\n'
         f'    <a class="landing-cta-secondary" href="{MCP_NPM_URL}" target="_blank" rel="noopener">{ls["mcp_link"]} \u2197</a>\n'
+        f'    <a class="landing-cta-secondary" href="{MCP_REPO_URL}" target="_blank" rel="noopener">{ls["mcp_repo_link"]} \u2197</a>\n'
         f'  </section>\n'
         f'  <section class="landing-final">\n'
         f'    <h3>{ls["final_title"]}</h3>\n'
@@ -7228,7 +7234,7 @@ def build():
             _titles_by_id[pid] = {"es": p["title_es"], "en": p["title_en"]}
     prompt_info_js = "var PROMPT_INFO = " + json.dumps(info_data, ensure_ascii=False) + ";"
 
-    # ── mcp-server/data/prompts-full.json (issue #106) ──
+    # ── data/prompts-full.json para dleon55/ai-sdlc-mcp (issue #106) ──
     # prompts-index.json solo tiene metadata + contrato editorial, nunca el
     # texto ejecutable del prompt -- un agente de IA no puede consumir la
     # biblioteca programáticamente con eso, solo copiar/pegar desde el
@@ -7257,11 +7263,14 @@ def build():
         "token_registry": _parse_token_registry_for_export(JS),
         "prompts": mcp_prompts,
     }
-    MCP_DATA_OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
-    MCP_DATA_OUTPUT_FILE.write_text(
-        json.dumps(mcp_data, ensure_ascii=False, indent=2) + "\n",
-        encoding="utf-8",
-    )
+    mcp_data_out = os.environ.get(MCP_DATA_ENV, "").strip()
+    if mcp_data_out:
+        mcp_data_path = Path(mcp_data_out)
+        mcp_data_path.parent.mkdir(parents=True, exist_ok=True)
+        mcp_data_path.write_text(
+            json.dumps(mcp_data, ensure_ascii=False, indent=2) + "\n",
+            encoding="utf-8",
+        )
 
     # ── sidebar ──
     COPY_ICO = (
@@ -8383,7 +8392,8 @@ def build():
     print(f"Framework : incluido")
     print(f"Tamano    : {size_kb:.1f} KB")
     print(f"Indice    : {INDEX_OUTPUT_FILE.name} ({contracted}/{total} con contrato editorial)")
-    print(f"MCP data  : mcp-server/data/{MCP_DATA_OUTPUT_FILE.name} ({len(mcp_prompts)} prompts)")
+    if mcp_data_out:
+        print(f"MCP data  : {mcp_data_out} ({len(mcp_prompts)} prompts)")
 
     PRECIOS_OUTPUT_FILE.write_text(build_precios_page(), encoding="utf-8")
     print(f"OK  -> {PRECIOS_OUTPUT_FILE.name}")

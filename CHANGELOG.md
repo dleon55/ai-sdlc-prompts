@@ -8,6 +8,9 @@ Este proyecto usa [Versionado Semántico](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+### Removed
+- **Servidor MCP retirado de este repositorio (2026-11-20)**: el código, su historial y la publicación (npm `ai-sdlc-prompts-mcp` y registro MCP, workflow `publish.yml` con tag `v*`) viven en [dleon55/ai-sdlc-mcp](https://github.com/dleon55/ai-sdlc-mcp) desde la 1.0.3. Se eliminan `mcp-server/`, `.github/workflows/publish-mcp.yml` y el job `mcp-server-test` de `deploy.yml`. `build.py` ya no escribe `mcp-server/data/prompts-full.json`: el export se genera con `scripts/exportar-datos-mcp.sh <ruta>` para copiarlo vía PR al repo nuevo (`docs/publicar-mcp.md`). Las pruebas de paridad del contrato y de licencia del paquete se corren ahora contra el paquete publicado en npm (`tests/conftest.py`). La portada enlaza también al repo nuevo. LICENSE §2 remite a ese repositorio.
+
 ### Added
 - **Skills para Claude Code y Codex (2026-11-13, spec E2)**: `tools/build_skills.py` genera desde `prompts-index.json` y `ai_sdlc_pro_prompts/` el repo público `dleon55/ai-sdlc-skills`: dos plugins (`ai-sdlc-es`, `ai-sdlc-en`) con 18 skills por idioma (una por sección) y los 112 prompts como `references/` sin cambios, más `00-framework.md`, un marketplace de plugins de Claude Code, `install.sh` para `~/.claude/skills` o `~/.agents/skills` (Codex) y `validate_skills.py` (frontmatter, enlaces, atribución, secretos, código de la plataforma). Sólo se publica el cuerpo CC BY 4.0 (§1 de LICENSE, que ahora incluye el repo de skills); el generador y la plataforma siguen siendo propietarios y no se copian. CTA a precios con UTM `utm_source=github&utm_medium=skills` en README, plugins y nota final de cada referencia; `SKILL.md` sólo lleva la línea de atribución. Determinista; `tests/test_build_skills.py`. Procedimiento en `docs/publicar-skills.md` y `scripts/publicar-skills.sh`.
 

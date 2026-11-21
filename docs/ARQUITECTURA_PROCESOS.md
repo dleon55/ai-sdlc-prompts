@@ -10,7 +10,7 @@ WEB_PROMPTS/
 ├── prompts-index.json   # Índice estructurado consumible por herramientas y MCP
 ├── verify_clean.py      # QA Gate: Script de validación de limpieza de prompts
 ├── extract_vars.py      # QA Gate: Contrato de placeholders y aliases
-├── mcp-server/          # Servidor MCP para consulta y resolución de prompts
+│   (servidor MCP: repo aparte, https://github.com/dleon55/ai-sdlc-mcp)
 ├── backend/             # API propia: auth GitHub, base PostgreSQL, prueba, webhook Paddle
 ├── index.html           # Artefacto Final: Aplicación SPA self-contained
 └── nginx_prompts.conf   # Infra: Configuración de servidor para producción

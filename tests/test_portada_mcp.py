@@ -19,8 +19,14 @@ def test_portada_es_y_en_anuncian_el_servidor_mcp():
         assert "https://www.npmjs.com/package/ai-sdlc-prompts-mcp" in html, rel
 
 
-def test_el_nombre_del_paquete_coincide_con_mcp_server():
-    import json
+def test_portada_enlaza_al_repo_del_servidor_mcp():
+    """El código del MCP vive en dleon55/ai-sdlc-mcp desde nov-2026."""
+    for rel in ("index.html", "en/index.html"):
+        assert "https://github.com/dleon55/ai-sdlc-mcp" in _read(rel), rel
 
-    pkg = json.loads(_read("mcp-server/package.json"))
-    assert pkg["name"] == "ai-sdlc-prompts-mcp"
+
+def test_el_fragmento_de_config_usa_el_paquete_publicado():
+    import build
+
+    assert "ai-sdlc-prompts-mcp" in build.MCP_CONFIG_SNIPPET_HTML
+    assert build.MCP_NPM_URL == "https://www.npmjs.com/package/ai-sdlc-prompts-mcp"

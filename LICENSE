@@ -1,6 +1,6 @@
 Copyright (c) 2026 LionSystems.
 
-Este repositorio contiene tres cuerpos de trabajo con licencias distintas.
+Este repositorio contiene dos cuerpos de trabajo (y remite a un tercero) con licencias distintas.
 La licencia que aplica depende de QUÉ archivo se use, no del repositorio
 como un todo. Esto es deliberado: refleja el modelo de producto, en el que
 los prompts son libres y la plataforma que los opera no lo es.
@@ -15,7 +15,8 @@ dleon555@live.com.mx antes de asumir.
 Alcance:
   - ai_sdlc_pro_prompts/**            (los 226 archivos .md, ES y EN)
   - prompts-index.json
-  - mcp-server/data/prompts-full.json
+  - el export data/prompts-full.json que genera scripts/exportar-datos-mcp.sh
+    y que embebe el servidor MCP (https://github.com/dleon55/ai-sdlc-mcp)
   - tools/skills_templates/README.md y lo que tools/build_skills.py
     genera a partir de los prompts: las skills publicadas en
     https://github.com/dleon55/ai-sdlc-skills (adaptación al formato SKILL.md;
@@ -36,10 +37,9 @@ partir de estos prompts es tuyo, sin obligación de atribución.
 2. EL SERVIDOR MCP  —  Licencia MIT
 ================================================================================
 
-Alcance:
-  - mcp-server/**, EXCEPTO mcp-server/data/ (que es contenido, ver §1)
-
-Ver mcp-server/LICENSE para el texto completo.
+El servidor MCP ya no vive en este repositorio. Su código, su licencia MIT
+y su historial están en https://github.com/dleon55/ai-sdlc-mcp (paquete npm
+ai-sdlc-prompts-mcp); ver la LICENSE de ese repositorio para el texto completo.
 
 Instalar y ejecutar este servidor es un uso expresamente permitido. Los
 prompts que sirve siguen bajo CC BY 4.0 (§1).

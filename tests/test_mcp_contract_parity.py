@@ -13,14 +13,19 @@ distintos según cómo lo pidas, que es exactamente la clase de incoherencia
 que este producto vende resolver.
 
 Este test falla si se edita un lado y no el otro.
+
+Desde nov-2026 el servidor vive en https://github.com/dleon55/ai-sdlc-mcp: el
+lado MCP se lee del paquete publicado en npm (fixture `paquete_mcp` en
+conftest.py), que es lo que reciben los agentes.
 """
 
 import re
 from pathlib import Path
 
+import pytest
+
 RAIZ = Path(__file__).resolve().parent.parent
 BUILD = RAIZ / "build.py"
-MCP = RAIZ / "mcp-server" / "src" / "operatingContract.js"
 
 # Campo canónico -> (etiqueta ES, etiqueta EN). Es la fuente de verdad del
 # test: si se agrega un campo al contrato, se agrega aquí y el test exige
@@ -51,26 +56,27 @@ def _build_js():
     return _sin_comentarios(BUILD.read_text(encoding="utf-8"))
 
 
-def _mcp_js():
-    return _sin_comentarios(MCP.read_text(encoding="utf-8"))
+@pytest.fixture(scope="module")
+def mcp_js(paquete_mcp):
+    return _sin_comentarios((paquete_mcp / "src" / "operatingContract.js").read_text(encoding="utf-8"))
 
 
-def test_las_etiquetas_coinciden_en_ambos_lados():
-    sitio, mcp = _build_js(), _mcp_js()
+def test_las_etiquetas_coinciden_en_ambos_lados(mcp_js):
+    sitio, mcp = _build_js(), mcp_js
     for campo, (es, en) in CAMPOS.items():
         for etiqueta in (es, en):
             assert etiqueta in sitio, f"falta '{etiqueta}' ({campo}) en el sitio (build.py)"
             assert etiqueta in mcp, f"falta '{etiqueta}' ({campo}) en el servidor MCP"
 
 
-def test_el_encabezado_es_el_mismo():
-    sitio, mcp = _build_js(), _mcp_js()
+def test_el_encabezado_es_el_mismo(mcp_js):
+    sitio, mcp = _build_js(), mcp_js
     for encabezado in ("## Contrato de operación", "## Operating contract"):
         assert encabezado in sitio, f"falta el encabezado '{encabezado}' en el sitio"
         assert encabezado in mcp, f"falta el encabezado '{encabezado}' en el servidor MCP"
 
 
-def test_ninguno_ordena_obedecer_por_encima_de_la_tarea():
+def test_ninguno_ordena_obedecer_por_encima_de_la_tarea(mcp_js):
     """Decisión deliberada, y vale para las dos vías.
 
     Si la tarea contradice al contrato, el agente debe DECLARARLO, no elegir
@@ -78,18 +84,18 @@ def test_ninguno_ordena_obedecer_por_encima_de_la_tarea():
     editorial en un secuestro de la instrucción del usuario, y además es la
     clase de frase que un prompt hostil imita.
     """
-    for nombre, fuente in (("el sitio", _build_js()), ("el servidor MCP", _mcp_js())):
+    for nombre, fuente in (("el sitio", _build_js()), ("el servidor MCP", mcp_js)):
         assert not re.search(r"por encima de (todo|cualquier)", fuente, re.I), (
             f"{nombre} ordena obedecer el contrato por encima de la tarea del usuario"
         )
-    for fuente in (_build_js(), _mcp_js()):
+    for fuente in (_build_js(), mcp_js):
         assert "decláralo en vez de excederlas" in fuente
         assert "say so instead of exceeding them" in fuente
 
 
-def test_el_orden_de_los_campos_es_el_mismo():
+def test_el_orden_de_los_campos_es_el_mismo(mcp_js):
     """Autonomía primero: es el límite que enmarca a los otros tres."""
-    mcp = _mcp_js()
+    mcp = mcp_js
     orden = re.search(r"const ORDER = \[(.*?)\]", mcp, re.S)
     assert orden, "no se encontró el orden de campos en el servidor MCP"
     ids_mcp = re.findall(r'"([a-z_]+)"', orden.group(1))

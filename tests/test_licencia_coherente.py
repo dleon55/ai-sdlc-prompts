@@ -21,8 +21,8 @@ from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
 LICENSE = RAIZ / "LICENSE"
-LICENSE_MCP = RAIZ / "mcp-server" / "LICENSE"
-PKG_MCP = RAIZ / "mcp-server" / "package.json"
+# El servidor MCP vive en dleon55/ai-sdlc-mcp desde nov-2026: su licencia se
+# verifica sobre el paquete publicado en npm (fixture `paquete_mcp`).
 
 # Confirmada como no entregable: sin registros MX, rebota.
 CORREO_QUE_REBOTA = "contacto@lionsystems.com.mx"
@@ -32,7 +32,6 @@ ARCHIVOS_PUBLICOS = [
     LICENSE,
     RAIZ / "CONTRIBUTING.md",
     RAIZ / "README.md",
-    RAIZ / "mcp-server" / "README.md",
     RAIZ / "docs" / "publicar-mcp.md",
 ]
 
@@ -58,6 +57,12 @@ def test_ningun_documento_publica_un_correo_que_rebota():
     )
 
 
+def test_la_licencia_remite_al_repo_del_servidor_mcp():
+    texto = _texto(LICENSE)
+    assert "https://github.com/dleon55/ai-sdlc-mcp" in texto
+    assert "mcp-server/" not in texto, "LICENSE no debe describir una carpeta que ya no existe"
+
+
 def test_la_licencia_da_un_contacto_alcanzable():
     texto = _texto(LICENSE)
     assert CORREO_VIGENTE in texto, "LICENSE debe dar un contacto de licenciamiento vigente"
@@ -79,13 +84,15 @@ def test_los_prompts_permiten_uso_comercial():
     assert "fines comerciales" in texto, "debe decir explícitamente que el uso comercial está permitido"
 
 
-def test_el_servidor_mcp_se_puede_instalar_y_ejecutar():
+def test_el_servidor_mcp_se_puede_instalar_y_ejecutar(paquete_mcp):
     """Sin permiso explícito, publicar en npm distribuye algo inusable.
 
     Instalar un paquete es reproducirlo y ejecutarlo es usarlo: con la
     licencia propietaria anterior, cada usuario estaba en violación.
     """
-    assert LICENSE_MCP.exists(), "mcp-server debe llevar su propia licencia en el paquete"
+    LICENSE_MCP = paquete_mcp / "LICENSE"
+    PKG_MCP = paquete_mcp / "package.json"
+    assert LICENSE_MCP.exists(), "el paquete MCP debe llevar su propia licencia en el paquete"
     mit = _texto(LICENSE_MCP)
     assert "MIT License" in mit
     assert "without restriction" in mit
@@ -103,11 +110,9 @@ def test_el_servidor_mcp_se_puede_instalar_y_ejecutar():
     )
 
 
-def test_la_licencia_se_incluye_en_el_paquete_publicado():
-    pkg = PKG_MCP.read_text(encoding="utf-8")
-    archivos = re.search(r'"files"\s*:\s*\[(.*?)\]', pkg, re.S)
-    assert archivos, "package.json debe declarar 'files'"
-    assert "LICENSE" in archivos.group(1), (
+def test_la_licencia_se_incluye_en_el_paquete_publicado(paquete_mcp):
+    # Se verifica sobre el tarball real: es más fuerte que leer 'files'.
+    assert (paquete_mcp / "LICENSE").exists(), (
         "publicar sin la licencia deja al usuario sin saber qué se le permite"
     )
 

@@ -150,7 +150,7 @@ Cambios de fondo respecto a hoy:
 
 Motivo: la Edge Function ya está en TypeScript/Deno — migrarla a Node es
 casi una traducción de imports, no una reescritura de lógica. El repo ya
-tiene tooling Node instalado (`mcp-server/`), y el ecosistema de Node para
+tiene tooling Node instalado (el servidor MCP, hoy en dleon55/ai-sdlc-mcp), y el ecosistema de Node para
 JWT (`jose`), OAuth y clientes de Postgres (`pg`) es maduro. La alternativa
 (Python/FastAPI) es viable pero obligaría a reescribir `alertas.ts` y el
 webhook desde cero en otro lenguaje, sin ganar nada a cambio.
